@@ -36,6 +36,12 @@ The acceptance harness uses installed package source, real Pi1.5.0 RPC and a rea
 
 These observations prove model generation/tool rendering and browser->same-session handoff. They do not convert HTTP202 into a successful-model acknowledgment or prove completion of the final reply path.
 
+### Agent Plan endpoint audit after user challenge
+
+The Volcengine run was **Agent Plan**, not Coding Plan. The harness selected `volcengine-ark/deepseek-v4-flash`; the local models.json declares that provider at `https://ark.cn-beijing.volces.com/api/plan/v3`. A fresh read-only Pi RPC `get_state` with the same provider/model returned api=openai-completions and exactly that baseUrl; no model request was sent during this audit. The old static Agent Plan extension is archived because the provider definition moved into models.json, so absence of that extension from installed packages did not imply fallback to Coding Plan. There was no `/api/coding/v3` override in the acceptance command.
+
+The observed429/AccountQuotaExceeded applies to the recorded request on that Agent Plan model. It is not independent evidence that the whole Agent Plan account or every available model has no usable quota. Earlier chat wording generalized this too broadly; the unresolved acceptance step remains that specific failed subsequent reply. Do not silently swap to Coding Plan or infer a plan-wide quota diagnosis from this record.
+
 ## Zero-model runtime acceptance
 
 - Restore-only run loaded the same persisted successful real-model tool snapshot from the installed package, opened the official UI, removed the bootstrap fragment, and observed0 page errors. It submitted no action and made no model request.
