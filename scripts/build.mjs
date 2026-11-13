@@ -1,12 +1,12 @@
 import { build } from "esbuild";
-import { mkdir, copyFile, writeFile } from "node:fs/promises";
+import { mkdir, copyFile, writeFile, readFile, readdir } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
-import { join } from "node:path";
+import { join, resolve } from "node:path";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 const dist = join(root, "dist");
 await mkdir(dist, { recursive: true });
-await build({
+const bundle = await build({
   entryPoints: [join(root, "src/client.ts")],
   outfile: join(dist, "client.js"),
   bundle: true,
@@ -15,7 +15,33 @@ await build({
   target: ["es2022"],
   minify: true,
   legalComments: "eof",
+  metafile: true,
 });
+
+// The prebuilt browser distribution must carry complete dependency licenses,
+// including notices, rather than relying only on short minified SPDX comments.
+const packages = new Map();
+for (const input of Object.keys(bundle.metafile.inputs)) {
+  const absolute = resolve(root, input).replaceAll("\\", "/");
+  const separator = absolute.lastIndexOf("/node_modules/");
+  if (separator < 0) continue;
+  const suffix = absolute.slice(separator + "/node_modules/".length);
+  const parts = suffix.split("/");
+  const name = parts[0].startsWith("@") ? parts.slice(0, 2).join("/") : parts[0];
+  const packageRoot = absolute.slice(0, separator) + "/node_modules/" + name;
+  const metadata = JSON.parse(await readFile(join(packageRoot, "package.json"), "utf8"));
+  packages.set(`${metadata.name}@${metadata.version}`, {packageRoot, metadata});
+}
+const licenseSections = ["Third-party licenses for the pi-a2ui browser bundle\nGenerated from the actual esbuild input packages. Full upstream license/notice texts follow.\n"];
+for (const [identity, {packageRoot, metadata}] of [...packages.entries()].sort(([a], [b]) => a.localeCompare(b))) {
+  const files = (await readdir(packageRoot, {withFileTypes:true}))
+    .filter(entry => entry.isFile() && /^(?:licen[cs]e|notice|copyright)(?:$|[.\-_])/i.test(entry.name))
+    .map(entry => entry.name).sort();
+  if (!files.some(file => /^licen[cs]e(?:$|[.\-_])/i.test(file))) throw new Error(`Missing full upstream license for bundled package ${identity}`);
+  licenseSections.push(`\n${"=".repeat(72)}\n${identity}\nDeclared license: ${metadata.license ?? "see upstream text"}\n`);
+  for (const file of files) licenseSections.push(`\n--- ${file} ---\n${(await readFile(join(packageRoot, file), "utf8")).trim()}\n`);
+}
+await writeFile(join(root, "THIRD_PARTY_LICENSES.txt"), licenseSections.join(""));
 await copyFile(join(root, "src/client.css"), join(dist, "client.css"));
 await writeFile(join(dist, "index.html"), `<!doctype html>
 <html lang="en" class="a2ui-light">

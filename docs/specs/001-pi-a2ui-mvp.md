@@ -4,7 +4,7 @@ Date: 2026-11-13. Lifecycle: complete (local MVP acceptance only). Profile: stri
 
 ## Goal and authorization
 
-Let a Pi user receive an interactive local UI, submit a form, and continue the same Pi conversation. User approved the tool-driven architecture and authorized independent design review followed by development, verification, and local installation/live testing when GO. Public npm/forge publication, remote deployment, and modification of Pi itself are outside this slice.
+Let a Pi user receive an interactive local UI, submit a form, and continue the same Pi conversation. User approved the tool-driven architecture and authorized independent design review followed by development, verification, and local installation/live testing when GO. The original slice was local-only; the user's2026-11-13 instruction subsequently authorizes the GitHub v0.1.0 checkpoint/release at Jackallink/pi-a2ui, tracked in docs/releases/v0.1.0.md and docs/checks/009-v0.1.0-release.md. npm registry publication, remote service deployment, and modification of Pi itself remain outside scope.
 
 ## Scope
 

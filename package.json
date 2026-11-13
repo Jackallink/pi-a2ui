@@ -17,6 +17,7 @@
     "src/",
     "dist/",
     "README.md",
+    "THIRD_PARTY_LICENSES.txt",
     "LICENSE"
   ],
   "scripts": {
@@ -53,5 +54,20 @@
     "typebox": {
       "optional": true
     }
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jackallink/pi-a2ui.git"
+  },
+  "homepage": "https://github.com/Jackallink/pi-a2ui#readme",
+  "bugs": {
+    "url": "https://github.com/Jackallink/pi-a2ui/issues"
+  },
+  "keywords": [
+    "pi-package",
+    "pi-extension",
+    "a2ui",
+    "coding-agent",
+    "generative-ui"
+  ]
 }

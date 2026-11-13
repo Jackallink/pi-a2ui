@@ -4,17 +4,32 @@ A local interactive canvas for the Pi coding agent. Pi keeps the conversation an
 
 Requires Node >=22.19.0 and Pi >=1.5.0. A2UI protocol 1.0, pinned Agent SDK 0.1.0 and Web Core/Lit 0.15.0.
 
+Version 0.1.0 is the initial local-use MVP checkpoint. It supports forms, choices and task cards alongside Pi; it does not add a separate model or change Pi's tool permissions. Real model acceptance used Volcengine Ark Agent Plan `glm-5.3-flash`. The extension uses whichever model you select in Pi.
+
+Project source is MIT licensed. The bundled browser libraries retain their own licenses; complete third-party license/notice texts are included in `THIRD_PARTY_LICENSES.txt` in the distribution.
+
 ## Install
 
-For development:
+Download `pi-a2ui-0.1.0.tgz` and `SHA256SUMS` from the [v0.1.0 GitHub Release](https://github.com/Jackallink/pi-a2ui/releases/tag/v0.1.0). From the download directory:
+
+```sh
+shasum -a 256 -c SHA256SUMS
+mkdir -p "$HOME/.local/share/pi-a2ui/0.1.0"
+tar -xzf pi-a2ui-0.1.0.tgz -C "$HOME/.local/share/pi-a2ui/0.1.0"
+cd "$HOME/.local/share/pi-a2ui/0.1.0/package"
+npm install --omit=dev --ignore-scripts
+pi install "$PWD"
+```
+
+The archive includes built browser assets; installing it does not require a build. `pi install -l "$PWD"` registers only the current project. This is a GitHub distribution; no npm registry publication is required.
+
+For development from a checkout:
 
 ```sh
 npm ci
 npm run build
 pi install /absolute/path/to/pi-a2ui
 ```
-
-For a built archive, extract it, install production dependencies in the extracted package, then register its absolute path with `pi install`. The package includes browser assets; users do not run a build. Public npm publication is not part of this version's local acceptance.
 
 Restart Pi or run `/reload`. In Pi:
 
@@ -59,7 +74,19 @@ npm run test:browser
 npm pack
 ```
 
-Browser tests require a Playwright Chromium installation (`npx playwright install chromium`). Browser bundling is a development/release step. No CDN or WebSocket dependency is used at runtime. Spec, walkthrough and acceptance mappings: [MVP design](docs/specs/001-pi-a2ui-mvp.md).
+Browser tests require a Playwright Chromium installation (`npx playwright install chromium`). Browser bundling is a development/release step. No CDN or WebSocket dependency is used at runtime. Spec, walkthrough and acceptance mappings: [MVP design](https://github.com/Jackallink/pi-a2ui/blob/v0.1.0/docs/specs/001-pi-a2ui-mvp.md).
+
+Live acceptance defaults to Agent Plan `volcengine-ark/glm-5.3-flash` and checks the resolved model and Agent Plan endpoint before making a request. Credentials stay in Pi. Select an installed Chromium executable with `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` when needed.
+
+## Releases and iteration scope
+
+See the [changelog](https://github.com/Jackallink/pi-a2ui/blob/v0.1.0/CHANGELOG.md), [v0.1.0 checkpoint](https://github.com/Jackallink/pi-a2ui/blob/v0.1.0/docs/releases/v0.1.0.md), and [roadmap](https://github.com/Jackallink/pi-a2ui/blob/main/ROADMAP.md).
+
+- **0.1.1:** form and layout components: CheckBox, ChoicePicker, Slider, DateTimeInput, Tabs, Divider.
+- **0.1.2:** coding components: CodeDiff and TestResults.
+- **0.1.3:** live data components: LogView and Chart.
+
+These are planned iterations, not capabilities included in 0.1.0. Each iteration requires its own walkthrough, TDD mapping, independent review and release checks.
 
 ## Remove
 
