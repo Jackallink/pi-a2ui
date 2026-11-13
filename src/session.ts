@@ -1,3 +1,4 @@
+import { inputPaths, validateInput } from './inputs.ts';
 import { randomUUID } from 'node:crypto';
 import { ActionMessageSchema } from '@a2ui/web_core/v1_0';
 import { boundedJson, compile, exactKeys, isBinding, record, validateSurface } from './compiler.ts';
@@ -104,9 +105,12 @@ export class UiSession {
     if(source?.component!=='Button' || !declared || declared.name!==action.name) throw new UiError(403,'Undeclared browser event');
     const context=record(declared.context)?declared.context:{};
     if(Object.keys(context).length!==Object.keys(action.context).length || Object.keys(context).some(key=>!Object.hasOwn(action.context,key))) throw new UiError(403,'Context keys do not match the declared event');
+    const fields=inputPaths(surface.message.createSurface.components);
     for(const [key,value]of Object.entries(context)) {
       if(isBinding(value)) {
-        if(typeof action.context[key]!=='string') throw new UiError(403,'TextField context must be a string');
+        const field=fields.get(value['@path']);
+        if(!field) throw new UiError(403,'Unknown input binding');
+        try { validateInput(field,action.context[key]); } catch(error) { throw new UiError(403,error instanceof Error?error.message:'Invalid input'); }
       } else if(canonical(value)!==canonical(action.context[key])) throw new UiError(403,'Literal event context was changed');
     }
     if(this.accepted.size>=LIMITS.events) throw new UiError(429,'Event capacity reached; reset the UI session');

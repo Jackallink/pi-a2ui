@@ -1,13 +1,17 @@
 // Bounded integration check: real Pi/model, installed package, real browser, two turns.
 // Existing Pi credentials stay in Pi; do not print bootstrap URLs or raw RPC records.
+import { formsSource, fillForms } from './acceptance-scenarios.mjs';
 import { spawn } from 'node:child_process';
 import { mkdir, writeFile, readFile, access } from 'node:fs/promises';
+import { fileURLToPath } from 'node:url';
 import { resolve, join } from 'node:path';
 import { chromium } from '@playwright/test';
 
 const packagePath = resolve(process.argv[2] ?? '.local/installed/package');
 const provider = process.env.A2UI_ACCEPT_PROVIDER ?? 'volcengine-ark';
 const model = process.env.A2UI_ACCEPT_MODEL ?? 'glm-5.3-flash';
+if(provider!=='volcengine-ark'||model!=='glm-5.3-flash') throw new Error('Only owner-authorized AgentPlan GLM model is allowed');
+const scenario=process.env.A2UI_ACCEPT_SCENARIO??'basic';
 const providerExtension = process.env.A2UI_ACCEPT_PROVIDER_EXTENSION;
 const restoreOnly = process.env.A2UI_ACCEPT_RESTORE_ONLY === '1';
 const additionalExtensions = providerExtension ? ['-e',resolve(providerExtension)] : [];
@@ -15,7 +19,7 @@ const workspace = resolve(process.env.A2UI_ACCEPT_WORKSPACE ?? '.local/live');
 const urlFile = join(workspace,'open-url');
 await mkdir(join(workspace,'bin'),{recursive:true});
 await writeFile(join(workspace,'bin','open'),'#!/bin/sh\numask 077\nprintf "%s" "$1" > "$A2UI_ACCEPT_OPEN_FILE"\n', {mode:0o700});
-const pi = spawn('pi',['--no-extensions','--no-mcp','--no-skills','--no-context-files','--no-prompt-templates','--no-themes','--mode','rpc','--provider',provider,'--model',model,'--thinking','off','--tools','a2ui_render','--session',join(workspace,`session-${provider}.jsonl`),...additionalExtensions,'-e',join(packagePath,'extension.ts')],{
+const pi = spawn(process.execPath,[fileURLToPath(new URL('../node_modules/@earendil-works/pi-coding-agent/dist/bundle/cli.js',import.meta.url)),'--no-extensions','--no-mcp','--no-skills','--no-context-files','--no-prompt-templates','--no-themes','--mode','rpc','--provider',provider,'--model',model,'--thinking','off','--tools','a2ui_render','--session',join(workspace,`session-${provider}.jsonl`),...additionalExtensions,'-e',join(packagePath,'extension.ts')],{
   cwd:process.cwd(),env:{...process.env,PATH:`${join(workspace,'bin')}:${process.env.PATH}`,A2UI_ACCEPT_OPEN_FILE:urlFile,PI_OFFLINE:'1'},stdio:['pipe','pipe','pipe'],
 });
 let text='';let stderr='';const events=[];const waiters=new Set();let exited=false;
@@ -48,8 +52,9 @@ try{
   if (provider === 'volcengine-ark' && initial.data?.model?.baseUrl !== 'https://ark.cn-beijing.volces.com/api/plan/v3') throw new Error('Expected Agent Plan endpoint; refusing model request');
   if (initial.data?.model?.id !== model) throw new Error('Pi selected an unexpected model; refusing model request');
   if (!restoreOnly) {
-  const source='$/form/name = ""\nroot = Card(Column([Text("Pi A2UI local acceptance"), TextField("Acceptance phrase", $/form/name), Button(Text("Submit acceptance"), action=Event("submit", {name: $/form/name}))]))';
-  command({id:'first',type:'prompt',message:`Local UI acceptance only. Call a2ui_render exactly once with surfaceId "acceptance" and source ${JSON.stringify(source)}. After successful tool call, say "Form ready" briefly. A later user message named A2UI browser context data is expected: when it arrives, reply "Accepted: " followed by context.name; do not render again or invoke another tool.`});
+  const basicSource='$/form/name = ""\nroot = Card(Column([Text("Pi A2UI local acceptance"), TextField("Acceptance phrase", $/form/name), Button(Text("Submit acceptance"), action=Event("submit", {name: $/form/name}))]))';
+  const source=scenario==='forms'?formsSource:basicSource;
+  command({id:'first',type:'prompt',message:`Local UI acceptance only. Call a2ui_render exactly once with surfaceId "acceptance" and source ${JSON.stringify(source)}. After successful tool call, say "Form ready" briefly. A later user message named A2UI browser context data is expected: when it arrives, reply "Accepted: " followed by the exact JSON object action.context (preserving boolean/number/array types); do not render again or invoke another tool.`});
   const rendered=await wait(e=>(e.type==='message_end'&&e.message?.role==='toolResult'&&e.message.toolName==='a2ui_render'&&!e.message.isError)||e.type==='agent_settled');
   if(rendered.type==='agent_settled'){
     const markers=events.filter(e=>e.type==='message_end').map(e=>e.message?.errorMessage??'').join(' ').match(/401|403|404|429|5\d\d|quota|balance|insufficient|not found/ig)??[];
@@ -73,7 +78,7 @@ try{
   browser=await chromium.launch({executablePath:process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH,headless:true});
   const page=await browser.newPage();const pageErrors=[];page.on('pageerror',e=>pageErrors.push(e.message));
   await page.goto(openUrl).catch(()=>{throw new Error("Local canvas navigation failed");});
-  await page.getByRole('textbox').waitFor();
+  await page.locator('input[type=text]').waitFor();
   if(page.url().includes('#'))throw new Error('Browser did not remove bootstrap fragment');
   if (restoreOnly) {
     await page.screenshot({path:join(workspace,'restored.png'),fullPage:true});
@@ -81,7 +86,8 @@ try{
     console.log(JSON.stringify(result));
   } else {
   const phrase='pi-a2ui-local-acceptance-20261113';
-  await page.getByRole('textbox').fill(phrase);
+  await page.locator('input[type=text]').fill(phrase);
+  if(scenario==='forms') await fillForms(page);
   const before=events.length;
   await page.getByRole('button',{name:'Submit acceptance'}).click();
   await page.getByText('Sent to Pi',{exact:true}).waitFor();
@@ -89,10 +95,16 @@ try{
   const replies=events.slice(before).filter(e=>e.type==='message_end'&&e.message?.role==='assistant').flatMap(e=>e.message.content??[]).filter(c=>c.type==='text').map(c=>c.text).join('\n');
   result={provider,model,actualToolResult:true,browserForm:true,fragmentCleared:true,local202:true,actualNextTurnAttempted:true,actualNextTurnContainsSubmittedValue:replies.includes(phrase),browserErrors:pageErrors.length};
   await page.screenshot({path:join(workspace,'acceptance.png'),fullPage:true});
+  if(scenario==='forms') {
+    const json=replies.match(/\{[\s\S]*\}/)?.[0];
+    const ack=json?JSON.parse(json):undefined;
+    if(JSON.stringify(ack?.features)!=='["b"]'||ack?.enabled!==true||ack?.count!==7||ack?.date!=='2026-12-25'||ack?.name!==phrase)throw new Error('Actual next model reply did not preserve typed submitted context');
+    result.typedContextAcknowledged=true;
+  }
   if(!replies.includes(phrase))throw new Error('Actual subsequent model reply did not acknowledge submitted context');
   await page.screenshot({path:join(workspace,'acceptance.png'),fullPage:true});
   if(pageErrors.length)throw new Error('Browser emitted errors during actual Pi acceptance');
-  result={provider,model,pi:initial.data?.version??'local 1.5.0',surface:'acceptance',actualToolResult:true,browserForm:true,fragmentCleared:true,local202:true,actualNextTurnContainsSubmittedValue:true,browserErrors:pageErrors.length};
+  result={...result,scenario,provider,model,pi:initial.data?.version??'local 1.5.0',surface:'acceptance',actualToolResult:true,browserForm:true,fragmentCleared:true,local202:true,actualNextTurnContainsSubmittedValue:true,browserErrors:pageErrors.length};
   console.log(JSON.stringify(result));
   }
 }finally{

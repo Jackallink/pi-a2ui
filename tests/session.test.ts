@@ -13,8 +13,8 @@ function action(session: UiSession, eventId='event-1') {
 }
 function rejectsStatus(fn:()=>unknown,status:number) { assert.throws(fn, (error:unknown)=>error instanceof UiError && error.status===status); }
 
-test('restricted implementation catalog exposes only six components and no functions',()=>{
- assert.deepEqual([...restrictedCatalog.components.keys()].sort(),['Button','Card','Column','Row','Text','TextField']);
+test('restricted implementation catalog exposes only twelve components and no functions',()=>{
+ assert.deepEqual([...restrictedCatalog.components.keys()].sort(),['Button','Card','CheckBox','ChoicePicker','Column','DateTimeInput','Divider','Row','Slider','Tabs','Text','TextField']);
  assert.equal(restrictedCatalog.functions.size,0);
  assert.ok(restrictedCatalog.components.get('Text'));
  assert.match(promptSnippet(),/TextField/);

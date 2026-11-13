@@ -26,6 +26,7 @@ The archive includes built browser assets; installing it does not require a buil
 For development from a checkout:
 
 ```sh
+nvm use
 npm ci
 npm run build
 pi install /absolute/path/to/pi-a2ui
@@ -52,7 +53,7 @@ root = Card(Column([
 ]))
 ```
 
-Allowed components: Text, Column, Row, Card, Button, TextField. Text is escaped plain text. Functions, checks, dynamic templates, media, HTML and general RPC are unavailable. Bind submitted values directly to absolute TextField value paths; values are strings. Literal event context is checked against the committed definition.
+Development v0.1.1 adds CheckBox, ChoicePicker, Slider, DateTimeInput, Tabs and Divider to Text, Column, Row, Card, Button and TextField. Text is escaped plain text. Functions, checks, dynamic templates, media, HTML and general RPC are unavailable. Bind submitted values directly to absolute input value paths. TextField uses string, CheckBox boolean, Slider finite bounded number, ChoicePicker string array; DateTimeInput uses explicit date/time flags and local calendar strings (optional :00 seconds), with static bounds. Literal event context is checked against the committed definition.
 
 Rendering validates the entire replacement before publishing it. Invalid source leaves the old surface intact. A tool result does not wait for a human; the browser action becomes a later structured user message, with `followUp` during generation. “Sent to Pi” acknowledges one local dispatch attempt, not model success; asynchronous failures appear in Pi. Ambiguous network failures are not automatically retried.
 
@@ -95,3 +96,5 @@ pi remove /absolute/path/used/when/installing
 ```
 
 For project-local installs, use `pi install -l` and `pi remove -l`. Existing Pi sessions and credentials are retained.
+
+Development runtime: run `nvm use` (Node24, pinned by `.nvmrc`) before installing or testing. The optional forms acceptance scenario uses `A2UI_ACCEPT_SCENARIO=forms` with the production-installed package.

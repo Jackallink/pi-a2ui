@@ -131,3 +131,41 @@ test("15 second action deadline releases busy state, reports uncertainty and nev
   await expect(page.locator("#notice")).toHaveText("Delivery is uncertain. Check Pi before sending again.");
   expect(await heldCount(page)).toBe(1);
 });
+
+test('typed controls submit actual values and tab navigation preserves bound drafts', async({page,canvas})=>{
+ canvas.session.render('form',`$/f/ok = false
+$/f/n = 2
+$/f/options = ["a"]
+$/f/date = "2026-11-13"
+$/f/name = ""
+root = Column([Tabs([{title:"Inputs",child:Column([TextField("Draft", $/f/name),CheckBox("Enabled", $/f/ok),Slider(label="Count",min=0,max=10,value=$/f/n,steps=10),ChoicePicker(label="Features",variant="multipleSelection",options=[{label:"Alpha",value:"a"},{label:"Beta",value:"b"}],value=$/f/options),DateTimeInput($/f/date,enableDate=true,enableTime=false,label="Date")])},{title:"Details",child:Text("Second panel")}]),Divider(),Button(Text("Save typed"),action=Event("save",{ok:$/f/ok,n:$/f/n,options:$/f/options,date:$/f/date,name:$/f/name}))])`);
+ await page.goto(canvas.origin);
+ await page.locator('input[type=text]').fill('Typed draft');
+ await page.getByRole('checkbox',{name:'Enabled',exact:true}).check();
+ await page.getByRole('slider').evaluate(e=>{(e as HTMLInputElement).value='7';e.dispatchEvent(new Event('input',{bubbles:true}));});
+ await page.getByRole('checkbox',{name:'Alpha',exact:true}).uncheck();
+ await page.getByRole('checkbox',{name:'Beta',exact:true}).check();
+ await page.locator('input[type=date]').fill('2026-12-25');
+ await page.getByRole('button',{name:'Details',exact:true}).click();
+ await expect(page.getByText('Second panel',{exact:true})).toBeVisible();
+ canvas.session.render('other','root = Text("Unrelated")');
+ await page.getByRole('button',{name:'Inputs',exact:true}).click();
+ await expect(page.locator('input[type=text]')).toHaveValue('Typed draft');
+ await expect(page.getByRole('checkbox',{name:'Enabled',exact:true})).toBeChecked();
+ await page.getByRole('button',{name:'Save typed',exact:true}).click();
+ await expect(page.locator('#notice')).toHaveText('Sent to Pi');
+ expect(JSON.parse(canvas.sent[0].split('\n')[1]).context).toEqual({ok:true,n:7,options:['b'],date:'2026-12-25',name:'Typed draft'});
+});
+
+test('combined local date/time edits submit an equivalent whole-hour boundary',async({page,canvas})=>{
+ canvas.session.render('form',`$/when = "2026-11-13T12:00"
+root = Column([DateTimeInput($/when,enableDate=true,enableTime=true,min="2026-11-13T12:00:00",max="2026-11-14T13:00:00",label="When"),Button(Text("Save date"),action=Event("save",{when:$/when}))])`);
+ await page.goto(canvas.origin);
+ await expect(page.locator('input[type=date]')).toHaveValue('2026-11-13');
+ await expect(page.locator('input[type=time]')).toHaveValue('12:00');
+ await page.locator('input[type=date]').fill('2026-11-14');
+ await page.locator('input[type=time]').fill('13:00');
+ await page.getByRole('button',{name:'Save date',exact:true}).click();
+ await expect(page.locator('#notice')).toHaveText('Sent to Pi');
+ expect(JSON.parse(canvas.sent[0].split('\n')[1]).context.when).toBe('2026-11-14T13:00:00');
+});
