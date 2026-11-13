@@ -6,12 +6,12 @@ import { resolve, join } from 'node:path';
 import { chromium } from '@playwright/test';
 
 const packagePath = resolve(process.argv[2] ?? '.local/installed/package');
-const provider = process.env.A2UI_ACCEPT_PROVIDER ?? 'deepseek';
-const model = process.env.A2UI_ACCEPT_MODEL ?? 'deepseek-flash';
+const provider = process.env.A2UI_ACCEPT_PROVIDER ?? 'volcengine-ark';
+const model = process.env.A2UI_ACCEPT_MODEL ?? 'glm-5.3-flash';
 const providerExtension = process.env.A2UI_ACCEPT_PROVIDER_EXTENSION;
 const restoreOnly = process.env.A2UI_ACCEPT_RESTORE_ONLY === '1';
 const additionalExtensions = providerExtension ? ['-e',resolve(providerExtension)] : [];
-const workspace = resolve('.local/live');
+const workspace = resolve(process.env.A2UI_ACCEPT_WORKSPACE ?? '.local/live');
 const urlFile = join(workspace,'open-url');
 await mkdir(join(workspace,'bin'),{recursive:true});
 await writeFile(join(workspace,'bin','open'),'#!/bin/sh\numask 077\nprintf "%s" "$1" > "$A2UI_ACCEPT_OPEN_FILE"\n', {mode:0o700});
@@ -45,6 +45,8 @@ try{
   command({id:'state',type:'get_state'});
   const initial=await wait(e=>e.type==='response'&&e.id==='state',0,30000);
   if(!initial.success)throw new Error('Pi state request failed');
+  if (provider === 'volcengine-ark' && initial.data?.model?.baseUrl !== 'https://ark.cn-beijing.volces.com/api/plan/v3') throw new Error('Expected Agent Plan endpoint; refusing model request');
+  if (initial.data?.model?.id !== model) throw new Error('Pi selected an unexpected model; refusing model request');
   if (!restoreOnly) {
   const source='$/form/name = ""\nroot = Card(Column([Text("Pi A2UI local acceptance"), TextField("Acceptance phrase", $/form/name), Button(Text("Submit acceptance"), action=Event("submit", {name: $/form/name}))]))';
   command({id:'first',type:'prompt',message:`Local UI acceptance only. Call a2ui_render exactly once with surfaceId "acceptance" and source ${JSON.stringify(source)}. After successful tool call, say "Form ready" briefly. A later user message named A2UI browser context data is expected: when it arrives, reply "Accepted: " followed by context.name; do not render again or invoke another tool.`});

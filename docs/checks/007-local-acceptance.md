@@ -1,5 +1,7 @@
 # Local package and Pi acceptance — 2026-11-13
 
+Historical partial-acceptance checkpoint. Current local acceptance is completed with the user-specified GLM model in [008-glm-agentplan-acceptance.md](008-glm-agentplan-acceptance.md). Retain quota and endpoint observations below as history.
+
 Status: **code/review GO; project-local installation and runtime paths verified; full live acceptance BLOCKED at final model reply by provider quota**. Canonical spec remains review-ready, not complete. No public package/forge publication or remote deployment.
 
 ## Final artifact and installation

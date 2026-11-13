@@ -1,6 +1,6 @@
 # Pi A2UI MVP
 
-Date: 2026-11-13. Lifecycle: review-ready. Profile: strict.
+Date: 2026-11-13. Lifecycle: complete (local MVP acceptance only). Profile: strict.
 
 ## Goal and authorization
 
@@ -78,4 +78,4 @@ Design review amendment note (2026-11-13): independent re-review clarified depth
 
 ## Local acceptance boundary
 
-Implementation/code review is GO and the built package is installed project-locally. Full completion remains blocked only on LIVE-01: a successful real model reply after browser submission. Actual model generation, tool execution, browser render, submission into the same Pi session, persisted-state restore, interactive /reload and listener cleanup were observed; the provider rejected the subsequent model request with AccountQuotaExceeded. See ../checks/007-local-acceptance.md. Do not promote review-ready to complete or claim full live acceptance until that reply is observed. Public production readiness and the unpatched Zod advisory remain outside the local-trial GO.
+Implementation/code review is GO and the built package is installed project-locally. LIVE-01 is closed: using the user's explicitly enabled Agent Plan glm-5.3-flash model, actual generation, tool execution, browser submission and a successful same-session model reply were observed; a model-designed Chinese requirements-confirmation form also completed its interaction. See ../checks/008-glm-agentplan-acceptance.md. The earlier DeepSeek-model quota failures in007 are historical evidence and do not establish that GLM was unavailable. Local MVP acceptance is complete; public production readiness and the unpatched Zod advisory remain outside the local-trial GO. Acceptance requests default to glm-5.3-flash and verify the Agent Plan endpoint; no further attempts on other models are part of this user's authorized test configuration.
