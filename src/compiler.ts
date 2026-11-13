@@ -30,7 +30,7 @@ export function boundedJson(value: unknown, bytes = LIMITS.snapshotBytes): void 
   if (Buffer.byteLength(JSON.stringify(value), 'utf8') > bytes) throw new UiError(413, 'JSON byte limit exceeded');
 }
 export function isBinding(value: unknown): value is { '@path': string } {
-  return record(value) && Object.keys(value).length === 1 && typeof value['@path'] === 'string' && /^\/(?:[^\x00-\x1f]*)$/.test(value['@path']);
+  return record(value) && Object.keys(value).length === 1 && typeof value['@path'] === 'string' && /^(?:\/(?:[^~/\x00-\x1f\x7f]|~[01])+)+$/.test(value['@path']);
 }
 function noExpressions(value: unknown): void {
   if (!value || typeof value !== 'object') return;
@@ -89,6 +89,26 @@ export function validateSurface(input: unknown): SurfaceMessage {
     }
     walk('root', 1);
     if (reachable.size !== components.size) throw new UiError(400, 'Unreachable component');
+    const dataModel = state.getSurface(create.surfaceId)!.dataModel;
+    function checkBindings(value: unknown): void {
+      if (isBinding(value)) {
+        // SDK resolution owns decoded-segment safety and container traversal.
+        dataModel.get(value['@path']);
+      } else if (value && typeof value === 'object') {
+        for (const child of Object.values(value)) checkBindings(child);
+      }
+    }
+    checkBindings(message.createSurface.components);
+    for (const component of components.values()) {
+      const properties = component.component === 'Text' ? ['text'] : component.component === 'TextField' ? ['label', 'value', 'placeholder'] : [];
+      const strings: Array<[string, unknown]> = properties.map(property => [property, component[property]]);
+      if (record(component.accessibility)) {
+        strings.push(['accessibility.label', component.accessibility.label], ['accessibility.description', component.accessibility.description]);
+      }
+      for (const [property, binding] of strings) {
+        if (isBinding(binding) && typeof dataModel.get(binding['@path']) !== 'string') throw new UiError(400, `Bound ${component.component}.${property} must resolve to an initialized string`);
+      }
+    }
     const fields = new Set([...components.values()].filter(component => component.component === 'TextField' && isBinding(component.value)).map(component => (component.value as { '@path': string })['@path']));
     for (const component of components.values()) {
       if (component.component !== 'Button') continue;
@@ -113,14 +133,24 @@ export function validateSurface(input: unknown): SurfaceMessage {
 // Bound parser work before entering the SDK. Quoted content is one lexical unit.
 function preflightSource(source: string): void {
   let tokens = 0;
-  let nesting = 0;
+  const delimiters: string[] = [];
   for (let index = 0; index < source.length;) {
     if (/\s/.test(source[index])) { index++; continue; }
+    if (source[index] === '#' || source.startsWith('//', index)) {
+      while (index < source.length && source[index] !== '\n' && source[index] !== '\r') index++;
+      continue;
+    }
+    if (source.startsWith('/*', index)) {
+      const end = source.indexOf('*/', index + 2);
+      if (end < 0) throw new UiError(400, 'Unterminated source comment');
+      index = end + 2;
+      continue;
+    }
     if (++tokens > 4096) throw new UiError(413, 'Source token limit exceeded');
     if (source[index] === '"') {
       const triple = source.startsWith('"""', index);
       const delimiter = triple ? '"""' : '"';
-      const raw = index > 0 && source[index - 1] === 'r';
+      const raw = index > 0 && /[rR]/.test(source[index - 1]);
       index += delimiter.length;
       while (index < source.length) {
         if (!raw && source[index] === '\\') { index += 2; continue; }
@@ -128,13 +158,14 @@ function preflightSource(source: string): void {
         index++;
       }
     } else if ('([{'.includes(source[index])) {
-      if (++nesting > 64) throw new UiError(413, 'Source delimiter nesting limit exceeded');
+      delimiters.push(source[index]);
+      if (delimiters.length > 64) throw new UiError(413, 'Source delimiter nesting limit exceeded');
       index++;
     } else if (')]}'.includes(source[index])) {
-      nesting--;
+      if (delimiters.pop() !== '([{'.charAt(')]}'.indexOf(source[index]))) throw new UiError(400, 'Unmatched source delimiter');
       index++;
-    } else if (/[A-Za-z0-9_/.~@-]/.test(source[index])) {
-      do { index++; } while (index < source.length && /[A-Za-z0-9_/.~@-]/.test(source[index]));
+    } else if (/[A-Za-z0-9_.~@-]/.test(source[index])) {
+      do { index++; } while (index < source.length && /[A-Za-z0-9_.~@-]/.test(source[index]));
     } else index++;
   }
 }

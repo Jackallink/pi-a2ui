@@ -5,7 +5,8 @@ import { restrictedCatalog } from '../src/catalog.ts';
 import { UiSession } from '../src/session.ts';
 import { LIMITS, UiError, type Snapshot } from '../src/protocol.ts';
 
-const form = `root = Card(Column([Text("Plan"), TextField("Name", $/form/name), Button(Text("Submit"), action=Event("submit", {name: $/form/name, kind: "plan"}))]))`;
+const form = `$/form/name = ""
+root = Card(Column([Text("Plan"), TextField("Name", $/form/name), Button(Text("Submit"), action=Event("submit", {name: $/form/name, kind: "plan"}))]))`;
 function action(session: UiSession, eventId='event-1') {
   const snapshot = session.snapshot();
   return {epoch:snapshot.epoch, revision:snapshot.surfaces[0].revision, eventId, message:{version:'1.0',action:{name:'submit',surfaceId:'form',sourceComponentId:'root_child_children_2',timestamp:'2026-11-13T00:00:00Z',context:{name:'Ada',kind:'plan'}}}};
@@ -112,4 +113,44 @@ test('tool prompt removes unsupported SDK template function deletion and sentine
 });
 test('asynchronously rejected listeners are isolated from the successful commit',async()=>{
  const session=new UiSession(()=>{});session.subscribe(async()=>{throw Error('async observer failure');});assert.equal(session.render('form',form).surfaces.length,1);await new Promise(resolve=>setImmediate(resolve));assert.equal(session.snapshot().surfaces.length,1);
+});
+test('uninitialized field values reject compilation and preserve the previous committed surface',()=>{
+ const session=new UiSession(()=>{});session.render('form',form);const before=session.snapshot();rejectsStatus(()=>session.render('form','root = TextField("Name", $/form/name)'),400);assert.deepEqual(session.snapshot(),before);
+});
+test('unsafe reserved pointer segments reject every DynamicString and context binding before commit',()=>{
+ const base=compile('form',form);
+ for(const property of ['text','label','value','placeholder']) {
+  for(const path of ['/constructor','/form/prototype','/__proto__/name']) {
+   const bad=structuredClone(base);const component=bad.createSurface.components.find(c=>c.component===(property==='text'?'Text':'TextField'))!;component[property]={'@path':path};assert.throws(()=>validateSurface(bad),UiError,property+' '+path);
+  }
+ }
+});
+test('scalar parent missing nonstring and noncanonical pointer bindings reject restored surfaces atomically',()=>{
+ const session=new UiSession(()=>{});session.render('form',form);const before=session.snapshot();
+ const cases:Array<[string,Record<string,unknown>]>=[['/a/b',{a:'primitive'}],['/form/name',{}],['/form/name',{form:{name:42}}],['/form/name',{form:{name:null}}],['/form//name',{form:{name:''}}],['/form/name/',{form:{name:''}}],['/form/na~2me',{form:{'na~2me':''}}]];
+ for(const [path,dataModel]of cases){const bad=structuredClone(before);const message=bad.surfaces[0].message;message.createSurface.dataModel=dataModel;(message.createSurface.components.find(c=>c.component==='TextField')!).value={'@path':path};(message.createSurface.components.find(c=>c.component==='Button')!.action as any).event.context.name={'@path':path};rejectsStatus(()=>session.reset(bad),400);assert.deepEqual(session.snapshot(),before);}
+});
+test('bound Text text and TextField label placeholder require initialized string values',()=>{
+ const base=compile('form',form);
+ for(const property of ['text','label','placeholder'])for(const value of [undefined,10,false,{},[]]){const bad=structuredClone(base);bad.createSurface.dataModel={form:{name:''},...(value===undefined?{}:{display:value})};const component=bad.createSurface.components.find(c=>c.component===(property==='text'?'Text':'TextField'))!;component[property]={'@path':'/display'};assert.throws(()=>validateSurface(bad),UiError,property+' '+JSON.stringify(value));}
+});
+test('initialized untouched field empty string is accepted and safe escaped pointer arrays resolve through SDK',()=>{
+ const session=new UiSession(()=>{});session.render('form',form);const event=action(session);event.message.action.context.name='';assert.deepEqual(session.acceptAction(event),{accepted:true,duplicate:false});
+ const message=compile('form',form);message.createSurface.dataModel={'a/b':{'~name':['ready']}};const path='/a~1b/~0name/0';message.createSurface.components.find(c=>c.component==='TextField')!.value={'@path':path};(message.createSurface.components.find(c=>c.component==='Button')!.action as any).event.context.name={'@path':path};assert.deepEqual(validateSurface(message),message);
+});
+test('SDK comments cannot offset source delimiter depth before parsing',()=>{
+ for(const comment of ['// '+')'.repeat(1000)+'\n','# '+')'.repeat(1000)+'\n','/* '+')'.repeat(1000)+' */\n']){assert.throws(()=>compile('x',comment+'root = '+'Card('.repeat(65)+'Text("x")'+')'.repeat(65)),(error:unknown)=>error instanceof UiError&&error.status===413&&error.message==='Source delimiter nesting limit exceeded');}
+});
+test('all supported SDK comments are ignored while quoted comment markers remain literal',()=>{
+ for(const comment of ['// ((( ))) \n','# ((( ))) \n','/* ((( ))) */\n'])assert.equal(compile('x',comment+'root = Text("valid")').createSurface.components[0].text,'valid');
+ for(const literal of ['"// # /* ) */"','r"// # /* ) */"','R"// # /* ) */"','"""// # /* ) */"""','r"""// # /* ) */"""','R"""// # /* ) */"""'])assert.equal(compile('x','root = Text('+literal+')').createSurface.components[0].text,'// # /* ) */');
+});
+test('unmatched source closing delimiters reject in preflight instead of reducing nesting credit',()=>{
+ assert.throws(()=>compile('x',')\nroot = Text("x")'),(error:unknown)=>error instanceof UiError&&error.status===400&&error.message==='Unmatched source delimiter');
+});
+test('accessibility DynamicString bindings require initialized strings',()=>{
+ for(const property of ['label','description'])for(const value of [undefined,42,false,{},[]]){const message=compile('a11y','root = Text("visible")');message.createSurface.dataModel=value===undefined?{}:{accessible:value};message.createSurface.components[0].accessibility={[property]:{'@path':'/accessible'}};assert.throws(()=>validateSurface(message),UiError,property+' '+JSON.stringify(value));}
+});
+test('initialized accessibility strings preserve legitimate bound hidden false',()=>{
+ const message=compile('a11y','root = Text("visible")');message.createSurface.dataModel={label:'Accessible label',description:'Accessible description',hidden:false};message.createSurface.components[0].accessibility={label:{'@path':'/label'},description:{'@path':'/description'},hidden:{'@path':'/hidden'}};assert.deepEqual(validateSurface(message),message);
 });

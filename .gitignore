@@ -3,3 +3,6 @@ dist/
 coverage/
 .local/
 *.tgz
+test-results/
+playwright-report/
+.pi/

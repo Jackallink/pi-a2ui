@@ -37,3 +37,11 @@ This is a concrete mitigation requirement and a disclosed dependency risk, not a
 ## Re-review
 
 Return P1-TR-01 and P2-TR-02 substantive fixes and focused evidence for independent re-review. Keep the initial findings/reproduction as history. Final acceptance remains separate from this scoped transport review.
+
+## Scoped re-review: P1-TR-01 resolved
+
+Date: 2026-11-13. Re-read the current server framing check, the exact-limit HTTP regression, and the amended canonical queue-budget contract. `SSE_FRAME_ALLOWANCE` is a fixed 64 bytes; snapshot delivery checks buffered bytes plus frame bytes against 256 KiB + 64. This permits the 24-byte snapshot framing overhead while retaining a finite slow-client queue bound. The spec explicitly records the fixed allowance.
+
+Independently re-ran `node --import tsx --test tests/server.test.ts`: **5/5 passed**, 0 skipped, including the exact 262144-byte JSON snapshot being received and parsed over real authenticated HTTP SSE. The earlier socket-failure reproduction remains historical RED evidence. Existing authentication, client-cap and shutdown checks continue to pass.
+
+**P1-TR-01 is closed. GO for this scoped transport fix.** No unresolved P1 remains from this transport review. This re-review does not claim an actual blocked-socket backpressure test, does not re-audit concurrently changing core/Pi code, and does not establish Zod mitigation or completed browser/live acceptance. P2-TR-02 is outside this requested re-review and remains for the active browser/final reviewer to verify against its targeted fixes. The initial findings above are preserved as history rather than a current rejection of this framing fix.

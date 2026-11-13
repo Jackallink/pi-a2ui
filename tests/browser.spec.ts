@@ -2,7 +2,8 @@ import { test as base, expect, type Page } from "@playwright/test";
 import { UiSession } from "../src/session.ts";
 import { startServer } from "../src/server.ts";
 
-const form = (title = "Plan") => `root = Card(Column([Text(${JSON.stringify(title)}), TextField("Name", $/form/name), Button(Text("Submit"), action=Event("submit", {name: $/form/name, kind: "plan"}))]))`;
+const form = (title = "Plan") => `$/form/name = ""
+root = Card(Column([Text(${JSON.stringify(title)}), TextField("Name", $/form/name), Button(Text("Submit"), action=Event("submit", {name: $/form/name, kind: "plan"}))]))`;
 
 type Canvas = { session: UiSession; sent: string[]; origin: string };
 const test = base.extend<{ canvas: Canvas }>({

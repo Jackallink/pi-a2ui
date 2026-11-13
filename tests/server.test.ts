@@ -82,3 +82,16 @@ test("a maximum-size valid snapshot reaches an empty SSE connection with framing
   while(!frame.endsWith("\n\n")){const chunk=await reader.read();assert.equal(chunk.done,false);frame+=new TextDecoder().decode(chunk.value);}
   assert.match(frame,/event: snapshot/);assert.equal(JSON.parse(frame.split("data: ")[1]).surfaces[0].surfaceId,"large");abort.abort();
 });
+
+test("a stalled SSE client is disconnected at the queue bound and a fresh client can recover", async t => {
+  const state=session();const server=await startServer(state);t.after(()=>server.close());const cookie=await connect(server);
+  const stalled=await new Promise<import("node:http").IncomingMessage>((resolve,reject)=>{
+    const req=request(`${server.origin}/api/events`,{headers:{cookie}},res=>{res.once("data",()=>{res.pause();resolve(res);});res.on("error",()=>{});});req.on("error",reject);req.end();
+  });t.after(()=>stalled.destroy());
+  state.snapshot().surfaces=[{surfaceId:"large",revision:1,message:{version:"1.0",createSurface:{surfaceId:"large",catalogId:"https://a2ui.org/specification/v1_0/catalogs/basic/catalog.json",components:[{id:"root",component:"Text",text:"x".repeat(200_000)}]}}}];
+  for(let i=0;i<40;i++)state.publish();
+  assert.equal(server.clients,0,"the stalled connection must be removed instead of retaining a growing queue");
+  const abort=new AbortController();t.after(()=>abort.abort());
+  const recovered=await fetch(`${server.origin}/api/events`,{headers:{cookie},signal:abort.signal});assert.equal(recovered.status,200);
+  const first=await recovered.body!.getReader().read();assert.ok(first.value!.length>0);abort.abort();
+});
