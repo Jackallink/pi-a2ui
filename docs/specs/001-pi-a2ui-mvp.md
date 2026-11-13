@@ -1,0 +1,72 @@
+# Pi A2UI MVP
+
+Date: 2026-11-13. Lifecycle: draft. Profile: strict.
+
+## Goal and authorization
+
+Let a Pi user receive an interactive local UI, submit a form, and continue the same Pi conversation. User approved the tool-driven architecture and authorized independent design review followed by development, verification, and local installation/live testing when GO. Public npm/forge publication, remote deployment, and modification of Pi itself are outside this slice.
+
+## Scope
+
+IN: one npm Pi package; one `a2ui_render` tool; official A2UI Express compiler and Lit renderer; loopback HTTP with same-origin SSE/POST; `/a2ui`, `/a2ui-status`, `/a2ui-toggle`; full surface replacement, browser reconnect, current-branch restoration, lifecycle cleanup; independent review and bounded real Pi/browser acceptance.
+
+OUT: model-token streaming preview, custom catalogs, agent RPC, arbitrary HTML/JS/URL/media, remote access, direct browser execution of coding tools, npm publication, additional model calls inside the plugin. User retains the normal Pi coding workflow.
+
+## Constraints and dependency evidence
+
+- Node >=22.19.0; Pi >=1.5.0. Local Pi observed 1.5.0; registry latest observed 1.5.2.
+- Pin initial A2UI dependencies: `@a2ui/agent` 0.1.0, `@a2ui/web_core` 0.15.0, `@a2ui/lit` 0.15.0. Protocol is 1.0; package numbers differ.
+- Published agent package exports A2uiGenerator/ExpressFormatFactory, not RendererToAgentMessageProcessor. Use published exports and v1_0 schemas, not the documentation's nonexistent export.
+- Renderer uses the same restricted basic catalog as compiler. Allow Text, Column, Row, Card, Button, TextField; plain text only in Text. Event actions only; no catalog function calls, URLs, media or executable content.
+- No custom WebSocket implementation or WebSocket dependency. Browser assets are bundled at development/release time and included in the installable package; user needs no build step/CDN.
+- Source <=32 KiB; <=64 components and <=4 surfaces; complete snapshot <=256 KiB; <=8 SSE clients; reject bodies >64 KiB; deduplicate up to 1024 accepted event IDs per epoch without evicting accepted IDs. At capacity reject new actions; reset/new epoch clears them. Bound slow-client queued bytes to 256 KiB, then disconnect and use snapshot recovery.
+
+Sources: https://a2ui.org/concepts/inference-formats/ ; https://a2ui.org/guides/client-integration/ ; npm tarball declarations at the pinned versions; https://raw.githubusercontent.com/earendil-works/pi/main/packages/coding-agent/docs/extensions.md . SDK behaviors still require executable characterization and integration checks.
+
+## Architecture and contracts
+
+`Pi tool -> compiler -> UI session -> HTTP SSE -> official renderer -> POST action -> UI session -> Pi user message`.
+
+`a2ui_render({surfaceId, source})`: surfaceId is 1..64 ASCII letters/digits/hyphen/underscore. Source is complete Express DSL, not arbitrary code. SDK promptSnippet supplies actual syntax. Tool returns a short success/error and details containing the committed full snapshot. It never waits for a human action and never starts another LLM call.
+
+Compiler parses into a fresh SDK RendererState with only the restricted catalog. Require exactly one complete created surface with the requested ID, a valid root tree, no other affected surface, no RPC, no event functions or dynamic executable expressions. Materialize one complete createSurface message from the validated resulting state. No source evaluation. Any rejection leaves the committed canvas unchanged.
+
+Session owns `{epoch, enabled, surfaces: [{surfaceId, revision, message}]}`. A render validates and checks capacity before synchronously swapping the committed snapshot and notifying listeners. Failed compilation, cancellation or unavailable server cannot report successful publication. AbortSignal is checked before commit. Same surface replacement increments revision. A snapshot event is the complete state; no unbounded event log or partial replay. On a snapshot of the same epoch, browser replaces only changed revisions, preserving unrelated unsent input. On a new epoch it clears all prior surfaces and form state.
+
+Browser stores draft input only in the official renderer's DataModel. Action context bindings resolve the submitted fields; no keystroke transmission. Browser sends `{epoch, revision, eventId, message: {version:'1.0', action}}`. Validate schema, current epoch/revision, declared reachable source component and event name, literal context fields and declared bound context keys/types against committed component definitions. Browser userMessage, timestamps and extra fields are not instructions. A structured JSON user message labels browser context as user-supplied data. No command/template expansion. Dispatch synchronously to current Pi session using `sendUserMessage(..., {deliverAs:'followUp'})`; an accepted event ID is recorded once. Synchronous rejection returns an error without acceptance. Duplicate accepted ID with identical content returns prior acceptance; reuse with different content is rejected. No promise/await gap between epoch validation and Pi dispatch. This is process/epoch-local deduplication, not crash-proof exactly-once delivery. No automatic browser POST retries after ambiguous transport failure.
+
+Session start/switch/tree navigation rotates epoch, disconnects/invalidates old actions and reconstructs only current branch's newest valid tool-result snapshot. Skip failed, malformed, oversized or incompatible records and show empty UI if none. Snapshot validation uses SDK, constraints and current catalog, never arbitrary file evaluation. Restore does not dispatch actions. Persistence is limited to bounded committed snapshots in Pi tool-result details; no credentials/event cache/draft keystrokes.
+
+## HTTP and credentials
+
+Server binds 127.0.0.1 with OS-assigned port to allow multiple Pi instances. Lazy start on `/a2ui` or first render; failed startup leaves a retryable state. `/a2ui` opens the local default browser with a random 256-bit bootstrap token in URL fragment; do not log it or store it in tool details. Browser exchanges fragment via same-origin POST `/api/connect`, receives a port-specific HttpOnly SameSite=Strict cookie, and clears fragment. Token is process-local, timing-safe checked; never embed it in public HTML/assets. Any credential in a URL is intentionally only the user's local browser bootstrap and not published evidence.
+
+GET `/`: public static shell with no session data; bundled JS/CSS only. POST `/api/connect`: exact Host and Origin, JSON, token validation. GET `/api/events`: authenticated SSE, immediate snapshot, heartbeat, current epoch and revisions; cap clients/backpressure. POST `/api/actions`: authenticated exact Host/Origin + JSON, bounded body, schema/context validation; 202 accepted/duplicate; 400 malformed; 401 unauthorized; 403 foreign origin or undeclared action; 409 stale epoch/revision/event ID conflict; 413 oversize; 429 capacity; 503 disabled/delivery unavailable. No CORS allowance. Validate Host before any session route (DNS-rebinding boundary). Bind auth cookie to the process port; close all client sockets, timers and listener on shutdown/reload. Use restrictive CSP and no external browser network resources.
+
+`/a2ui-toggle` disables model guidance/tool commits/actions, preserving committed UI for viewing; reenabling allows the same current epoch's UI. `/a2ui-status` reports enabled/listening/surface count/client count only. CLI command does not expose any existing Pi secrets.
+
+## User stories, walkthrough and acceptance mapping
+
+Canonical path/story/AC definitions: [round 1](../walkthrough/01-round1-user-stories.md). Technical trace: [round 2](../walkthrough/02-round2-technical-trace.md). Integration/errors: [round 3](../walkthrough/03-round3-integration-check.md).
+
+| AC | Required verification |
+| --- | --- |
+| AC-01 valid card/form + replacement | tests/session.test.ts real SDK; browser acceptance |
+| AC-02 invalid/cancelled/oversized atomicity | tests/session.test.ts |
+| AC-03 action continues once, correct context | tests/session.test.ts; tests/server.test.ts; real Pi/browser acceptance |
+| AC-04 stale/forged/replayed/disabled rejection | tests/session.test.ts; tests/server.test.ts |
+| AC-05 reconnect/input preservation/isolation | tests/server.test.ts; browser acceptance |
+| AC-06 branch restore and rejected history | tests/extension.test.ts; real Pi reload |
+| AC-07 shutdown and port rebind | tests/server.test.ts; Pi lifecycle smoke |
+| AC-08 authentication/origin/body/resource limits | tests/server.test.ts |
+| AC-09 installable package + no user build | npm run build/check/test; npm pack install smoke; local pi install/load |
+
+## Gates, drift, risk and rollback
+
+State machine: draft -> walkthrough-approved -> tdd-approved -> in-progress -> review-ready -> complete. Independent design review must examine real API feasibility, state/auth/lifecycle boundaries and AC coverage; no unresolved P0/P1 findings to implement. Independent final review plus relevant tests/build/package/browser/Pi checks must pass before local install acceptance is called complete. Reviewer recommendation, author corrections and observed results remain separately recorded in docs/checks. Plans contain goals/gates, not live execution counters.
+
+Initial drift from original proposal: explicit tool generation and atomic display replace intercepted prose streaming; native HTTP SSE/POST replaces hand-written WebSocket; published package exports replace illustrative SDK names; packaged browser assets replace a single source file. These are user-approved architecture choices. Later drift must be recorded here before release.
+
+Risk: local browser actions can start coding turns, malformed DSL can consume resources, restored history can be untrusted, SDK API drift. Mitigation: explicit event/context validation, revision/epoch isolation, bounded inputs/state, locked versions, independent review and real runtime evidence. Node SDK parsing has no hard CPU deadline in this MVP; 32 KiB input and depth limits constrain work but do not constitute sandboxing. Loopback-only trusted local use is the deployment boundary.
+
+Rollback: disable with `/a2ui-toggle`, exit/reload to release service, remove local package registration using `pi remove <absolute package path>`. Preserve existing Pi settings and credentials; capture only changed settings keys and restore if installation fails. Do not uninstall or update unrelated packages.
