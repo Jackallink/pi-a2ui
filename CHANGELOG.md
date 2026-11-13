@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.2 — Unreleased
+
+- Add read-only CodeDiff and structured TestResults in a versioned Pi catalog with shared server/browser schemas.
+- Preserve legacy Basic snapshots and enforce immutable bounded record IDs plus current ID-bound follow-up actions.
+- Display case-count consistency and explicit Pi-reported evidence provenance without certifying test execution.
+
+
 ## 0.1.1 — Unreleased
 
 - Add official CheckBox, ChoicePicker, Slider, DateTimeInput, Tabs and Divider.

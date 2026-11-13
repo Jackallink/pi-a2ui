@@ -1,9 +1,16 @@
-import { basicCatalog } from '@a2ui/web_core/v1_0';
+import { codingApis } from './coding.js';
+import { basicCatalog, type Catalog, type ComponentApi } from '@a2ui/web_core/v1_0';
 
 // Keep the official implementations; pruning schema alone would not render in Lit.
-export const restrictedCatalog = basicCatalog.derive({
+const official = basicCatalog.derive({
   catalogId: basicCatalog.id,
   components: ['Text', 'Column', 'Row', 'Card', 'Button', 'TextField', 'CheckBox', 'ChoicePicker', 'Slider', 'DateTimeInput', 'Tabs', 'Divider'],
   functions: [],
   instructions: 'Use only the twelve declared components. Text is literal escaped plain text. Use event actions only. No functions, checks, templates, URLs, media or executable expressions. Bind event context only to absolute value paths of reachable inputs. Initialize TextField with strings, CheckBox booleans, Slider bounded finite numbers, ChoicePicker string arrays. Use explicit enableDate/enableTime flags and local YYYY-MM-DD / HH:mm / YYYY-MM-DDTHH:mm date/time strings, optional :00 seconds. Declare static ranges/options.',
 });
+
+// Keep document refs/options but strip browser constructors from server APIs.
+const base:Catalog<ComponentApi>=official;
+export const legacyCatalog=base.derive({catalogId:official.id,functions:[],instructions:official.instructions,components:[...official.components.values()].map(({element:_element,tagName:_tagName,...api})=>api)});
+export const restrictedCatalog=legacyCatalog.derive({catalogId:'https://jackallink.github.io/pi-a2ui/catalogs/coding-v1.json',functions:[],components:[...legacyCatalog.components.values(),...codingApis],instructions:legacyCatalog.instructions?.replace('Use only the twelve declared components.','Use only the declared components/signatures.')+' CodeDiff and TestResults are static read-only records. Each surface has at most one of each; every Button must include current literal proposalId/resultId. IDs are immutable within a session. Test results are supplied tool evidence, not independently certified by the browser.'});
+export const catalogs=[legacyCatalog,restrictedCatalog];

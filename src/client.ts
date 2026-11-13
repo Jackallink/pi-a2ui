@@ -4,7 +4,7 @@ import {
   injectBasicCatalogStyles,
   type ActionPayload,
 } from "@a2ui/web_core/v1_0";
-import { restrictedCatalog } from "./catalog.js";
+import { browserCatalogs } from "./browser-catalog.js";
 import type { Snapshot, SurfaceRecord } from "./protocol.js";
 
 // Consume the bootstrap credential once, before starting any network work.
@@ -43,7 +43,7 @@ const mounted = new Map<string, MountedSurface>();
 injectBasicCatalogStyles();
 
 function makeProcessor() {
-  return new MessageProcessor<LitComponentApi>([restrictedCatalog], undefined, { version: "1.0" });
+  return new MessageProcessor<LitComponentApi>(browserCatalogs, undefined, { version: "1.0" });
 }
 
 function showNotice(message: string, error = false) {
