@@ -1,0 +1,10 @@
+{
+  "node": "24.18.1",
+  "liveTests": 18,
+  "archiveSha256": "a6167600e239c6d031ced09ac03327e1a3239f884a470596c3407b7b3ecbb97b",
+  "productionOnlyInstall": true,
+  "consumerBuildRequired": false,
+  "actualModelOnThisArchive": true,
+  "nodeTests": 88,
+  "browserTests": 12
+}

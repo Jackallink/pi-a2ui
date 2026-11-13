@@ -1,6 +1,6 @@
 // Bounded integration check: real Pi/model, installed package, real browser, two turns.
 // Existing Pi credentials stay in Pi; do not print bootstrap URLs or raw RPC records.
-import { formsSource, fillForms, codingSource } from './acceptance-scenarios.mjs';
+import { formsSource, fillForms, codingSource, liveSource, liveChartSeries } from './acceptance-scenarios.mjs';
 import { spawn, spawnSync } from 'node:child_process';
 import { mkdir, writeFile, readFile, access } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
@@ -28,7 +28,7 @@ if(scenario==='coding'&&!restoreOnly){
 }
 await mkdir(join(workspace,'bin'),{recursive:true});
 await writeFile(join(workspace,'bin','open'),'#!/bin/sh\numask 077\nprintf "%s" "$1" > "$A2UI_ACCEPT_OPEN_FILE"\n', {mode:0o700});
-const pi = spawn(process.execPath,[fileURLToPath(new URL('../node_modules/@earendil-works/pi-coding-agent/dist/bundle/cli.js',import.meta.url)),'--no-extensions','--no-mcp','--no-skills','--no-context-files','--no-prompt-templates','--no-themes','--mode','rpc','--provider',provider,'--model',model,'--thinking','off','--tools','a2ui_render','--session',join(workspace,`session-${provider}.jsonl`),...additionalExtensions,'-e',join(packagePath,'extension.ts')],{
+const pi = spawn(process.execPath,[fileURLToPath(new URL('../node_modules/@earendil-works/pi-coding-agent/dist/bundle/cli.js',import.meta.url)),'--no-extensions','--no-mcp','--no-skills','--no-context-files','--no-prompt-templates','--no-themes','--mode','rpc','--provider',provider,'--model',model,'--thinking','off','--tools',scenario==='live'?'a2ui_render,a2ui_update_chart,bash':'a2ui_render','--session',join(workspace,`session-${provider}.jsonl`),...additionalExtensions,'-e',join(packagePath,'extension.ts')],{
   cwd:process.cwd(),env:{...process.env,PATH:`${join(workspace,'bin')}:${process.env.PATH}`,A2UI_ACCEPT_OPEN_FILE:urlFile,PI_OFFLINE:'1'},stdio:['pipe','pipe','pipe'],
 });
 let text='';let stderr='';const events=[];const waiters=new Set();let exited=false;
@@ -53,7 +53,7 @@ function wait(predicate,after=0,timeout=180000){
   });
 }
 function command(value){pi.stdin.write(JSON.stringify(value)+'\n');}
-let browser;let origin;let result={};
+let browser;let origin;let result={};let liveEvidence={};
 try{
   command({id:'state',type:'get_state'});
   const initial=await wait(e=>e.type==='response'&&e.id==='state',0,30000);
@@ -62,7 +62,7 @@ try{
   if (initial.data?.model?.id !== model) throw new Error('Pi selected an unexpected model; refusing model request');
   if (!restoreOnly) {
   const basicSource='$/form/name = ""\nroot = Card(Column([Text("Pi A2UI local acceptance"), TextField("Acceptance phrase", $/form/name), Button(Text("Submit acceptance"), action=Event("submit", {name: $/form/name}))]))';
-  const source=scenario==='forms'?formsSource:scenario==='coding'?codingSource(testEvidence):basicSource;
+  const source=scenario==='forms'?formsSource:scenario==='coding'?codingSource(testEvidence):scenario==='live'?liveSource:basicSource;
   command({id:'first',type:'prompt',message:`Local UI acceptance only. Call a2ui_render exactly once with surfaceId "acceptance" and source ${JSON.stringify(source)}. After successful tool call, say "Form ready" briefly. A later user message named A2UI browser context data is expected: when it arrives, reply "Accepted: " followed by the exact JSON object action.context (preserving boolean/number/array types); do not render again or invoke another tool.`});
   const rendered=await wait(e=>(e.type==='message_end'&&e.message?.role==='toolResult'&&e.message.toolName==='a2ui_render'&&!e.message.isError)||e.type==='agent_settled');
   if(rendered.type==='agent_settled'){
@@ -90,6 +90,11 @@ try{
   await page.locator('input[type=text]').waitFor();
   if(page.url().includes('#'))throw new Error('Browser did not remove bootstrap fragment');
   if (restoreOnly) {
+    if(scenario==='live'){
+      await page.locator('pi-a2ui-chart rect').nth(2).waitFor();
+      await page.locator('pi-a2ui-log-view pre').filter({hasText:'live-tick-3'}).waitFor();
+      if(await page.locator('pi-a2ui-log-view [data-stream-state=running]').count())throw new Error('Restored history cannot claim a running native tool');
+    }
     await page.screenshot({path:join(workspace,'restored.png'),fullPage:true});
     result={provider,model,restoreOnly:true,restoredActualModelToolResult:true,browserForm:true,fragmentCleared:true,browserErrors:pageErrors.length};
     console.log(JSON.stringify(result));
@@ -97,12 +102,30 @@ try{
   const phrase='pi-a2ui-local-acceptance-20261113';
   await page.locator('input[type=text]').fill(phrase);
   if(scenario==='forms') await fillForms(page);
+  if(scenario==='live'){
+    await page.locator('input[type=text]').evaluate(element=>globalThis.acceptanceOriginalInput=element);
+    const runAfter=events.length;
+    const commandText="for i in 1 2 3; do printf 'live-tick-%s\\n' \"$i\"; sleep 0.4; done";
+    command({id:'native-run',type:'prompt',message:`Native tool/log acceptance. Call bash exactly once with command ${JSON.stringify(commandText)}. After it succeeds call a2ui_update_chart with surfaceId acceptance, revision 1, componentId chart, series ${JSON.stringify(liveChartSeries)}. Do not render another surface or run other commands. Then say Run complete. When the later A2UI browser context arrives, still acknowledge its exact JSON context as previously instructed.`});
+    await page.locator('pi-a2ui-log-view [data-stream-state=running]').waitFor();
+    await page.locator('pi-a2ui-log-view pre').filter({hasText:'live-tick-1'}).waitFor();
+    const progressBeforeEnd=!events.slice(runAfter).some(e=>e.type==='tool_execution_end'&&e.toolName==='bash');
+    if(!progressBeforeEnd)throw new Error('Native output was not observed while the tool was still running');
+    await wait(e=>e.type==='agent_settled',runAfter);
+    const completed=events.slice(runAfter).some(e=>e.type==='tool_execution_end'&&e.toolName==='bash'&&e.isError===false);
+    const updated=events.slice(runAfter).some(e=>e.type==='message_end'&&e.message?.role==='toolResult'&&e.message.toolName==='a2ui_update_chart'&&!e.message.isError);
+    if(!completed||!updated)throw new Error('Actual native bash/chart tool did not succeed');
+    await page.locator('pi-a2ui-log-view [data-stream-state=completed]').waitFor();
+    await page.locator('pi-a2ui-chart rect').nth(2).waitFor();
+    if(await page.locator('input[type=text]').inputValue()!==phrase||!await page.locator('input[type=text]').evaluate(e=>e===globalThis.acceptanceOriginalInput))throw new Error('Native live updates lost draft/input identity');
+    liveEvidence={actualNativeToolOutput:true,progressObservedBeforeToolEnd:true,actualChartTool:true,draftAndInputIdentityPreserved:true,nativeUpdateEvents:events.slice(runAfter).filter(e=>e.type==='tool_execution_update'&&e.toolName==='bash').length};
+  }
   const before=events.length;
   await page.getByRole('button',{name:'Submit acceptance'}).click();
   await page.getByText('Sent to Pi',{exact:true}).waitFor();
   await wait(e=>e.type==='agent_settled',before);
   const replies=events.slice(before).filter(e=>e.type==='message_end'&&e.message?.role==='assistant').flatMap(e=>e.message.content??[]).filter(c=>c.type==='text').map(c=>c.text).join('\n');
-  result={provider,model,actualToolResult:true,browserForm:true,fragmentCleared:true,local202:true,actualNextTurnAttempted:true,actualNextTurnContainsSubmittedValue:replies.includes(phrase),browserErrors:pageErrors.length};
+  result={...liveEvidence,provider,model,actualToolResult:true,browserForm:true,fragmentCleared:true,local202:true,actualNextTurnAttempted:true,actualNextTurnContainsSubmittedValue:replies.includes(phrase),browserErrors:pageErrors.length};
   await page.screenshot({path:join(workspace,'acceptance.png'),fullPage:true});
   if(scenario==='forms') {
     const json=replies.match(/\{[\s\S]*\}/)?.[0];

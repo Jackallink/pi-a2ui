@@ -2,11 +2,12 @@ import { createServer, type IncomingMessage, type ServerResponse } from "node:ht
 import { randomBytes, timingSafeEqual } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import type { Socket } from "node:net";
-import { LIMITS, UiError, type Snapshot } from "./protocol.ts";
+import { LIMITS, UiError, type Snapshot, type DataBatch } from "./protocol.ts";
 
 export interface SessionPort {
   snapshot(): Snapshot;
   subscribe(listener: (snapshot: Snapshot) => void): () => void;
+  subscribeData?(listener:(batch:DataBatch)=>void):()=>void;
   acceptAction(input: unknown): { accepted: true; duplicate: boolean };
 }
 export interface CanvasServer {
@@ -120,7 +121,10 @@ export async function startServer(session: SessionPort, options: {port?: number}
     throw new UiError(404, "Not found");
   }
   function sendSnapshot(res: ServerResponse, snapshot: Snapshot) {
-    const frame = `event: snapshot\ndata: ${JSON.stringify(snapshot)}\n\n`;
+    sendEvent(res,"snapshot",snapshot);
+  }
+  function sendEvent(res:ServerResponse,event:string,data:unknown){
+    const frame = `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`;
     if (res.writableLength + Buffer.byteLength(frame) > LIMITS.queuedBytes + SSE_FRAME_ALLOWANCE) { streams.delete(res); res.destroy(); return; }
     res.write(frame);
   }
@@ -130,6 +134,7 @@ export async function startServer(session: SessionPort, options: {port?: number}
       catch { streams.delete(res); res.destroy(); }
     }
   });
+  const unsubscribeData=session.subscribeData?.(batch=>{for(const res of streams){try{sendEvent(res,"data",batch);}catch{streams.delete(res);res.destroy();}}})??(()=>{});
   const heartbeat = setInterval(() => {
     for (const res of streams) {
       if (res.writableLength > LIMITS.queuedBytes) { streams.delete(res); res.destroy(); }
@@ -143,7 +148,7 @@ export async function startServer(session: SessionPort, options: {port?: number}
       server.once("error", failed);
       server.listen(options.port ?? 0, "127.0.0.1", () => {server.off("error", failed); resolve();});
     });
-  } catch (error) { clearInterval(heartbeat); unsubscribe(); server.close(); throw error; }
+  } catch (error) { clearInterval(heartbeat); unsubscribe(); unsubscribeData(); server.close(); throw error; }
   const address = server.address() as {port: number};
   host = `127.0.0.1:${address.port}`; origin = `http://${host}`;
   cookieName = `pi_a2ui_${address.port}_${randomBytes(8).toString("hex")}`;
@@ -152,7 +157,7 @@ export async function startServer(session: SessionPort, options: {port?: number}
     get clients() { return streams.size; },
     close() {
       if (closing) return closing;
-      clearInterval(heartbeat); unsubscribe();
+      clearInterval(heartbeat); unsubscribe(); unsubscribeData();
       for (const res of streams) res.end(); streams.clear();
       closing = new Promise<void>(resolve => {
         server.close(() => resolve());
