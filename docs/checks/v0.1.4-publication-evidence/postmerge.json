@@ -1,0 +1,9 @@
+{
+  "mergedSource": "bb66d4de5fc28ad745eb864a2c71e9f6fdd4b959",
+  "sha256": "e1c75b224c7d07408582fb1405e4959dd992e0f7eecd5e9489971b797da7cf29",
+  "sameAsReviewedArchive": true,
+  "nodeTests": 137,
+  "browserTests": 27,
+  "browserBuild": 1208,
+  "buildAndTypes": true
+}

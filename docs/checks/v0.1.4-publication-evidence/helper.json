@@ -1,0 +1,10 @@
+{
+  "source": "bb66d4de5fc28ad745eb864a2c71e9f6fdd4b959",
+  "node": "24.18.1",
+  "version": "0.1.4",
+  "catalogId": "https://jackallink.github.io/pi-a2ui/catalogs/workbench-v1.json",
+  "components": 29,
+  "examplesCompiled": 11,
+  "normalGitTagInstallation": true,
+  "noDevBuildOrHostPeerInstall": true
+}
