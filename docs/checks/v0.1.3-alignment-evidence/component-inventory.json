@@ -1,0 +1,55 @@
+{
+  "verified": "2026-11-14",
+  "webCoreVersion": "0.15.0",
+  "officialComponents": [
+    "Text",
+    "Image",
+    "Icon",
+    "Video",
+    "AudioPlayer",
+    "Row",
+    "Column",
+    "List",
+    "Card",
+    "Tabs",
+    "Modal",
+    "Divider",
+    "Button",
+    "TextField",
+    "CheckBox",
+    "ChoicePicker",
+    "Slider",
+    "DateTimeInput"
+  ],
+  "enabledComponents": [
+    "Text",
+    "Column",
+    "Row",
+    "Card",
+    "Button",
+    "TextField",
+    "CheckBox",
+    "ChoicePicker",
+    "Slider",
+    "DateTimeInput",
+    "Tabs",
+    "Divider",
+    "CodeDiff",
+    "TestResults",
+    "LogView",
+    "Chart"
+  ],
+  "officialNotEnabled": [
+    "Image",
+    "Icon",
+    "Video",
+    "AudioPlayer",
+    "List",
+    "Modal"
+  ],
+  "enabledFunctions": [],
+  "sources": [
+    "https://a2ui.org/concepts/catalogs/",
+    "https://a2ui.org/guides/defining-a-catalog/"
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "version": "0.1.3",
+  "nodeSupport": "24.x only",
+  "engineStrictInstall": true,
+  "node": "24.18.1",
+  "productionOnly": true,
+  "actualProjectRegistration": true,
+  "installedFilesMatchArchive": true,
+  "unrelatedSettingsPreserved": true,
+  "privateGlobalSettingsPreserved": true,
+  "hostCopiesAbsent": true,
+  "esbuildAbsent": true,
+  "consumerBuild": false
+}

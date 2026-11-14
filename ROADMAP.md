@@ -2,7 +2,7 @@
 
 Baseline: [v0.1.0 checkpoint](docs/releases/v0.1.0.md). The user approved the version-to-scope mapping on2026-11-13. This document defines scope/dependencies/admission gates; live issue progress belongs in GitHub Issues and validation results in docs/checks.
 
-The user consolidated all three slices into **v0.1.1** on2026-11-14. Former0.1.2/0.1.3 labels are historical development slices, not planned public versions.
+The user consolidated all three slices into **v0.1.1** on2026-11-14. Former0.1.2/0.1.3 labels originally described development slices. A subsequent user instruction publishes0.1.3 as a version-alignment checkpoint with the same functionality as0.1.1;0.1.2 remains unpublished.
 
 | Slice in0.1.1 | Outcome | Canonical feature contract |
 | --- | --- | --- |
@@ -10,9 +10,11 @@ The user consolidated all three slices into **v0.1.1** on2026-11-14. Former0.1.2
 | Step2 | Read-only CodeDiff and structured TestResults | [Coding components](docs/specs/003-v0.1.2-coding-components.md) |
 | Step3 | Bounded LogView and constrained Chart | [Live components](docs/specs/004-v0.1.3-live-data.md) |
 
-Release path:0.1.0 →0.1.1 (all three steps). [Distribution contract](docs/specs/005-v0.1.1-distribution.md) governs Git/local packaging; no npm publication.
+Release path:0.1.0 →0.1.1 (all three steps) →0.1.3 (version alignment only). [Distribution contract](docs/specs/005-v0.1.1-distribution.md) governs Git/local packaging; no npm publication.
 
 ## Shared requirements
+
+- Current supported runtime is Node 24.x only (`nvm use 24`, `.nvmrc=24`); previous lower-floor statements belong to historical releases.
 
 - Retain Pi as conversation/tool/permission owner. Browser actions express user intent, not direct filesystem/shell authority.
 - Preserve epoch/revision isolation, snapshot recovery, atomic failure and bounded payloads/resources.

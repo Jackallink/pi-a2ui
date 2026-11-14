@@ -1,3 +1,5 @@
+> Historical scope/runtime record. Current release requires **Node 24.x** (`nvm use 24`); old runtime-floor statements below are superseded by spec006 for current use. Immutable old release source/assets are not rewritten.
+
 # Pi A2UI MVP
 
 Date: 2026-11-13. Lifecycle: complete (local MVP acceptance only). Profile: strict.
