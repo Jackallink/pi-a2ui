@@ -1,0 +1,19 @@
+{
+  "sourceSha": "f0f1805fc14348a967f7a723f857a89ac7319640",
+  "archiveSHA256": "ce42eb900a0120daf39bc5638d70ecac397eee251d04046d20838dc6c6241772",
+  "node": "v24.18.1",
+  "productionHelper": true,
+  "catalogTypes": 32,
+  "patterns": 8,
+  "examplesCompiledAndChecked": 19,
+  "patternIdentityAndReferences": true,
+  "stdinCRLFUnicodeExact": true,
+  "unknownTraversalAndArityErrorsFailWithoutStdout": true,
+  "absentDevAndHostCopies": [
+    "tsx",
+    "typescript",
+    "esbuild",
+    "@earendil-works/pi-coding-agent",
+    "typebox"
+  ]
+}

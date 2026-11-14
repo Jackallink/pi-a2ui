@@ -1,0 +1,47 @@
+{
+  "node": "v24.18.1",
+  "provider": "volcengine-ark",
+  "model": "glm-5.3-flash",
+  "agentPlanEndpointVerified": true,
+  "initialSourceSha": "dc14b8dd0edd361d086f90b8d3baa4d051a39440",
+  "initialArchiveSHA256": "0366feceb7cf5fc52eda21aac7f03110e84aa8dcc40e8b4c90bd92577c27eb3a",
+  "storySuppliedWithoutDSL": true,
+  "actualSkillPatternsPatternExampleCheck": true,
+  "successfulRenders": 1,
+  "renderFailures": 0,
+  "browserActionContext": {
+    "name": "Ada",
+    "accept": true,
+    "branch": [
+      "feature"
+    ]
+  },
+  "modelAcknowledgementContext": {
+    "name": "Ada",
+    "accept": true,
+    "branch": [
+      "feature"
+    ]
+  },
+  "agentRunsInFinalResume": 1,
+  "invalidSubmissionPosts": 0,
+  "validSubmissionPosts": 1,
+  "nativeBashTimelineObservedInSecondAttempt": true,
+  "initialAutomaticOpenAttempts": 1,
+  "cleanSingleHarnessPass": false,
+  "forwardBrowserErrors": "not established; array assertion followed parser failure",
+  "completionBasis": "UI assertions completed before metadata extraction TypeError; raw typed events re-parsed offline. Request counts and palette path are control-flow assertions, not independent packet capture. Native bash timeline locator completed in prior resumed attempt before unrelated alert locator timeout.",
+  "harnessFailures": [
+    "baseline accessible-name locator mismatch",
+    "assumed alert role instead of aria-live section",
+    "string toolResult content in metadata parser"
+  ],
+  "rawEvidenceHashes": {
+    "forward/events.json": "52180a534ddd4ce1693f57cc6dcd9c3b8a3ea1ed6c7de752fa503492042d3ad3",
+    "forward-complete/events.json": "1452eab437a41cbf22cc145229373bae9e9f848c651be397bd068ead7c070f37",
+    "forward-final/events.json": "2af0c6dd3c4730a29b542f3ddb12be3b60d38046224c4d0751e2628eec61ecac",
+    "forward-final.mjs": "ae7b5fb5c55e6f38fb6d699b0a454f11d4f7a5595b062d2ef134ae636256ce01"
+  },
+  "processExited": true,
+  "listenerReleased": true
+}

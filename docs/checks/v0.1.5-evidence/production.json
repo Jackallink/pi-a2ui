@@ -1,0 +1,15 @@
+{
+  "sourceSha": "f0f1805fc14348a967f7a723f857a89ac7319640",
+  "archiveSHA256": "ce42eb900a0120daf39bc5638d70ecac397eee251d04046d20838dc6c6241772",
+  "payloadFiles": 71,
+  "sourceArchiveInstalledBytesEqual": true,
+  "productionDependenciesOnly": true,
+  "packageVersion": "0.1.5",
+  "catalogTypes": 32,
+  "patterns": 8,
+  "examplesCompiled": 19,
+  "stdinExactToolArguments": true,
+  "deltaFromActualGLMPackage": [
+    "package/skills/pi-a2ui/references/keyboard-actions.md"
+  ]
+}
