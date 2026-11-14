@@ -1,7 +1,7 @@
 import {logStates} from './live.js';
 import {z} from 'zod';
 import {basicCatalog,type ComponentApi} from '@a2ui/web_core/v1_0';
-import {UiError,type SurfaceMessage} from './protocol.ts';
+import { componentError, UiError,type SurfaceMessage} from './protocol.ts';
 const identity=z.string().regex(/^[A-Za-z0-9_-]{1,64}$/);
 export const dataTableApi={name:'DataTable',schema:z.object({caption:z.string().min(1).max(256),columns:z.array(z.object({id:identity,label:z.string().min(1).max(128)}).strict()).min(1).max(12),rows:z.array(z.object({id:identity,cells:z.array(z.union([z.string().max(256),z.number().finite(),z.boolean(),z.null()])).max(12)}).strict()).max(200),state:z.enum(['ready','loading','error']).default('ready'),message:z.string().max(512).default('')}).strict()} satisfies ComponentApi;
 export const codeBlockApi={name:'CodeBlock',schema:z.object({code:z.string(),language:z.string().max(32).default('text'),copyable:z.boolean().default(true)}).strict()} satisfies ComponentApi;
@@ -17,6 +17,7 @@ export const APPROVED_ICON_NAMES:readonly string[]=Object.freeze(['check','close
 export function validateWorkbench(message:SurfaceMessage,initial=false):void{
  let progressCount=0,modalCount=0;
  for(const c of message.createSurface.components){
+    try {
   if(['Image','Video','AudioPlayer'].includes(c.component)){artifactUrl.parse(c.url);if(c.posterUrl!==undefined)artifactUrl.parse(c.posterUrl);for(const prop of ['description','fit','variant'])if(c[prop]!==undefined&&typeof c[prop]!=='string')throw new UiError(400,'Artifact media props must be static');}
   if(c.component==='Icon'&&!APPROVED_ICON_NAMES.includes(c.name as string))throw new UiError(400,'Icon name must be a static approved local icon');
   if(c.component==='Modal'){
@@ -37,5 +38,7 @@ export function validateWorkbench(message:SurfaceMessage,initial=false):void{
    const {id:_,component:__,...props}=c;const p=dataTableApi.schema.parse(props);
    if(new Set(p.columns.map(x=>x.id)).size!==p.columns.length||new Set(p.rows.map(x=>x.id)).size!==p.rows.length||p.rows.some(x=>x.cells.length!==p.columns.length))throw new UiError(400,'Table requires unique IDs and one cell per column');Object.assign(c,p);
   }
- }
+
+    } catch(error) { throw componentError(error,c, message.createSurface.surfaceId); }
+  }
 }
