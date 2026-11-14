@@ -14,7 +14,7 @@ Release path:0.1.0 →0.1.1 (all three steps) →0.1.3 (version alignment only).
 
 ## v0.1.4规划：日常交互与可读性
 
-**规划范围已登记，尚未实现/发布。** 此前七组能力全部保留，低优先级不等于删除；Node24.x only和既有Pi权限/资源边界不变。
+**范围全部保留，设计门禁见Check024，实现证据见Check025–031；发布单独执行。** 此前七组能力全部保留，低优先级不等于删除；Node24.x only和既有Pi权限/资源边界不变。
 
 | 组 | 必选能力ID | 内容 |
 | --- | --- | --- |
@@ -26,7 +26,7 @@ Release path:0.1.0 →0.1.1 (all three steps) →0.1.3 (version alignment only).
 | W6 | C11, C12 | ArtifactPreview / Image：本地视觉产物预览 |
 | W7 | C13, C14 | Video / AudioPlayer：媒体产物回看 |
 
-[canonical spec007](docs/specs/007-v0.1.4-usability.md) · [交付顺序/依赖](docs/plans/007-v0.1.4-components.md) · [走查](docs/walkthrough/v0.1.4/walkthrough.md)。W1/W2/W3优先阅读，W4/W5强化状态/详情，W6/W7完成受审产物与媒体；媒体D1–D4设计门禁未关闭不得开始资源实现。R01–R08新增建议为独立候选，不算已实现或必选承诺。
+[canonical spec007](docs/specs/007-v0.1.4-usability.md) · [交付顺序/依赖](docs/plans/007-v0.1.4-components.md) · [走查](docs/walkthrough/v0.1.4/walkthrough.md)。W1/W2/W3优先阅读，W4/W5强化状态/详情，W6/W7完成受审产物与媒体；媒体D1–D4设计门禁未关闭不得开始资源实现。R01–R08全部归入v0.1.5（spec008/issues19–26），当前不实施。
 
 ## Shared requirements
 
@@ -50,7 +50,7 @@ Issues [#1](https://github.com/Jackallink/pi-a2ui/issues/1), [#2](https://github
 
 ## v0.1.4跟踪入口
 
-[Milestone](https://github.com/Jackallink/pi-a2ui/milestone/4) · [总任务#9](https://github.com/Jackallink/pi-a2ui/issues/9)；七个必选分组issue#10–#16，新增候选#17单独登记。当前仍为draft规划，不升发行版本。
+[Milestone](https://github.com/Jackallink/pi-a2ui/milestone/4) · [总任务#9](https://github.com/Jackallink/pi-a2ui/issues/9)；七个必选分组issue#10–#16，后续八组扩展在v0.1.5总任务#17登记。候选package身份可为0.1.4，tag/release仍单独执行。
 
 ## v0.1.5：八组已纳入能力
 

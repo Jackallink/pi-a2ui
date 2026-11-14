@@ -1,23 +1,25 @@
 # 组件支持与日常交互扩展
 
-当前运行环境：**Node 24.x**，先执行 `nvm use 24`。现有能力清单面向 pi-a2ui0.1.3；用户已将下面七组能力规划到0.1.4，规划项不代表已经实现，也不授权浏览器直接执行命令或读写文件。
+当前运行环境：**Node 24.x**，先执行 `nvm use 24`。本分支为0.1.4候选，已发布稳定版仍为0.1.3；实现、运行验收与发布分别记录，禁止浏览器直接执行命令或读写文件。
 
-## 已支持什么
+## 候选版本支持什么
 
-2026-11-14 对照官方 A2UI v1.0 Basic Catalog，并直接枚举本项目锁定的 Web Core/Lit0.15.0 catalog：官方有18个基础组件，本插件启用其中12个，另加4个Pi自定义组件，共16个。最新在线协议可能演进；实现以锁定SDK、共享schema和匹配的浏览器实现为准。
+锁定Web Core/Lit0.15.0的官方Basic共18类，本候选全部接入受审schema/实现，另加11类Pi组件，共29类。以实际catalog为准，不在运行时下载代码。
 
-| 状态 | 组件 | 日常价值 |
-| --- | --- | --- |
-| 已支持：官方布局 | Column、Row、Card、Tabs、Divider | 分区、对比方案、按任务切换视图 |
-| 已支持：官方文本/输入/动作 | Text、TextField、Button、CheckBox、ChoicePicker、Slider、DateTimeInput | 需求澄清、参数选择、结构化提交 |
-| 已支持：Pi自定义 | CodeDiff、TestResults、LogView、Chart | 看改动、测试记录、真实工具输出和受约束趋势图 |
-| 官方存在，插件未接入 | List、Modal、Icon、Image、Video、AudioPlayer | 结果列表、局部详情、状态图标、视觉产物和媒体预览 |
+| 组件 | 日常价值与边界 |
+| --- | --- |
+| Text / Column / Row / Card / Tabs / Divider / List | 字面文本、分区和静态列表；无动态模板 |
+| Button / TextField / CheckBox / ChoicePicker / Slider / DateTimeInput | 当前epoch/revision的类型化输入/声明动作 |
+| DataTable / CodeBlock / MarkdownView / Details | 表格本地排序筛选、原样代码复制、受限富文本、折叠证据；Accordion是Details组合 |
+| CodeDiff / TestResults / LogView / Chart / StatusBadge / TaskProgress | 不可变记录、所报测试、真实原生日志和计数、有界数据图；所报成功不等于独立验证 |
+| Modal / Icon | 本地聚焦详情与12种本地SVG；键盘焦点循环、Escape返回 |
+| ArtifactPreview / Image / Video / AudioPlayer | 先由Pi显式注册workspace普通文件，浏览器仅用认证opaqueURL；预览真实HEAD元数据，原生播放/可见失败，不自动播放 |
 
-官方 Text 支持简单Markdown，但本插件当前将Text作为转义纯文本；不能把这说成现成的富文本能力。官方有格式化/校验等函数，当前插件catalog的functions为空，相关函数、checks、动态模板及通用RPC尚未启用。官方“有这个组件”不等于本插件现在可直接生成使用。
+官方Text的markdown能力未直接开放，本插件Text始终转义纯文本；MarkdownView是单独受限组件。函数、checks、任意RPC/HTML/外链和SVG媒体关闭。媒体注册16个/128MiB包含pending，image10MiB、audio/video64MiB每个；不可变内存副本，暂停/reset/close撤销后续访问，旧快照不重新读文件。详细契约/资源/错误边界见[spec007](specs/007-v0.1.4-usability.md)。
 
 ## v0.1.4已纳入的七组交互能力
 
-以下七组已全部纳入v0.1.4规划（C01–C14），包括Video/AudioPlayer。优先级只决定顺序；完整范围、用户故事/AC与入场门禁以[spec007](specs/007-v0.1.4-usability.md)为准。本次规划未实现组件，也未批准媒体权限/资源设计。
+以下七组完整范围为v0.1.4（C01–C14），包括Video/AudioPlayer。优先级只决定顺序；完整范围、用户故事/AC与入场门禁以[spec007](specs/007-v0.1.4-usability.md)为准。详细设计/TDD已独立GO（Check024），实现与测试见Check025–031；候选验收不等于发布。
 
 | 优先级/方向 | 用户眼前的问题 | 推荐实现方式与边界 |
 | --- | --- | --- |
@@ -52,10 +54,10 @@
 2. **同时接入Agent与浏览器。** 服务端在`src/catalog.ts`派生明确版本catalog，并给模型相应指令；浏览器在`src/browser-catalog.ts`注册同一schema的Lit实现。现有`coding.ts`/`coding-elements.ts`及`live.ts`/`live-elements.ts`展示了这种分工。catalogId是标识，不要依赖运行时下载未审查schema。
 3. **补齐整条链路再开放。** `compiler.ts`和`session.ts`要覆盖新children slots、树深、输入类型、动作上下文、原子失败及快照/旧版本恢复。交互仍走现有事件/修订校验；动态数据使用受限更新路径，不创建通用执行RPC。验证schema一致、真实浏览器可访问性/长数据边界、重连/恢复和原有表单草稿保留。
 
-这不是“写一个前端组件就完成”：模型可生成的schema、服务端接纳的状态和浏览器渲染行为必须一致。七组能力已归入spec007用户故事/AC和分组tracker，逐组通过设计/TDD/代码审查后实现；本轮只完成规划与候选说明。
+这不是“写一个前端组件就完成”：模型可生成的schema、服务端接纳的状态和浏览器渲染行为必须一致。七组能力已归入spec007用户故事/AC和分组tracker，逐组通过设计/TDD/代码审查后实现；实现证据在Check025–031，候选安装/整版验收独立记录，发布仍单独执行。
 
 ## 一手依据
 
 - [官方Catalog概念与基础组件清单](https://a2ui.org/concepts/catalogs/)：基础组件、schema与渲染实现的共同契约。
 - [官方定义Catalog指南](https://a2ui.org/guides/defining-a-catalog/)：声明schema、Agent加载、客户端注册及schema一致性。
-- 本仓库实际能力：`src/catalog.ts`、`src/browser-catalog.ts`、`src/compiler.ts`、`src/session.ts`；数量由锁定SDK和restrictedCatalog实际枚举确认，functions当前为0。
+- 本仓库实际能力：`src/catalog.ts`、`src/browser-catalog.ts`、`src/compiler.ts`、`src/session.ts`；数量由锁定SDK和workbenchCatalog实际枚举确认，functions当前为0。

@@ -18,3 +18,6 @@ export const liveSource=`$/form/name = ""
 chart = Chart(kind="bar",series=[])
 root = Column([TextField("Acceptance phrase",$/form/name),LogView(stream="tools"),chart,Button(Text("Submit acceptance"),action=Event("submit",{name:$/form/name}))])`;
 export const liveChartSeries=[{name:'Ticks',points:[{label:'tick-1',value:1},{label:'tick-2',value:2},{label:'tick-3',value:3}]}];
+
+export function workbenchSource(image,video,audio){return `$/form/name = ""
+root = Column([TextField("Acceptance phrase",$/form/name),List([Text("Inspect"),Text("Review")]),DataTable(caption="Checks",columns=[{id:"name",label:"Name"},{id:"count",label:"Count"}],rows=[{id:"a",cells:["ten",10]},{id:"b",cells:["two",2]}]),CodeBlock(code="  literal <tag>\\n",language="text"),MarkdownView(text="# Candidate\\n\\n**Readable** evidence"),Details(title="Evidence",child=Text("Folded detail")),StatusBadge(label="Candidate",status="info"),TaskProgress(),LogView(),Modal(trigger=Icon(name="settings"),content=Text("Local settings")),ArtifactPreview(src="${image}",kind="image",label="Generated image"),Image(url="${image}",description="Blue fixture"),Video(url="${video}"),AudioPlayer(url="${audio}",description="Tone fixture"),Button(Text("Submit acceptance"),action=Event("submit",{name:$/form/name}))])`;}

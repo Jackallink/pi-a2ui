@@ -4,7 +4,9 @@ A local interactive canvas for the Pi coding agent. Pi keeps the conversation an
 
 Requires **Node 24.x** and Pi >=1.5.0. A2UI protocol 1.0, pinned Agent SDK 0.1.0 and Web Core/Lit 0.15.0.
 
-Version 0.1.3 is a version-alignment checkpoint with the same complete functionality as v0.1.1: typed forms/layout, coding review components and bounded native logs/charts. It supports forms, choices and task cards alongside Pi; it does not add a separate model or change Pi's tool permissions. Real model acceptance used Volcengine Ark Agent Plan `glm-5.3-flash`. The extension uses whichever model you select in Pi.
+Version **0.1.4 candidate** adds readable results, code/Markdown, collapsible evidence, native progress and bounded local artifact/media previews. It uses Pi's existing model and tools; it makes no separate model request per UI event or output chunk. Project live acceptance uses only Volcengine Ark Agent Plan `glm-5.3-flash`.
+
+This branch is not a published release. The latest published tag remains **v0.1.3**; use the local route below to test this candidate.
 
 Project source is MIT licensed. The bundled browser libraries retain their own licenses; complete third-party license/notice texts are included in `THIRD_PARTY_LICENSES.txt` in the distribution.
 
@@ -12,7 +14,7 @@ Project source is MIT licensed. The bundled browser libraries retain their own l
 
 The package is distributed through Git and local paths; it is not published to npm. Requires **Node 24.x** and Pi >=1.5.0; select it with `nvm use 24` before installation or use.
 
-### Git
+### Git (published v0.1.3)
 
 From the Pi project where you want this package enabled:
 
@@ -23,7 +25,7 @@ pi install -l --approve git:github.com/Jackallink/pi-a2ui@v0.1.3
 
 Pi clones the pinned ref and installs production dependencies. Ready browser assets and full third-party licenses are committed in the repository; no browser build is required. Tags/commits are pinned: `pi update --extensions` does not advance a configured tag to the next release. To upgrade, select the new release ref.
 
-### Local package
+### Local package (including the v0.1.4 candidate)
 
 Use an existing checkout or an unpacked release. Keep your intended Pi project as the working directory and substitute the package's absolute path:
 
@@ -58,13 +60,26 @@ root = Card(Column([
 ]))
 ```
 
-Supported components include bounded native-tool LogView and finite line/bar Chart; a2ui_update_chart updates series without replacing inputs. Native log collection uses Pi events and makes no model request per chunk. Log display can be paused locally; earlier omitted content is marked. The version also includes read-only CodeDiff and TestResults under a versioned Pi catalog. It also adds CheckBox, ChoicePicker, Slider, DateTimeInput, Tabs and Divider to Text, Column, Row, Card, Button and TextField. Text and source content are escaped plain text. Coding follow-up buttons carry literal proposalId/resultId; source/test records are immutable within a session. TestResults displays supplied case records and provenance reported by Pi; it does not certify a test execution. Functions, checks, dynamic templates, media, HTML and general RPC are unavailable. Bind submitted values directly to absolute input value paths. TextField uses string, CheckBox boolean, Slider finite bounded number, ChoicePicker string array; DateTimeInput uses explicit date/time flags and local calendar strings (optional :00 seconds), with static bounds. Literal event context is checked against the committed definition.
+Supported components include bounded native-tool LogView and finite line/bar Chart; a2ui_update_chart updates series without replacing inputs. Native log collection uses Pi events and makes no model request per chunk. Log display can be paused locally; earlier omitted content is marked. The version also includes read-only CodeDiff and TestResults under a versioned Pi catalog. It also adds CheckBox, ChoicePicker, Slider, DateTimeInput, Tabs and Divider to Text, Column, Row, Card, Button and TextField. Text and source content are escaped plain text. Coding follow-up buttons carry literal proposalId/resultId; source/test records are immutable within a session. TestResults displays supplied case records and provenance reported by Pi; it does not certify a test execution. Functions, checks, dynamic templates, HTML and general RPC are unavailable. MarkdownView explicitly renders a bounded safe subset; Text remains literal. Bind submitted values directly to absolute input value paths. TextField uses string, CheckBox boolean, Slider finite bounded number, ChoicePicker string array; DateTimeInput uses explicit date/time flags and local calendar strings (optional :00 seconds), with static bounds. Literal event context is checked against the committed definition.
 
 Rendering validates the entire replacement before publishing it. Invalid source leaves the old surface intact. A tool result does not wait for a human; the browser action becomes a later structured user message, with `followUp` during generation. “Sent to Pi” acknowledges one local dispatch attempt, not model success; asynchronous failures appear in Pi. Ambiguous network failures are not automatically retried.
 
 ## Component support and extension opportunities
 
-This version exposes12 official Basic components plus4 custom Pi components (CodeDiff, TestResults, LogView, Chart). Official List, Modal, Icon, Image, Video and AudioPlayer are not enabled. Proposed tables, code blocks, collapsible details and status/progress widgets are future work, not shipped features. See the [component inventory and practical extension guide](https://github.com/Jackallink/pi-a2ui/blob/v0.1.3/docs/components-and-extensions.md).
+The candidate exposes **18 official Basic types +11 custom Pi types**:
+
+| Group | Components / interaction | Purpose |
+| --- | --- | --- |
+| Layout and forms | Text, Column, Row, Card, Button, TextField, CheckBox, ChoicePicker, Slider, DateTimeInput, Tabs, Divider, List | Collect typed input, compare options and list steps |
+| Reading | DataTable, CodeBlock with local copy, MarkdownView, Details / Accordion composition | Sort/filter supplied rows, read/copy code and fold evidence |
+| Evidence and state | CodeDiff, TestResults, LogView, Chart, StatusBadge, TaskProgress | Distinguish supplied claims from real native tool lifecycle |
+| Focus and artifacts | Modal, Icon, ArtifactPreview, Image, Video, AudioPlayer | Inspect details and registered local outputs |
+
+Copy, sorting, filtering, disclosure, modal opening and playback stay local; only declared Button events send context to Pi. Interactive widgets cannot be nested in Button. StatusBadge/TestResults remain reported evidence, not execution certification. TaskProgress counts tracked real tool events without inventing a planned percentage.
+
+Register an existing workspace file with `a2ui_register_artifact({path:"outputs/preview.png",kind:"image"})`; use its opaque `src` in `ArtifactPreview(src=...,kind="image",label="Preview")` or `Image(url=...,description="Preview")`. Video accepts registered WebM/MP4 and AudioPlayer accepts WAV; decoding depends on the browser and failures are visible. No external/file/data/blob/SVG sources, autoplay, microphone or browser file-path API. Registration copies up to16 files/128MiB total including pending reads (image10MiB; audio/video64MiB each). Reset, pause and shutdown revoke future access; restoring old references shows Unavailable without reopening files. Bytes already received by the browser cannot be remotely erased. The service allows two active bodies with64KiB chunks, backpressure,15s idle timeout and single byte ranges.
+
+See the [component and extension guide](docs/components-and-extensions.md), [canonical v0.1.4 design](docs/specs/007-v0.1.4-usability.md) and executable [summary/choices](docs/examples/v0.1.4.express) / [accordion](docs/examples/v0.1.4-accordion.express) examples.
 
 ## State and local boundary
 
@@ -96,9 +111,9 @@ Live acceptance defaults to Agent Plan `volcengine-ark/glm-5.3-flash` and checks
 
 See [CHANGELOG.md](CHANGELOG.md), [ROADMAP.md](ROADMAP.md), the [Pi package distribution contract](docs/specs/005-v0.1.1-distribution.md), and the [version-alignment contract](docs/specs/006-v0.1.3-version-alignment.md). Historical design/test evidence preserves each original feature slice and artifact identity.
 
-## Planned v0.1.4
+## Next scope: v0.1.5
 
-The [v0.1.4 scope](docs/specs/007-v0.1.4-usability.md) retains all seven component/interaction groups previously discussed, including image/artifact and audio/video support. It is a draft plan, not shipped functionality or permission to skip design/TDD/security gates. Additional useful candidates are listed separately in the [component guide](docs/components-and-extensions.md). Current install/version/runtime remains v0.1.3 on Node24.x.
+All eight additional groups are assigned to [v0.1.5](docs/specs/008-v0.1.5-interactions.md), milestone5/issues19–26: TreeView/Breadcrumbs, SearchablePicker/ComboBox, KeyValueView/MetricCard, inline/form validation, Callout/EmptyState/Skeleton, ActivityTimeline, EvidenceLink/SourceLocation and CommandPalette/ActionBar. They are planned scope; their implementation has not started.
 
 ## Remove
 

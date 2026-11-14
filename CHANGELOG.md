@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.4 - Unreleased
+
+- Add static List and bounded sortable/filterable DataTable, literal CodeBlock with local CopyAction, safe MarkdownView and native Details/Accordion composition.
+- Add reported/unverified StatusBadge and native-event TaskProgress with bounded tracking and no per-chunk model request; preserve drafts during live updates.
+- Add focus-managed Modal and12 local SVG Icon names. All18 official Basic component types are available through reviewed schemas/implementations; plus11 custom Pi components.
+- Add a2ui_register_artifact for bounded immutable workspace files, ArtifactPreview metadata and Image/Video/AudioPlayer. Authenticated opaque routes, exact signatures, pending quotas, revocation, backpressure and single ranges remain constrained. Native controls never autoplay or access a microphone.
+- Require Node24.x; Git/local distribution only, no npm publication. Existing tags/assets remain unchanged. This is a candidate until separately published.
+
 ## 0.1.3 - 2026-11-14
 
 - Version-alignment checkpoint: publish the complete v0.1.1 functionality as v0.1.3 to remove ambiguity with historical development version labels.
@@ -13,7 +21,7 @@
 - Add read-only CodeDiff and structured TestResults in a versioned Pi catalog, immutable bounded IDs and exact current-record follow-up actions. TestResults displays Pi-supplied evidence rather than independently certifying test execution.
 - Add bounded native-tool LogView, constrained line/bar Chart and a2ui_update_chart; lifecycle ownership, coalesced SSE data sequences and gap recovery preserve unsent inputs. No model request per log chunk.
 - Distribute ready browser assets through both Git and local installs; retain complete third-party licenses, include this changelog and declare host packages as wildcard peers. No npm registry publication.
-- Pin contributor runtime to Node24; retain the existing Node22.19/Pi1.5 runtime floor.
+- Historical runtime-floor guidance is superseded: current consumers and contributors require Node24.x and Pi>=1.5.0.
 - This release combines the former three unpublished iteration candidates. Known upstream Zod advisory remains unchanged.
 
 ## 0.1.0 - 2026-11-13
