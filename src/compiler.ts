@@ -58,7 +58,7 @@ export function promptSnippet(): string {
     .replace(/While simple Markdown formatting.*presentation\./, 'Text renders literal plain text.')
     .replace(/ or function call/g, '')
     .replace(/, checks\? \(static\)/g, '');
-  return 'Pass a complete Express DSL source string to a2ui_render. Source is unwrapped (omit sentinel tags). Use only the requested surfaceId. This MVP forbids functions, validation checks, dynamic templates, deletion, and extra surfaces. Text renders literal plain text.\n\n' + sdk;
+  return 'Pass a complete Express DSL source string to a2ui_render. Source is unwrapped (omit sentinel tags). Use only the requested surfaceId. This canvas forbids functions, SDK executable checks, dynamic templates, deletion, and extra surfaces. Text renders literal plain text. Declarative FormValidation required/minLength/maxLength rules are available for explicitly guarded submit Buttons.\n\n' + sdk;
 }
 export function validateSurface(input: unknown): SurfaceMessage {
   try {
@@ -86,7 +86,7 @@ export function validateSurface(input: unknown): SurfaceMessage {
       if (reachable.has(id)) throw new UiError(400, 'Components must form a tree without repeated children');
       const component = components.get(id);
       if (!component) throw new UiError(400, 'Missing root or child');
-      if(insideButton && ['LogView','DataTable','CodeBlock','Details','TaskProgress','Modal','Image','ArtifactPreview','Video','AudioPlayer','SearchablePicker'].includes(component.component)) throw new UiError(400,component.component+' must not be nested in a Button');
+      if(insideButton && ['LogView','DataTable','CodeBlock','Details','TaskProgress','Modal','Image','ArtifactPreview','Video','AudioPlayer','SearchablePicker','FormValidation'].includes(component.component)) throw new UiError(400,component.component+' must not be nested in a Button');
       reachable.add(id);
       const children = component.component==='Modal'?[component.trigger,component.content]:component.component === 'Tabs' && Array.isArray(component.tabs) ? component.tabs.map(tab => (tab as {child:string}).child) : Array.isArray(component.children) ? component.children : typeof component.child === 'string' ? [component.child] : [];
       for (const child of children) {

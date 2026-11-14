@@ -1,15 +1,50 @@
 import {z} from 'zod';
 import {basicCatalog,type ComponentApi} from '@a2ui/web_core/v1_0';
-import {UiError,type SurfaceMessage} from './protocol.ts';
+import {UiError,type Component,type SurfaceMessage} from './protocol.ts';
+import {validateInput} from './inputs.ts';
 const choice=basicCatalog.components.get('ChoicePicker')!.schema as z.ZodObject<any>;
 export const searchablePickerApi={name:'SearchablePicker',schema:z.object({label:z.string().min(1).max(128),options:z.array(z.object({label:z.string().min(1).max(128),value:z.string().min(1).max(128)}).strict()).max(200),value:choice.shape.value,variant:z.enum(['mutuallyExclusive','multipleSelection']).default('mutuallyExclusive')}).strict()} satisfies ComponentApi;
-export const interactionApis:ComponentApi[]=[searchablePickerApi];
+const ruleSchema=z.object({fieldId:z.string().min(1).max(128),message:z.string().min(1).max(256),required:z.boolean().optional(),minLength:z.number().int().min(0).max(4096).optional(),maxLength:z.number().int().min(0).max(4096).optional()}).strict();
+export const formValidationApi={name:'FormValidation',schema:z.object({title:z.string().min(1).max(128).default('Check these fields'),buttons:z.array(z.string().min(1).max(128)).min(1).max(16),rules:z.array(ruleSchema).min(1).max(16)}).strict()} satisfies ComponentApi;
+export const interactionApis:ComponentApi[]=[searchablePickerApi,formValidationApi];
+type Rules=z.infer<typeof formValidationApi.schema>;
+export interface ValidationIssue{fieldId:string;message:string}
+function bindingPath(value:unknown):string|undefined{return value&&typeof value==='object'&&!Array.isArray(value)&&'@path' in value&&typeof value['@path']==='string'?value['@path']:undefined;}
+function declaration(component:Component|undefined):Record<string,unknown>{return (component?.action as {event?:{context?:Record<string,unknown>}})?.event?.context??{};}
 export function validateInteractions(message:SurfaceMessage,_initial=false):void{
- for(const c of message.createSurface.components){
+ const components=message.createSurface.components;let validations=0;
+ for(const c of components){
   if(c.component==='SearchablePicker'){
    const {id:_,component:__,...props}=c;const parsed=searchablePickerApi.schema.parse(props);
-   if(!parsed.value||typeof parsed.value!=='object'||Array.isArray(parsed.value)||!('@path' in parsed.value))throw new UiError(400,'SearchablePicker requires an initialized absolute value binding');
-   Object.assign(c,parsed);
+   if(!bindingPath(parsed.value))throw new UiError(400,'SearchablePicker requires an initialized absolute value binding');Object.assign(c,parsed);
+  }
+  if(c.component==='FormValidation'){
+   if(++validations>1)throw new UiError(400,'Only one FormValidation per surface');
+   const {id:_,component:__,...props}=c;const data=formValidationApi.schema.parse(props);
+   if(new Set(data.buttons).size!==data.buttons.length)throw new UiError(400,'FormValidation buttons must be distinct');
+   const fields=new Set<string>();const paths=new Set<string>();
+   for(const rule of data.rules){
+    const field=components.find(n=>n.id===rule.fieldId);const path=bindingPath(field?.value);
+    if(!field||!['TextField','CheckBox','ChoicePicker','SearchablePicker','Slider','DateTimeInput'].includes(field.component)||!path)throw new UiError(400,'Validation field must be a reachable bound input');
+    if(fields.has(rule.fieldId)||paths.has(path))throw new UiError(400,'Validation rules must not share fields or paths');fields.add(rule.fieldId);paths.add(path);
+    if(rule.required!==true&&!(rule.minLength!==undefined&&rule.minLength>0)&&rule.maxLength===undefined)throw new UiError(400,'Validation rule needs a meaningful constraint');
+    if(rule.minLength!==undefined||rule.maxLength!==undefined){if(!['TextField','ChoicePicker','SearchablePicker'].includes(field.component))throw new UiError(400,'Length rules require text or choices');if((rule.minLength??0)>(rule.maxLength??4096))throw new UiError(400,'Reversed validation lengths');}
+   }
+   for(const id of data.buttons){const button=components.find(n=>n.id===id);if(button?.component!=='Button')throw new UiError(400,'Validation guard must name a reachable Button');const values=Object.values(declaration(button));for(const path of paths)if(!values.some(value=>bindingPath(value)===path))throw new UiError(400,'Guarded Button must bind every ruled input path');}
+   Object.assign(c,data);
   }
  }
+}
+export function validateSubmission(components:Component[],sourceId:string,context:Record<string,unknown>):ValidationIssue[]{
+ const component=components.find(c=>c.component==='FormValidation'&&(c.buttons as string[]).includes(sourceId));if(!component)return[];
+ const rules=component as unknown as Rules;const declared=declaration(components.find(c=>c.id===sourceId));const errors:ValidationIssue[]=[];
+ for(const rule of rules.rules){const field=components.find(c=>c.id===rule.fieldId)!;const path=bindingPath(field.value);const aliases=Object.keys(declared).filter(key=>bindingPath(declared[key])===path);const values=aliases.map(key=>context[key]);let invalid=!values.length;
+  try{for(const value of values)validateInput(field,value);}catch{invalid=true;}
+  const value=values[0];if(values.some(v=>JSON.stringify(v)!==JSON.stringify(value)))invalid=true;
+  if(rule.required){if(typeof value==='string'?value.trim()==='':typeof value==='boolean'?!value:Array.isArray(value)?value.length===0:typeof value!=='number'||!Number.isFinite(value))invalid=true;}
+  const length=typeof value==='string'?Array.from(value).length:Array.isArray(value)?value.length:undefined;
+  if(rule.minLength!==undefined&&(length===undefined||length<rule.minLength)||rule.maxLength!==undefined&&(length===undefined||length>rule.maxLength))invalid=true;
+  if(invalid)errors.push({fieldId:rule.fieldId,message:rule.message});
+ }
+ return errors;
 }

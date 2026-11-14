@@ -25,17 +25,140 @@ var UiError = class extends Error {
   }
 };
 
+// src/inputs.ts
+var inputTypes = /* @__PURE__ */ new Set(["TextField", "CheckBox", "ChoicePicker", "Slider", "DateTimeInput", "SearchablePicker"]);
+function inputPaths(components) {
+  const paths = /* @__PURE__ */ new Map();
+  for (const component of components) {
+    if (!inputTypes.has(component.component)) continue;
+    const value = component.value;
+    if (!value || typeof value !== "object" || !("@path" in value)) continue;
+    const path = value["@path"];
+    const previous = paths.get(path);
+    if (previous && (previous.component !== "TextField" || component.component !== "TextField")) throw new UiError(400, "Typed input bindings must not share paths");
+    paths.set(path, component);
+  }
+  return paths;
+}
+function datePart(value) {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+  if (!match) return false;
+  const [year, month, day] = match.slice(1).map(Number);
+  const leap = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
+  const days = [31, leap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  return year >= 1 && month >= 1 && month <= 12 && day >= 1 && day <= days[month - 1];
+}
+function dateValue(component, value, empty) {
+  if (typeof value !== "string") throw new UiError(400, "Date/time input must be a string");
+  if (empty && value === "") return "";
+  const date = component.enableDate;
+  const time = component.enableTime;
+  const parts = date && time ? value.split("T") : [value];
+  const valid = date && time ? parts.length === 2 && datePart(parts[0]) && timePart(parts[1]) : date ? datePart(value) : timePart(value);
+  if (!valid) throw new UiError(400, "Invalid local calendar date/time");
+  return time && (date ? parts[1] : value).length === 8 ? value.slice(0, -3) : value;
+}
+function timePart(value) {
+  return /^(?:[01]\d|2[0-3]):[0-5]\d(?::00)?$/.test(value);
+}
+function validateInput(component, value) {
+  switch (component.component) {
+    case "TextField":
+      if (typeof value !== "string") throw new UiError(400, "TextField context must be a string");
+      break;
+    case "CheckBox":
+      if (typeof value !== "boolean") throw new UiError(400, "CheckBox value must be a boolean");
+      break;
+    case "ChoicePicker":
+    case "SearchablePicker": {
+      const options = component.options;
+      const allowed = new Set(options.map((option) => option.value));
+      if (allowed.size !== options.length) throw new UiError(400, "Duplicate choice option IDs");
+      if (!Array.isArray(value) || value.some((item) => typeof item !== "string" || !allowed.has(item)) || new Set(value).size !== value.length || component.variant !== "multipleSelection" && value.length > 1) throw new UiError(400, "Invalid choice selection");
+      break;
+    }
+    case "Slider": {
+      const min = component.min ?? 0;
+      const max = component.max;
+      if (typeof min !== "number" || typeof max !== "number" || !Number.isFinite(min) || !Number.isFinite(max) || min >= max || !Number.isFinite(max - min)) throw new UiError(400, "Invalid static slider range");
+      if (typeof value !== "number" || !Number.isFinite(value) || value < min || value > max) throw new UiError(400, "Slider value outside the declared range");
+      if (component.steps !== void 0) {
+        const steps = component.steps;
+        if (typeof steps !== "number" || !Number.isSafeInteger(steps) || steps < 1) throw new UiError(400, "Invalid slider divisions");
+        const index = (value - min) / (max - min) * steps;
+        if (Math.abs(index - Math.round(index)) > 1e-8) throw new UiError(400, "Slider value is off the declared grid");
+      }
+      break;
+    }
+    case "DateTimeInput": {
+      if (typeof component.enableDate !== "boolean" || typeof component.enableTime !== "boolean" || !component.enableDate && !component.enableTime) throw new UiError(400, "Date/time flags must be explicit and enable at least one input");
+      const current = dateValue(component, value, true);
+      const min = component.min === void 0 ? void 0 : dateValue(component, component.min, false);
+      const max = component.max === void 0 ? void 0 : dateValue(component, component.max, false);
+      if (min !== void 0 && max !== void 0 && min > max || current !== "" && (min !== void 0 && current < min || max !== void 0 && current > max)) throw new UiError(400, "Date/time value outside the declared range");
+      break;
+    }
+  }
+}
+function validateInputs(components, resolve) {
+  const entries = [...components];
+  inputPaths(entries);
+  for (const component of entries) {
+    if (!inputTypes.has(component.component)) continue;
+    const value = component.value;
+    validateInput(component, value && typeof value === "object" && "@path" in value ? resolve(value["@path"]) : value);
+  }
+}
+
 // src/interactions.ts
 var choice = basicCatalog.components.get("ChoicePicker").schema;
 var searchablePickerApi = { name: "SearchablePicker", schema: z.object({ label: z.string().min(1).max(128), options: z.array(z.object({ label: z.string().min(1).max(128), value: z.string().min(1).max(128) }).strict()).max(200), value: choice.shape.value, variant: z.enum(["mutuallyExclusive", "multipleSelection"]).default("mutuallyExclusive") }).strict() };
-var interactionApis = [searchablePickerApi];
+var ruleSchema = z.object({ fieldId: z.string().min(1).max(128), message: z.string().min(1).max(256), required: z.boolean().optional(), minLength: z.number().int().min(0).max(4096).optional(), maxLength: z.number().int().min(0).max(4096).optional() }).strict();
+var formValidationApi = { name: "FormValidation", schema: z.object({ title: z.string().min(1).max(128).default("Check these fields"), buttons: z.array(z.string().min(1).max(128)).min(1).max(16), rules: z.array(ruleSchema).min(1).max(16) }).strict() };
+var interactionApis = [searchablePickerApi, formValidationApi];
+function bindingPath(value) {
+  return value && typeof value === "object" && !Array.isArray(value) && "@path" in value && typeof value["@path"] === "string" ? value["@path"] : void 0;
+}
+function declaration(component) {
+  return component?.action?.event?.context ?? {};
+}
 function validateInteractions(message, _initial = false) {
-  for (const c of message.createSurface.components) {
+  const components = message.createSurface.components;
+  let validations = 0;
+  for (const c of components) {
     if (c.component === "SearchablePicker") {
       const { id: _, component: __, ...props } = c;
       const parsed = searchablePickerApi.schema.parse(props);
-      if (!parsed.value || typeof parsed.value !== "object" || Array.isArray(parsed.value) || !("@path" in parsed.value)) throw new UiError(400, "SearchablePicker requires an initialized absolute value binding");
+      if (!bindingPath(parsed.value)) throw new UiError(400, "SearchablePicker requires an initialized absolute value binding");
       Object.assign(c, parsed);
+    }
+    if (c.component === "FormValidation") {
+      if (++validations > 1) throw new UiError(400, "Only one FormValidation per surface");
+      const { id: _, component: __, ...props } = c;
+      const data = formValidationApi.schema.parse(props);
+      if (new Set(data.buttons).size !== data.buttons.length) throw new UiError(400, "FormValidation buttons must be distinct");
+      const fields = /* @__PURE__ */ new Set();
+      const paths = /* @__PURE__ */ new Set();
+      for (const rule of data.rules) {
+        const field = components.find((n) => n.id === rule.fieldId);
+        const path = bindingPath(field?.value);
+        if (!field || !["TextField", "CheckBox", "ChoicePicker", "SearchablePicker", "Slider", "DateTimeInput"].includes(field.component) || !path) throw new UiError(400, "Validation field must be a reachable bound input");
+        if (fields.has(rule.fieldId) || paths.has(path)) throw new UiError(400, "Validation rules must not share fields or paths");
+        fields.add(rule.fieldId);
+        paths.add(path);
+        if (rule.required !== true && !(rule.minLength !== void 0 && rule.minLength > 0) && rule.maxLength === void 0) throw new UiError(400, "Validation rule needs a meaningful constraint");
+        if (rule.minLength !== void 0 || rule.maxLength !== void 0) {
+          if (!["TextField", "ChoicePicker", "SearchablePicker"].includes(field.component)) throw new UiError(400, "Length rules require text or choices");
+          if ((rule.minLength ?? 0) > (rule.maxLength ?? 4096)) throw new UiError(400, "Reversed validation lengths");
+        }
+      }
+      for (const id of data.buttons) {
+        const button = components.find((n) => n.id === id);
+        if (button?.component !== "Button") throw new UiError(400, "Validation guard must name a reachable Button");
+        const values = Object.values(declaration(button));
+        for (const path of paths) if (!values.some((value) => bindingPath(value) === path)) throw new UiError(400, "Guarded Button must bind every ruled input path");
+      }
+      Object.assign(c, data);
     }
   }
 }
@@ -151,91 +274,6 @@ function validateWorkbench(message, initial = false) {
 // src/compiler.ts
 import { A2uiGenerator, CatalogConfig, ExpressFormatFactory, RendererState } from "@a2ui/agent";
 
-// src/inputs.ts
-var inputTypes = /* @__PURE__ */ new Set(["TextField", "CheckBox", "ChoicePicker", "Slider", "DateTimeInput", "SearchablePicker"]);
-function inputPaths(components) {
-  const paths = /* @__PURE__ */ new Map();
-  for (const component of components) {
-    if (!inputTypes.has(component.component)) continue;
-    const value = component.value;
-    if (!value || typeof value !== "object" || !("@path" in value)) continue;
-    const path = value["@path"];
-    const previous = paths.get(path);
-    if (previous && (previous.component !== "TextField" || component.component !== "TextField")) throw new UiError(400, "Typed input bindings must not share paths");
-    paths.set(path, component);
-  }
-  return paths;
-}
-function datePart(value) {
-  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
-  if (!match) return false;
-  const [year, month, day] = match.slice(1).map(Number);
-  const leap = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
-  const days = [31, leap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-  return year >= 1 && month >= 1 && month <= 12 && day >= 1 && day <= days[month - 1];
-}
-function dateValue(component, value, empty) {
-  if (typeof value !== "string") throw new UiError(400, "Date/time input must be a string");
-  if (empty && value === "") return "";
-  const date = component.enableDate;
-  const time = component.enableTime;
-  const parts = date && time ? value.split("T") : [value];
-  const valid = date && time ? parts.length === 2 && datePart(parts[0]) && timePart(parts[1]) : date ? datePart(value) : timePart(value);
-  if (!valid) throw new UiError(400, "Invalid local calendar date/time");
-  return time && (date ? parts[1] : value).length === 8 ? value.slice(0, -3) : value;
-}
-function timePart(value) {
-  return /^(?:[01]\d|2[0-3]):[0-5]\d(?::00)?$/.test(value);
-}
-function validateInput(component, value) {
-  switch (component.component) {
-    case "TextField":
-      if (typeof value !== "string") throw new UiError(400, "TextField context must be a string");
-      break;
-    case "CheckBox":
-      if (typeof value !== "boolean") throw new UiError(400, "CheckBox value must be a boolean");
-      break;
-    case "ChoicePicker":
-    case "SearchablePicker": {
-      const options = component.options;
-      const allowed = new Set(options.map((option) => option.value));
-      if (allowed.size !== options.length) throw new UiError(400, "Duplicate choice option IDs");
-      if (!Array.isArray(value) || value.some((item) => typeof item !== "string" || !allowed.has(item)) || new Set(value).size !== value.length || component.variant !== "multipleSelection" && value.length > 1) throw new UiError(400, "Invalid choice selection");
-      break;
-    }
-    case "Slider": {
-      const min = component.min ?? 0;
-      const max = component.max;
-      if (typeof min !== "number" || typeof max !== "number" || !Number.isFinite(min) || !Number.isFinite(max) || min >= max || !Number.isFinite(max - min)) throw new UiError(400, "Invalid static slider range");
-      if (typeof value !== "number" || !Number.isFinite(value) || value < min || value > max) throw new UiError(400, "Slider value outside the declared range");
-      if (component.steps !== void 0) {
-        const steps = component.steps;
-        if (typeof steps !== "number" || !Number.isSafeInteger(steps) || steps < 1) throw new UiError(400, "Invalid slider divisions");
-        const index = (value - min) / (max - min) * steps;
-        if (Math.abs(index - Math.round(index)) > 1e-8) throw new UiError(400, "Slider value is off the declared grid");
-      }
-      break;
-    }
-    case "DateTimeInput": {
-      if (typeof component.enableDate !== "boolean" || typeof component.enableTime !== "boolean" || !component.enableDate && !component.enableTime) throw new UiError(400, "Date/time flags must be explicit and enable at least one input");
-      const current = dateValue(component, value, true);
-      const min = component.min === void 0 ? void 0 : dateValue(component, component.min, false);
-      const max = component.max === void 0 ? void 0 : dateValue(component, component.max, false);
-      if (min !== void 0 && max !== void 0 && min > max || current !== "" && (min !== void 0 && current < min || max !== void 0 && current > max)) throw new UiError(400, "Date/time value outside the declared range");
-      break;
-    }
-  }
-}
-function validateInputs(components, resolve) {
-  const entries = [...components];
-  inputPaths(entries);
-  for (const component of entries) {
-    if (!inputTypes.has(component.component)) continue;
-    const value = component.value;
-    validateInput(component, value && typeof value === "object" && "@path" in value ? resolve(value["@path"]) : value);
-  }
-}
-
 // src/coding.ts
 import { z as z4 } from "zod";
 var identity2 = z4.string().regex(/^[A-Za-z0-9_-]{1,64}$/);
@@ -307,7 +345,7 @@ var workbenchCatalog = restrictedCatalog.derive({ catalogId: "https://jackallink
   const { element: _, tagName: __, ...api } = basicCatalog3.components.get(name);
   return api;
 })], instructions: restrictedCatalog.instructions?.replace("No functions, checks, templates, URLs, media or executable expressions.", "No functions, checks, templates or executable expressions. URLs only in registered artifact media props.") + ' List has static children. DataTable contains bounded primitive cells and unique row/column IDs. Table sorting and filtering are browser-local. CodeBlock preserves literal code with a local copy button; never nest it or DataTable in Button. MarkdownView explicitly renders a safe limited subset; no links/images/HTML. Text stays literal. Details(title,child,open?) is a local disclosure; Accordion is multiple Details. Never place local interactive widgets inside Button. StatusBadge is reported/unverified. TaskProgress(stream="tools") is native-server controlled; omit counters/state/omitted initial values, never fabricate a planned percentage. Modal(trigger,content) has a local Text/Icon-only trigger; at most one per surface. Image/Video/AudioPlayer.url (Video.posterUrl too) and ArtifactPreview.src must be the exact opaque src returned by a2ui_register_artifact. No external/file/data/blob URLs or SVG. Native media controls are local; no autoplay/microphone. Video supports WebM/MP4, AudioPlayer WAV; browser codec failures are visible. Artifacts expire on reset/pause; label is not verified metadata. Icon names are static local check/close/error/info/warning/folder/help/refresh/play/pause/search/settings.' });
-var interactionsCatalog = workbenchCatalog.derive({ catalogId: "https://jackallink.github.io/pi-a2ui/catalogs/interactions-v1.json", functions: [], components: [...workbenchCatalog.components.values(), ...interactionApis], instructions: workbenchCatalog.instructions + " SearchablePicker(label,options,value,variant?) has static label/options and an initialized absolute string-array value binding. Single mutuallyExclusive or multipleSelection; query/filter/removal is browser-local and never submits arbitrary text. At most200 distinct option values; never nest in a Button." });
+var interactionsCatalog = workbenchCatalog.derive({ catalogId: "https://jackallink.github.io/pi-a2ui/catalogs/interactions-v1.json", functions: [], components: [...workbenchCatalog.components.values(), ...interactionApis], instructions: workbenchCatalog.instructions + " SearchablePicker(label,options,value,variant?) has static label/options and an initialized absolute string-array value binding. Single mutuallyExclusive or multipleSelection; query/filter/removal is browser-local and never submits arbitrary text. At most200 distinct option values; never nest in a Button. FormValidation(title?,buttons,rules) names reachable input field IDs and guarded Button IDs. Every guard must bind every ruled path; only required/minLength/maxLength constraints, no functions/checks. Initial business-invalid drafts are allowed; only guarded submits require valid values. Never nest validation in a Button." });
 var catalogs = [legacyCatalog, codingCatalog, restrictedCatalog, workbenchCatalog, interactionsCatalog];
 
 // src/compiler.ts
@@ -359,7 +397,7 @@ function validateSurface(input) {
       if (reachable.has(id)) throw new UiError(400, "Components must form a tree without repeated children");
       const component = components.get(id);
       if (!component) throw new UiError(400, "Missing root or child");
-      if (insideButton && ["LogView", "DataTable", "CodeBlock", "Details", "TaskProgress", "Modal", "Image", "ArtifactPreview", "Video", "AudioPlayer", "SearchablePicker"].includes(component.component)) throw new UiError(400, component.component + " must not be nested in a Button");
+      if (insideButton && ["LogView", "DataTable", "CodeBlock", "Details", "TaskProgress", "Modal", "Image", "ArtifactPreview", "Video", "AudioPlayer", "SearchablePicker", "FormValidation"].includes(component.component)) throw new UiError(400, component.component + " must not be nested in a Button");
       reachable.add(id);
       const children = component.component === "Modal" ? [component.trigger, component.content] : component.component === "Tabs" && Array.isArray(component.tabs) ? component.tabs.map((tab) => tab.child) : Array.isArray(component.children) ? component.children : typeof component.child === "string" ? [component.child] : [];
       for (const child of children) {

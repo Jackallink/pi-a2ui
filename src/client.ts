@@ -1,3 +1,4 @@
+import {BrowserValidation} from './browser-interactions.js';
 import { A2uiSurface, type LitComponentApi } from "@a2ui/lit";
 import {
   MessageProcessor,
@@ -21,6 +22,7 @@ const count = document.querySelector<HTMLElement>("#surface-count")!;
 
 interface MountedSurface {
   revision: number;
+  validation:BrowserValidation;
   sequence:number;
   liveIds:Map<string,string>;
   wrapper: HTMLElement;
@@ -50,6 +52,7 @@ function makeProcessor() {
 }
 
 function showNotice(message: string, error = false) {
+  delete notice.dataset.validationOwner;
   notice.textContent = message;
   notice.dataset.kind = error ? "error" : "info";
   notice.hidden = !message;
@@ -84,6 +87,7 @@ function removeSurface(surfaceId: string) {
   const entry = mounted.get(surfaceId);
   if (!entry) return;
   entry.unsubscribe();
+  entry.validation.dispose();
   entry.element.surface = undefined;
   entry.wrapper.remove();
   processor.processMessages({ version: "1.0", deleteSurface: { surfaceId } });
@@ -106,6 +110,7 @@ function mountSurface(record: SurfaceRecord) {
   const subscription = model.onAction.subscribe((action) => sendAction(action, capturedEpoch, record.revision));
   mounted.set(record.surfaceId, {
     revision: record.revision,
+    validation:new BrowserValidation(wrapper,record.message.createSurface.components,path=>model.dataModel.get(path),()=>enabled&&!pending&&epoch===capturedEpoch&&mounted.get(record.surfaceId)?.revision===record.revision,{element:notice,show:showNotice}),
     sequence:record.dataSequence??0,
     liveIds:new Map(record.message.createSurface.components.filter(c=>c.component==='LogView'||c.component==='Chart'||c.component==='TaskProgress').map(c=>[c.id,c.component])),
     wrapper,
@@ -129,6 +134,7 @@ function applySnapshot(snapshot: Snapshot) {
   if (snapshot.epoch !== epoch) {
     for (const entry of mounted.values()) {
       entry.unsubscribe();
+      entry.validation.dispose();
       entry.element.surface = undefined;
       entry.wrapper.remove();
     }
@@ -161,6 +167,7 @@ function applySnapshot(snapshot: Snapshot) {
 
 async function sendAction(action: ActionPayload, capturedEpoch: string, revision: number) {
   if (pending || !enabled || epoch !== capturedEpoch || mounted.get(action.surfaceId)?.revision !== revision) return;
+  if(!mounted.get(action.surfaceId)!.validation.check(action.sourceComponentId,action.context))return;
   const envelope = {
     epoch: capturedEpoch,
     revision,

@@ -1,3 +1,4 @@
+import {validateSubmission} from './interactions.ts';
 import {ArtifactStore,type ArtifactKind,type ArtifactMeta} from './artifact-store.ts';
 import {type ToolProgress} from './workbench.ts';
 import { trimLog, validateSeries, type LogState } from './live.ts';
@@ -198,6 +199,8 @@ export class UiSession {
         try { validateInput(field,action.context[key]); } catch(error) { throw new UiError(403,error instanceof Error?error.message:'Invalid input'); }
       } else if(canonical(value)!==canonical(action.context[key])) throw new UiError(403,'Literal event context was changed');
     }
+    const validation=validateSubmission(surface.message.createSurface.components,action.sourceComponentId,action.context);
+    if(validation.length)throw new UiError(403,'Form validation failed: '+validation.map(issue=>issue.message).join('; '));
     if(this.accepted.size>=LIMITS.events) throw new UiError(429,'Event capacity reached; reset the UI session');
     const epoch=this.state.epoch;
     // Reserve synchronously so a reentrant bridge cannot dispatch the ID twice.

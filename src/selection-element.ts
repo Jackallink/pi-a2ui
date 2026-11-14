@@ -5,7 +5,7 @@ export class SearchablePickerElement extends A2uiLitElement<typeof searchablePic
  createRenderRoot(){return this;}
  static styles=css`:host{display:block}section{display:grid;gap:.5em}.picker-options{display:flex;flex-wrap:wrap;gap:.4em}.picker-selected{display:flex;flex-wrap:wrap;gap:.4em}button[aria-pressed=true]{border:2px solid #2563eb}input{max-width:100%;padding:.5em}`;
  private query='';
- private choose(value:string){const p=this.controller.props;if(!p)return;const current=p.value as string[];const next=current.includes(value)?current.filter(v=>v!==value):p.variant==='multipleSelection'?[...current,value]:[value];p.setValue?.(next);}
+ private choose(value:string){const p=this.controller.props;if(!p)return;const current=p.value as string[];const next=current.includes(value)?current.filter(v=>v!==value):p.variant==='multipleSelection'?[...current,value]:[value];p.setValue?.(next);this.dispatchEvent(new Event('a2ui-input-change',{bubbles:true,composed:true}));}
  private search(event:Event){const input=event.target as HTMLInputElement;this.query=Array.from(input.value).slice(0,128).join('');input.value=this.query;this.requestUpdate();}
  private navigate(event:KeyboardEvent){
   if(event.key==='Escape'){event.preventDefault();this.query='';this.requestUpdate();this.querySelector('input')?.focus();return;}

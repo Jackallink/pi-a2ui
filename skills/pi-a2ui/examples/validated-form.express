@@ -1,0 +1,8 @@
+$/name = ""
+$/ok = false
+name = TextField(label="Name",value=$/name)
+ok = CheckBox(label="Accept",value=$/ok)
+submit = Button(child=Text(text="Save form"),action=Event("save",{name:$/name,ok:$/ok}))
+cancel = Button(child=Text(text="Cancel"),action=Event("cancel"))
+validation = FormValidation(buttons=["submit"],rules=[{fieldId:"name",message:"Enter 2 to 5 characters",required:true,minLength:2,maxLength:5},{fieldId:"ok",message:"Accept to continue",required:true}])
+root = Column(children=[name,ok,validation,submit,cancel])

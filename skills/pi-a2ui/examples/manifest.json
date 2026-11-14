@@ -141,5 +141,18 @@
     ],
     "pattern": "summary-metrics",
     "reference": "references/summaries-and-feedback.md"
+  },
+  {
+    "name": "validated-form",
+    "requires": [
+      "TextField",
+      "CheckBox",
+      "Button",
+      "Text",
+      "FormValidation",
+      "Column"
+    ],
+    "pattern": "validated-form",
+    "reference": "references/summaries-and-feedback.md"
   }
 ]
