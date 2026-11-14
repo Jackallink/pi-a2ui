@@ -1,0 +1,1 @@
+root = Column(children=[CodeBlock(code="  const name = \"Ada\";\n",language="ts"),MarkdownView(text="# Result\n\n**Reported** result.\n\n- Inspect\n- Review")])

@@ -1,0 +1,7 @@
+{
+  "normalPackageRegistration": true,
+  "explicitSkillFlag": false,
+  "skillCommands": 1,
+  "agentStarts": 0,
+  "externalHTTPDenied": true
+}

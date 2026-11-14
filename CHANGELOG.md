@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased companion addition
+
+- Bundle pi-a2ui skill, progressive component/error references and11 capability-gated Express templates. Add read-only catalog/example/preflight script using prebuiltJS and the existing compiler; no extra runtime dependency or provider.
+- Correct contradictory SDK prompt wording about named arguments. Existing published0.1.3 tag and auto-open work are unchanged.
+
 ## 0.1.3 - 2026-11-14
 
 - Version-alignment checkpoint: publish the complete v0.1.1 functionality as v0.1.3 to remove ambiguity with historical development version labels.

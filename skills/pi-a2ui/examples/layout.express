@@ -1,0 +1,4 @@
+root = Tabs(tabs=[
+  {title:"Overview",child:Card(child=Column(children=[Text(text="Summary"),Row(children=[Text(text="Branch"),Text(text="main")]),Divider(),Text(text="1. Inspect  2. Test  3. Review")]))},
+  {title:"Options",child:Row(children=[Card(child=Text(text="Small change")),Card(child=Text(text="Larger change"))])}
+])

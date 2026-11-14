@@ -49,6 +49,7 @@ function processor(surfaceId: string) {
 export function promptSnippet(): string {
   const sdk = processor('surface').promptSnippet
     .replace(/IMPORTANT:.*\n\n/, '')
+    .replace('Use these exact positional signatures to instantiate components. Do not output property keys:', 'These signatures show property order. Named arguments are supported and recommended when optional properties are skipped:')
     .replace(/^(7|9|11|12)\. [\s\S]*?(?=^\d+\. |^## )/gm, '')
     .replace(/## Positional Function Signatures[\s\S]*?(?=## Catalog Instructions)/, '')
     .replace(/   Prefix relative list scopes.*\n   A lone.*\n/, '')
