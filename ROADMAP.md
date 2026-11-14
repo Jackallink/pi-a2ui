@@ -47,3 +47,7 @@ For the consolidated version: closed user/technical/error walkthrough, AC-to-tes
 ## GitHub delivery tracking
 
 Issues [#1](https://github.com/Jackallink/pi-a2ui/issues/1), [#2](https://github.com/Jackallink/pi-a2ui/issues/2), [#3](https://github.com/Jackallink/pi-a2ui/issues/3) retain the slice acceptance criteria and now target milestonev0.1.1. Issue state owns active delivery; Check records own validation and publication receipts.
+
+## v0.1.4跟踪入口
+
+[Milestone](https://github.com/Jackallink/pi-a2ui/milestone/4) · [总任务#9](https://github.com/Jackallink/pi-a2ui/issues/9)；七个必选分组issue#10–#16，新增候选#17单独登记。当前仍为draft规划，不升发行版本。
