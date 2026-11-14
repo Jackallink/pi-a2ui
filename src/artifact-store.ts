@@ -12,10 +12,10 @@ const caps={image:10*1024*1024,video:64*1024*1024,audio:64*1024*1024};
 function classify(bytes:Buffer):{kind:ArtifactKind;mime:string}|undefined{
  if(bytes.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10])))return{kind:'image',mime:'image/png'};
  if(bytes[0]===255&&bytes[1]===216&&bytes[2]===255)return{kind:'image',mime:'image/jpeg'};
- if(bytes.toString('ascii',0,4)==='RIFF'&&bytes.toString('ascii',8,12)==='WEBP')return{kind:'image',mime:'image/webp'};
- if(bytes.toString('ascii',0,4)==='RIFF'&&bytes.toString('ascii',8,12)==='WAVE')return{kind:'audio',mime:'audio/wav'};
+ if(bytes.subarray(0,4).equals(Buffer.from('RIFF'))&&bytes.subarray(8,12).equals(Buffer.from('WEBP')))return{kind:'image',mime:'image/webp'};
+ if(bytes.subarray(0,4).equals(Buffer.from('RIFF'))&&bytes.subarray(8,12).equals(Buffer.from('WAVE')))return{kind:'audio',mime:'audio/wav'};
  if(bytes.subarray(0,4).equals(Buffer.from([26,69,223,163])))return{kind:'video',mime:'video/webm'};
- if(bytes.toString('ascii',4,8)==='ftyp')return{kind:'video',mime:'video/mp4'};
+ if(bytes.subarray(4,8).equals(Buffer.from('ftyp')))return{kind:'video',mime:'video/mp4'};
 }
 export class ArtifactStore{
  private entries=new Map<string,Artifact>();private pending=new Set<Pending>();private responses=new Map<ServerResponse,string>();private generation=0;private stopped=false;
