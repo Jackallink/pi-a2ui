@@ -1,0 +1,19 @@
+{
+  "provider": "volcengine-ark",
+  "model": "glm-5.3-flash",
+  "restoreOnly": true,
+  "restoredActualModelToolResult": true,
+  "unsupportedNewSnapshotSkipped": false,
+  "restoredArtifactRefsUnavailable": false,
+  "browserForm": true,
+  "fragmentCleared": true,
+  "browserErrors": 0,
+  "listenerReleased": true,
+  "processExited": true,
+  "normalPackageRegistration": true,
+  "explicitExtensionOverride": false,
+  "explicitSkillOverride": false,
+  "skillCommandRequired": false,
+  "externalHTTPDenied": true,
+  "agentStartEvents": 0
+}

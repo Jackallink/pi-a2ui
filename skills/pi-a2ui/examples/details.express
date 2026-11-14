@@ -1,0 +1,1 @@
+root = Column(children=[Details(title="Summary",child=Text(text="Read the outcome first"),open=true),Details(title="Evidence",child=CodeBlock(code="Illustrative evidence only\n"))])

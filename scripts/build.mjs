@@ -18,6 +18,10 @@ const bundle = await build({
   metafile: true,
 });
 
+// Bundle local server TS only. Runtime SDK dependencies stay external and carry
+// their own licenses; consumers need no TS loader or developer build tool.
+await build({entryPoints:[join(root,'src/assistant-cli.ts')],outfile:join(dist,'assistant-cli.mjs'),bundle:true,platform:'node',format:'esm',target:['node24'],packages:'external',legalComments:'eof'});
+
 // The prebuilt browser distribution must carry complete dependency licenses,
 // including notices, rather than relying only on short minified SPDX comments.
 const packages = new Map();

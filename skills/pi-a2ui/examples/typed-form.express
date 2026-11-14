@@ -1,0 +1,11 @@
+$/form/enabled = false
+$/form/count = 2
+$/form/features = ["a"]
+$/form/date = "2026-11-14"
+root = Column(children=[
+  CheckBox(label="Enabled", value=$/form/enabled),
+  Slider(label="Count", min=0, max=10, steps=10, value=$/form/count),
+  ChoicePicker(label="Features", variant="multipleSelection", options=[{label:"Alpha",value:"a"},{label:"Beta",value:"b"}], value=$/form/features),
+  DateTimeInput(label="Date", value=$/form/date, enableDate=true, enableTime=false),
+  Button(child=Text(text="Save"), action=Event("save", {enabled:$/form/enabled,count:$/form/count,features:$/form/features,date:$/form/date}))
+])

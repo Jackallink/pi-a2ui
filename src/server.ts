@@ -1,3 +1,4 @@
+import type {ArtifactStore} from './artifact-store.ts';
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
 import { randomBytes, timingSafeEqual } from "node:crypto";
 import { readFile } from "node:fs/promises";
@@ -5,6 +6,7 @@ import type { Socket } from "node:net";
 import { LIMITS, UiError, type Snapshot, type DataBatch } from "./protocol.ts";
 
 export interface SessionPort {
+  artifacts?:Pick<ArtifactStore,"serve">;
   snapshot(): Snapshot;
   subscribe(listener: (snapshot: Snapshot) => void): () => void;
   subscribeData?(listener:(batch:DataBatch)=>void):()=>void;
@@ -17,7 +19,7 @@ export interface CanvasServer {
   close(): Promise<void>;
 }
 
-const CSP = "default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
+const CSP = "default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self'; media-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
 // A maximum-size snapshot needs its fixed SSE envelope as well as its JSON bytes.
 const SSE_FRAME_ALLOWANCE = 64;
 function json(res: ServerResponse, status: number, value: unknown) {
@@ -106,6 +108,8 @@ export async function startServer(session: SessionPort, options: {port?: number}
       const cookies = (req.headers.cookie ?? "").split(";").map(value => value.trim());
       const value = cookies.find(value => value.startsWith(`${cookieName}=`))?.slice(cookieName.length + 1);
       if (!equalSecret(value, credential)) throw new UiError(401, "Open /a2ui in Pi to connect this browser");
+      const artifact=/^\/api\/artifacts\/([a-f0-9]{32})$/.exec(path);
+      if(artifact&&(req.method==='GET'||req.method==='HEAD')&&session.artifacts){await session.artifacts.serve(artifact[1],req,res);return;}
       if (req.method === "GET" && path === "/api/events") {
         if (streams.size >= LIMITS.clients) throw new UiError(429, "Too many canvas connections");
         res.writeHead(200, {"content-type":"text/event-stream; charset=utf-8",connection:"keep-alive","x-accel-buffering":"no"});

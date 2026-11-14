@@ -78,3 +78,136 @@ test('native tool lifecycle updates only current run logs and chart snapshots re
   result=await update();assert.notEqual(result.details.a2uiSnapshot.epoch,snapshot.epoch);assert.doesNotMatch(JSON.stringify(result.details),/LATE OLD SESSION/);assert.equal(sent.length,0);assert.equal(render.details.a2uiSnapshot.surfaces[0].revision,1);
  }finally{await handlers.get('session_shutdown')({});}
 });
+
+test('first render with no connected browser auto-opens once, success path',async()=>{
+ const tools=new Map<string,any>(),handlers=new Map<string,any>();const execCalls:unknown[][]=[];
+ const host={registerTool(t:any){tools.set(t.name,t);},registerCommand(){},on(n:string,h:any){handlers.set(n,h);},sendUserMessage(){},exec:(...args:unknown[])=>{execCalls.push(args);return Promise.resolve({code:0,stdout:'',stderr:''});},getActiveTools:()=>['read'],setActiveTools(){}} as unknown as ExtensionAPI;
+ install(host);const ctx={sessionManager:{getBranch:()=>[]},ui:{notify(){}}};await handlers.get('session_start')({},ctx);
+ try{
+  const first=await tools.get('a2ui_render').execute('t1',{surfaceId:'auto',source:'root = Text("Auto open")'},undefined,undefined,ctx);
+  assert.match(first.content[0].text,/automatically/);
+  await new Promise(r=>setTimeout(r,20));assert.equal(execCalls.length,1);
+  assert.equal(execCalls[0][0],process.platform==='darwin'?'open':process.platform==='win32'?'rundll32':'xdg-open');
+  const openArgs=execCalls[0][1] as string[];
+  assert.match(openArgs[openArgs.length-1],/^http:\/\/127\.0\.0\.1:\d+\/#token=/);
+  const second=await tools.get('a2ui_render').execute('t2',{surfaceId:'auto',source:'root = Text("Second")'},undefined,undefined,ctx);
+  await new Promise(r=>setTimeout(r,20));assert.equal(execCalls.length,1);
+  assert.match(second.content[0].text,/Use \/a2ui to open/);
+ }finally{await handlers.get('session_shutdown')({});}
+});
+
+test('failed auto-open notifies once and does not retry on later renders',async()=>{
+ const tools=new Map<string,any>(),handlers=new Map<string,any>();const notes:string[]=[];let attempts=0;
+ const host={registerTool(t:any){tools.set(t.name,t);},registerCommand(){},on(n:string,h:any){handlers.set(n,h);},sendUserMessage(){},exec:async()=>{attempts++;return {code:1,stdout:'',stderr:''};},getActiveTools:()=>['read'],setActiveTools(){}} as unknown as ExtensionAPI;
+ install(host);const ctx={sessionManager:{getBranch:()=>[]},ui:{notify:(value:string)=>notes.push(value)}};await handlers.get('session_start')({},ctx);
+ try{
+  const first=await tools.get('a2ui_render').execute('t1',{surfaceId:'auto',source:'root = Text("Fail open")'},undefined,undefined,ctx);
+  assert.match(first.content[0].text,/automatically/);
+  await new Promise(r=>setTimeout(r,20));assert.equal(attempts,1);
+  await tools.get('a2ui_render').execute('t2',{surfaceId:'auto',source:'root = Text("Again")'},undefined,undefined,ctx);
+  await new Promise(r=>setTimeout(r,20));assert.equal(attempts,1);
+  assert.match(notes.join('\n'),/Could not open a browser automatically/);
+  assert.equal(notes.length,1);
+ }finally{await handlers.get('session_shutdown')({});}
+});
+
+test('pending auto-open attempt that fails after session shutdown never rejects unhandled',async()=>{
+ const tools=new Map<string,any>(),handlers=new Map<string,any>();const notes:string[]=[];
+ let release:()=>void=()=>{};
+ const gated=new Promise<void>(resolve=>{release=()=>resolve();});
+ const host={registerTool(t:any){tools.set(t.name,t);},registerCommand(){},on(n:string,h:any){handlers.set(n,h);},sendUserMessage(){},exec:()=>gated.then(()=>({code:1,stdout:'',stderr:''})),getActiveTools:()=>['read'],setActiveTools(){}} as unknown as ExtensionAPI;
+ install(host);const ctx={sessionManager:{getBranch:()=>[]},ui:{notify:(value:string)=>notes.push(value)}};await handlers.get('session_start')({},ctx);
+ try{
+  await tools.get('a2ui_render').execute('t1',{surfaceId:'auto',source:'root = Text("Pending")'},undefined,undefined,ctx);
+  await new Promise(r=>setTimeout(r,10)); // attempt started, exec still pending
+  let unhandled:unknown;const onUnhandled=(err:unknown)=>{unhandled=err;};
+  process.on('unhandledRejection',onUnhandled);
+  try{
+   await handlers.get('session_shutdown')({});
+   release();
+   await new Promise(r=>setTimeout(r,20));
+  }finally{process.off('unhandledRejection',onUnhandled);}
+  assert.equal(unhandled,undefined);
+  assert.equal(notes.length,0);
+ }finally{release();}
+});
+
+test('session_tree branch switch invalidates an in-flight attempt and the new episode may retry once',async()=>{
+ const tools=new Map<string,any>(),handlers=new Map<string,any>();const notes:string[]=[];const execCalls:unknown[][]=[];
+ let release:()=>void=()=>{};
+ const gated=new Promise<void>(resolve=>{release=()=>resolve();});
+ const host={registerTool(t:any){tools.set(t.name,t);},registerCommand(){},on(n:string,h:any){handlers.set(n,h);},sendUserMessage(){},exec:(...args:unknown[])=>{execCalls.push(args);return gated.then(()=>({code:1,stdout:'',stderr:''}));},getActiveTools:()=>['read'],setActiveTools(){}} as unknown as ExtensionAPI;
+ install(host);const ctx={sessionManager:{getBranch:()=>[]},ui:{notify:(value:string)=>notes.push(value)}};await handlers.get('session_start')({},ctx);
+ try{
+  await tools.get('a2ui_render').execute('t1',{surfaceId:'auto',source:'root = Text("Branch")'},undefined,undefined,ctx);
+  await new Promise(r=>setTimeout(r,10)); // attempt pending when the branch switches
+  let unhandled:unknown;const onUnhandled=(err:unknown)=>{unhandled=err;};
+  process.on('unhandledRejection',onUnhandled);
+  try{
+   await handlers.get('session_tree')({},ctx);
+   release();
+   await new Promise(r=>setTimeout(r,20));
+  }finally{process.off('unhandledRejection',onUnhandled);}
+  assert.equal(unhandled,undefined);
+  assert.equal(notes.length,0);
+  await tools.get('a2ui_render').execute('t2',{surfaceId:'auto',source:'root = Text("Retry")'},undefined,undefined,ctx);
+  await new Promise(r=>setTimeout(r,20));assert.equal(execCalls.length,2);
+  assert.equal(notes.length,1);
+  await tools.get('a2ui_render').execute('t3',{surfaceId:'auto',source:'root = Text("Third")'},undefined,undefined,ctx);
+  await new Promise(r=>setTimeout(r,20));assert.equal(execCalls.length,2); // still at most one attempt per episode
+  assert.equal(notes.length,1);
+ }finally{release();await handlers.get('session_shutdown')({});}
+});
+
+test('stale context whose ui getter throws cannot produce an unhandled rejection',async()=>{
+ const tools=new Map<string,any>(),handlers=new Map<string,any>();
+ const host={registerTool(t:any){tools.set(t.name,t);},registerCommand(){},on(n:string,h:any){handlers.set(n,h);},sendUserMessage(){},exec:async()=>({code:1,stdout:'',stderr:''}),getActiveTools:()=>['read'],setActiveTools(){}} as unknown as ExtensionAPI;
+ install(host);
+ const staleCtx:any={sessionManager:{getBranch:()=>[]}};
+ Object.defineProperty(staleCtx,'ui',{get(){throw new Error('stale context invalidated');}});
+ await handlers.get('session_start')({},staleCtx);
+ try{
+  const first=await tools.get('a2ui_render').execute('t1',{surfaceId:'auto',source:'root = Text("Getter")'},undefined,undefined,staleCtx);
+  assert.match(first.content[0].text,/automatically/);
+  let unhandled:unknown;const onUnhandled=(err:unknown)=>{unhandled=err;};
+  process.on('unhandledRejection',onUnhandled);
+  try{await new Promise(r=>setTimeout(r,20));}finally{process.off('unhandledRejection',onUnhandled);}
+  assert.equal(unhandled,undefined);
+ }finally{await handlers.get('session_shutdown')({});}
+});
+
+test('notify sink that throws synchronously cannot produce an unhandled rejection',async()=>{
+ const tools=new Map<string,any>(),handlers=new Map<string,any>();
+ const host={registerTool(t:any){tools.set(t.name,t);},registerCommand(){},on(n:string,h:any){handlers.set(n,h);},sendUserMessage(){},exec:async()=>({code:1,stdout:'',stderr:''}),getActiveTools:()=>['read'],setActiveTools(){}} as unknown as ExtensionAPI;
+ install(host);
+ const ctx={sessionManager:{getBranch:()=>[]},ui:{notify(){throw new Error('notify sink closed');}}};
+ await handlers.get('session_start')({},ctx);
+ try{
+  const first=await tools.get('a2ui_render').execute('t1',{surfaceId:'auto',source:'root = Text("Sink")'},undefined,undefined,ctx);
+  assert.match(first.content[0].text,/automatically/);
+  let unhandled:unknown;const onUnhandled=(err:unknown)=>{unhandled=err;};
+  process.on('unhandledRejection',onUnhandled);
+  try{await new Promise(r=>setTimeout(r,20));}finally{process.off('unhandledRejection',onUnhandled);}
+  assert.equal(unhandled,undefined);
+ }finally{await handlers.get('session_shutdown')({});}
+});
+
+test('I2 combined render errors and active SSE do not auto-open; current workbench/progress remain intact',async()=>{
+ const tools=new Map<string,any>(),handlers=new Map<string,any>(),commands=new Map<string,any>();const opens:string[]=[];
+ install({registerTool(t:any){tools.set(t.name,t);},registerCommand(n:string,c:any){commands.set(n,c);},on(n:string,h:any){handlers.set(n,h);},sendUserMessage(){},exec:async(_p:string,args:string[])=>{opens.push(args.at(-1)!);return{code:0,stdout:'',stderr:''};},getActiveTools:()=>['read','a2ui_render'],setActiveTools(){}}as unknown as ExtensionAPI);
+ const ctx={cwd:process.cwd(),sessionManager:{getBranch:()=>[]},ui:{notify(){}}};await handlers.get('session_start')({},ctx);let stream:Response|undefined;
+ try{
+  await assert.rejects(tools.get('a2ui_render').execute('bad',{surfaceId:'combo',source:'root = Card("missing")'},undefined,undefined,ctx));const cancelled=new AbortController();cancelled.abort();await assert.rejects(tools.get('a2ui_render').execute('cancel',{surfaceId:'combo',source:'root = Text("cancel")'},cancelled.signal,undefined,ctx));assert.equal(opens.length,0);
+  await commands.get('a2ui-toggle').handler('',ctx);await assert.rejects(tools.get('a2ui_render').execute('paused',{surfaceId:'combo',source:'root = Text("paused")'},undefined,undefined,ctx));assert.equal(opens.length,0);await commands.get('a2ui-toggle').handler('',ctx);
+  await commands.get('a2ui').handler('',ctx);assert.equal(opens.length,1);const url=new URL(opens[0]);const origin=url.origin;const response=await fetch(origin+'/api/connect',{method:'POST',headers:{origin,'content-type':'application/json'},body:JSON.stringify({token:new URLSearchParams(url.hash.slice(1)).get('token')})});const cookie=response.headers.get('set-cookie')!.split(';')[0];stream=await fetch(origin+'/api/events',{headers:{cookie}});
+  handlers.get('agent_start')({});handlers.get('tool_execution_start')({toolCallId:'native',toolName:'bash'});await new Promise(r=>setTimeout(r,120));const render=await tools.get('a2ui_render').execute('combo',{surfaceId:'combo',source:'chart = Chart(kind="line",series=[])\nroot = Column([CodeBlock(code="sample"),TaskProgress(),LogView(),chart])'},undefined,undefined,ctx);assert.match(render.details.a2uiSnapshot.surfaces[0].message.createSurface.catalogId,/workbench-v1/);await new Promise(r=>setTimeout(r,120));assert.equal(opens.length,1);const live=await tools.get('a2ui_update_chart').execute('current',{surfaceId:'combo',revision:1,componentId:'chart',series:[]});const current=live.details.a2uiSnapshot.surfaces[0].message.createSurface.components.find((c:any)=>c.component==='TaskProgress');assert.equal(current.started,1);assert.equal(current.state,'running');
+  handlers.get('tool_execution_end')({toolCallId:'native',result:{content:[]},isError:false});handlers.get('agent_end')({messages:[]});await new Promise(r=>setTimeout(r,120));const finished=await tools.get('a2ui_update_chart').execute('finished',{surfaceId:'combo',revision:1,componentId:'chart',series:[]});const progress=finished.details.a2uiSnapshot.surfaces[0].message.createSurface.components.find((c:any)=>c.component==='TaskProgress');assert.equal(progress.state,'completed');assert.equal(progress.settled,1);
+ }finally{await stream?.body?.cancel();await handlers.get('session_shutdown')({});}
+});
+
+test('I3 auto-open survives combined artifact registration and restores scoped root without stale resource reuse',async()=>{
+ const tools=new Map<string,any>(),handlers=new Map<string,any>();let opens=0;let branch:unknown[]=[];
+ install({registerTool(t:any){tools.set(t.name,t);},registerCommand(){},on(n:string,h:any){handlers.set(n,h);},sendUserMessage(){},exec:async()=>{opens++;return{code:0,stdout:'',stderr:''};},getActiveTools:()=>[],setActiveTools(){}}as unknown as ExtensionAPI);const ctx={cwd:process.cwd(),sessionManager:{getBranch:()=>branch},ui:{notify(){}}};await handlers.get('session_start')({},ctx);
+ try{const registered=await tools.get('a2ui_register_artifact').execute('asset',{path:'tests/fixtures/blue.png',kind:'image'},undefined,undefined,ctx);const meta=JSON.parse(registered.content[0].text);assert.equal(opens,0);const result=await tools.get('a2ui_render').execute('render',{surfaceId:'image',source:`root = Column([Image(url="${meta.src}"),TaskProgress()])`},undefined,undefined,ctx);assert.equal(opens,1);branch=[{type:'message',message:{role:'toolResult',toolName:'a2ui_render',isError:false,details:result.details}}];await handlers.get('session_tree')({},ctx);assert.equal(opens,1);const again=await tools.get('a2ui_register_artifact').execute('new',{path:'tests/fixtures/blue.png',kind:'image'},undefined,undefined,ctx);assert.notEqual(JSON.parse(again.content[0].text).src,meta.src);await tools.get('a2ui_render').execute('new-render',{surfaceId:'image',source:'root = Text("New episode")'},undefined,undefined,ctx);assert.equal(opens,2);
+ }finally{await handlers.get('session_shutdown')({});}
+});

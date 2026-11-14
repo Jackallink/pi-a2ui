@@ -1,0 +1,6 @@
+// Illustrative records only. Replace with actual proposal and tool evidence; never certify this fixture as an executed test.
+root = Column(children=[
+  CodeDiff(proposalId="proposal-example", filename="example.ts", baseRevision="base-example", before="const n = 1;\n", after="const n = 2;\n"),
+  TestResults(resultId="result-example", command="example only", evidence="Illustrative fixture, not an executed test", cases=[{id:"sample",name:"Not run",status:"skip"}], summary={pass:0,fail:0,skip:1,error:0}),
+  Button(child=Text(text="Review"), action=Event("review", {proposalId:"proposal-example",resultId:"result-example"}))
+])

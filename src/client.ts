@@ -63,6 +63,8 @@ function setConnection(message: string, state: "live" | "waiting" | "closed") {
 function updateAvailability() {
   const sending = pending !== undefined;
   surfaces.inert = !enabled || sending;
+  // Native modal dialogs escape ancestor inertness; apply availability explicitly.
+  for(const dialog of surfaces.querySelectorAll<HTMLDialogElement>('dialog'))dialog.inert=!enabled||sending;
   surfaces.setAttribute("aria-busy", String(sending));
   status.textContent = !enabled ? "Canvas paused" : sending ? "Sending…" : "Ready for your input";
 }
@@ -105,7 +107,7 @@ function mountSurface(record: SurfaceRecord) {
   mounted.set(record.surfaceId, {
     revision: record.revision,
     sequence:record.dataSequence??0,
-    liveIds:new Map(record.message.createSurface.components.filter(c=>c.component==='LogView'||c.component==='Chart').map(c=>[c.id,c.component])),
+    liveIds:new Map(record.message.createSurface.components.filter(c=>c.component==='LogView'||c.component==='Chart'||c.component==='TaskProgress').map(c=>[c.id,c.component])),
     wrapper,
     element,
     unsubscribe: () => subscription.unsubscribe(),
@@ -143,12 +145,13 @@ function applySnapshot(snapshot: Snapshot) {
   }
   for (const record of snapshot.surfaces) {
     if (mounted.get(record.surfaceId)?.revision === record.revision) {
-      applyData({surfaceId:record.surfaceId,revision:record.revision,sequence:record.dataSequence??0,components:record.message.createSurface.components.filter(c=>c.component==='LogView'||c.component==='Chart')},true);
+      applyData({surfaceId:record.surfaceId,revision:record.revision,sequence:record.dataSequence??0,components:record.message.createSurface.components.filter(c=>c.component==='LogView'||c.component==='Chart'||c.component==='TaskProgress')},true);
       continue;
     }
     removeSurface(record.surfaceId);
     mountSurface(record);
   }
+  if(!enabled){pauseMedia();window.dispatchEvent(new Event('a2ui-artifacts-revoked'));}
   empty.hidden = mounted.size > 0;
   count.textContent = `${mounted.size} ${mounted.size === 1 ? "surface" : "surfaces"}`;
   if (!enabled) showNotice("Pi has paused this canvas. Run /a2ui-toggle in Pi to continue.");
@@ -276,7 +279,9 @@ async function start() {
   connectEvents();
 }
 
+function pauseMedia(){for(const media of document.querySelectorAll<HTMLMediaElement>('video,audio'))media.pause();}
 window.addEventListener("pagehide", () => {
+  pauseMedia();
   stream?.close();
 });
 // Back/forward cache keeps the same models and drafts, but the stream needs reopening.

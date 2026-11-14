@@ -1,6 +1,6 @@
 // Bounded integration check: real Pi/model, installed package, real browser, two turns.
 // Existing Pi credentials stay in Pi; do not print bootstrap URLs or raw RPC records.
-import { formsSource, fillForms, codingSource, liveSource, liveChartSeries } from './acceptance-scenarios.mjs';
+import { formsSource, fillForms, codingSource, liveSource, liveChartSeries, workbenchSource } from './acceptance-scenarios.mjs';
 import { spawn, spawnSync } from 'node:child_process';
 import { mkdir, writeFile, readFile, access } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
@@ -17,6 +17,7 @@ const restoreOnly = process.env.A2UI_ACCEPT_RESTORE_ONLY === '1';
 const additionalExtensions = providerExtension ? ['-e',resolve(providerExtension)] : [];
 const workspace = resolve(process.env.A2UI_ACCEPT_WORKSPACE ?? '.local/live');
 const urlFile = join(workspace,'open-url');
+if(scenario==='workbench'&&!restoreOnly){await mkdir(join(process.cwd(),'a2ui-fixtures'),{recursive:true});for(const name of ['blue.png','blue.webm','tone.wav'])await writeFile(join(process.cwd(),'a2ui-fixtures',name),await readFile(new URL('../tests/fixtures/'+name,import.meta.url)));}
 let testEvidence;
 if(scenario==='coding'&&!restoreOnly){
  await mkdir(workspace,{recursive:true});
@@ -28,7 +29,7 @@ if(scenario==='coding'&&!restoreOnly){
 }
 await mkdir(join(workspace,'bin'),{recursive:true});
 await writeFile(join(workspace,'bin','open'),'#!/bin/sh\numask 077\nprintf "%s" "$1" > "$A2UI_ACCEPT_OPEN_FILE"\n', {mode:0o700});
-const pi = spawn(process.execPath,[fileURLToPath(new URL('../node_modules/@earendil-works/pi-coding-agent/dist/bundle/cli.js',import.meta.url)),'--no-extensions','--no-mcp','--no-skills','--no-context-files','--no-prompt-templates','--no-themes','--mode','rpc','--provider',provider,'--model',model,'--thinking','off','--tools',scenario==='live'?'a2ui_render,a2ui_update_chart,bash':'a2ui_render','--session',join(workspace,`session-${provider}.jsonl`),...additionalExtensions,'-e',join(packagePath,'extension.ts')],{
+const pi = spawn(process.execPath,[fileURLToPath(new URL('../node_modules/@earendil-works/pi-coding-agent/dist/bundle/cli.js',import.meta.url)),'--no-extensions','--no-mcp','--no-skills','--no-context-files','--no-prompt-templates','--no-themes','--mode','rpc','--provider',provider,'--model',model,'--thinking','off','--tools',scenario==='live'?'a2ui_render,a2ui_update_chart,bash':scenario==='workbench'?'a2ui_render,a2ui_register_artifact,bash':'a2ui_render','--session',join(workspace,`session-${provider}.jsonl`),...additionalExtensions,'-e',join(packagePath,'extension.ts')],{
   cwd:process.cwd(),env:{...process.env,PATH:`${join(workspace,'bin')}:${process.env.PATH}`,A2UI_ACCEPT_OPEN_FILE:urlFile,PI_OFFLINE:'1'},stdio:['pipe','pipe','pipe'],
 });
 let text='';let stderr='';const events=[];const waiters=new Set();let exited=false;
@@ -62,8 +63,9 @@ try{
   if (initial.data?.model?.id !== model) throw new Error('Pi selected an unexpected model; refusing model request');
   if (!restoreOnly) {
   const basicSource='$/form/name = ""\nroot = Card(Column([Text("Pi A2UI local acceptance"), TextField("Acceptance phrase", $/form/name), Button(Text("Submit acceptance"), action=Event("submit", {name: $/form/name}))]))';
-  const source=scenario==='forms'?formsSource:scenario==='coding'?codingSource(testEvidence):scenario==='live'?liveSource:basicSource;
-  command({id:'first',type:'prompt',message:`Local UI acceptance only. Call a2ui_render exactly once with surfaceId "acceptance" and source ${JSON.stringify(source)}. After successful tool call, say "Form ready" briefly. A later user message named A2UI browser context data is expected: when it arrives, reply "Accepted: " followed by the exact JSON object action.context (preserving boolean/number/array types); do not render again or invoke another tool.`});
+  const source=scenario==='workbench'?workbenchSource('{{IMAGE}}','{{VIDEO}}','{{AUDIO}}'):scenario==='forms'?formsSource:scenario==='coding'?codingSource(testEvidence):scenario==='live'?liveSource:basicSource;
+  const artifactInstructions=scenario==='workbench'?'First call a2ui_register_artifact on a2ui-fixtures/blue.png kind image, a2ui-fixtures/blue.webm kind video, and a2ui-fixtures/tone.wav kind audio. Substitute their returned opaque src values for {{IMAGE}}, {{VIDEO}} and {{AUDIO}} in the source below. After rendering run bash exactly once: printf v014-native-acceptance. Never use any other command. ':'';
+  command({id:'first',type:'prompt',message:artifactInstructions+`Local UI acceptance only. Call a2ui_render exactly once with surfaceId "acceptance" and source ${JSON.stringify(source)}. After successful tool call, say "Form ready" briefly. A later user message named A2UI browser context data is expected: when it arrives, reply "Accepted: " followed by the exact JSON object action.context (preserving boolean/number/array types); do not render again or invoke another tool.`});
   const rendered=await wait(e=>(e.type==='message_end'&&e.message?.role==='toolResult'&&e.message.toolName==='a2ui_render'&&!e.message.isError)||e.type==='agent_settled');
   if(rendered.type==='agent_settled'){
     const markers=events.filter(e=>e.type==='message_end').map(e=>e.message?.errorMessage??'').join(' ').match(/401|403|404|429|5\d\d|quota|balance|insufficient|not found/ig)??[];
@@ -119,6 +121,17 @@ try{
     await page.locator('pi-a2ui-chart rect').nth(2).waitFor();
     if(await page.locator('input[type=text]').inputValue()!==phrase||!await page.locator('input[type=text]').evaluate(e=>e===globalThis.acceptanceOriginalInput))throw new Error('Native live updates lost draft/input identity');
     liveEvidence={actualNativeToolOutput:true,progressObservedBeforeToolEnd:true,actualChartTool:true,draftAndInputIdentityPreserved:true,nativeUpdateEvents:events.slice(runAfter).filter(e=>e.type==='tool_execution_update'&&e.toolName==='bash').length};
+  }
+  if(scenario==='workbench'){
+    await page.getByText('Registered in this Pi session',{exact:true}).waitFor();
+    await page.waitForFunction(()=>document.querySelector('pi-a2ui-image img')?.naturalWidth===32);
+    await page.getByRole('button',{name:'Count',exact:true}).click();
+    if((await page.locator('pi-a2ui-data-table tbody tr').first().textContent())!=='two2')throw new Error('Installed table numeric sort failed');
+    await page.locator('pi-a2ui-details summary').click();await page.getByText('Folded detail',{exact:true}).waitFor();
+    await page.getByRole('button',{name:'settings',exact:true}).click();await page.getByRole('dialog').waitFor();await page.keyboard.press('Escape');
+    await page.getByText('Tracked tools · completed',{exact:true}).waitFor();
+    if(!events.some(e=>e.type==='tool_execution_end'&&e.toolName==='bash'&&e.isError===false))throw new Error('Actual native bash event missing');
+    liveEvidence={registeredArtifacts:3,installedImageDecoded:true,installedTableSorted:true,installedDetailsAndModal:true,actualNativeTaskProgress:true};
   }
   const before=events.length;
   await page.getByRole('button',{name:'Submit acceptance'}).click();

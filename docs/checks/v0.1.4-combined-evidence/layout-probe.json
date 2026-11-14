@@ -1,0 +1,27 @@
+{
+  "keyboardNativePlayback": true,
+  "rows": [
+    {
+      "tag": "video",
+      "box": {
+        "x": 597.671875,
+        "y": 343.640625,
+        "width": 32,
+        "height": 32
+      },
+      "attemptedY": -15,
+      "target": "A2UI-BASIC-COLUMN"
+    },
+    {
+      "tag": "audio",
+      "box": {
+        "x": 564.703125,
+        "y": 513.046875,
+        "width": 300,
+        "height": 54
+      },
+      "attemptedY": 27,
+      "target": "AUDIO"
+    }
+  ]
+}

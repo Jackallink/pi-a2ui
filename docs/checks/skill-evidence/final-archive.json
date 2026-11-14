@@ -1,0 +1,7 @@
+{
+  "sha256": "dcc0a24226c1c1154b4457d73da2709495f3d691a0c5e95a03fd75fa323be947",
+  "files": 46,
+  "allPayloadBytesMatchSource": true,
+  "devOrHostDependenciesRequired": false,
+  "nodeMajor": 24
+}

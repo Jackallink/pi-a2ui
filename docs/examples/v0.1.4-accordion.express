@@ -1,0 +1,1 @@
+root = Column([Details(title="Summary",child=Text("Start with the result"),open=true),Details(title="Evidence",child=CodeBlock(code="node --test\nexit 0"))])

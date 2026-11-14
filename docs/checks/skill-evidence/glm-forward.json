@@ -1,0 +1,20 @@
+{
+  "provider": "volcengine-ark",
+  "model": "glm-5.3-flash",
+  "agentPlanEndpointVerified": true,
+  "explicitSkillCommand": true,
+  "storyProvidedWithoutDSL": true,
+  "successfulRenders": 1,
+  "renderFailures": 0,
+  "readReferenceNames": [
+    "core-components.md"
+  ],
+  "actualBrowserTypedSubmission": true,
+  "nextModelReplyAcknowledged": true,
+  "browserErrors": 0,
+  "fragmentCleared": true,
+  "listenerReleased": true,
+  "processExited": true,
+  "notificationBooleanAndDepartmentArraySubmitted": true,
+  "productionArchiveSha256": "780bd00df1278d8f5c22c9522d9daf2b3a9bd8a54e6c02f210a62bd432c6398c"
+}

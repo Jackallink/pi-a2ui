@@ -1,8 +1,9 @@
+import {validateWorkbench} from './workbench.ts';
 import { A2uiGenerator, CatalogConfig, ExpressFormatFactory, RendererState } from '@a2ui/agent';
 import { inputPaths, validateInputs } from './inputs.ts';
 import { validateLive } from './live.ts';
 import { validateCoding } from './coding.ts';
-import { restrictedCatalog, catalogs } from './catalog.ts';
+import { workbenchCatalog, catalogs } from './catalog.ts';
 import { LIMITS, UiError, type Component, type SurfaceMessage } from './protocol.ts';
 
 export function record(value: unknown): value is Record<string, unknown> {
@@ -44,11 +45,12 @@ function noExpressions(value: unknown): void {
   }
 }
 function processor(surfaceId: string) {
-  return new A2uiGenerator([new CatalogConfig(restrictedCatalog)], undefined, new ExpressFormatFactory({ surfaceId })).createProcessor({ '1.0': { supportedCatalogIds: [restrictedCatalog.id] } });
+  return new A2uiGenerator([new CatalogConfig(workbenchCatalog)], undefined, new ExpressFormatFactory({ surfaceId })).createProcessor({ '1.0': { supportedCatalogIds: [workbenchCatalog.id] } });
 }
 export function promptSnippet(): string {
   const sdk = processor('surface').promptSnippet
     .replace(/IMPORTANT:.*\n\n/, '')
+    .replace('Use these exact positional signatures to instantiate components. Do not output property keys:', 'These signatures show property order. Named arguments are supported and recommended when optional properties are skipped:')
     .replace(/^(7|9|11|12)\. [\s\S]*?(?=^\d+\. |^## )/gm, '')
     .replace(/## Positional Function Signatures[\s\S]*?(?=## Catalog Instructions)/, '')
     .replace(/   Prefix relative list scopes.*\n   A lone.*\n/, '')
@@ -83,9 +85,9 @@ export function validateSurface(input: unknown): SurfaceMessage {
       if (reachable.has(id)) throw new UiError(400, 'Components must form a tree without repeated children');
       const component = components.get(id);
       if (!component) throw new UiError(400, 'Missing root or child');
-      if(insideButton && component.component==='LogView') throw new UiError(400,'LogView must not be nested in a Button');
+      if(insideButton && ['LogView','DataTable','CodeBlock','Details','TaskProgress','Modal','Image','ArtifactPreview','Video','AudioPlayer'].includes(component.component)) throw new UiError(400,component.component+' must not be nested in a Button');
       reachable.add(id);
-      const children = component.component === 'Tabs' && Array.isArray(component.tabs) ? component.tabs.map(tab => (tab as {child:string}).child) : Array.isArray(component.children) ? component.children : typeof component.child === 'string' ? [component.child] : [];
+      const children = component.component==='Modal'?[component.trigger,component.content]:component.component === 'Tabs' && Array.isArray(component.tabs) ? component.tabs.map(tab => (tab as {child:string}).child) : Array.isArray(component.children) ? component.children : typeof component.child === 'string' ? [component.child] : [];
       for (const child of children) {
         if (typeof child !== 'string') throw new UiError(400, 'Expected static child ID');
         walk(child, depth + 1, insideButton || component.component==='Button');
@@ -133,6 +135,7 @@ export function validateSurface(input: unknown): SurfaceMessage {
     }
     validateCoding(message);
     validateLive(message);
+    validateWorkbench(message);
     return message;
   } catch (error) {
     if (error instanceof UiError) throw error;
@@ -184,7 +187,7 @@ export function compile(surfaceId: string, source: string): SurfaceMessage {
   if (Buffer.byteLength(source, 'utf8') > LIMITS.sourceBytes) throw new UiError(413, 'Source byte limit exceeded');
   preflightSource(source);
   try {
-    const state = new RendererState([restrictedCatalog]);
+    const state = new RendererState([workbenchCatalog]);
     const parts = processor(surfaceId).parseResponse(source, { wrapped: false, state });
     let creates = 0;
     for (const part of parts) {
@@ -199,8 +202,9 @@ export function compile(surfaceId: string, source: string): SurfaceMessage {
     if (creates !== 1 || state.surfaceIds.length !== 1 || state.surfaceIds[0] !== surfaceId) throw new UiError(400, 'Exactly one complete surface is required');
     state.checkTopology([surfaceId]);
     const surface = state.getSurface(surfaceId)!;
-    const message:SurfaceMessage={version:'1.0',createSurface:{surfaceId,catalogId:restrictedCatalog.id,components:[...surface.componentsModel.getAll().values()].map(component=>component.componentTree as Component),dataModel:surface.dataModel.get('/')}};
+    const message:SurfaceMessage={version:'1.0',createSurface:{surfaceId,catalogId:workbenchCatalog.id,components:[...surface.componentsModel.getAll().values()].map(component=>component.componentTree as Component),dataModel:surface.dataModel.get('/')}};
     validateLive(message,true);
+    validateWorkbench(message,true);
     return validateSurface(message);
   } catch (error) {
     if (error instanceof UiError) throw error;
