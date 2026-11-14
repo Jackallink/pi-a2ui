@@ -1,11 +1,12 @@
 import {z} from 'zod';
-import {type ComponentApi} from '@a2ui/web_core/v1_0';
+import {basicCatalog,type ComponentApi} from '@a2ui/web_core/v1_0';
 import {UiError,type SurfaceMessage} from './protocol.ts';
 const identity=z.string().regex(/^[A-Za-z0-9_-]{1,64}$/);
 export const dataTableApi={name:'DataTable',schema:z.object({caption:z.string().min(1).max(256),columns:z.array(z.object({id:identity,label:z.string().min(1).max(128)}).strict()).min(1).max(12),rows:z.array(z.object({id:identity,cells:z.array(z.union([z.string().max(256),z.number().finite(),z.boolean(),z.null()])).max(12)}).strict()).max(200),state:z.enum(['ready','loading','error']).default('ready'),message:z.string().max(512).default('')}).strict()} satisfies ComponentApi;
 export const codeBlockApi={name:'CodeBlock',schema:z.object({code:z.string(),language:z.string().max(32).default('text'),copyable:z.boolean().default(true)}).strict()} satisfies ComponentApi;
 export const markdownApi={name:'MarkdownView',schema:z.object({text:z.string()}).strict()} satisfies ComponentApi;
-export const workbenchApis:ComponentApi[]=[dataTableApi,codeBlockApi,markdownApi];
+export const detailsApi={name:'Details',schema:z.object({title:z.string().min(1).max(256),child:(basicCatalog.components.get('Card')!.schema as z.ZodObject<any>).shape.child,open:z.boolean().default(false)}).strict()} satisfies ComponentApi;
+export const workbenchApis:ComponentApi[]=[dataTableApi,codeBlockApi,markdownApi,detailsApi];
 export function validateWorkbench(message:SurfaceMessage,initial=false):void{
  for(const c of message.createSurface.components){
   if(c.component==='CodeBlock'||c.component==='MarkdownView'){
