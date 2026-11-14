@@ -4,9 +4,9 @@ A local interactive canvas for the Pi coding agent. Pi keeps the conversation an
 
 Requires **Node 24.x** and Pi >=1.5.0. A2UI protocol 1.0, pinned Agent SDK 0.1.0 and Web Core/Lit 0.15.0.
 
-Version **0.1.5 candidate** adds eight daily interaction groups,19 skill templates and read-only pattern discovery to the readable workbench delivered in0.1.4. It uses Pi's existing model and tools; it makes no separate model request per UI event or output chunk. Project live acceptance uses only Volcengine Ark Agent Plan `glm-5.3-flash`.
+Version **0.1.5** adds eight daily interaction groups,19 skill templates and read-only pattern discovery to the readable workbench delivered in0.1.4. It uses Pi's existing model and tools; it makes no separate model request per UI event or output chunk. Project live acceptance uses only Volcengine Ark Agent Plan `glm-5.3-flash`.
 
-This branch prepares v0.1.5; the published stable Git tag remains v0.1.4 until a new release is published. Use the local route to evaluate this candidate. See [candidate scope](docs/releases/v0.1.5.md) and [published0.1.4 guide](docs/releases/v0.1.4.md).
+See the [v0.1.5 guide](docs/releases/v0.1.5.md) for installation, compatibility and acceptance boundaries. The [v0.1.4 guide](docs/releases/v0.1.4.md) remains available for rollback.
 
 Project source is MIT licensed. The bundled browser libraries retain their own licenses; complete third-party license/notice texts are included in `THIRD_PARTY_LICENSES.txt` in the distribution.
 
@@ -20,7 +20,7 @@ From the Pi project where you want this package enabled:
 
 ```sh
 nvm use 24
-pi install -l --approve git:github.com/Jackallink/pi-a2ui@v0.1.4
+pi install -l --approve git:github.com/Jackallink/pi-a2ui@v0.1.5
 ```
 
 Pi clones the pinned ref and installs production dependencies. Ready browser assets and full third-party licenses are committed in the repository; no browser build is required. Tags/commits are pinned: `pi update --extensions` does not advance a configured tag to the next release. To upgrade, select the new release ref.
@@ -49,7 +49,7 @@ Ask Pi: “Use a2ui_render to show a form asking for my implementation plan. Whe
 
 ## Companion skill and preflight helper
 
-The0.1.5 candidate bundles the **pi-a2ui** skill, component subdocuments,19 executable templates and eight pattern routes. Published0.1.4 has11 templates; older pinned tags do not gain new files on reload. Package discovery loads the extension and skill together via `pi.extensions`/`pi.skills`; no extra global skill or CLI installation is needed. Run `/reload` after selecting the new package/ref, then:
+Version0.1.5 bundles the **pi-a2ui** skill, component subdocuments,19 executable templates and eight pattern routes. Published0.1.4 has11 templates; older pinned tags do not gain new files on reload. Package discovery loads the extension and skill together via `pi.extensions`/`pi.skills`; no extra global skill or CLI installation is needed. Run `/reload` after selecting the new package/ref, then:
 
 ```text
 /skill:pi-a2ui 生成用户信息表单，包含用户名、邮箱和确认按钮
@@ -134,14 +134,14 @@ Live acceptance defaults to Agent Plan `volcengine-ark/glm-5.3-flash` and checks
 [Version0.1.4](docs/releases/v0.1.4.md) combines PR#27 (automatic browser opening), PR#28 (all seven interaction groups) and PR#30 (skill/helper). The previous0.1.3 version-alignment checkpoint and0.1.0/0.1.1 tags/assets remain immutable;0.1.2 remains unpublished. Source/package/test/publication identity is recorded separately from feature acceptance.
 See [CHANGELOG.md](CHANGELOG.md), [ROADMAP.md](ROADMAP.md), the [Pi package distribution contract](docs/specs/005-v0.1.1-distribution.md), and the [version-alignment contract](docs/specs/006-v0.1.3-version-alignment.md). Historical design/test evidence preserves each original feature slice and artifact identity.
 
-## v0.1.5 candidate scope
+## v0.1.5 scope
 
-All eight additional groups are assigned to [v0.1.5](docs/specs/008-v0.1.5-interactions.md), milestone5/issues19–26: TreeView/Breadcrumbs, SearchablePicker/ComboBox, KeyValueView/MetricCard, inline/form validation, Callout/EmptyState/Skeleton, ActivityTimeline, EvidenceLink/SourceLocation and CommandPalette/ActionBar. The canonical scope is spec008; implementation/review and acceptance receipts are tracked in [#17](https://github.com/Jackallink/pi-a2ui/issues/17) and [candidate PR#33](https://github.com/Jackallink/pi-a2ui/pull/33), separately from publication. The same version includes companion skill/CLI [#32](https://github.com/Jackallink/pi-a2ui/issues/32).
+All eight additional groups are included in [v0.1.5](docs/specs/008-v0.1.5-interactions.md), milestone5/issues19–26: TreeView/Breadcrumbs, SearchablePicker/ComboBox, KeyValueView/MetricCard, inline/form validation, Callout/EmptyState/Skeleton, ActivityTimeline, EvidenceLink/SourceLocation and CommandPalette/ActionBar. The canonical scope is spec008; implementation/review and acceptance receipts are tracked in [#17](https://github.com/Jackallink/pi-a2ui/issues/17) and [PR#33](https://github.com/Jackallink/pi-a2ui/pull/33), separately from publication. The same version includes companion skill/CLI [#32](https://github.com/Jackallink/pi-a2ui/issues/32).
 
 ## Remove
 
 ```sh
-pi remove -l --approve git:github.com/Jackallink/pi-a2ui@v0.1.4
+pi remove -l --approve git:github.com/Jackallink/pi-a2ui@v0.1.5
 # For the local route instead:
 pi remove -l --approve /absolute/path/to/pi-a2ui
 ```

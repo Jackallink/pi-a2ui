@@ -25,3 +25,8 @@
 | Model/provider unavailable | bounded acceptance blocked with exact source/environment receipt | no model fallback/billed provider change |
 
 Consistency: one action API, same error/envelope/dedup/capacity policy, no model calls for local sorting/filtering/disclosure/palette/validation, no new execution or auth flows. Non-goals and rollback are in spec008. Open questions: none intentionally deferred for schema/authority/scope; independent review may identify blockers, which must be resolved before admitting implementation. Browser adapter and capacity tests are required evidence, not waived assumptions.
+
+
+## Authorized release closure (2026-11-14)
+
+User GO covers PR33 merge → immutable v0.1.5 tag → GitHub archive/checksums publication → downloaded asset identity → fresh normal Git@tag registration, skill/helper and no-model session restore → issue/milestone closure. Release preparation changes installation/readme status only; runtime/schema/skill/compiler and dependency identity remain unchanged. Existing166/45 regression plus fresh pre-merge checks, payload/source/dist identity and independent release review gate the merge. Missing tag/release is checked before creation; never replace a prior immutable asset. Post-release source/check receipt commits do not move the tag. If download/consumer verification fails, preserve the published evidence, keep issues open, diagnose within the same scope and do not report completion. Real-user installation/credentials/default Node are outside scope. Actual inference, if needed, retains exact Ark AgentPlan glm-5.3-flash preflight; existing bounded model evidence is not recast as a fresh publication-time model call.
