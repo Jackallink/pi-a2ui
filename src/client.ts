@@ -149,6 +149,7 @@ function applySnapshot(snapshot: Snapshot) {
     removeSurface(record.surfaceId);
     mountSurface(record);
   }
+  if(!enabled)window.dispatchEvent(new Event('a2ui-artifacts-revoked'));
   empty.hidden = mounted.size > 0;
   count.textContent = `${mounted.size} ${mounted.size === 1 ? "surface" : "surfaces"}`;
   if (!enabled) showNotice("Pi has paused this canvas. Run /a2ui-toggle in Pi to continue.");
