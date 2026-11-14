@@ -240,3 +240,16 @@ test('W1 table mixed-type order is deterministic and ties stable; bounded table 
  canvas.session.render('form',`root = DataTable(caption="Types",columns=[{id:"v",label:"Value"},{id:"id",label:"Row"}],rows=${JSON.stringify(rows)})`);await page.goto(canvas.origin);const table=page.locator('pi-a2ui-data-table');await table.getByRole('button',{name:'Value',exact:true}).click();expect(await table.locator('tbody tr td:last-child').allTextContents()).toEqual(['null','false','true','first','second','string']);
  const many=Array.from({length:200},(_,i)=>({id:'r'+i,cells:[i]}));canvas.session.render('form',`root = DataTable(caption="Many",columns=[{id:"a",label:"A"}],rows=${JSON.stringify(many)})`);await expect(table.locator('tbody tr')).toHaveCount(200);expect(await table.locator('.table-scroll').evaluate(e=>e.scrollHeight>e.clientHeight)).toBe(true);
 });
+
+test('W2 code preserves whitespace, clipboard success/failure stays local, Markdown has no executable URLs',async({page,canvas})=>{
+ await page.addInitScript(()=>{Object.defineProperty(navigator,'clipboard',{value:{writeText:async(text:string)=>{if((window as any).rejectCopy)throw new Error('denied');(window as any).copied=text;}}});});
+ const code='  <script>x</script>\n\tconst x = 1;\n';
+ canvas.session.render('other',`root = Column([CodeBlock(code=${JSON.stringify(code)},language="ts"),MarkdownView(text="# Heading\\n\\n**Bold** and *italic* and \u0060inline\u0060\\n\\n- First\\n- Second\\n\\n1. Ordered\\n\\n\u0060\u0060\u0060ts\\n  <img src=x>\\n\u0060\u0060\u0060\\n\\n[link](https://example.invalid) <script>bad()</script>"),Text("**literal**")])`);await open(page,canvas);
+ const block=page.locator('pi-a2ui-code-block');await expect(block.locator('code')).toHaveText(code,{useInnerText:false});expect(await block.locator('code').textContent()).toBe(code);
+ await block.getByRole('button',{name:'Copy code',exact:true}).click();expect(await page.evaluate(()=>(window as any).copied)).toBe(code);await expect(block.getByRole('status')).toHaveText('Copied');
+ await page.evaluate(()=>(window as any).rejectCopy=true);await block.getByRole('button',{name:'Copy code',exact:true}).click();await expect(block.getByRole('status')).toHaveText('Copy unavailable; select the code manually');expect(canvas.sent).toHaveLength(0);
+ const md=page.locator('pi-a2ui-markdown');await expect(md.getByRole('heading',{name:'Heading',exact:true})).toBeVisible();await expect(md.locator('strong')).toHaveText('Bold');await expect(md.locator('em')).toHaveText('italic');await expect(md.locator('ul li')).toHaveCount(2);await expect(md.locator('ol li')).toHaveCount(1);await expect(md.locator('a,img,script')).toHaveCount(0);await expect(page.getByText('**literal**',{exact:true})).toBeVisible();
+});
+test('W2 native clipboard receives exact code from user click',async({page,context,canvas})=>{
+ await context.grantPermissions(['clipboard-read','clipboard-write'],{origin:canvas.origin});const code='  hello\n\t世界\n';canvas.session.render('form',`root = CodeBlock(code=${JSON.stringify(code)})`);await page.goto(canvas.origin);await page.getByRole('button',{name:'Copy code',exact:true}).click();await expect(page.getByRole('status').filter({hasText:'Copied'})).toBeVisible();expect(await page.evaluate(()=>navigator.clipboard.readText())).toBe(code);expect(canvas.sent).toEqual([]);
+});
