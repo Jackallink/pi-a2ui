@@ -232,5 +232,5 @@ test('W1 List and DataTable sort numeric cells, filter locally and distinguish e
  const table=page.locator('pi-a2ui-data-table');await expect(table.locator('tbody tr')).toHaveCount(2);await expect(table.locator('script')).toHaveCount(0);
  await table.getByRole('button',{name:'Size',exact:true}).click();await expect(table.locator('tbody tr').first()).toHaveText('b2');
  await table.getByRole('searchbox').fill('script');await expect(table.locator('tbody tr')).toHaveCount(1);expect(canvas.sent).toHaveLength(0);await expect(page.locator('input[type=text]')).toHaveValue('Keep draft');
- for(const [state,text]of [['ready','No data yet'],['loading','Loading data'],['error','Data unavailable']]){canvas.session.render('other',`root = DataTable(caption="Empty",columns=[{id:"a",label:"A"}],rows=[],state="${state}")`);await expect(page.getByText(text,{exact:true})).toBeVisible();}
+ for(const [state,text]of [['ready','No results'],['loading','Loading data'],['error','Data unavailable']]){canvas.session.render('other',`root = DataTable(caption="Empty",columns=[{id:"a",label:"A"}],rows=[],state="${state}")`);await expect(page.getByText(text,{exact:true})).toBeVisible();}
 });
