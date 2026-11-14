@@ -40,7 +40,7 @@ test('R05 feedback pattern distinguishes actual-known states from labelled place
 });
 
 test('R07 source-location pattern sends only an immutable evidence intent to Pi',async()=>{
- const surface=example('evidence-location');const {UiSession}=await import('../src/session.ts');const sent:string[]=[];const s=new UiSession(t=>sent.push(t));s.reset({version:1,epoch:'old',enabled:true,surfaces:[{surfaceId:'pattern',revision:1,message:surface}]});
+ const surface=example('evidence-location');assert.ok(surface.createSurface.components.some(c=>c.component==='Text'&&c.text==='Evidence ID: compiler-entry'));const {UiSession}=await import('../src/session.ts');const sent:string[]=[];const s=new UiSession(t=>sent.push(t));s.reset({version:1,epoch:'old',enabled:true,surfaces:[{surfaceId:'pattern',revision:1,message:surface}]});
  const snapshot=s.snapshot();const button=surface.createSurface.components.find(c=>c.component==='Button')!;const event=(button.action as any).event;
  assert.deepEqual(event.context,{evidenceId:'compiler-entry',file:'src/compiler.ts',line:1});
  const envelope={epoch:snapshot.epoch,revision:1,eventId:'inspect',message:{version:'1.0',action:{surfaceId:'pattern',sourceComponentId:button.id,name:event.name,timestamp:'2026-11-14T00:00:00Z',context:{...event.context,line:2}}}};
