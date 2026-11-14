@@ -1,6 +1,6 @@
 import {z} from 'zod';
 import {basicCatalog,type ComponentApi} from '@a2ui/web_core/v1_0';
-import {UiError,type Component,type SurfaceMessage} from './protocol.ts';
+import { componentError, UiError,type Component,type SurfaceMessage} from './protocol.ts';
 import {validateInput} from './inputs.ts';
 import {logStates} from './live.ts';
 const choice=basicCatalog.components.get('ChoicePicker')!.schema as z.ZodObject<any>;
@@ -19,6 +19,7 @@ function declaration(component:Component|undefined):Record<string,unknown>{retur
 export function validateInteractions(message:SurfaceMessage,initial=false):void{
  const components=message.createSurface.components;let validations=0,timelines=0;
  for(const c of components){
+    try {
   if(c.component==='SearchablePicker'){
    const {id:_,component:__,...props}=c;const parsed=searchablePickerApi.schema.parse(props);
    if(!bindingPath(parsed.value))throw new UiError(400,'SearchablePicker requires an initialized absolute value binding');Object.assign(c,parsed);
@@ -47,7 +48,9 @@ export function validateInteractions(message:SurfaceMessage,initial=false):void{
    for(const id of data.buttons){const button=components.find(n=>n.id===id);if(button?.component!=='Button')throw new UiError(400,'Validation guard must name a reachable Button');const values=Object.values(declaration(button));for(const path of paths)if(!values.some(value=>bindingPath(value)===path))throw new UiError(400,'Guarded Button must bind every ruled input path');}
    Object.assign(c,data);
   }
- }
+
+    } catch(error) { throw componentError(error,c, message.createSurface.surfaceId); }
+  }
 }
 export function validateSubmission(components:Component[],sourceId:string,context:Record<string,unknown>):ValidationIssue[]{
  const component=components.find(c=>c.component==='FormValidation'&&(c.buttons as string[]).includes(sourceId));if(!component)return[];

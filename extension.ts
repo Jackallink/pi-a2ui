@@ -4,7 +4,7 @@ import { Type } from "typebox";
 import { promptSnippet } from "./src/compiler.ts";
 import { CanvasController, restoreBranch } from "./src/controller.ts";
 import { UiSession } from "./src/session.ts";
-import { LIMITS, UiError } from "./src/protocol.ts";
+import { LIMITS, UiError, snapshotUsage } from "./src/protocol.ts";
 
 export default function a2ui(pi: ExtensionAPI) {
   const makeController = () => new CanvasController(new UiSession(text => {
@@ -46,7 +46,7 @@ export default function a2ui(pi: ExtensionAPI) {
     label:"A2UI canvas",
     description: "Display an interactive local form or card for the user alongside this Pi conversation. Returns immediately after publishing; never wait for a button. A later browser action arrives as a user message. Use only when an interactive UI helps. "
       + promptSnippet()
-      + "\nTOOL CONTRACT: source is raw complete Express DSL WITHOUT <a2ui> tags or markdown fences. Exactly one surface matching surfaceId, root required. Only the components/signatures declared above. No functions, SDK checks, templates, HTML or RPC; use declarative FormValidation rules for guarded forms. Only MarkdownView renders its declared limited markdown subset; source itself has no markdown fences. Initialize every input value binding with its declared type. Event context may contain literal JSON or direct input value bindings. DateTimeInput requires explicit enableDate/enableTime flags and static matching local bounds. A full render replaces that surface; preserve other surfaces by using different IDs. Example: $/form/name = \"\"\nroot = Card(Column([Text(\"Your plan\"), TextField(\"Name\", $/form/name), Button(Text(\"Submit\"), action=Event(\"submit\", {name: $/form/name}))]))",
+      + "\nTOOL CONTRACT: source is raw complete Express DSL WITHOUT <a2ui> tags or markdown fences. Exactly one surface matching surfaceId, root required. Only the components/signatures declared above. No functions, SDK checks, templates, HTML or RPC; use declarative FormValidation rules for guarded forms. Only MarkdownView renders its declared limited markdown subset; source itself has no markdown fences. Initialize every input value binding with its declared type. Event context may contain literal JSON or direct input value bindings. Authoring trees reserve checks, path, call, callFunction and @-prefixed keys except valid @path bindings; use file for a literal filename. This restriction does not rename the artifact tool path parameter. DateTimeInput requires explicit enableDate/enableTime flags and static matching local bounds. A full render replaces that surface; preserve other surfaces by using different IDs. Example: $/form/name = \"\"\nroot = Card(Column([Text(\"Your plan\"), TextField(\"Name\", $/form/name), Button(Text(\"Submit\"), action=Event(\"submit\", {name: $/form/name}))]))",
     promptSnippet:"SearchablePicker(label,options,value,variant?) supports local search over declared typed choices. FormValidation(buttons=...,rules=...) adds client/server guarded-submit rules. Render interactive forms/cards with a2ui_render; read the pi-a2ui skill for named-argument templates and offline DSL preflight.",
     parameters: Type.Object({
       surfaceId:Type.String({pattern:"^[A-Za-z0-9_-]{1,64}$",description:"Stable name of the surface to create or fully replace."}),
@@ -57,6 +57,7 @@ export default function a2ui(pi: ExtensionAPI) {
       const snapshot = await controller.render(params.surfaceId, params.source, signal);
       live.refresh();
       const surface = snapshot.surfaces.find(item => item.surfaceId === params.surfaceId)!;
+      const usage = {...snapshotUsage(snapshot),surface:{surfaceId:surface.surfaceId,components:surface.message.createSurface.components.length}};
       const server = controller.server;
       let note = "";
       if (server && !autoOpenAttempted && server.clients === 0) {
@@ -70,8 +71,8 @@ export default function a2ui(pi: ExtensionAPI) {
         });
       }
       return {
-        content:[{type:"text",text:`Rendered ${params.surfaceId} (revision ${surface.revision}).${note||" Use /a2ui to open the local canvas."} Continue your response; form actions arrive as later user messages.`}],
-        details:{a2uiSnapshot:snapshot},
+        content:[{type:"text",text:`Rendered ${params.surfaceId} (revision ${surface.revision}); components ${usage.components.used}/${usage.components.limit}, surfaces ${usage.surfaces.used}/${usage.surfaces.limit}; this surface ${usage.surface.components}.${note||" Use /a2ui to open the local canvas."} Continue your response; form actions arrive as later user messages.`}],
+        details:{a2uiSnapshot:snapshot,a2uiUsage:usage},
       };
     },
   });

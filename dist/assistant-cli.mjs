@@ -1,6 +1,3 @@
-// src/live.ts
-import { z } from "zod";
-
 // src/protocol.ts
 var LIMITS = {
   sourceBytes: 32 * 1024,
@@ -14,13 +11,39 @@ var LIMITS = {
   queuedBytes: 256 * 1024
 };
 var UiError = class extends Error {
-  constructor(status, message, options) {
-    super(message, options);
+  constructor(status, reason, options) {
+    const diagnostic = Object.fromEntries(Object.entries(options?.diagnostic ?? {}).filter(([, value]) => value !== void 0));
+    const context = [];
+    if (diagnostic.surfaceId !== void 0) context.push("surface " + JSON.stringify(diagnostic.surfaceId));
+    if (diagnostic.componentId !== void 0) context.push("component " + JSON.stringify(diagnostic.componentId) + (diagnostic.componentType ? " (" + diagnostic.componentType + ")" : ""));
+    else if (diagnostic.componentType) context.push("component type " + JSON.stringify(diagnostic.componentType));
+    if (diagnostic.propertyPath) context.push("property " + JSON.stringify(diagnostic.propertyPath));
+    if (diagnostic.workspaceRoot) context.push("relative to workspace " + JSON.stringify(diagnostic.workspaceRoot));
+    super(reason + (context.length ? " [" + context.join("; ") + "]" : ""), options);
     this.status = status;
+    this.reason = reason;
+    if (Object.keys(diagnostic).length) this.diagnostic = Object.freeze(diagnostic);
   }
+  diagnostic;
+  reason;
 };
+function locateUiError(error, context) {
+  const known = error instanceof UiError;
+  const diagnostic = { ...context, ...known ? error.diagnostic : {} };
+  if (known && Object.entries(diagnostic).every(([key, value]) => value === error.diagnostic?.[key])) return error;
+  return new UiError(known ? error.status : 400, known ? error.reason : "Invalid A2UI surface: " + (error instanceof Error ? error.message : "validation failed"), { cause: error, diagnostic });
+}
+function componentError(error, component, surfaceId) {
+  const data = component && typeof component === "object" ? component : {};
+  return locateUiError(error, {
+    surfaceId,
+    componentId: typeof data.id === "string" && data.id.length <= 512 ? data.id : void 0,
+    componentType: typeof data.component === "string" && data.component.length <= 128 ? data.component : void 0
+  });
+}
 
 // src/live.ts
+import { z } from "zod";
 var logStates = ["idle", "running", "completed", "error", "paused", "interrupted"];
 var logViewApi = { name: "LogView", schema: z.object({ stream: z.literal("tools").default("tools"), text: z.string().default(""), omitted: z.boolean().default(false), state: z.enum(logStates).default("idle") }).strict() };
 var seriesSchema = z.array(z.object({ name: z.string().min(1).max(128), points: z.array(z.object({ label: z.string().max(128), value: z.number().finite() }).strict()).max(200) }).strict()).max(4);
@@ -61,14 +84,18 @@ function validateSeries(input2) {
 function validateLive(message, initial = false) {
   let logs = 0;
   for (const component of message.createSurface.components) {
-    if (component.component === "Chart") validateSeries(component.series);
-    if (component.component === "LogView") {
-      if (++logs > 1) throw new UiError(400, "Only one LogView per surface");
-      const { id: _, component: __, ...props } = component;
-      const data = logViewApi.schema.parse(props);
-      if (initial && (data.text !== "" || data.omitted || data.state !== "idle")) throw new UiError(400, "LogView initial output is server-controlled");
-      if (trimLog(data.text).text !== data.text) throw new UiError(413, "Saved LogView exceeds its text/line budget");
-      Object.assign(component, data);
+    try {
+      if (component.component === "Chart") validateSeries(component.series);
+      if (component.component === "LogView") {
+        if (++logs > 1) throw new UiError(400, "Only one LogView per surface");
+        const { id: _, component: __, ...props } = component;
+        const data = logViewApi.schema.parse(props);
+        if (initial && (data.text !== "" || data.omitted || data.state !== "idle")) throw new UiError(400, "LogView initial output is server-controlled");
+        if (trimLog(data.text).text !== data.text) throw new UiError(413, "Saved LogView exceeds its text/line budget");
+        Object.assign(component, data);
+      }
+    } catch (error) {
+      throw componentError(error, component, message.createSurface.surfaceId);
     }
   }
 }
@@ -90,40 +117,44 @@ var APPROVED_ICON_NAMES = Object.freeze(["check", "close", "error", "info", "war
 function validateWorkbench(message, initial = false) {
   let progressCount = 0, modalCount = 0;
   for (const c of message.createSurface.components) {
-    if (["Image", "Video", "AudioPlayer"].includes(c.component)) {
-      artifactUrl.parse(c.url);
-      if (c.posterUrl !== void 0) artifactUrl.parse(c.posterUrl);
-      for (const prop of ["description", "fit", "variant"]) if (c[prop] !== void 0 && typeof c[prop] !== "string") throw new UiError(400, "Artifact media props must be static");
-    }
-    if (c.component === "Icon" && !APPROVED_ICON_NAMES.includes(c.name)) throw new UiError(400, "Icon name must be a static approved local icon");
-    if (c.component === "Modal") {
-      if (++modalCount > 1) throw new UiError(400, "Only one Modal per surface");
-      const trigger = message.createSurface.components.find((node) => node.id === c.trigger);
-      if (!trigger || !["Text", "Icon"].includes(trigger.component)) throw new UiError(400, "Modal trigger must be Text or Icon");
-    }
-    if (c.component === "StatusBadge") {
-      const { id: _, component: __, ...props } = c;
-      Object.assign(c, statusBadgeApi.schema.parse(props));
-    }
-    if (c.component === "TaskProgress") {
-      const { id: _, component: __, ...props } = c;
-      const p = taskProgressApi.schema.parse(props);
-      if (++progressCount > 1 || p.failed > p.settled || p.settled > p.started) throw new UiError(400, "Invalid native tool progress counters");
-      if (initial && (p.state !== "idle" || p.started !== 0 || p.settled !== 0 || p.failed !== 0 || p.omitted)) throw new UiError(400, "TaskProgress initial values are server-controlled");
-      Object.assign(c, p);
-    }
-    if (c.component === "CodeBlock" || c.component === "MarkdownView") {
-      const { id: _, component: __, ...props } = c;
-      const p = (c.component === "CodeBlock" ? codeBlockApi : markdownApi).schema.parse(props);
-      const value = "code" in p ? p.code : p.text;
-      if (new TextEncoder().encode(value).byteLength > 16384 || value.split(/\r\n|\r|\n/).length > 512) throw new UiError(413, "Text block exceeds16KiB/512 lines");
-      Object.assign(c, p);
-    }
-    if (c.component === "DataTable") {
-      const { id: _, component: __, ...props } = c;
-      const p = dataTableApi.schema.parse(props);
-      if (new Set(p.columns.map((x) => x.id)).size !== p.columns.length || new Set(p.rows.map((x) => x.id)).size !== p.rows.length || p.rows.some((x) => x.cells.length !== p.columns.length)) throw new UiError(400, "Table requires unique IDs and one cell per column");
-      Object.assign(c, p);
+    try {
+      if (["Image", "Video", "AudioPlayer"].includes(c.component)) {
+        artifactUrl.parse(c.url);
+        if (c.posterUrl !== void 0) artifactUrl.parse(c.posterUrl);
+        for (const prop of ["description", "fit", "variant"]) if (c[prop] !== void 0 && typeof c[prop] !== "string") throw new UiError(400, "Artifact media props must be static");
+      }
+      if (c.component === "Icon" && !APPROVED_ICON_NAMES.includes(c.name)) throw new UiError(400, "Icon name must be a static approved local icon");
+      if (c.component === "Modal") {
+        if (++modalCount > 1) throw new UiError(400, "Only one Modal per surface");
+        const trigger = message.createSurface.components.find((node) => node.id === c.trigger);
+        if (!trigger || !["Text", "Icon"].includes(trigger.component)) throw new UiError(400, "Modal trigger must be Text or Icon");
+      }
+      if (c.component === "StatusBadge") {
+        const { id: _, component: __, ...props } = c;
+        Object.assign(c, statusBadgeApi.schema.parse(props));
+      }
+      if (c.component === "TaskProgress") {
+        const { id: _, component: __, ...props } = c;
+        const p = taskProgressApi.schema.parse(props);
+        if (++progressCount > 1 || p.failed > p.settled || p.settled > p.started) throw new UiError(400, "Invalid native tool progress counters");
+        if (initial && (p.state !== "idle" || p.started !== 0 || p.settled !== 0 || p.failed !== 0 || p.omitted)) throw new UiError(400, "TaskProgress initial values are server-controlled");
+        Object.assign(c, p);
+      }
+      if (c.component === "CodeBlock" || c.component === "MarkdownView") {
+        const { id: _, component: __, ...props } = c;
+        const p = (c.component === "CodeBlock" ? codeBlockApi : markdownApi).schema.parse(props);
+        const value = "code" in p ? p.code : p.text;
+        if (new TextEncoder().encode(value).byteLength > 16384 || value.split(/\r\n|\r|\n/).length > 512) throw new UiError(413, "Text block exceeds16KiB/512 lines");
+        Object.assign(c, p);
+      }
+      if (c.component === "DataTable") {
+        const { id: _, component: __, ...props } = c;
+        const p = dataTableApi.schema.parse(props);
+        if (new Set(p.columns.map((x) => x.id)).size !== p.columns.length || new Set(p.rows.map((x) => x.id)).size !== p.rows.length || p.rows.some((x) => x.cells.length !== p.columns.length)) throw new UiError(400, "Table requires unique IDs and one cell per column");
+        Object.assign(c, p);
+      }
+    } catch (error) {
+      throw componentError(error, c, message.createSurface.surfaceId);
     }
   }
 }
@@ -236,7 +267,13 @@ function cliDiagnostic(error, code, catalog, examples = []) {
       result.hint = "Use component " + cause.compName + " for named parameters/project notes, or example " + (guidance.examples[0] ?? "user-form") + "; then check the corrected complete source.";
     } else result.hint = "That name is not a component in this helper catalog. Use catalog for actual names or patterns/examples for compositions; do not invent a constructor.";
   }
-  if (code === "COMPILE" && message === "Executable expressions and checks are unavailable") result.hint = "Executable checks/functions are unavailable. Use FormValidation for declared required/minLength/maxLength rules, then check the source.";
+  if (error instanceof UiError && error.diagnostic) {
+    result.diagnostic = error.diagnostic;
+    const key = error.diagnostic.forbiddenKey;
+    if (key === "path") result.hint = "The literal event-data key path is reserved in this authoring profile. Use a non-reserved key such as file, then check again; artifact tool path parameters are separate.";
+    else if (key === "checks") result.hint = "Executable checks are unavailable. Use FormValidation for declared required/minLength/maxLength rules, then check the source.";
+    else if (key !== void 0) result.hint = "Remove the reserved authoring key " + JSON.stringify(key) + ". Use declared Event data and valid absolute input bindings; functions/RPC remain unavailable.";
+  }
   return result;
 }
 var AUTHORING_RESTRICTIONS = Object.freeze(["Named arguments only in this authoring reference; no positional constructor signature is implied.", "No executable checks, functions or dynamic templates; interactive widgets cannot be inside Button.", "Helper-local metadata does not certify a different running Pi, live capacity or reported execution; actual check/tool validation remains authoritative."]);
@@ -250,13 +287,17 @@ var inputTypes = /* @__PURE__ */ new Set(["TextField", "CheckBox", "ChoicePicker
 function inputPaths(components) {
   const paths = /* @__PURE__ */ new Map();
   for (const component of components) {
-    if (!inputTypes.has(component.component)) continue;
-    const value = component.value;
-    if (!value || typeof value !== "object" || !("@path" in value)) continue;
-    const path = value["@path"];
-    const previous = paths.get(path);
-    if (previous && (previous.component !== "TextField" || component.component !== "TextField")) throw new UiError(400, "Typed input bindings must not share paths");
-    paths.set(path, component);
+    try {
+      if (!inputTypes.has(component.component)) continue;
+      const value = component.value;
+      if (!value || typeof value !== "object" || !("@path" in value)) continue;
+      const path = value["@path"];
+      const previous = paths.get(path);
+      if (previous && (previous.component !== "TextField" || component.component !== "TextField")) throw new UiError(400, "Typed input bindings must not share paths");
+      paths.set(path, component);
+    } catch (error) {
+      throw componentError(error, component);
+    }
   }
   return paths;
 }
@@ -282,51 +323,59 @@ function timePart(value) {
   return /^(?:[01]\d|2[0-3]):[0-5]\d(?::00)?$/.test(value);
 }
 function validateInput(component, value) {
-  switch (component.component) {
-    case "TextField":
-      if (typeof value !== "string") throw new UiError(400, "TextField context must be a string");
-      break;
-    case "CheckBox":
-      if (typeof value !== "boolean") throw new UiError(400, "CheckBox value must be a boolean");
-      break;
-    case "ChoicePicker":
-    case "SearchablePicker": {
-      const options = component.options;
-      const allowed = new Set(options.map((option) => option.value));
-      if (allowed.size !== options.length) throw new UiError(400, "Duplicate choice option IDs");
-      if (!Array.isArray(value) || value.some((item) => typeof item !== "string" || !allowed.has(item)) || new Set(value).size !== value.length || component.variant !== "multipleSelection" && value.length > 1) throw new UiError(400, "Invalid choice selection");
-      break;
-    }
-    case "Slider": {
-      const min = component.min ?? 0;
-      const max = component.max;
-      if (typeof min !== "number" || typeof max !== "number" || !Number.isFinite(min) || !Number.isFinite(max) || min >= max || !Number.isFinite(max - min)) throw new UiError(400, "Invalid static slider range");
-      if (typeof value !== "number" || !Number.isFinite(value) || value < min || value > max) throw new UiError(400, "Slider value outside the declared range");
-      if (component.steps !== void 0) {
-        const steps = component.steps;
-        if (typeof steps !== "number" || !Number.isSafeInteger(steps) || steps < 1) throw new UiError(400, "Invalid slider divisions");
-        const index = (value - min) / (max - min) * steps;
-        if (Math.abs(index - Math.round(index)) > 1e-8) throw new UiError(400, "Slider value is off the declared grid");
+  try {
+    switch (component.component) {
+      case "TextField":
+        if (typeof value !== "string") throw new UiError(400, "TextField context must be a string");
+        break;
+      case "CheckBox":
+        if (typeof value !== "boolean") throw new UiError(400, "CheckBox value must be a boolean");
+        break;
+      case "ChoicePicker":
+      case "SearchablePicker": {
+        const options = component.options;
+        const allowed = new Set(options.map((option) => option.value));
+        if (allowed.size !== options.length) throw new UiError(400, "Duplicate choice option IDs");
+        if (!Array.isArray(value) || value.some((item) => typeof item !== "string" || !allowed.has(item)) || new Set(value).size !== value.length || component.variant !== "multipleSelection" && value.length > 1) throw new UiError(400, "Invalid choice selection");
+        break;
       }
-      break;
+      case "Slider": {
+        const min = component.min ?? 0;
+        const max = component.max;
+        if (typeof min !== "number" || typeof max !== "number" || !Number.isFinite(min) || !Number.isFinite(max) || min >= max || !Number.isFinite(max - min)) throw new UiError(400, "Invalid static slider range");
+        if (typeof value !== "number" || !Number.isFinite(value) || value < min || value > max) throw new UiError(400, "Slider value outside the declared range");
+        if (component.steps !== void 0) {
+          const steps = component.steps;
+          if (typeof steps !== "number" || !Number.isSafeInteger(steps) || steps < 1) throw new UiError(400, "Invalid slider divisions");
+          const index = (value - min) / (max - min) * steps;
+          if (Math.abs(index - Math.round(index)) > 1e-8) throw new UiError(400, "Slider value is off the declared grid");
+        }
+        break;
+      }
+      case "DateTimeInput": {
+        if (typeof component.enableDate !== "boolean" || typeof component.enableTime !== "boolean" || !component.enableDate && !component.enableTime) throw new UiError(400, "Date/time flags must be explicit and enable at least one input");
+        const current = dateValue(component, value, true);
+        const min = component.min === void 0 ? void 0 : dateValue(component, component.min, false);
+        const max = component.max === void 0 ? void 0 : dateValue(component, component.max, false);
+        if (min !== void 0 && max !== void 0 && min > max || current !== "" && (min !== void 0 && current < min || max !== void 0 && current > max)) throw new UiError(400, "Date/time value outside the declared range");
+        break;
+      }
     }
-    case "DateTimeInput": {
-      if (typeof component.enableDate !== "boolean" || typeof component.enableTime !== "boolean" || !component.enableDate && !component.enableTime) throw new UiError(400, "Date/time flags must be explicit and enable at least one input");
-      const current = dateValue(component, value, true);
-      const min = component.min === void 0 ? void 0 : dateValue(component, component.min, false);
-      const max = component.max === void 0 ? void 0 : dateValue(component, component.max, false);
-      if (min !== void 0 && max !== void 0 && min > max || current !== "" && (min !== void 0 && current < min || max !== void 0 && current > max)) throw new UiError(400, "Date/time value outside the declared range");
-      break;
-    }
+  } catch (error) {
+    throw componentError(error, component);
   }
 }
 function validateInputs(components, resolve) {
   const entries = [...components];
   inputPaths(entries);
   for (const component of entries) {
-    if (!inputTypes.has(component.component)) continue;
-    const value = component.value;
-    validateInput(component, value && typeof value === "object" && "@path" in value ? resolve(value["@path"]) : value);
+    try {
+      if (!inputTypes.has(component.component)) continue;
+      const value = component.value;
+      validateInput(component, value && typeof value === "object" && "@path" in value ? resolve(value["@path"]) : value);
+    } catch (error) {
+      throw componentError(error, component);
+    }
   }
 }
 
@@ -348,50 +397,54 @@ function validateInteractions(message, initial = false) {
   const components = message.createSurface.components;
   let validations = 0, timelines = 0;
   for (const c of components) {
-    if (c.component === "SearchablePicker") {
-      const { id: _, component: __, ...props } = c;
-      const parsed = searchablePickerApi.schema.parse(props);
-      if (!bindingPath(parsed.value)) throw new UiError(400, "SearchablePicker requires an initialized absolute value binding");
-      Object.assign(c, parsed);
-    }
-    if (c.component === "ActivityTimeline") {
-      if (c.id.length > 512) throw new UiError(413, "Timeline component ID exceeds512 UTF-16 units");
-      if (++timelines > 1) throw new UiError(400, "Only one ActivityTimeline per surface");
-      const { id: _, component: __, ...props } = c;
-      const data = activityTimelineApi.schema.parse(props);
-      if (new Set(data.entries.map((row) => row.id)).size !== data.entries.length) throw new UiError(400, "Duplicate timeline row IDs");
-      if (initial && (data.entries.length || data.state !== "idle" || data.omitted)) throw new UiError(400, "ActivityTimeline initial values are server-controlled");
-      if (data.state !== "running" && data.entries.some((row) => row.state === "running") || data.state === "idle" && data.entries.length) throw new UiError(400, "Inconsistent timeline state");
-      Object.assign(c, data);
-      if (new TextEncoder().encode(JSON.stringify(c)).byteLength > 32768) throw new UiError(413, "Timeline complete component exceeds32KiB");
-    }
-    if (c.component === "FormValidation") {
-      if (++validations > 1) throw new UiError(400, "Only one FormValidation per surface");
-      const { id: _, component: __, ...props } = c;
-      const data = formValidationApi.schema.parse(props);
-      if (new Set(data.buttons).size !== data.buttons.length) throw new UiError(400, "FormValidation buttons must be distinct");
-      const fields = /* @__PURE__ */ new Set();
-      const paths = /* @__PURE__ */ new Set();
-      for (const rule of data.rules) {
-        const field = components.find((n) => n.id === rule.fieldId);
-        const path = bindingPath(field?.value);
-        if (!field || !["TextField", "CheckBox", "ChoicePicker", "SearchablePicker", "Slider", "DateTimeInput"].includes(field.component) || !path) throw new UiError(400, "Validation field must be a reachable bound input");
-        if (fields.has(rule.fieldId) || paths.has(path)) throw new UiError(400, "Validation rules must not share fields or paths");
-        fields.add(rule.fieldId);
-        paths.add(path);
-        if (rule.required !== true && !(rule.minLength !== void 0 && rule.minLength > 0) && rule.maxLength === void 0) throw new UiError(400, "Validation rule needs a meaningful constraint");
-        if (rule.minLength !== void 0 || rule.maxLength !== void 0) {
-          if (!["TextField", "ChoicePicker", "SearchablePicker"].includes(field.component)) throw new UiError(400, "Length rules require text or choices");
-          if ((rule.minLength ?? 0) > (rule.maxLength ?? 4096)) throw new UiError(400, "Reversed validation lengths");
+    try {
+      if (c.component === "SearchablePicker") {
+        const { id: _, component: __, ...props } = c;
+        const parsed = searchablePickerApi.schema.parse(props);
+        if (!bindingPath(parsed.value)) throw new UiError(400, "SearchablePicker requires an initialized absolute value binding");
+        Object.assign(c, parsed);
+      }
+      if (c.component === "ActivityTimeline") {
+        if (c.id.length > 512) throw new UiError(413, "Timeline component ID exceeds512 UTF-16 units");
+        if (++timelines > 1) throw new UiError(400, "Only one ActivityTimeline per surface");
+        const { id: _, component: __, ...props } = c;
+        const data = activityTimelineApi.schema.parse(props);
+        if (new Set(data.entries.map((row) => row.id)).size !== data.entries.length) throw new UiError(400, "Duplicate timeline row IDs");
+        if (initial && (data.entries.length || data.state !== "idle" || data.omitted)) throw new UiError(400, "ActivityTimeline initial values are server-controlled");
+        if (data.state !== "running" && data.entries.some((row) => row.state === "running") || data.state === "idle" && data.entries.length) throw new UiError(400, "Inconsistent timeline state");
+        Object.assign(c, data);
+        if (new TextEncoder().encode(JSON.stringify(c)).byteLength > 32768) throw new UiError(413, "Timeline complete component exceeds32KiB");
+      }
+      if (c.component === "FormValidation") {
+        if (++validations > 1) throw new UiError(400, "Only one FormValidation per surface");
+        const { id: _, component: __, ...props } = c;
+        const data = formValidationApi.schema.parse(props);
+        if (new Set(data.buttons).size !== data.buttons.length) throw new UiError(400, "FormValidation buttons must be distinct");
+        const fields = /* @__PURE__ */ new Set();
+        const paths = /* @__PURE__ */ new Set();
+        for (const rule of data.rules) {
+          const field = components.find((n) => n.id === rule.fieldId);
+          const path = bindingPath(field?.value);
+          if (!field || !["TextField", "CheckBox", "ChoicePicker", "SearchablePicker", "Slider", "DateTimeInput"].includes(field.component) || !path) throw new UiError(400, "Validation field must be a reachable bound input");
+          if (fields.has(rule.fieldId) || paths.has(path)) throw new UiError(400, "Validation rules must not share fields or paths");
+          fields.add(rule.fieldId);
+          paths.add(path);
+          if (rule.required !== true && !(rule.minLength !== void 0 && rule.minLength > 0) && rule.maxLength === void 0) throw new UiError(400, "Validation rule needs a meaningful constraint");
+          if (rule.minLength !== void 0 || rule.maxLength !== void 0) {
+            if (!["TextField", "ChoicePicker", "SearchablePicker"].includes(field.component)) throw new UiError(400, "Length rules require text or choices");
+            if ((rule.minLength ?? 0) > (rule.maxLength ?? 4096)) throw new UiError(400, "Reversed validation lengths");
+          }
         }
+        for (const id of data.buttons) {
+          const button = components.find((n) => n.id === id);
+          if (button?.component !== "Button") throw new UiError(400, "Validation guard must name a reachable Button");
+          const values = Object.values(declaration(button));
+          for (const path of paths) if (!values.some((value) => bindingPath(value) === path)) throw new UiError(400, "Guarded Button must bind every ruled input path");
+        }
+        Object.assign(c, data);
       }
-      for (const id of data.buttons) {
-        const button = components.find((n) => n.id === id);
-        if (button?.component !== "Button") throw new UiError(400, "Validation guard must name a reachable Button");
-        const values = Object.values(declaration(button));
-        for (const path of paths) if (!values.some((value) => bindingPath(value) === path)) throw new UiError(400, "Guarded Button must bind every ruled input path");
-      }
-      Object.assign(c, data);
+    } catch (error) {
+      throw componentError(error, c, message.createSurface.surfaceId);
     }
   }
 }
@@ -434,30 +487,43 @@ function diffLines(before, after) {
 function validateCoding(message) {
   let proposal, result;
   for (const component of message.createSurface.components) {
-    if (component.component === "CodeDiff") {
-      if (proposal !== void 0) throw new UiError(400, "Only one CodeDiff per surface");
-      proposal = component.proposalId;
-      diffLines(component.before, component.after);
-    }
-    if (component.component === "TestResults") {
-      if (result !== void 0) throw new UiError(400, "Only one TestResults per surface");
-      result = component.resultId;
-      const rows = component.cases;
-      const counts = { pass: 0, fail: 0, skip: 0, error: 0 };
-      const ids = /* @__PURE__ */ new Set();
-      for (const row of rows) {
-        if (ids.has(row.id)) throw new UiError(400, "Duplicate test case ID");
-        ids.add(row.id);
-        counts[row.status]++;
+    try {
+      if (component.component === "CodeDiff") {
+        if (proposal !== void 0) throw new UiError(400, "Only one CodeDiff per surface");
+        proposal = component.proposalId;
+        diffLines(component.before, component.after);
       }
-      const summary = component.summary;
-      if (Object.keys(counts).some((key) => counts[key] !== summary[key])) throw new UiError(400, "Test summary does not match case records");
+      if (component.component === "TestResults") {
+        if (result !== void 0) throw new UiError(400, "Only one TestResults per surface");
+        result = component.resultId;
+        const rows = component.cases;
+        const counts = { pass: 0, fail: 0, skip: 0, error: 0 };
+        const ids = /* @__PURE__ */ new Set();
+        for (const row of rows) {
+          if (ids.has(row.id)) throw new UiError(400, "Duplicate test case ID");
+          ids.add(row.id);
+          counts[row.status]++;
+        }
+        const summary = component.summary;
+        if (Object.keys(counts).some((key) => counts[key] !== summary[key])) throw new UiError(400, "Test summary does not match case records");
+      }
+    } catch (error) {
+      throw componentError(error, component, message.createSurface.surfaceId);
     }
   }
   for (const component of message.createSurface.components) {
-    if (component.component !== "Button") continue;
-    const context = component.action?.event?.context;
-    if ((proposal !== void 0 || result !== void 0) && (context?.proposalId !== proposal || context?.resultId !== result)) throw new UiError(400, "Coding actions must reference current literal record IDs");
+    try {
+      if (component.component !== "Button") continue;
+      const context = component.action?.event?.context;
+      if (proposal !== void 0 || result !== void 0) {
+        const mismatched = [];
+        if (context?.proposalId !== proposal) mismatched.push("proposalId");
+        if (context?.resultId !== result) mismatched.push("resultId");
+        if (mismatched.length) throw new UiError(400, "Coding actions must reference current literal record IDs (missing/mismatched: " + mismatched.join(", ") + ")", { diagnostic: { propertyPath: "/action/event/context" } });
+      }
+    } catch (error) {
+      throw componentError(error, component, message.createSurface.surfaceId);
+    }
   }
 }
 
@@ -511,30 +577,41 @@ function boundedJson(value, bytes = LIMITS.snapshotBytes) {
 function isBinding(value) {
   return record(value) && Object.keys(value).length === 1 && typeof value["@path"] === "string" && /^(?:\/(?:[^~/\x00-\x1f\x7f]|~[01])+)+$/.test(value["@path"]);
 }
-function noExpressions(value) {
+function authoringPropertyPath(path, key, owner) {
+  return "/" + [...owner ? path.slice(2) : path, key].map((part) => part.replaceAll("~", "~0").replaceAll("/", "~1")).join("/");
+}
+function noExpressions(value, path = [], owner) {
   if (!value || typeof value !== "object") return;
+  if (path.length === 2 && path[0] === "components") owner = value;
   for (const [key, child] of Object.entries(value)) {
-    if (FORBIDDEN_AUTHORING_KEYS.includes(key) || key.startsWith("@") && key !== "@path") throw new UiError(400, "Executable expressions and checks are unavailable");
-    if (key === "@path" && !isBinding(value)) throw new UiError(400, "Only absolute data bindings are supported");
-    noExpressions(child);
+    if (FORBIDDEN_AUTHORING_KEYS.includes(key) || key.startsWith("@") && key !== "@path") {
+      throw componentError(new UiError(400, "Forbidden map key " + JSON.stringify(key) + " (blocked: " + FORBIDDEN_AUTHORING_KEYS.join(", ") + ", @* except valid @path bindings)", { diagnostic: { forbiddenKey: key, propertyPath: authoringPropertyPath(path, key, owner) } }), owner);
+    }
+    if (key === "@path" && !isBinding(value)) throw componentError(new UiError(400, "Only absolute data bindings are supported", { diagnostic: { propertyPath: authoringPropertyPath(path, key, owner) } }), owner);
+    noExpressions(child, [...path, key], owner);
   }
 }
 function processor(surfaceId) {
   return new A2uiGenerator([new CatalogConfig(interactionsCatalog)], void 0, new ExpressFormatFactory({ surfaceId })).createProcessor({ "1.0": { supportedCatalogIds: [interactionsCatalog.id] } });
 }
 function validateSurface(input2) {
+  let surfaceId;
   try {
     let walk2 = function(id, depth, insideButton = false) {
-      if (depth > LIMITS.depth) throw new UiError(413, "Tree depth exceeded");
-      if (reachable.has(id)) throw new UiError(400, "Components must form a tree without repeated children");
-      const component = components.get(id);
-      if (!component) throw new UiError(400, "Missing root or child");
-      if (insideButton && ["LogView", "DataTable", "CodeBlock", "Details", "TaskProgress", "Modal", "Image", "ArtifactPreview", "Video", "AudioPlayer", "SearchablePicker", "FormValidation", "ActivityTimeline"].includes(component.component)) throw new UiError(400, component.component + " must not be nested in a Button");
-      reachable.add(id);
-      const children = component.component === "Modal" ? [component.trigger, component.content] : component.component === "Tabs" && Array.isArray(component.tabs) ? component.tabs.map((tab) => tab.child) : Array.isArray(component.children) ? component.children : typeof component.child === "string" ? [component.child] : [];
-      for (const child of children) {
-        if (typeof child !== "string") throw new UiError(400, "Expected static child ID");
-        walk2(child, depth + 1, insideButton || component.component === "Button");
+      try {
+        if (depth > LIMITS.depth) throw new UiError(413, "Tree depth exceeded");
+        if (reachable.has(id)) throw new UiError(400, "Components must form a tree without repeated children");
+        const component = components.get(id);
+        if (!component) throw new UiError(400, "Missing root or child");
+        if (insideButton && ["LogView", "DataTable", "CodeBlock", "Details", "TaskProgress", "Modal", "Image", "ArtifactPreview", "Video", "AudioPlayer", "SearchablePicker", "FormValidation", "ActivityTimeline"].includes(component.component)) throw componentError(new UiError(400, component.component + " must not be nested in a Button"), component, surfaceId);
+        reachable.add(id);
+        const children = component.component === "Modal" ? [component.trigger, component.content] : component.component === "Tabs" && Array.isArray(component.tabs) ? component.tabs.map((tab) => tab.child) : Array.isArray(component.children) ? component.children : typeof component.child === "string" ? [component.child] : [];
+        for (const child of children) {
+          if (typeof child !== "string") throw new UiError(400, "Expected static child ID");
+          walk2(child, depth + 1, insideButton || component.component === "Button");
+        }
+      } catch (error) {
+        throw componentError(error, components.get(id), surfaceId);
       }
     }, checkBindings2 = function(value) {
       if (isBinding(value)) {
@@ -551,11 +628,12 @@ function validateSurface(input2) {
     const create = input2.createSurface;
     exactKeys(create, ["surfaceId", "catalogId", "components"], ["dataModel"]);
     if (typeof create.surfaceId !== "string" || !/^[A-Za-z0-9_-]{1,64}$/.test(create.surfaceId) || !catalogs.some((catalog) => catalog.id === create.catalogId) || !Array.isArray(create.components) || !create.components.length) throw new UiError(400, "Invalid surface or empty root");
-    if (create.components.length > LIMITS.components) throw new UiError(413, "Component limit exceeded");
+    surfaceId = create.surfaceId;
+    if (create.components.length > LIMITS.components) throw new UiError(413, `Component limit exceeded: ${create.components.length}/${LIMITS.components}`);
     noExpressions(create);
     for (const component of create.components) {
-      if (!record(component) || typeof component.component !== "string" || !catalogs.find((catalog) => catalog.id === create.catalogId).components.has(component.component)) throw new UiError(400, "Unsupported component");
-      if ("children" in component && !Array.isArray(component.children)) throw new UiError(400, "Dynamic children are unavailable");
+      if (!record(component) || typeof component.component !== "string" || !catalogs.find((catalog) => catalog.id === create.catalogId).components.has(component.component)) throw componentError(new UiError(400, "Unsupported component"), component, surfaceId);
+      if ("children" in component && !Array.isArray(component.children)) throw componentError(new UiError(400, "Dynamic children are unavailable"), component, surfaceId);
     }
     const message = structuredClone(input2);
     const state = new RendererState(catalogs);
@@ -566,33 +644,47 @@ function validateSurface(input2) {
     walk2("root", 1);
     if (reachable.size !== components.size) throw new UiError(400, "Unreachable component");
     const dataModel = state.getSurface(create.surfaceId).dataModel;
-    checkBindings2(message.createSurface.components);
-    for (const component of components.values()) {
-      const properties = component.component === "Text" ? ["text"] : component.component === "TextField" ? ["label", "value", "placeholder"] : ["CheckBox", "ChoicePicker", "Slider", "DateTimeInput"].includes(component.component) ? ["label"] : [];
-      const strings = properties.map((property) => [property, component[property]]);
-      if (component.component === "Tabs") for (const tab of component.tabs) strings.push(["tabs.title", tab.title]);
-      if (component.component === "ChoicePicker") for (const option of component.options) strings.push(["options.label", option.label]);
-      if (record(component.accessibility)) {
-        strings.push(["accessibility.label", component.accessibility.label], ["accessibility.description", component.accessibility.description]);
+    for (const component of message.createSurface.components) {
+      try {
+        checkBindings2(component);
+      } catch (error) {
+        throw componentError(error, component, surfaceId);
       }
-      for (const [property, binding] of strings) {
-        if (isBinding(binding) && typeof dataModel.get(binding["@path"]) !== "string") throw new UiError(400, `Bound ${component.component}.${property} must resolve to an initialized string`);
+    }
+    for (const component of components.values()) {
+      try {
+        const properties = component.component === "Text" ? ["text"] : component.component === "TextField" ? ["label", "value", "placeholder"] : ["CheckBox", "ChoicePicker", "Slider", "DateTimeInput"].includes(component.component) ? ["label"] : [];
+        const strings = properties.map((property) => [property, component[property]]);
+        if (component.component === "Tabs") for (const tab of component.tabs) strings.push(["tabs.title", tab.title]);
+        if (component.component === "ChoicePicker") for (const option of component.options) strings.push(["options.label", option.label]);
+        if (record(component.accessibility)) {
+          strings.push(["accessibility.label", component.accessibility.label], ["accessibility.description", component.accessibility.description]);
+        }
+        for (const [property, binding] of strings) {
+          if (isBinding(binding) && typeof dataModel.get(binding["@path"]) !== "string") throw new UiError(400, `Bound ${component.component}.${property} must resolve to an initialized string`);
+        }
+      } catch (error) {
+        throw componentError(error, component, message.createSurface.surfaceId);
       }
     }
     validateInputs(components.values(), (path) => dataModel.get(path));
     const fields = inputPaths(components.values());
     for (const component of components.values()) {
-      if (component.component !== "Button") continue;
-      const action = component.action;
-      if (!record(action) || !record(action.event)) throw new UiError(400, "Only event actions are supported");
-      exactKeys(action, ["event"]);
-      exactKeys(action.event, ["name"], ["context"]);
-      const context = action.event.context ?? {};
-      if (!record(context)) throw new UiError(400, "Expected event context");
-      for (const value of Object.values(context)) {
-        if (isBinding(value)) {
-          if (!fields.has(value["@path"])) throw new UiError(400, "Context must bind to a reachable input");
-        } else if (JSON.stringify(value).includes('"@path"')) throw new UiError(400, "Nested context bindings are unavailable");
+      try {
+        if (component.component !== "Button") continue;
+        const action = component.action;
+        if (!record(action) || !record(action.event)) throw new UiError(400, "Only event actions are supported");
+        exactKeys(action, ["event"]);
+        exactKeys(action.event, ["name"], ["context"]);
+        const context = action.event.context ?? {};
+        if (!record(context)) throw new UiError(400, "Expected event context");
+        for (const value of Object.values(context)) {
+          if (isBinding(value)) {
+            if (!fields.has(value["@path"])) throw new UiError(400, "Context must bind to a reachable input");
+          } else if (JSON.stringify(value).includes('"@path"')) throw new UiError(400, "Nested context bindings are unavailable");
+        }
+      } catch (error) {
+        throw componentError(error, component, message.createSurface.surfaceId);
       }
     }
     validateCoding(message);
@@ -601,8 +693,7 @@ function validateSurface(input2) {
     validateInteractions(message);
     return message;
   } catch (error) {
-    if (error instanceof UiError) throw error;
-    throw new UiError(400, "Invalid A2UI surface: " + (error instanceof Error ? error.message : "validation failed"));
+    throw locateUiError(error, { surfaceId });
   }
 }
 function preflightSource(source) {
@@ -656,33 +747,37 @@ function preflightSource(source) {
 }
 function compile(surfaceId, source) {
   if (!/^[A-Za-z0-9_-]{1,64}$/.test(surfaceId)) throw new UiError(400, "Invalid surface ID");
-  if (typeof source !== "string" || !source.trim()) throw new UiError(400, "Source must be nonempty");
-  if (Buffer.byteLength(source, "utf8") > LIMITS.sourceBytes) throw new UiError(413, "Source byte limit exceeded");
-  preflightSource(source);
   try {
-    const state = new RendererState([interactionsCatalog]);
-    const parts = processor(surfaceId).parseResponse(source, { wrapped: false, state });
-    let creates = 0;
-    for (const part of parts) {
-      if (part.type !== "a2ui") throw new UiError(400, "Expected only UI content");
-      for (const message2 of part.a2ui) {
-        const wire = message2;
-        const command = wire.createSurface ?? wire.updateComponents ?? wire.updateDataModel;
-        if (!command || command.surfaceId !== surfaceId) throw new UiError(400, "Only the requested surface may be changed");
-        if (wire.createSurface) creates++;
+    if (typeof source !== "string" || !source.trim()) throw new UiError(400, "Source must be nonempty");
+    if (Buffer.byteLength(source, "utf8") > LIMITS.sourceBytes) throw new UiError(413, "Source byte limit exceeded");
+    preflightSource(source);
+    try {
+      const state = new RendererState([interactionsCatalog]);
+      const parts = processor(surfaceId).parseResponse(source, { wrapped: false, state });
+      let creates = 0;
+      for (const part of parts) {
+        if (part.type !== "a2ui") throw new UiError(400, "Expected only UI content");
+        for (const message2 of part.a2ui) {
+          const wire = message2;
+          const command = wire.createSurface ?? wire.updateComponents ?? wire.updateDataModel;
+          if (!command || command.surfaceId !== surfaceId) throw new UiError(400, "Only the requested surface may be changed");
+          if (wire.createSurface) creates++;
+        }
       }
+      if (creates !== 1 || state.surfaceIds.length !== 1 || state.surfaceIds[0] !== surfaceId) throw new UiError(400, "Exactly one complete surface is required");
+      state.checkTopology([surfaceId]);
+      const surface = state.getSurface(surfaceId);
+      const message = { version: "1.0", createSurface: { surfaceId, catalogId: interactionsCatalog.id, components: [...surface.componentsModel.getAll().values()].map((component) => component.componentTree), dataModel: surface.dataModel.get("/") } };
+      validateLive(message, true);
+      validateWorkbench(message, true);
+      validateInteractions(message, true);
+      return validateSurface(message);
+    } catch (error) {
+      if (error instanceof UiError) throw error;
+      throw new UiError(400, "Invalid Express source: " + compilerErrorMessage(error, interactionsCatalog), { cause: error });
     }
-    if (creates !== 1 || state.surfaceIds.length !== 1 || state.surfaceIds[0] !== surfaceId) throw new UiError(400, "Exactly one complete surface is required");
-    state.checkTopology([surfaceId]);
-    const surface = state.getSurface(surfaceId);
-    const message = { version: "1.0", createSurface: { surfaceId, catalogId: interactionsCatalog.id, components: [...surface.componentsModel.getAll().values()].map((component) => component.componentTree), dataModel: surface.dataModel.get("/") } };
-    validateLive(message, true);
-    validateWorkbench(message, true);
-    validateInteractions(message, true);
-    return validateSurface(message);
   } catch (error) {
-    if (error instanceof UiError) throw error;
-    throw new UiError(400, "Invalid Express source: " + compilerErrorMessage(error, interactionsCatalog), { cause: error });
+    throw locateUiError(error, { surfaceId });
   }
 }
 

@@ -1,9 +1,10 @@
-import { UiError, type Component } from './protocol.ts';
+import { componentError, UiError, type Component } from './protocol.ts';
 
 const inputTypes = new Set(['TextField','CheckBox','ChoicePicker','Slider','DateTimeInput','SearchablePicker']);
 export function inputPaths(components: Iterable<Component>): Map<string, Component> {
   const paths = new Map<string, Component>();
   for (const component of components) {
+    try {
     if (!inputTypes.has(component.component)) continue;
     const value = component.value;
     if (!value || typeof value !== 'object' || !('@path' in value)) continue;
@@ -11,6 +12,8 @@ export function inputPaths(components: Iterable<Component>): Map<string, Compone
     const previous = paths.get(path);
     if (previous && (previous.component !== 'TextField' || component.component !== 'TextField')) throw new UiError(400,'Typed input bindings must not share paths');
     paths.set(path,component);
+
+    } catch(error) { throw componentError(error,component); }
   }
   return paths;
 }
@@ -35,6 +38,7 @@ function dateValue(component: Component, value: unknown, empty: boolean): string
 }
 function timePart(value: string): boolean { return /^(?:[01]\d|2[0-3]):[0-5]\d(?::00)?$/.test(value); }
 export function validateInput(component: Component, value: unknown): void {
+  try {
   switch (component.component) {
     case 'TextField':
       if (typeof value !== 'string') throw new UiError(400,'TextField context must be a string');
@@ -72,13 +76,18 @@ export function validateInput(component: Component, value: unknown): void {
       break;
     }
   }
+
+  } catch(error) { throw componentError(error,component); }
 }
 export function validateInputs(components: Iterable<Component>, resolve: (path:string)=>unknown): void {
   const entries = [...components];
   inputPaths(entries);
   for (const component of entries) {
+    try {
     if (!inputTypes.has(component.component)) continue;
     const value = component.value;
     validateInput(component,value && typeof value==='object' && '@path' in value ? resolve((value as {'@path':string})['@path']) : value);
+
+    } catch(error) { throw componentError(error,component); }
   }
 }

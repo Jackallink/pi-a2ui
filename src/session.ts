@@ -7,7 +7,7 @@ import { codingIdentities } from './coding.ts';
 import { randomUUID, createHash } from 'node:crypto';
 import { ActionMessageSchema } from '@a2ui/web_core/v1_0';
 import { boundedJson, compile, exactKeys, isBinding, record, validateSurface } from './compiler.ts';
-import { LIMITS, UiError, type Operation, type Snapshot, type SurfaceRecord, type DataBatch } from './protocol.ts';
+import { LIMITS, UiError, snapshotUsage, type Operation, type Snapshot, type SurfaceRecord, type DataBatch } from './protocol.ts';
 
 function canonical(value: unknown): string {
   if (Array.isArray(value)) return '[' + value.map(canonical).join(',') + ']';
@@ -47,7 +47,11 @@ export class UiSession {
     return this.snapshot();
   }
   private checkCapacity(snapshot:Snapshot):void {
-    if (snapshot.surfaces.length>LIMITS.surfaces || snapshot.surfaces.reduce((count,surface)=>count+surface.message.createSurface.components.length,0)>LIMITS.components) throw new UiError(413,'Surface or total component limit exceeded');
+    const attempted=snapshotUsage(snapshot);
+    if (attempted.surfaces.used>attempted.surfaces.limit || attempted.components.used>attempted.components.limit) {
+      const current=snapshotUsage(this.state);
+      throw new UiError(413,`Surface or total component limit exceeded: attempted components ${attempted.components.used}/${attempted.components.limit}, surfaces ${attempted.surfaces.used}/${attempted.surfaces.limit}; current components ${current.components.used}/${current.components.limit}, surfaces ${current.surfaces.used}/${current.surfaces.limit}`);
+    }
     boundedJson(snapshot);
     const live=snapshot.surfaces.flatMap(s=>s.message.createSurface.components.filter(c=>c.component==='LogView'||c.component==='Chart'||c.component==='TaskProgress'||c.component==='ActivityTimeline'));
     const logs=live.filter(c=>c.component==='LogView');

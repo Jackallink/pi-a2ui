@@ -6,7 +6,7 @@ import { inputPaths, validateInputs } from './inputs.ts';
 import { validateLive } from './live.ts';
 import { validateCoding } from './coding.ts';
 import { interactionsCatalog, catalogs } from './catalog.ts';
-import { LIMITS, UiError, type Component, type SurfaceMessage } from './protocol.ts';
+import { LIMITS, componentError, locateUiError, UiError, type Component, type SurfaceMessage } from './protocol.ts';
 
 export function record(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === 'object' && !Array.isArray(value) && (Object.getPrototypeOf(value) === Object.prototype || Object.getPrototypeOf(value) === null);
@@ -38,12 +38,18 @@ export function boundedJson(value: unknown, bytes = LIMITS.snapshotBytes): void 
 export function isBinding(value: unknown): value is { '@path': string } {
   return record(value) && Object.keys(value).length === 1 && typeof value['@path'] === 'string' && /^(?:\/(?:[^~/\x00-\x1f\x7f]|~[01])+)+$/.test(value['@path']);
 }
-function noExpressions(value: unknown): void {
+function authoringPropertyPath(path:string[],key:string,owner:unknown):string {
+  return '/'+[...(owner?path.slice(2):path),key].map(part=>part.replaceAll('~','~0').replaceAll('/','~1')).join('/');
+}
+function noExpressions(value: unknown, path:string[]=[], owner?:unknown): void {
   if (!value || typeof value !== 'object') return;
+  if(path.length===2&&path[0]==='components')owner=value;
   for (const [key, child] of Object.entries(value)) {
-    if (FORBIDDEN_AUTHORING_KEYS.includes(key) || key.startsWith('@') && key !== '@path') throw new UiError(400, 'Executable expressions and checks are unavailable');
-    if (key === '@path' && !isBinding(value)) throw new UiError(400, 'Only absolute data bindings are supported');
-    noExpressions(child);
+    if (FORBIDDEN_AUTHORING_KEYS.includes(key) || key.startsWith('@') && key !== '@path') {
+      throw componentError(new UiError(400,'Forbidden map key '+JSON.stringify(key)+' (blocked: '+FORBIDDEN_AUTHORING_KEYS.join(', ')+', @* except valid @path bindings)',{diagnostic:{forbiddenKey:key,propertyPath:authoringPropertyPath(path,key,owner)}}),owner);
+    }
+    if (key === '@path' && !isBinding(value)) throw componentError(new UiError(400, 'Only absolute data bindings are supported',{diagnostic:{propertyPath:authoringPropertyPath(path,key,owner)}}),owner);
+    noExpressions(child,[...path,key],owner);
   }
 }
 function processor(surfaceId: string) {
@@ -62,6 +68,7 @@ export function promptSnippet(): string {
   return 'Pass a complete Express DSL source string to a2ui_render. Source is unwrapped (omit sentinel tags). Use only the requested surfaceId. This canvas forbids functions, SDK executable checks, dynamic templates, deletion, and extra surfaces. Text renders literal plain text. Declarative FormValidation required/minLength/maxLength rules are available for explicitly guarded submit Buttons.\n\n' + sdk;
 }
 export function validateSurface(input: unknown): SurfaceMessage {
+  let surfaceId:string|undefined;
   try {
     boundedJson(input);
     if (!record(input)) throw new UiError(400, 'Expected surface message');
@@ -70,11 +77,12 @@ export function validateSurface(input: unknown): SurfaceMessage {
     const create = input.createSurface;
     exactKeys(create, ['surfaceId', 'catalogId', 'components'], ['dataModel']);
     if (typeof create.surfaceId !== 'string' || !/^[A-Za-z0-9_-]{1,64}$/.test(create.surfaceId) || !catalogs.some(catalog=>catalog.id===create.catalogId) || !Array.isArray(create.components) || !create.components.length) throw new UiError(400, 'Invalid surface or empty root');
-    if (create.components.length > LIMITS.components) throw new UiError(413, 'Component limit exceeded');
+    surfaceId=create.surfaceId;
+    if (create.components.length > LIMITS.components) throw new UiError(413, `Component limit exceeded: ${create.components.length}/${LIMITS.components}`);
     noExpressions(create);
     for (const component of create.components) {
-      if (!record(component) || typeof component.component !== 'string' || !catalogs.find(catalog=>catalog.id===create.catalogId)!.components.has(component.component)) throw new UiError(400, 'Unsupported component');
-      if ('children' in component && !Array.isArray(component.children)) throw new UiError(400, 'Dynamic children are unavailable');
+      if (!record(component) || typeof component.component !== 'string' || !catalogs.find(catalog=>catalog.id===create.catalogId)!.components.has(component.component)) throw componentError(new UiError(400, 'Unsupported component'),component,surfaceId);
+      if ('children' in component && !Array.isArray(component.children)) throw componentError(new UiError(400, 'Dynamic children are unavailable'),component,surfaceId);
     }
     const message = structuredClone(input) as unknown as SurfaceMessage;
     const state = new RendererState(catalogs);
@@ -83,18 +91,21 @@ export function validateSurface(input: unknown): SurfaceMessage {
     const components = new Map(message.createSurface.components.map(component => [component.id, component]));
     const reachable = new Set<string>();
     function walk(id: string, depth: number, insideButton=false): void {
+      try {
       if (depth > LIMITS.depth) throw new UiError(413, 'Tree depth exceeded');
       if (reachable.has(id)) throw new UiError(400, 'Components must form a tree without repeated children');
       const component = components.get(id);
       if (!component) throw new UiError(400, 'Missing root or child');
-      if(insideButton && ['LogView','DataTable','CodeBlock','Details','TaskProgress','Modal','Image','ArtifactPreview','Video','AudioPlayer','SearchablePicker','FormValidation','ActivityTimeline'].includes(component.component)) throw new UiError(400,component.component+' must not be nested in a Button');
+      if(insideButton && ['LogView','DataTable','CodeBlock','Details','TaskProgress','Modal','Image','ArtifactPreview','Video','AudioPlayer','SearchablePicker','FormValidation','ActivityTimeline'].includes(component.component)) throw componentError(new UiError(400,component.component+' must not be nested in a Button'),component,surfaceId);
       reachable.add(id);
       const children = component.component==='Modal'?[component.trigger,component.content]:component.component === 'Tabs' && Array.isArray(component.tabs) ? component.tabs.map(tab => (tab as {child:string}).child) : Array.isArray(component.children) ? component.children : typeof component.child === 'string' ? [component.child] : [];
       for (const child of children) {
         if (typeof child !== 'string') throw new UiError(400, 'Expected static child ID');
         walk(child, depth + 1, insideButton || component.component==='Button');
       }
-    }
+
+      } catch(error) { throw componentError(error,components.get(id),surfaceId); }
+}
     walk('root', 1);
     if (reachable.size !== components.size) throw new UiError(400, 'Unreachable component');
     const dataModel = state.getSurface(create.surfaceId)!.dataModel;
@@ -106,8 +117,9 @@ export function validateSurface(input: unknown): SurfaceMessage {
         for (const child of Object.values(value)) checkBindings(child);
       }
     }
-    checkBindings(message.createSurface.components);
+    for(const component of message.createSurface.components){try{checkBindings(component);}catch(error){throw componentError(error,component,surfaceId);}}
     for (const component of components.values()) {
+    try {
       const properties = component.component === 'Text' ? ['text'] : component.component === 'TextField' ? ['label', 'value', 'placeholder'] : ['CheckBox','ChoicePicker','Slider','DateTimeInput'].includes(component.component) ? ['label'] : [];
       const strings: Array<[string, unknown]> = properties.map(property => [property, component[property]]);
       if (component.component==='Tabs') for (const tab of component.tabs as Array<{title:unknown}>) strings.push(['tabs.title',tab.title]);
@@ -118,10 +130,13 @@ export function validateSurface(input: unknown): SurfaceMessage {
       for (const [property, binding] of strings) {
         if (isBinding(binding) && typeof dataModel.get(binding['@path']) !== 'string') throw new UiError(400, `Bound ${component.component}.${property} must resolve to an initialized string`);
       }
-    }
+
+    } catch(error) { throw componentError(error,component, message.createSurface.surfaceId); }
+  }
     validateInputs(components.values(), path => dataModel.get(path));
     const fields = inputPaths(components.values());
     for (const component of components.values()) {
+    try {
       if (component.component !== 'Button') continue;
       const action = component.action;
       if (!record(action) || !record(action.event)) throw new UiError(400, 'Only event actions are supported');
@@ -134,15 +149,16 @@ export function validateSurface(input: unknown): SurfaceMessage {
           if (!fields.has(value['@path'])) throw new UiError(400, 'Context must bind to a reachable input');
         } else if (JSON.stringify(value).includes('"@path"')) throw new UiError(400, 'Nested context bindings are unavailable');
       }
-    }
+
+    } catch(error) { throw componentError(error,component, message.createSurface.surfaceId); }
+  }
     validateCoding(message);
     validateLive(message);
     validateWorkbench(message);
     validateInteractions(message);
     return message;
   } catch (error) {
-    if (error instanceof UiError) throw error;
-    throw new UiError(400, 'Invalid A2UI surface: ' + (error instanceof Error ? error.message : 'validation failed'));
+    throw locateUiError(error,{surfaceId});
   }
 }
 // Bound parser work before entering the SDK. Quoted content is one lexical unit.
@@ -186,6 +202,7 @@ function preflightSource(source: string): void {
 }
 export function compile(surfaceId: string, source: string): SurfaceMessage {
   if (!/^[A-Za-z0-9_-]{1,64}$/.test(surfaceId)) throw new UiError(400, 'Invalid surface ID');
+  try {
   if (typeof source !== 'string' || !source.trim()) throw new UiError(400, 'Source must be nonempty');
   if (Buffer.byteLength(source, 'utf8') > LIMITS.sourceBytes) throw new UiError(413, 'Source byte limit exceeded');
   preflightSource(source);
@@ -214,4 +231,5 @@ export function compile(surfaceId: string, source: string): SurfaceMessage {
     if (error instanceof UiError) throw error;
     throw new UiError(400, 'Invalid Express source: ' + compilerErrorMessage(error,interactionsCatalog),{cause:error});
   }
+  } catch(error) { throw locateUiError(error,{surfaceId}); }
 }

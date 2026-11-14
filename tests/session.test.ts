@@ -139,14 +139,14 @@ test('initialized untouched field empty string is accepted and safe escaped poin
  const message=compile('form',form);message.createSurface.dataModel={'a/b':{'~name':['ready']}};const path='/a~1b/~0name/0';message.createSurface.components.find(c=>c.component==='TextField')!.value={'@path':path};(message.createSurface.components.find(c=>c.component==='Button')!.action as any).event.context.name={'@path':path};assert.deepEqual(validateSurface(message),message);
 });
 test('SDK comments cannot offset source delimiter depth before parsing',()=>{
- for(const comment of ['// '+')'.repeat(1000)+'\n','# '+')'.repeat(1000)+'\n','/* '+')'.repeat(1000)+' */\n']){assert.throws(()=>compile('x',comment+'root = '+'Card('.repeat(65)+'Text("x")'+')'.repeat(65)),(error:unknown)=>error instanceof UiError&&error.status===413&&error.message==='Source delimiter nesting limit exceeded');}
+ for(const comment of ['// '+')'.repeat(1000)+'\n','# '+')'.repeat(1000)+'\n','/* '+')'.repeat(1000)+' */\n']){assert.throws(()=>compile('x',comment+'root = '+'Card('.repeat(65)+'Text("x")'+')'.repeat(65)),(error:unknown)=>error instanceof UiError&&error.status===413&&error.reason==='Source delimiter nesting limit exceeded');}
 });
 test('all supported SDK comments are ignored while quoted comment markers remain literal',()=>{
  for(const comment of ['// ((( ))) \n','# ((( ))) \n','/* ((( ))) */\n'])assert.equal(compile('x',comment+'root = Text("valid")').createSurface.components[0].text,'valid');
  for(const literal of ['"// # /* ) */"','r"// # /* ) */"','R"// # /* ) */"','"""// # /* ) */"""','r"""// # /* ) */"""','R"""// # /* ) */"""'])assert.equal(compile('x','root = Text('+literal+')').createSurface.components[0].text,'// # /* ) */');
 });
 test('unmatched source closing delimiters reject in preflight instead of reducing nesting credit',()=>{
- assert.throws(()=>compile('x',')\nroot = Text("x")'),(error:unknown)=>error instanceof UiError&&error.status===400&&error.message==='Unmatched source delimiter');
+ assert.throws(()=>compile('x',')\nroot = Text("x")'),(error:unknown)=>error instanceof UiError&&error.status===400&&error.reason==='Unmatched source delimiter');
 });
 test('accessibility DynamicString bindings require initialized strings',()=>{
  for(const property of ['label','description'])for(const value of [undefined,42,false,{},[]]){const message=compile('a11y','root = Text("visible")');message.createSurface.dataModel=value===undefined?{}:{accessible:value};message.createSurface.components[0].accessibility={[property]:{'@path':'/accessible'}};assert.throws(()=>validateSurface(message),UiError,property+' '+JSON.stringify(value));}
