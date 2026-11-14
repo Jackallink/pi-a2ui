@@ -63,6 +63,8 @@ function setConnection(message: string, state: "live" | "waiting" | "closed") {
 function updateAvailability() {
   const sending = pending !== undefined;
   surfaces.inert = !enabled || sending;
+  // Native modal dialogs escape ancestor inertness; apply availability explicitly.
+  for(const dialog of surfaces.querySelectorAll<HTMLDialogElement>('dialog'))dialog.inert=!enabled||sending;
   surfaces.setAttribute("aria-busy", String(sending));
   status.textContent = !enabled ? "Canvas paused" : sending ? "Sending…" : "Ready for your input";
 }
