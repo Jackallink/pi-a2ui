@@ -255,7 +255,7 @@ test('A02 preflight evidence must obtain the template and finish the exact check
     const example = [start('example', `node "${helper}" example validated-form`), end('example', 'template source')];
     const check = [start('check', `node "${helper}" check --surface-id skill-acceptance form.express`), end('check', JSON.stringify(args))];
     const render = { type: 'tool_execution_start', toolName: 'a2ui_render', args };
-    assert.equal(verifyPreflight([...example, ...check, render], helper, render), true);
+    assert.equal(verifyPreflight([...example, ...check, render], helper, render).preflightMatchKind, 'exact');
     assert.equal(verifyPreflight([...check, render], helper, render), false, 'missing actual template fetch is not a skill fast-path proof');
     assert.equal(verifyPreflight([...example, render, ...check], helper, render), false, 'post-render check is not preflight');
     assert.equal(verifyPreflight([example[0], end('example', 'failed', true), ...check, render], helper, render), false);
@@ -379,4 +379,13 @@ test('A02 review browser preflight also bounds a never-settling close before mod
  const {preflightBrowser}=await import(new URL('../scripts/skill-acceptance.mjs',import.meta.url).href);
  const browserType={executablePath:()=>process.execPath,launch:async()=>({close:()=>new Promise(()=>{})})};
  const observed=await Promise.race([preflightBrowser({browserType,timeoutMs:50}).then(()=> 'unexpected success',()=> 'rejected'),new Promise(res=>setTimeout(()=>res('still pending'),500))]);assert.equal(observed,'rejected','preflight close must reach a failed receipt instead of hanging before Pi/cleanup');
+});
+
+test('A02 LF policy accepts only exact or a single terminal LF while preserving both raw source identities',async()=>{
+ const {verifyPreflight}=await import(new URL('../scripts/skill-acceptance.mjs',import.meta.url).href);const helper='/admitted/a2ui.mjs',base='root = Text("ok")';
+ const probe=(checked:string,rendered:string)=>{const start=(id:string,command:string)=>({type:'tool_execution_start',toolName:'bash',toolCallId:id,args:{command}});const end=(id:string,text:string)=>({type:'tool_execution_end',toolCallId:id,isError:false,result:{content:[{type:'text',text}]}});const render={type:'tool_execution_start',toolName:'a2ui_render',args:{surfaceId:'form',source:rendered}};return verifyPreflight([start('example',`node ${helper} example validated-form`),end('example','raw template'),start('check',`node ${helper} check --surface-id form -`),end('check',JSON.stringify({surfaceId:'form',source:checked})),render],helper,render);};
+ for(const [checked,rendered] of [[base+'\n',base],[base,base+'\n']]){const result=probe(checked,rendered);assert.ok(result,'only one final LF should be eligible under the revised policy');assert.equal(result.preflightMatchKind,'single-terminal-lf');assert.equal(result.exactPreflightObserved,false);const {createHash}=await import('node:crypto');assert.equal(result.preflightSourceSha256,createHash('sha256').update(checked).digest('hex'));assert.equal(result.renderSourceSha256,createHash('sha256').update(rendered).digest('hex'));}
+ const exact=probe(base,base);assert.equal(exact.preflightMatchKind,'exact');assert.equal(exact.exactPreflightObserved,true);assert.equal(exact.preflightSourceSha256,exact.renderSourceSha256);
+ for(const [checked,rendered]of [[base+'\r\n',base],[base+'\n\n',base],[base+'\n\n',base+'\n'],[base+' ',base],[base+'\t',base],[base.replace('Text','Text '),base],[base+'\r\n',base+'\r']])assert.equal(probe(checked,rendered),false,'other byte differences are not allowed');
+ const {compile}=await import('../src/compiler.ts');assert.deepEqual(compile('form',base+'\n'),compile('form',base));
 });

@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { mkdir, writeFile, readFile, access } from 'node:fs/promises';
 import { constants } from 'node:fs';
 import { join, resolve } from 'node:path';
@@ -67,8 +68,16 @@ export function verifyPreflight(events, helper, renderStart) {
         for (const line of messageText(end.result).split('\n')) {
             try {
                 const value = JSON.parse(line);
-                if (value?.surfaceId === renderStart.args.surfaceId && value.source === renderStart.args.source && Object.keys(value).length === 2)
-                    return true;
+                if (value?.surfaceId !== renderStart.args.surfaceId || Object.keys(value).length !== 2 || typeof value.source !== 'string' || typeof renderStart.args.source !== 'string') continue;
+                const checked = value.source, rendered = renderStart.args.source;
+                let kind;
+                if (checked === rendered) kind = 'exact';
+                else {
+                    const shorter = checked.length < rendered.length ? checked : rendered;
+                    const longer = checked.length < rendered.length ? rendered : checked;
+                    if (!/[\r\n]$/.test(shorter) && longer === shorter + '\n') kind = 'single-terminal-lf';
+                }
+                if (kind) return { preflightMatchKind: kind, exactPreflightObserved: kind === 'exact', preflightSourceSha256: createHash('sha256').update(checked).digest('hex'), renderSourceSha256: createHash('sha256').update(rendered).digest('hex') };
             }
             catch { /* Helper output may also include harmless shell text. */ }
         }
@@ -141,9 +150,9 @@ export async function runAcceptance({ options, identity, run, report }) {
                 ({ textField, checkBox, submit } = guardedForm(components));
                 const starts = phase.filter(event => event.type === 'tool_execution_start');
                 const renderStart = starts.filter(event => event.toolName === 'a2ui_render').at(-1);
-                if (!renderStart || !verifyPreflight(phase, identity.helper, renderStart))
-                    throw new AcceptanceError('skill-render', 'No successful exact helper preflight precedes the rendered source');
-                Object.assign(report.data.observed, { exactPreflightObserved: true, templateReadObserved: true, readCalls: starts.filter(e => e.toolName === 'read').length, bashCalls: starts.filter(e => e.toolName === 'bash').length });
+                const preflight = renderStart && verifyPreflight(phase, identity.helper, renderStart);
+                if (!preflight) throw new AcceptanceError('skill-render', 'No successful matching helper preflight precedes the rendered source');
+                Object.assign(report.data.observed, { preflightObserved: true, ...preflight, templateReadObserved: true, readCalls: starts.filter(e => e.toolName === 'read').length, bashCalls: starts.filter(e => e.toolName === 'bash').length });
             });
             const { chromium, expect } = await import('@playwright/test');
             browser = await chromium.launch({ headless: true, executablePath: browserPath });
