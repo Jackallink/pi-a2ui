@@ -37,3 +37,10 @@ test('A01 recovery does not infer a checks-policy failure from an arbitrary unkn
  const r=cli(['check','--surface-id','form','-'],'root=checksWidget()');assert.equal(r.status,1);const e=JSON.parse(r.stderr);assert.equal(e.code,'COMPILE');assert.doesNotMatch(e.hint,/FormValidation/);assert.match(e.hint,/catalog|example|component/);
  const syntax=cli(['check','--surface-id','form','-'],'root=Column(children=[Text(text="A")\nButton(child=Text(text="B"),action=Event("next"))])');assert.equal(syntax.status,1);assert.match(JSON.parse(syntax.stderr).error,/line 2|Line 2/);
 });
+
+test('A01 DateTimeInput metadata marks both project-required flags before a model attempts the omitted-flag form',()=>{
+ const r=cli(['component','DateTimeInput']);assert.equal(r.status,0,r.stderr);const c=JSON.parse(r.stdout).component;
+ for(const name of ['enableDate','enableTime'])assert.equal(c.parameters.find((p:any)=>p.name===name).required,true,name+' is required by the active compiler');
+ for(const source of ['root=DateTimeInput(value="")','root=DateTimeInput(value="",enableDate=true)'])assert.throws(()=>compile('date',source),/flags must be explicit/);
+ assert.doesNotThrow(()=>compile('date','root=DateTimeInput(value="",enableDate=true,enableTime=false)'));
+});

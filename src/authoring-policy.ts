@@ -9,7 +9,7 @@ export function authoringParameters(api:ComponentApi):{name:string;required:bool
  for(let depth=0;depth<8;depth++){
   if(schema instanceof z.ZodObject)return Object.entries(schema.shape as Record<string,z.ZodTypeAny>)
    .filter(([name])=>!FORBIDDEN_AUTHORING_KEYS.includes(name)&&(!nativeNames.has(api.name)||name==='stream'))
-   .map(([name,property])=>({name,required:(inputNames.has(api.name)&&name==='value')||!property.isOptional()}));
+   .map(([name,property])=>({name,required:(inputNames.has(api.name)&&name==='value')||(api.name==='DateTimeInput'&&['enableDate','enableTime'].includes(name))||!property.isOptional()}));
   if(schema instanceof z.ZodEffects)schema=schema.innerType();
   else if(schema instanceof z.ZodOptional||schema instanceof z.ZodNullable)schema=schema.unwrap();
   else if(schema instanceof z.ZodDefault)schema=schema.removeDefault();

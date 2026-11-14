@@ -137,7 +137,7 @@ var nativeNames = /* @__PURE__ */ new Set(["LogView", "TaskProgress", "ActivityT
 function authoringParameters(api) {
   let schema = api.schema;
   for (let depth = 0; depth < 8; depth++) {
-    if (schema instanceof z3.ZodObject) return Object.entries(schema.shape).filter(([name]) => !FORBIDDEN_AUTHORING_KEYS.includes(name) && (!nativeNames.has(api.name) || name === "stream")).map(([name, property]) => ({ name, required: inputNames.has(api.name) && name === "value" || !property.isOptional() }));
+    if (schema instanceof z3.ZodObject) return Object.entries(schema.shape).filter(([name]) => !FORBIDDEN_AUTHORING_KEYS.includes(name) && (!nativeNames.has(api.name) || name === "stream")).map(([name, property]) => ({ name, required: inputNames.has(api.name) && name === "value" || api.name === "DateTimeInput" && ["enableDate", "enableTime"].includes(name) || !property.isOptional() }));
     if (schema instanceof z3.ZodEffects) schema = schema.innerType();
     else if (schema instanceof z3.ZodOptional || schema instanceof z3.ZodNullable) schema = schema.unwrap();
     else if (schema instanceof z3.ZodDefault) schema = schema.removeDefault();
