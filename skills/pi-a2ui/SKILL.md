@@ -21,6 +21,8 @@ node "<absolute-skill-path>/scripts/a2ui.mjs" example validated-form > "$source_
 node "<absolute-skill-path>/scripts/a2ui.mjs" check --surface-id form "$source_file"
 ```
 
+Adapt **submitted keys as well as labels and validation**. A display label, its `value` binding path and an `Event.context` key are independent: the template's Accept checkbox uses `$/ok`, but a request for a submitted key `accept` needs `accept:$/ok`, not `ok:$/ok`. Before rendering, compare the exact requested context keys/types with the declared Event. `check` verifies structure; it cannot know the user's requested names. See [adapting a template](references/adapting-templates.md) for an executable example.
+
 Use the new file path shown above to adapt the template before the final check; stdin is also supported. Do not redirect over existing files. Pass the successful check output **unchanged as the arguments** to `a2ui_render`. Only that tool displays UI. A known template does not need a preceding `patterns`/`pattern`/`catalog` tour or a second `read` of the example already returned by the helper. Model transport errors and missing tools/skills need loading/configuration diagnosis, not another DSL rewrite.
 
 If a parameter is uncertain, ask only for that component:
