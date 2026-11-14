@@ -96,6 +96,10 @@ Live acceptance defaults to Agent Plan `volcengine-ark/glm-5.3-flash` and checks
 
 See [CHANGELOG.md](CHANGELOG.md), [ROADMAP.md](ROADMAP.md), the [Pi package distribution contract](docs/specs/005-v0.1.1-distribution.md), and the [version-alignment contract](docs/specs/006-v0.1.3-version-alignment.md). Historical design/test evidence preserves each original feature slice and artifact identity.
 
+## Planned v0.1.4
+
+The [v0.1.4 scope](docs/specs/007-v0.1.4-usability.md) retains all seven component/interaction groups previously discussed, including image/artifact and audio/video support. It is a draft plan, not shipped functionality or permission to skip design/TDD/security gates. Additional useful candidates are listed separately in the [component guide](docs/components-and-extensions.md). Current install/version/runtime remains v0.1.3 on Node24.x.
+
 ## Remove
 
 ```sh
