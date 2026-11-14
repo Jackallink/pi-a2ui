@@ -1,0 +1,2 @@
+// Existing primitives: key/value summary, comparison, ordered steps and next choices.
+root = Column([Card(Column([Text("Workspace summary"),Row([Text("Branch"),Text("main")]),Row([Text("Files"),Text("3 changed")])])),Row([Card(Text("Option A: smaller change")),Card(Text("Option B: broader cleanup"))]),List([Text("1. Inspect"),Text("2. Test"),Text("3. Review")]),Row([Button(Text("Continue"),action=Event("continue",{choice:"continue"})),Button(Text("Modify"),action=Event("modify",{choice:"modify"})),Button(Text("Abandon"),action=Event("abandon",{choice:"abandon"}))])])

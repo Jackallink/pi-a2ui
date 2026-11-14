@@ -1,10 +1,10 @@
 # v0.1.4 planning walkthrough
 
-State: draft planning, not implementation admission. Canonical scope: ../../specs/007-v0.1.4-usability.md.
+State: walkthrough-approved and tdd-approved for W1–W7; independent design GO b4d48d1 (Check024). Canonical scope: ../../specs/007-v0.1.4-usability.md.
 
 ## Round1 — User stories and AC
 
-W1–W7 correspond to seven original recommendations. C01–C14 in007 carry user problem, observable result and exact test intent. No low-priority original item is dropped; Video and AudioPlayer are required planning scope. R01–R08 are separate additional candidates.
+W1–W7 correspond to seven original recommendations. C01–C14 in007 carry user problem, observable result and exact test intent. No low-priority original item is dropped; Video and AudioPlayer are required planning scope. R01–R08 belong to v0.1.5 (spec008, issues19–26).
 
 ## Round2 — Technical trace
 
@@ -12,7 +12,7 @@ W1–W7 correspond to seven original recommendations. C01–C14 in007 carry user
 
 ## Round3 — Integration/errors and pre-code decisions
 
-Text/layout/state groups need bounded/schema/keyboard/live-draft and lifecycle tests. W6/W7 have explicitD1–D4 gate decisions on authorized source, file changes, resource/cache/range/encoding/CSP and revoke/restore. They cannot start resource implementation until decisions and tests are independently admitted. Global source/snapshot/client limits stay binding.
+Text/layout/state groups need bounded/schema/keyboard/live-draft and lifecycle tests. W6/W7 have explicitD1–D4 gate decisions on authorized source, file changes, resource/cache/range/encoding/CSP and revoke/restore. D1–D4 and test intent were independently admitted at b4d48d1; implementation evidence remains required. Global source/snapshot/client limits stay binding.
 
 ## AC→test map and boundaries
 

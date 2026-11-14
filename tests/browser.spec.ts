@@ -225,3 +225,12 @@ test('log view follows the bottom until the user scrolls upward',async({page,can
  canvas.session.render('form',liveSource);await page.goto(canvas.origin);const pre=page.locator('pi-a2ui-log-view pre');const text=Array.from({length:200},(_,i)=>'line '+i).join('\n');canvas.session.updateLog(text,'running',false);await expect(pre).toHaveText(text);
  await expect.poll(()=>pre.evaluate(e=>e.scrollTop+e.clientHeight>=e.scrollHeight-2)).toBe(true);await pre.evaluate(e=>{e.scrollTop=0;});canvas.session.updateLog(text+'\nnew line','running',false);await expect(pre).toContainText('new line');expect(await pre.evaluate(e=>e.scrollTop)).toBe(0);
 });
+
+test('W1 List and DataTable sort numeric cells, filter locally and distinguish empty/loading/error',async({page,canvas})=>{
+ const source='root = List([DataTable(caption="Files",columns=[{id:"name",label:"Name"},{id:"size",label:"Size"}],rows=[{id:"a",cells:["<script>x</script>",10]},{id:"b",cells:["b",2]}])])';
+ canvas.session.render('other',source);await open(page,canvas);await page.locator('input[type=text]').fill('Keep draft');
+ const table=page.locator('pi-a2ui-data-table');await expect(table.locator('tbody tr')).toHaveCount(2);await expect(table.locator('script')).toHaveCount(0);
+ await table.getByRole('button',{name:'Size',exact:true}).click();await expect(table.locator('tbody tr').first()).toHaveText('b2');
+ await table.getByRole('searchbox').fill('script');await expect(table.locator('tbody tr')).toHaveCount(1);expect(canvas.sent).toHaveLength(0);await expect(page.locator('input[type=text]')).toHaveValue('Keep draft');
+ for(const [state,text]of [['ready','No data yet'],['loading','Loading data'],['error','Data unavailable']]){canvas.session.render('other',`root = DataTable(caption="Empty",columns=[{id:"a",label:"A"}],rows=[],state="${state}")`);await expect(page.getByText(text,{exact:true})).toBeVisible();}
+});
