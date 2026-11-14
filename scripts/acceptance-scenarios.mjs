@@ -12,3 +12,5 @@ export async function fillForms(page) {
   await page.getByRole('checkbox',{name:'Beta',exact:true}).check();
   await page.locator('input[type=date]').fill('2026-12-25');
 }
+export function codingSource(report){return `$/form/name = ""
+root = Column([TextField("Acceptance phrase", $/form/name), CodeDiff(proposalId="proposal-live",filename="arithmetic.test.mjs",baseRevision="empty-file",before="",after=${JSON.stringify(report.source)}), TestResults(resultId="result-live",command="node --test --test-reporter=tap arithmetic.test.mjs",evidence="Acceptance runner observed exit0 and TAP pass1; supplied by Pi",cases=[{id:"arithmetic",name:"Arithmetic",status:"pass",details:"Observed assertion: 2 + 2 equals 4"}],summary={pass:1,fail:0,skip:0,error:0}), Button(Text("Submit acceptance"),action=Event("submit",{name:$/form/name,proposalId:"proposal-live",resultId:"result-live"}))])`;}

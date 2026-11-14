@@ -1,5 +1,6 @@
 import { inputPaths, validateInput } from './inputs.ts';
-import { randomUUID } from 'node:crypto';
+import { codingIdentities } from './coding.ts';
+import { randomUUID, createHash } from 'node:crypto';
 import { ActionMessageSchema } from '@a2ui/web_core/v1_0';
 import { boundedJson, compile, exactKeys, isBinding, record, validateSurface } from './compiler.ts';
 import { LIMITS, UiError, type Operation, type Snapshot, type SurfaceRecord } from './protocol.ts';
@@ -14,6 +15,7 @@ export class UiSession {
   private generation = 0;
   private stopped = false;
   private listeners = new Set<(snapshot:Snapshot)=>void>();
+  private identities = new Map<string,string>();
   private accepted = new Map<string, string>();
   constructor(private readonly dispatch:(text:string)=>void) {}
   get enabled():boolean { return this.state.enabled; }
@@ -39,6 +41,16 @@ export class UiSession {
     if (snapshot.surfaces.length>LIMITS.surfaces || snapshot.surfaces.reduce((count,surface)=>count+surface.message.createSurface.components.length,0)>LIMITS.components) throw new UiError(413,'Surface or total component limit exceeded');
     boundedJson(snapshot);
   }
+  private admitIdentities(messages:SurfaceRecord[], base=this.identities):Map<string,string> {
+    const next=new Map(base);
+    for(const surface of messages)for(const [id,data]of codingIdentities(surface.message)){
+      const hash=createHash('sha256').update(canonical(data)).digest('hex');
+      if(next.has(id)&&next.get(id)!==hash)throw new UiError(409,'Coding record ID is immutable within this epoch');
+      next.set(id,hash);
+      if(next.size>256)throw new UiError(413,'Coding identity capacity reached; reset the UI session');
+    }
+    return next;
+  }
   render(surfaceId:string,source:string,options:{operation?:Operation;signal?:AbortSignal}={}):Snapshot {
     const operation=options.operation??this.beginOperation();
     this.available(operation,options.signal);
@@ -50,7 +62,9 @@ export class UiSession {
     const surfaces=previous?this.state.surfaces.map(surface=>surface.surfaceId===surfaceId?replacement:surface):[...this.state.surfaces,replacement];
     const next={...this.state,surfaces};
     this.checkCapacity(next);
+    const identities=this.admitIdentities([replacement]);
     this.available(operation,options.signal);
+    this.identities=identities;
     return this.publish(next);
   }
   reset(saved?:unknown):void {
@@ -72,6 +86,8 @@ export class UiSession {
     }
     const next:Snapshot={version:1,epoch:randomUUID(),enabled:this.enabled,surfaces};
     this.checkCapacity(next);
+    const identities=this.admitIdentities(surfaces,new Map());
+    this.identities=identities;
     this.generation++;
     this.accepted.clear();
     this.publish(next);

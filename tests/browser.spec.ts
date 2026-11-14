@@ -169,3 +169,22 @@ root = Column([DateTimeInput($/when,enableDate=true,enableTime=true,min="2026-11
  await expect(page.locator('#notice')).toHaveText('Sent to Pi');
  expect(JSON.parse(canvas.sent[0].split('\n')[1]).context.when).toBe('2026-11-14T13:00:00');
 });
+
+test('coding components escape source and display exact reported outcomes before ID-bound follow-up',async({page,canvas})=>{
+ const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
+ canvas.session.render('form',`root = Column([CodeDiff(proposalId="p-browser",filename="new.ts",baseRevision="base",before="",after="<script>globalThis.bad = true</script>\\n新代码"),TestResults(resultId="r-browser",command="node --test",evidence="tool output run-browser",cases=[{id:"a",name:"Pass",status:"pass"},{id:"b",name:"Fail",status:"fail",details:"<img src=x>"},{id:"c",name:"Skip",status:"skip"},{id:"d",name:"Error",status:"error"}],summary={pass:1,fail:1,skip:1,error:1}),Button(Text("Review choice"),action=Event("review",{proposalId:"p-browser",resultId:"r-browser"}))])`);
+ await page.goto(canvas.origin);
+ await expect(page.getByText('new.ts',{exact:true})).toBeVisible();
+ await expect(page.getByText('<script>globalThis.bad = true</script>',{exact:true})).toBeVisible();
+ await expect(page.getByText('1 pass · 1 fail · 1 skip · 1 error',{exact:true})).toBeVisible();
+ await expect(page.locator('pi-a2ui-code-diff .add')).toHaveCount(2);
+ await expect(page.locator('pi-a2ui-code-diff .add').first()).toHaveCSS('display','flex');
+ await expect(page.locator('pi-a2ui-code-diff .add').first()).toHaveCSS('background-color','rgb(220, 252, 231)');
+ await expect(page.locator('pi-a2ui-code-diff pre').first()).toHaveCSS('white-space','pre-wrap');
+ await expect(page.locator('pi-a2ui-test-results tbody tr')).toHaveCount(4);
+ await expect(page.locator('pi-a2ui-code-diff script,pi-a2ui-test-results img')).toHaveCount(0);
+ expect(await page.evaluate(()=>(globalThis as any).bad)).toBeUndefined();
+ await page.getByRole('button',{name:'Review choice',exact:true}).click();
+ await expect(page.locator('#notice')).toHaveText('Sent to Pi');
+ expect(JSON.parse(canvas.sent[0].split('\n')[1]).context).toEqual({proposalId:'p-browser',resultId:'r-browser'});expect(errors).toEqual([]);
+});

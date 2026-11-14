@@ -1,7 +1,7 @@
 // Bounded integration check: real Pi/model, installed package, real browser, two turns.
 // Existing Pi credentials stay in Pi; do not print bootstrap URLs or raw RPC records.
-import { formsSource, fillForms } from './acceptance-scenarios.mjs';
-import { spawn } from 'node:child_process';
+import { formsSource, fillForms, codingSource } from './acceptance-scenarios.mjs';
+import { spawn, spawnSync } from 'node:child_process';
 import { mkdir, writeFile, readFile, access } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { resolve, join } from 'node:path';
@@ -17,6 +17,15 @@ const restoreOnly = process.env.A2UI_ACCEPT_RESTORE_ONLY === '1';
 const additionalExtensions = providerExtension ? ['-e',resolve(providerExtension)] : [];
 const workspace = resolve(process.env.A2UI_ACCEPT_WORKSPACE ?? '.local/live');
 const urlFile = join(workspace,'open-url');
+let testEvidence;
+if(scenario==='coding'&&!restoreOnly){
+ await mkdir(workspace,{recursive:true});
+ const source='import {test} from "node:test";import assert from "node:assert/strict";test("Arithmetic",()=>assert.equal(2+2,4));\n';
+ const path=join(workspace,'arithmetic.test.mjs');await writeFile(path,source);
+ const execution=spawnSync(process.execPath,['--test','--test-reporter=tap',path],{encoding:'utf8'});
+ if(execution.status!==0||!/^# pass 1$/m.test(execution.stdout))throw new Error('Actual coding fixture did not pass; refusing invented results');
+ testEvidence={source,exitCode:execution.status,pass:1,fail:0,actualExecution:true};await writeFile(join(workspace,'test-evidence.json'),JSON.stringify(testEvidence,null,2));
+}
 await mkdir(join(workspace,'bin'),{recursive:true});
 await writeFile(join(workspace,'bin','open'),'#!/bin/sh\numask 077\nprintf "%s" "$1" > "$A2UI_ACCEPT_OPEN_FILE"\n', {mode:0o700});
 const pi = spawn(process.execPath,[fileURLToPath(new URL('../node_modules/@earendil-works/pi-coding-agent/dist/bundle/cli.js',import.meta.url)),'--no-extensions','--no-mcp','--no-skills','--no-context-files','--no-prompt-templates','--no-themes','--mode','rpc','--provider',provider,'--model',model,'--thinking','off','--tools','a2ui_render','--session',join(workspace,`session-${provider}.jsonl`),...additionalExtensions,'-e',join(packagePath,'extension.ts')],{
@@ -53,7 +62,7 @@ try{
   if (initial.data?.model?.id !== model) throw new Error('Pi selected an unexpected model; refusing model request');
   if (!restoreOnly) {
   const basicSource='$/form/name = ""\nroot = Card(Column([Text("Pi A2UI local acceptance"), TextField("Acceptance phrase", $/form/name), Button(Text("Submit acceptance"), action=Event("submit", {name: $/form/name}))]))';
-  const source=scenario==='forms'?formsSource:basicSource;
+  const source=scenario==='forms'?formsSource:scenario==='coding'?codingSource(testEvidence):basicSource;
   command({id:'first',type:'prompt',message:`Local UI acceptance only. Call a2ui_render exactly once with surfaceId "acceptance" and source ${JSON.stringify(source)}. After successful tool call, say "Form ready" briefly. A later user message named A2UI browser context data is expected: when it arrives, reply "Accepted: " followed by the exact JSON object action.context (preserving boolean/number/array types); do not render again or invoke another tool.`});
   const rendered=await wait(e=>(e.type==='message_end'&&e.message?.role==='toolResult'&&e.message.toolName==='a2ui_render'&&!e.message.isError)||e.type==='agent_settled');
   if(rendered.type==='agent_settled'){
@@ -100,6 +109,11 @@ try{
     const ack=json?JSON.parse(json):undefined;
     if(JSON.stringify(ack?.features)!=='["b"]'||ack?.enabled!==true||ack?.count!==7||ack?.date!=='2026-12-25'||ack?.name!==phrase)throw new Error('Actual next model reply did not preserve typed submitted context');
     result.typedContextAcknowledged=true;
+  }
+  if(scenario==='coding'){
+    const json=replies.match(/\{[\s\S]*\}/)?.[0];const ack=json?JSON.parse(json):undefined;
+    if(ack?.proposalId!=='proposal-live'||ack?.resultId!=='result-live'||ack?.name!==phrase)throw new Error('Actual next model reply did not refer to reviewed proposal/results');
+    result.actualExecutedTestEvidence=testEvidence?.actualExecution===true;result.currentCodingIdsAcknowledged=true;
   }
   if(!replies.includes(phrase))throw new Error('Actual subsequent model reply did not acknowledge submitted context');
   await page.screenshot({path:join(workspace,'acceptance.png'),fullPage:true});

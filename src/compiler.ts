@@ -1,6 +1,7 @@
 import { A2uiGenerator, CatalogConfig, ExpressFormatFactory, RendererState } from '@a2ui/agent';
 import { inputPaths, validateInputs } from './inputs.ts';
-import { restrictedCatalog } from './catalog.ts';
+import { validateCoding } from './coding.ts';
+import { restrictedCatalog, catalogs } from './catalog.ts';
 import { LIMITS, UiError, type Component, type SurfaceMessage } from './protocol.ts';
 
 export function record(value: unknown): value is Record<string, unknown> {
@@ -63,15 +64,15 @@ export function validateSurface(input: unknown): SurfaceMessage {
     if (input.version !== '1.0' || !record(input.createSurface)) throw new UiError(400, 'Unsupported surface message');
     const create = input.createSurface;
     exactKeys(create, ['surfaceId', 'catalogId', 'components'], ['dataModel']);
-    if (typeof create.surfaceId !== 'string' || !/^[A-Za-z0-9_-]{1,64}$/.test(create.surfaceId) || create.catalogId !== restrictedCatalog.id || !Array.isArray(create.components) || !create.components.length) throw new UiError(400, 'Invalid surface or empty root');
+    if (typeof create.surfaceId !== 'string' || !/^[A-Za-z0-9_-]{1,64}$/.test(create.surfaceId) || !catalogs.some(catalog=>catalog.id===create.catalogId) || !Array.isArray(create.components) || !create.components.length) throw new UiError(400, 'Invalid surface or empty root');
     if (create.components.length > LIMITS.components) throw new UiError(413, 'Component limit exceeded');
     noExpressions(create);
     for (const component of create.components) {
-      if (!record(component) || typeof component.component !== 'string' || !restrictedCatalog.components.has(component.component)) throw new UiError(400, 'Unsupported component');
+      if (!record(component) || typeof component.component !== 'string' || !catalogs.find(catalog=>catalog.id===create.catalogId)!.components.has(component.component)) throw new UiError(400, 'Unsupported component');
       if ('children' in component && !Array.isArray(component.children)) throw new UiError(400, 'Dynamic children are unavailable');
     }
     const message = structuredClone(input) as unknown as SurfaceMessage;
-    const state = new RendererState([restrictedCatalog]);
+    const state = new RendererState(catalogs);
     state.apply(message);
     state.checkTopology([create.surfaceId]);
     const components = new Map(message.createSurface.components.map(component => [component.id, component]));
@@ -128,6 +129,7 @@ export function validateSurface(input: unknown): SurfaceMessage {
         } else if (JSON.stringify(value).includes('"@path"')) throw new UiError(400, 'Nested context bindings are unavailable');
       }
     }
+    validateCoding(message);
     return message;
   } catch (error) {
     if (error instanceof UiError) throw error;
