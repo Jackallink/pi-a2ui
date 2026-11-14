@@ -1,5 +1,5 @@
 // Developer-only acceptance entry. Defaults to a no-model, normally registered startup check.
-import { assertNode24, parseOptions, HELP, AcceptanceError, admitPackage, createRun, StageReport, packageFingerprint, operatorFingerprint, runNode, PI_ENTRY, verifyHelper, runtimeEnv } from './acceptance-support.mjs';
+import { assertNode24, parseOptions, HELP, AcceptanceError, admitPackage, createRun, StageReport, packageFingerprint, operatorFingerprint, runNode, PI_ENTRY, verifyHelper, runtimeEnv, validateEvidenceParent } from './acceptance-support.mjs';
 import { join } from 'node:path';
 let report, options, identity, operatorBefore, run;
 const operatorCwd = process.cwd();
@@ -12,12 +12,17 @@ try {
     else {
         operatorBefore = await operatorFingerprint(operatorCwd);
         identity = await admitPackage(options, operatorCwd);
-        run = await createRun(options.evidenceDir);
+        const evidenceParent = await validateEvidenceParent(options, identity, operatorCwd);
+        run = await createRun(evidenceParent);
         report = new StageReport(run, { mode: options.mode, node: process.version, nodeExecutable: process.execPath, packagePath: identity.root, packageVersion: identity.metadata.version, packageFingerprint: identity.fingerprint, modelRequestsAllowed: options.allowModel });
         await report.save();
         await report.step('helper-identity', async () => { const catalog = await verifyHelper(identity, run); report.data.catalogId = catalog.catalogId; });
-        await report.step('host-identity', async () => { const host = await runNode(PI_ENTRY, ['--version'], { cwd: run, env: runtimeEnv(run, process.env, { offline: true }) }); if (host.code !== 0)
-            throw new AcceptanceError('identity', 'Cannot identify the development Pi host'); report.data.hostPi = host.stdout.trim(); });
+        await report.step('host-identity', async () => {
+            const host = await runNode(PI_ENTRY, ['--version'], { cwd: run, env: runtimeEnv(run, process.env, { offline: true }) });
+            if (host.code !== 0)
+                throw new AcceptanceError('identity', 'Cannot identify the development Pi host');
+            report.data.hostPi = host.stdout.trim();
+        });
         if (options.mode === 'component') {
             const { runComponent } = await import('./component-acceptance.mjs');
             const { preflightBrowser } = await import('./skill-acceptance.mjs');
@@ -29,8 +34,11 @@ try {
             const { runAcceptance } = await import('./skill-acceptance.mjs');
             await runAcceptance({ options, identity, run, report });
         }
-        await report.step('preservation', async () => { if (await packageFingerprint(identity.root, identity.metadata) !== identity.fingerprint || await operatorFingerprint(operatorCwd) !== operatorBefore)
-            throw new AcceptanceError('preservation', 'Operator or package files changed during acceptance'); Object.assign(report.data.observed, { packagePayloadUnchanged: true, operatorFilesUnchanged: true }); });
+        await report.step('preservation', async () => {
+            if (await packageFingerprint(identity.root, identity.metadata) !== identity.fingerprint || await operatorFingerprint(operatorCwd) !== operatorBefore)
+                throw new AcceptanceError('preservation', 'Operator or package files changed during acceptance');
+            Object.assign(report.data.observed, { packagePayloadUnchanged: true, operatorFilesUnchanged: true });
+        });
         report.data.passed = true;
         await report.save();
         process.stdout.write(JSON.stringify({ ...report.data, receipt: join(run, 'result.json') }) + '\n');

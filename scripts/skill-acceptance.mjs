@@ -15,8 +15,12 @@ export async function preflightBrowser() {
         throw new AcceptanceError('browser-setup', 'Select an installed Chromium with PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH before model acceptance');
     }
 }
-async function opener(run) { await mkdir(join(run, 'bin')); const text = '#!/bin/sh\numask 077\nprintf "%s" "$1" > "$PI_A2UI_ACCEPT_OPEN_FILE"\n'; for (const name of ['open', 'xdg-open'])
-    await writeFile(join(run, 'bin', name), text, { mode: 0o700 }); }
+async function opener(run) {
+    await mkdir(join(run, 'bin'));
+    const text = '#!/bin/sh\numask 077\nprintf "%s" "$1" > "$PI_A2UI_ACCEPT_OPEN_FILE"\n';
+    for (const name of ['open', 'xdg-open'])
+        await writeFile(join(run, 'bin', name), text, { mode: 0o700 });
+}
 function checkLoaded(rpc, list, identity, normal) {
     for (const name of ['a2ui', 'a2ui-status', 'a2ui-toggle', 'skill:pi-a2ui'])
         if (list.filter(item => item.name === name).length !== 1)
@@ -29,34 +33,47 @@ function checkLoaded(rpc, list, identity, normal) {
     if (/Failed to load extension|conflicts with/i.test(rpc.stdout + '\n' + rpc.stderr) || rpc.events.some(event => event.type === 'extension_error'))
         throw new AcceptanceError('startup', 'Package load/conflict/runtime diagnostic observed');
 }
-async function tagControls(page, ids) { await page.waitForFunction(ids => { const all = []; function visit(root) { for (const element of root.querySelectorAll('*')) {
-    all.push(element);
-    if (element.shadowRoot)
-        visit(element.shadowRoot);
-} } visit(document); for (const [name, id] of Object.entries(ids)) {
-    const host = all.find(element => element.context?.componentModel?.id === id);
-    if (!host)
-        return false;
-    host.setAttribute('data-a2ui-acceptance', name);
-} return true; }, ids); }
+async function tagControls(page, ids) {
+    await page.waitForFunction(ids => {
+        const all = [];
+        function visit(root) {
+            for (const element of root.querySelectorAll('*')) {
+                all.push(element);
+                if (element.shadowRoot)
+                    visit(element.shadowRoot);
+            }
+        }
+        visit(document);
+        for (const [name, id] of Object.entries(ids)) {
+            const host = all.find(element => element.context?.componentModel?.id === id);
+            if (!host)
+                return false;
+            host.setAttribute('data-a2ui-acceptance', name);
+        }
+        return true;
+    }, ids);
+}
 function successfulRender(events) { return events.filter(event => event.type === 'message_end' && event.message?.role === 'toolResult' && event.message.toolName === 'a2ui_render' && event.message.isError === false); }
 export function verifyPreflight(events, helper, renderStart) {
     const before = events.slice(0, events.indexOf(renderStart));
-    const successfulCommands = before.filter(event => event.type === 'tool_execution_start' && event.toolName === 'bash' && typeof event.args?.command === 'string' && event.args.command.includes(helper)).map(start => ({start, end: before.find(event => event.type === 'tool_execution_end' && event.toolCallId === start.toolCallId && event.isError === false)})).filter(item => item.end);
+    const successfulCommands = before.filter(event => event.type === 'tool_execution_start' && event.toolName === 'bash' && typeof event.args?.command === 'string' && event.args.command.includes(helper)).map(start => ({ start, end: before.find(event => event.type === 'tool_execution_end' && event.toolCallId === start.toolCallId && event.isError === false) })).filter(item => item.end);
     const template = successfulCommands.find(item => /\bexample\s+["']?validated-form\b/.test(item.start.args.command));
-    if (!template) return false;
-    for (const {start, end} of successfulCommands) {
-        if (!/\bcheck\b/.test(start.args.command) || before.indexOf(end) < before.indexOf(template.end)) continue;
+    if (!template)
+        return false;
+    for (const { start, end } of successfulCommands) {
+        if (!/\bcheck\b/.test(start.args.command) || before.indexOf(end) < before.indexOf(template.end))
+            continue;
         for (const line of messageText(end.result).split('\n')) {
             try {
                 const value = JSON.parse(line);
-                if (value?.surfaceId === renderStart.args.surfaceId && value.source === renderStart.args.source && Object.keys(value).length === 2) return true;
-            } catch { /* Helper output may also include harmless shell text. */ }
+                if (value?.surfaceId === renderStart.args.surfaceId && value.source === renderStart.args.source && Object.keys(value).length === 2)
+                    return true;
+            }
+            catch { /* Helper output may also include harmless shell text. */ }
         }
     }
     return false;
 }
-
 async function privateStartupAgent(run) { const agentDir = join(run, 'agent'); await mkdir(agentDir); const settings = '{"acceptanceFixture":true}'; await writeFile(join(agentDir, 'settings.json'), settings, { mode: 0o600 }); await writeFile(join(agentDir, 'models.json'), JSON.stringify({ providers: { [MODEL.provider]: { baseUrl: MODEL.baseUrl, api: 'openai-completions', apiKey: 'fixture-unused-no-request', models: [{ id: MODEL.id, name: 'Acceptance startup fixture', reasoning: false, input: ['text'], contextWindow: 128000, maxTokens: 4096 }] } } }), { mode: 0o600 }); return { agentDir, settings }; }
 export async function runAcceptance({ options, identity, run, report }) {
     let rpc, browser, page, origin, failure, registrationAttempted = false, env, fixture;
@@ -77,16 +94,26 @@ export async function runAcceptance({ options, identity, run, report }) {
             fixture = await report.step('fixture', () => privateStartupAgent(run));
             env = runtimeEnv(run, process.env, { offline: true, agentDir: fixture.agentDir });
             registrationAttempted = true;
-            await report.step('registration', async () => { const r = await runNode(PI_ENTRY, ['install', '-l', '--approve', identity.root], { cwd: run, env }); await writeFile(join(run, 'registration.log'), r.stdout + r.stderr, { mode: 0o600 }); if (r.code !== 0)
-                throw new AcceptanceError('registration', 'Private package registration failed'); });
+            await report.step('registration', async () => {
+                const r = await runNode(PI_ENTRY, ['install', '-l', '--approve', identity.root], { cwd: run, env });
+                await writeFile(join(run, 'registration.log'), r.stdout + r.stderr, { mode: 0o600 });
+                if (r.code !== 0)
+                    throw new AcceptanceError('registration', 'Private package registration failed');
+            });
         }
         const profile = modelMode ? ['--no-extensions', '-e', identity.root, '--no-skills', '--skill', join(identity.root, 'skills/pi-a2ui')] : ['--approve'];
         const args = [...profile, '--no-mcp', '--no-context-files', '--no-prompt-templates', '--no-themes', '--mode', 'rpc', '--provider', MODEL.provider, '--model', MODEL.id, '--thinking', 'off', '--tools', modelMode ? 'read,bash,a2ui_render' : 'a2ui_render', '--session', join(run, 'session.jsonl')];
         await report.step('startup', async () => { rpc = new RpcProcess(PI_ENTRY, args, { cwd: run, env }); const state = await rpc.command('initial', 'get_state'); assertModelTuple(state); Object.assign(report.data.observed, { resolvedProvider: MODEL.provider, resolvedModel: MODEL.id, agentPlanEndpointVerified: true }); const commands = await rpc.command('commands', 'get_commands'); checkLoaded(rpc, commands.data?.commands ?? [], identity, !modelMode); Object.assign(report.data.observed, { uniqueA2uiCommands: 3, uniqueSkill: true }); });
         if (!modelMode) {
-            await report.step('status', async () => { await rpc.command('status', 'prompt', { message: '/a2ui-status' }); const notice = await rpc.wait(event => event.type === 'extension_ui_request' && event.method === 'notify' && typeof event.message === 'string' && event.message.startsWith('A2UI ')); if (!notice.message.includes('enabled'))
-                throw new AcceptanceError('status', 'A2UI is not enabled'); if (rpc.events.some(event => event.type === 'agent_start'))
-                throw new AcceptanceError('status', 'Startup unexpectedly attempted generation'); Object.assign(report.data.observed, { statusCommandExecuted: true, agentRuns: 0, modelRequests: 0, externalFetchDenied: true }); });
+            await report.step('status', async () => {
+                await rpc.command('status', 'prompt', { message: '/a2ui-status' });
+                const notice = await rpc.wait(event => event.type === 'extension_ui_request' && event.method === 'notify' && typeof event.message === 'string' && event.message.startsWith('A2UI '));
+                if (!notice.message.includes('enabled'))
+                    throw new AcceptanceError('status', 'A2UI is not enabled');
+                if (rpc.events.some(event => event.type === 'agent_start'))
+                    throw new AcceptanceError('status', 'Startup unexpectedly attempted generation');
+                Object.assign(report.data.observed, { statusCommandExecuted: true, agentRuns: 0, modelRequests: 0, externalFetchDenied: true });
+            });
         }
         else {
             let surface, submit, textField, checkBox;
@@ -110,15 +137,7 @@ export async function runAcceptance({ options, identity, run, report }) {
                     throw new AcceptanceError('skill-render', 'Model did not commit the single requested surface');
                 surface = snapshot.surfaces[0];
                 const components = surface.message.createSurface.components;
-                const texts = components.filter(c => c.component === 'TextField'), boxes = components.filter(c => c.component === 'CheckBox'), validators = components.filter(c => c.component === 'FormValidation');
-                if (texts.length !== 1 || boxes.length !== 1 || validators.length !== 1)
-                    throw new AcceptanceError('skill-render', 'Model-authored form has ambiguous or missing controls');
-                textField = texts[0];
-                checkBox = boxes[0];
-                const validator = validators[0];
-                submit = components.find(c => c.id === validator.buttons[0] && c.component === 'Button');
-                if (!submit || validator.buttons.length !== 1 || !validator.rules.some(r => r.fieldId === textField.id && r.required && r.minLength === 2 && r.maxLength === 5) || !validator.rules.some(r => r.fieldId === checkBox.id && r.required))
-                    throw new AcceptanceError('skill-render', 'Requested guarded validation was not authored');
+                ({ textField, checkBox, submit } = guardedForm(components));
                 const starts = phase.filter(event => event.type === 'tool_execution_start');
                 const renderStart = starts.filter(event => event.toolName === 'a2ui_render').at(-1);
                 if (!renderStart || !verifyPreflight(phase, identity.helper, renderStart))
@@ -130,38 +149,104 @@ export async function runAcceptance({ options, identity, run, report }) {
             page = await browser.newPage();
             page.on('pageerror', error => pageErrors.push(error.message));
             const posts = [];
-            page.on('request', request => { if (request.method() === 'POST' && new URL(request.url()).pathname === '/api/actions')
-                posts.push(true); });
-            await report.step('browser', async () => { let url; for (let attempt = 0; attempt < 100; attempt++) {
-                try {
-                    url = await readFile(join(run, 'open-url'), 'utf8');
-                    if (url)
-                        break;
+            page.on('request', request => {
+                if (request.method() === 'POST' && new URL(request.url()).pathname === '/api/actions')
+                    posts.push((() => { try {
+                        return request.postDataJSON();
+                    }
+                    catch {
+                        return null;
+                    } })());
+            });
+            await report.step('browser', async () => {
+                let url;
+                for (let attempt = 0; attempt < 100; attempt++) {
+                    try {
+                        url = await readFile(join(run, 'open-url'), 'utf8');
+                        if (url)
+                            break;
+                    }
+                    catch { }
+                    await new Promise(res => setTimeout(res, 50));
                 }
-                catch { }
-                await new Promise(res => setTimeout(res, 50));
-            } if (!url)
-                throw new AcceptanceError('browser', 'Automatic opener was not captured'); const parsed = new URL(url); if (parsed.protocol !== 'http:' || parsed.hostname !== '127.0.0.1')
-                throw new AcceptanceError('browser', 'Canvas opener was not a loopback HTTP URL'); origin = parsed.origin; await page.goto(url).catch(() => { throw new AcceptanceError('browser', 'Local canvas navigation failed'); }); await tagControls(page, { name: textField.id, accept: checkBox.id, submit: submit.id }); if (page.url().includes('#'))
-                throw new AcceptanceError('browser', 'Bootstrap fragment was not cleared'); report.data.observed.fragmentCleared = true; });
+                if (!url)
+                    throw new AcceptanceError('browser', 'Automatic opener was not captured');
+                const parsed = new URL(url);
+                if (parsed.protocol !== 'http:' || parsed.hostname !== '127.0.0.1')
+                    throw new AcceptanceError('browser', 'Canvas opener was not a loopback HTTP URL');
+                origin = parsed.origin;
+                await page.goto(url).catch(() => { throw new AcceptanceError('browser', 'Local canvas navigation failed'); });
+                await tagControls(page, { name: textField.id, accept: checkBox.id, submit: submit.id });
+                if (page.url().includes('#'))
+                    throw new AcceptanceError('browser', 'Bootstrap fragment was not cleared');
+                report.data.observed.fragmentCleared = true;
+            });
             const name = page.locator('[data-a2ui-acceptance=name]').locator('input[type=text],textarea'), accept = page.locator('[data-a2ui-acceptance=accept]').locator('input[type=checkbox]'), button = page.locator('[data-a2ui-acceptance=submit]').locator('button');
-            await report.step('invalid-submit', async () => { const before = rpc.events.length; await expect(name).toHaveCount(1); await expect(accept).toHaveCount(1); await expect(button).toHaveCount(1); await name.fill(''); await accept.uncheck(); await button.click(); await expect(name).toHaveAttribute('aria-invalid', 'true'); await new Promise(res => setTimeout(res, 100)); if (posts.length || rpc.events.slice(before).some(event => event.type === 'agent_start'))
-                throw new AcceptanceError('invalid-submit', 'Invalid form dispatched a request or model run'); Object.assign(report.data.observed, { invalidPosts: 0, invalidAgentRuns: 0 }); });
-            await report.step('valid-submit', async () => { await name.fill('Ada'); await accept.check(); const before = rpc.events.length; const response = page.waitForResponse(response => response.request().method() === 'POST' && new URL(response.url()).pathname === '/api/actions'); await button.click(); if ((await response).status() !== 202)
-                throw new AcceptanceError('valid-submit', 'Valid action was not accepted'); report.data.observed.validPosts = posts.length; if (posts.length !== 1)
-                throw new AcceptanceError('valid-submit', 'Expected exactly one valid browser action'); await rpc.wait(event => event.type === 'agent_settled', before, 180000); const phase = rpc.events.slice(before); const texts = phase.filter(event => event.type === 'message_end' && event.message?.role === 'assistant').map(event => messageText(event.message)).join('\n'); let ack; try {
-                ack = JSON.parse(texts.match(/\{[\s\S]*\}/)?.[0] ?? '');
-            }
-            catch {
-                throw new AcceptanceError('valid-submit', 'Model did not return a JSON acknowledgement');
-            } if (ack?.name !== 'Ada' || ack?.accept !== true || Object.keys(ack).length !== 2)
-                throw new AcceptanceError('valid-submit', 'Model acknowledgement did not preserve the exact typed context'); report.data.observed.typedAcknowledgement = { name: 'Ada', accept: true }; report.data.observed.agentRuns = rpc.events.filter(event => event.type === 'agent_start').length; });
-            await report.step('browser-errors', async () => { report.data.observed.browserErrors = pageErrors.length; if (pageErrors.length)
-                throw new AcceptanceError('browser-errors', 'Browser page errors were observed'); await page.screenshot({ path: join(run, 'acceptance.png'), fullPage: true }); });
+            await report.step('invalid-submit', async () => {
+                const before = rpc.events.length;
+                await expect(name).toHaveCount(1);
+                await expect(accept).toHaveCount(1);
+                await expect(button).toHaveCount(1);
+                await name.fill('');
+                await accept.uncheck();
+                await button.click();
+                await expect(name).toHaveAttribute('aria-invalid', 'true');
+                await new Promise(res => setTimeout(res, 100));
+                if (posts.length || rpc.events.slice(before).some(event => event.type === 'agent_start'))
+                    throw new AcceptanceError('invalid-submit', 'Invalid form dispatched a request or model run');
+                Object.assign(report.data.observed, { invalidPosts: 0, invalidAgentRuns: 0 });
+            });
+            await report.step('valid-submit', async () => {
+                await name.fill('Ada');
+                await accept.check();
+                const before = rpc.events.length;
+                const response = page.waitForResponse(response => response.request().method() === 'POST' && new URL(response.url()).pathname === '/api/actions');
+                await button.click();
+                if ((await response).status() !== 202)
+                    throw new AcceptanceError('valid-submit', 'Valid action was not accepted');
+                report.data.observed.validPosts = posts.length;
+                if (posts.length !== 1)
+                    throw new AcceptanceError('valid-submit', 'Expected exactly one valid browser action');
+                verifySubmittedAction(posts[0]?.message?.action, submit);
+                report.data.observed.postContextVerified = true;
+                await rpc.wait(event => event.type === 'agent_settled', before, 180000);
+                const phase = rpc.events.slice(before);
+                const contexts = phase.filter(event => event.message?.role === 'user').map(event => messageText(event.message)).filter(text => text.startsWith('A2UI browser context data')).map(text => { try {
+                    return JSON.parse(text.slice(text.indexOf('\n') + 1));
+                }
+                catch {
+                    return null;
+                } });
+                const forwarded = contexts.find(value => value?.surfaceId === 'skill-acceptance');
+                verifySubmittedAction(forwarded && { ...forwarded, name: forwarded.event }, submit);
+                report.data.observed.rpcContextVerified = true;
+                const texts = phase.filter(event => event.type === 'message_end' && event.message?.role === 'assistant').map(event => messageText(event.message)).join('\n');
+                let ack;
+                try {
+                    ack = JSON.parse(texts.match(/\{[\s\S]*\}/)?.[0] ?? '');
+                }
+                catch {
+                    throw new AcceptanceError('valid-submit', 'Model did not return a JSON acknowledgement');
+                }
+                if (ack?.name !== 'Ada' || ack?.accept !== true || Object.keys(ack).length !== 2)
+                    throw new AcceptanceError('valid-submit', 'Model acknowledgement did not preserve the exact typed context');
+                report.data.observed.typedAcknowledgement = { name: 'Ada', accept: true };
+                report.data.observed.agentRuns = rpc.events.filter(event => event.type === 'agent_start').length;
+            });
+            await report.step('browser-errors', async () => {
+                report.data.observed.browserErrors = pageErrors.length;
+                if (pageErrors.length)
+                    throw new AcceptanceError('browser-errors', 'Browser page errors were observed');
+                await page.screenshot({ path: join(run, 'acceptance.png'), fullPage: true });
+            });
         }
     }
     catch (error) {
         failure = error;
+        try {
+            await writeFile(join(run, 'stage-error.log'), String(error instanceof Error ? (error.stack ?? error.message) : error).slice(0, 8192), { mode: 0o600 });
+        }
+        catch { /* Resource cleanup must continue if diagnostics cannot be written. */ }
     }
     finally {
         if (rpc)
@@ -173,29 +258,38 @@ export async function runAcceptance({ options, identity, run, report }) {
         const cleanup = await cleanupOwned([
             ...(browser ? [['cleanup.browser', async () => { await browser.close(); }]] : []),
             ...(rpc ? [['cleanup.pi', async () => { report.data.observed.processExited = await rpc.close(run); }]] : []),
-            ['cleanup.registration', async () => { if (!registrationAttempted)
-                    return; let settings; try {
-                    settings = JSON.parse(await readFile(join(run, '.pi/settings.json'), 'utf8'));
-                }
-                catch (error) {
-                    if (error.code === 'ENOENT')
-                        settings = {};
-                    else
-                        throw error;
-                } if (settings.packages?.length) {
-                    const removed = await runNode(PI_ENTRY, ['remove', '-l', '--approve', identity.root], { cwd: run, env });
-                    await writeFile(join(run, 'unregistration.log'), removed.stdout + removed.stderr, { mode: 0o600 });
-                    if (removed.code !== 0)
-                        throw new AcceptanceError('cleanup', 'Owned registration removal failed');
-                    settings = JSON.parse(await readFile(join(run, '.pi/settings.json'), 'utf8'));
-                    if (settings.packages?.length)
-                        throw new AcceptanceError('cleanup', 'Owned package registration remains');
-                } report.data.observed.privateRegistrationRemoved = true; if (await readFile(join(fixture.agentDir, 'settings.json'), 'utf8') !== fixture.settings)
-                    throw new AcceptanceError('cleanup', 'Private global fixture settings changed'); }],
+            ['cleanup.registration', async () => {
+                    if (!registrationAttempted)
+                        return;
+                    let settings;
+                    try {
+                        settings = JSON.parse(await readFile(join(run, '.pi/settings.json'), 'utf8'));
+                    }
+                    catch (error) {
+                        if (error.code === 'ENOENT')
+                            settings = {};
+                        else
+                            throw error;
+                    }
+                    if (settings.packages?.length) {
+                        const removed = await runNode(PI_ENTRY, ['remove', '-l', '--approve', identity.root], { cwd: run, env });
+                        await writeFile(join(run, 'unregistration.log'), removed.stdout + removed.stderr, { mode: 0o600 });
+                        if (removed.code !== 0)
+                            throw new AcceptanceError('cleanup', 'Owned registration removal failed');
+                        settings = JSON.parse(await readFile(join(run, '.pi/settings.json'), 'utf8'));
+                        if (settings.packages?.length)
+                            throw new AcceptanceError('cleanup', 'Owned package registration remains');
+                    }
+                    report.data.observed.privateRegistrationRemoved = true;
+                    if (await readFile(join(fixture.agentDir, 'settings.json'), 'utf8') !== fixture.settings)
+                        throw new AcceptanceError('cleanup', 'Private global fixture settings changed');
+                }],
             ...(origin ? [['cleanup.listener', async () => { report.data.observed.listenerReleased = await requireListenerClosed(origin); }]] : []),
             ...(rpc ? [['child-runtime', async () => { Object.assign(report.data.observed, await checkChildRuntime(run, rpc.child.pid)); }]] : []),
-            ['cleanup.diagnostics', async () => { if (page)
-                    await writeFile(join(run, 'page-errors.json'), JSON.stringify(pageErrors), { mode: 0o600 }); }],
+            ['cleanup.diagnostics', async () => {
+                    if (page)
+                        await writeFile(join(run, 'page-errors.json'), JSON.stringify(pageErrors), { mode: 0o600 });
+                }],
         ]);
         report.data.stages.push(...cleanup.stages);
         if (cleanup.firstError) {
@@ -208,4 +302,25 @@ export async function runAcceptance({ options, identity, run, report }) {
     }
     if (failure)
         throw failure;
+}
+export function guardedForm(components) {
+    const texts = components.filter(c => c.component === 'TextField'), boxes = components.filter(c => c.component === 'CheckBox'), validators = components.filter(c => c.component === 'FormValidation');
+    if (texts.length !== 1 || boxes.length !== 1 || validators.length !== 1)
+        throw new AcceptanceError('skill-render', 'Model-authored form has ambiguous or missing controls');
+    const textField = texts[0];
+    const checkBox = boxes[0];
+    const validator = validators[0];
+    const submit = components.find(c => c.id === validator.buttons[0] && c.component === 'Button');
+    if (!submit || validator.buttons.length !== 1 || !validator.rules.some(r => r.fieldId === textField.id && r.required && r.minLength === 2 && r.maxLength === 5) || !validator.rules.some(r => r.fieldId === checkBox.id && r.required))
+        throw new AcceptanceError('skill-render', 'Requested guarded validation was not authored');
+    const context = submit.action?.event?.context;
+    const bindingPath = value => value && typeof value === 'object' && Object.keys(value).length === 1 && typeof value['@path'] === 'string' ? value['@path'] : undefined;
+    if (!context || Object.keys(context).sort().join(',') !== 'accept,name' || !bindingPath(textField.value) || !bindingPath(checkBox.value) || bindingPath(context.name) !== bindingPath(textField.value) || bindingPath(context.accept) !== bindingPath(checkBox.value))
+        throw new AcceptanceError('skill-render', 'Submit context must bind exactly name and accept to the requested controls');
+    return { textField, checkBox, submit };
+}
+export function verifySubmittedAction(action, submit) {
+    if (action?.surfaceId !== 'skill-acceptance' || action?.sourceComponentId !== submit.id || action?.name !== submit.action?.event?.name || !action.context || Object.keys(action.context).sort().join(',') !== 'accept,name' || action.context.name !== 'Ada' || action.context.accept !== true)
+        throw new AcceptanceError('valid-submit', 'Actual submitted action did not preserve the exact typed context and declared identity');
+    return true;
 }

@@ -1,3 +1,4 @@
+import * as requireFs from 'node:fs';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
@@ -5,14 +6,18 @@ import { mkdtempSync, writeFileSync, readdirSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 const entry = resolve('scripts/live-acceptance.mjs');
-function probe(args: string[]) { const cwd = mkdtempSync(join(tmpdir(), 'a2ui-admission-')); writeFileSync(join(cwd, 'sentinel.txt'), 'unchanged'); try {
-    const result = spawnSync(process.execPath, [entry, ...args], { cwd, env: { ...process.env, A2UI_ACCEPT_PROVIDER: 'deny-legacy-before-any-model' }, encoding: 'utf8', timeout: 15000 });
-    assert.deepEqual(readdirSync(cwd), ['sentinel.txt'], 'admission must not create fixture/session files');
-    return result;
+function probe(args: string[]) {
+    const cwd = mkdtempSync(join(tmpdir(), 'a2ui-admission-'));
+    writeFileSync(join(cwd, 'sentinel.txt'), 'unchanged');
+    try {
+        const result = spawnSync(process.execPath, [entry, ...args], { cwd, env: { ...process.env, A2UI_ACCEPT_PROVIDER: 'deny-legacy-before-any-model' }, encoding: 'utf8', timeout: 15000 });
+        assert.deepEqual(readdirSync(cwd), ['sentinel.txt'], 'admission must not create fixture/session files');
+        return result;
+    }
+    finally {
+        rmSync(cwd, { recursive: true, force: true });
+    }
 }
-finally {
-    rmSync(cwd, { recursive: true, force: true });
-} }
 test('A02 help explains explicit target and opt-in model without evaluating old provider configuration or creating fixtures', () => {
     const r = probe(['--help']);
     assert.equal(r.status, 0, r.stderr);
@@ -37,9 +42,13 @@ import { createServer } from 'node:net';
 const support = await import(new URL('../scripts/acceptance-support.mjs', import.meta.url).href);
 const actualPackage = resolve('.');
 const actualVersion = JSON.parse(readFileSync('package.json', 'utf8')).version;
-function cleanEnv(extra: Record<string, string> = {}) { const env = { ...process.env }; for (const key of Object.keys(env))
-    if (key.startsWith('A2UI_ACCEPT_') || key.startsWith('PI_A2UI_ACCEPT_'))
-        delete env[key]; return { ...env, ...extra }; }
+function cleanEnv(extra: Record<string, string> = {}) {
+    const env = { ...process.env };
+    for (const key of Object.keys(env))
+        if (key.startsWith('A2UI_ACCEPT_') || key.startsWith('PI_A2UI_ACCEPT_'))
+            delete env[key];
+    return { ...env, ...extra };
+}
 function admitted(args: string[], env = cleanEnv(), cwd = process.cwd()) { return spawnSync(process.execPath, [entry, ...args], { cwd, env, encoding: 'utf8', timeout: 30000 }); }
 test('A02 old010 target version is rejected before executing its helper or creating evidence', () => {
     const cwd = mkdtempSync(join(tmpdir(), 'a2ui-old-target-'));
@@ -237,18 +246,131 @@ test('A02 cleanup still closes a real child and socket after browser cleanup fai
         rmSync(folder, { recursive: true, force: true });
     }
 });
-
-test('A02 preflight evidence must obtain the template and finish the exact check before rendering',async()=>{
- const {verifyPreflight}=await import(new URL('../scripts/skill-acceptance.mjs',import.meta.url).href);
- const helper='/admitted/skills/pi-a2ui/scripts/a2ui.mjs';const args={surfaceId:'skill-acceptance',source:'root = Text("ok")'};
- const start=(id:string,command:string)=>({type:'tool_execution_start',toolName:'bash',toolCallId:id,args:{command}});
- const end=(id:string,text:string,isError=false)=>({type:'tool_execution_end',toolCallId:id,isError,result:{content:[{type:'text',text}]}});
- const example=[start('example',`node "${helper}" example validated-form`),end('example','template source')];
- const check=[start('check',`node "${helper}" check --surface-id skill-acceptance form.express`),end('check',JSON.stringify(args))];
- const render={type:'tool_execution_start',toolName:'a2ui_render',args};
- assert.equal(verifyPreflight([...example,...check,render],helper,render),true);
- assert.equal(verifyPreflight([...check,render],helper,render),false,'missing actual template fetch is not a skill fast-path proof');
- assert.equal(verifyPreflight([...example,render,...check],helper,render),false,'post-render check is not preflight');
- assert.equal(verifyPreflight([example[0],end('example','failed',true),...check,render],helper,render),false);
- assert.equal(verifyPreflight([...example,check[0],end('check',JSON.stringify({...args,source:'different'})),render],helper,render),false);
+test('A02 preflight evidence must obtain the template and finish the exact check before rendering', async () => {
+    const { verifyPreflight } = await import(new URL('../scripts/skill-acceptance.mjs', import.meta.url).href);
+    const helper = '/admitted/skills/pi-a2ui/scripts/a2ui.mjs';
+    const args = { surfaceId: 'skill-acceptance', source: 'root = Text("ok")' };
+    const start = (id: string, command: string) => ({ type: 'tool_execution_start', toolName: 'bash', toolCallId: id, args: { command } });
+    const end = (id: string, text: string, isError = false) => ({ type: 'tool_execution_end', toolCallId: id, isError, result: { content: [{ type: 'text', text }] } });
+    const example = [start('example', `node "${helper}" example validated-form`), end('example', 'template source')];
+    const check = [start('check', `node "${helper}" check --surface-id skill-acceptance form.express`), end('check', JSON.stringify(args))];
+    const render = { type: 'tool_execution_start', toolName: 'a2ui_render', args };
+    assert.equal(verifyPreflight([...example, ...check, render], helper, render), true);
+    assert.equal(verifyPreflight([...check, render], helper, render), false, 'missing actual template fetch is not a skill fast-path proof');
+    assert.equal(verifyPreflight([...example, render, ...check], helper, render), false, 'post-render check is not preflight');
+    assert.equal(verifyPreflight([example[0], end('example', 'failed', true), ...check, render], helper, render), false);
+    assert.equal(verifyPreflight([...example, check[0], end('check', JSON.stringify({ ...args, source: 'different' })), render], helper, render), false);
+});
+test('A02 review coding fixture executes its actual Node child in the owned cwd with runtime observation', async () => {
+    const { runCodingFixture } = await import(new URL('../scripts/component-acceptance.mjs', import.meta.url).href);
+    const folder = mkdtempSync(join(tmpdir(), 'a2ui-coding-cwd-'));
+    const before = process.env.NODE_OPTIONS, receipt = process.env.PI_A2UI_ACCEPT_CWD_RECEIPT, testContext = process.env.NODE_TEST_CONTEXT;
+    try {
+        delete process.env.NODE_TEST_CONTEXT;
+        process.env.NODE_OPTIONS = '--import=' + new URL('../scripts/acceptance-runtime-probe.mjs', import.meta.url).href;
+        process.env.PI_A2UI_ACCEPT_CWD_RECEIPT = join(folder, 'child-runtime.jsonl');
+        const value = await runCodingFixture(folder);
+        assert.equal(value.actualExecution, true);
+        const rows = readFileSync(join(folder, 'child-runtime.jsonl'), 'utf8').trim().split('\n').map(line => JSON.parse(line));
+        const { realpathSync } = await import('node:fs');
+        assert.ok(rows.length);
+        for (const row of rows) {
+            assert.match(row.node, /^v24\./);
+            assert.equal(realpathSync(row.cwd), realpathSync(folder));
+        }
+    }
+    finally {
+        if (testContext === undefined)
+            delete process.env.NODE_TEST_CONTEXT;
+        else
+            process.env.NODE_TEST_CONTEXT = testContext;
+        if (before === undefined)
+            delete process.env.NODE_OPTIONS;
+        else
+            process.env.NODE_OPTIONS = before;
+        if (receipt === undefined)
+            delete process.env.PI_A2UI_ACCEPT_CWD_RECEIPT;
+        else
+            process.env.PI_A2UI_ACCEPT_CWD_RECEIPT = receipt;
+        rmSync(folder, { recursive: true, force: true });
+    }
+});
+test('A02 review rejects literal/alias submit context even on a compiler-valid guarded form', async () => {
+    const { guardedForm } = await import(new URL('../scripts/skill-acceptance.mjs', import.meta.url).href);
+    const { compile } = await import('../src/compiler.ts');
+    const source = '$/name = ""\n$/ok = false\nname = TextField(label="Name",value=$/name)\nok = CheckBox(label="Accept",value=$/ok)\nsubmit = Button(child=Text(text="Submit acceptance"),action=Event("save",{name:$/name,accept:$/ok}))\nvalidation = FormValidation(buttons=["submit"],rules=[{fieldId:"name",message:"Name",required:true,minLength:2,maxLength:5},{fieldId:"ok",message:"Accept",required:true}])\nroot = Column(children=[name,ok,validation,submit])';
+    assert.doesNotThrow(() => guardedForm(compile('skill-acceptance', source).createSurface.components));
+    const attack = source.replace('name:$/name,accept:$/ok', 'name:"Ada",accept:true,nameAlias:$/name,acceptAlias:$/ok');
+    const compiled = compile('skill-acceptance', attack);
+    assert.throws(() => guardedForm(compiled.createSurface.components), /context|binding/);
+});
+test('A02 review verifies actual submitted action context and identity before trusting an acknowledgement', async () => {
+    const { verifySubmittedAction } = await import(new URL('../scripts/skill-acceptance.mjs', import.meta.url).href);
+    const submit = { id: 'submit', action: { event: { name: 'save' } } };
+    const action = { surfaceId: 'skill-acceptance', sourceComponentId: 'submit', name: 'save', context: { name: 'Ada', accept: true } };
+    assert.equal(verifySubmittedAction(action, submit), true);
+    for (const changed of [{ context: { name: 'Ada', accept: 'true' } }, { context: { name: 'Ada', accept: true, alias: 'Ada' } }, { sourceComponentId: 'different' }, { surfaceId: 'different' }, { name: 'different' }, { context: { name: 'Bob', accept: true } }])
+        assert.throws(() => verifySubmittedAction({ ...action, ...changed }, submit), /Actual submitted action/);
+});
+test('A02 review times out a hung cleanup and still shuts down a real owned child', async () => {
+    const folder = mkdtempSync(join(tmpdir(), 'a2ui-hung-cleanup-'));
+    const fixture = join(folder, 'fixture.mjs');
+    writeFileSync(fixture, 'process.stdin.resume();process.stdin.on("end",()=>process.exit(0));');
+    const rpc = new support.RpcProcess(fixture, [], { cwd: folder, env: cleanEnv() });
+    let outcome;
+    try {
+        outcome = await Promise.race([support.cleanupOwned([['hung-browser', () => new Promise(() => { })], ['pi', () => rpc.close(folder)]], { timeoutMs: 100 }), new Promise(res => setTimeout(() => res(null), 1000))]);
+        assert.ok(outcome, 'cleanup deadline must allow later owned resources to close');
+        assert.equal((outcome as any).stages[0].status, 'failed');
+        assert.equal((outcome as any).stages[1].status, 'passed');
+        assert.equal(rpc.exited, true);
+    }
+    finally {
+        await rpc.close(folder);
+        rmSync(folder, { recursive: true, force: true });
+    }
+});
+test('A02 review explicit package paths are absolute before creating a private run', () => {
+    assert.throws(() => support.parseOptions(['--package', '.', '--expected-version', '0.1.6'], {}), /absolute/);
+});
+test('A02 review unknown errors retain a bounded private cause without adding it to the public phase envelope', async () => {
+    const folder = mkdtempSync(join(tmpdir(), 'a2ui-private-cause-'));
+    try {
+        const report = new support.StageReport(folder, { mode: 'unit' });
+        await assert.rejects(report.step('locator', async () => { throw new Error('private-cause-token'); }));
+        const raw = readFileSync(join(folder, 'result.json'), 'utf8');
+        assert.doesNotMatch(raw, /private-cause-token/);
+        const diagnostic = readdirSync(folder).find(file => /^stage-\d+-error\.log$/.test(file));
+        assert.ok(diagnostic);
+        assert.match(readFileSync(join(folder, diagnostic!), 'utf8'), /private-cause-token/);
+    }
+    finally {
+        rmSync(folder, { recursive: true, force: true });
+    }
+});
+test('A02 review evidence admission rejects readonly package descendants including new paths and symlink aliases before writing', () => {
+    const { symlinkSync } = requireFs;
+    const folder = mkdtempSync(join(tmpdir(), 'a2ui-evidence-target-'));
+    const pkg = join(folder, 'package');
+    mkdirSync(pkg);
+    try {
+        for (const path of ['src', 'dist', 'skills/pi-a2ui/scripts'])
+            mkdirSync(join(pkg, path), { recursive: true });
+        writeFileSync(join(pkg, 'package.json'), JSON.stringify({ name: 'pi-a2ui', version: '0.1.6', pi: { extensions: ['./extension.ts'], skills: ['./skills'] }, files: ['src/', 'dist/', 'skills/', 'extension.ts'] }));
+        writeFileSync(join(pkg, 'extension.ts'), '');
+        writeFileSync(join(pkg, 'dist/assistant-cli.mjs'), '');
+        writeFileSync(join(pkg, 'skills/pi-a2ui/SKILL.md'), 'fixture');
+        writeFileSync(join(pkg, 'skills/pi-a2ui/scripts/a2ui.mjs'), 'console.log(JSON.stringify({packageVersion:"0.1.6",catalogId:"fixture",components:[]}));');
+        symlinkSync(pkg, join(folder, 'alias'), 'dir');
+        for (const parent of [join(pkg, 'src/new/deep'), join(folder, 'alias/src/new/deep')]) {
+            const r = admitted(['--package', pkg, '--expected-version', '0.1.6', '--evidence-dir', parent], cleanEnv(), folder);
+            assert.equal(r.status, 2, r.stderr);
+            assert.equal(JSON.parse(r.stderr).stage, 'admission');
+            assert.match(JSON.parse(r.stderr).error, /evidence|read.only/i);
+            assert.deepEqual(readdirSync(join(pkg, 'src')), []);
+        }
+    }
+    finally {
+        rmSync(folder, { recursive: true, force: true });
+    }
 });

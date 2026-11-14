@@ -2,7 +2,7 @@ import { createConnection } from 'node:net';
 import { spawn } from 'node:child_process';
 import { readFile, writeFile, readdir, lstat, realpath, mkdir, mkdtemp, rename } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
-import { resolve, join, relative, sep, dirname, delimiter } from 'node:path';
+import { resolve, join, relative, sep, dirname, delimiter, isAbsolute } from 'node:path';
 import { tmpdir } from 'node:os';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 export const MODEL = Object.freeze({ provider: 'volcengine-ark', id: 'glm-5.3-flash', baseUrl: 'https://ark.cn-beijing.volces.com/api/plan/v3' });
@@ -11,8 +11,10 @@ export const HELP = 'Usage: node scripts/live-acceptance.mjs --package ABS_PATH 
 export class AcceptanceError extends Error {
     constructor(stage, message, code = 'SETUP', exit = 1) { super(message); this.stage = stage; this.code = code; this.exit = exit; }
 }
-export function assertNode24(version) { if (!/^24\./.test(version))
-    throw new AcceptanceError('admission', 'Node24.x is required; run nvm use 24', 'RUNTIME', 2); }
+export function assertNode24(version) {
+    if (!/^24\./.test(version))
+        throw new AcceptanceError('admission', 'Node24.x is required; run nvm use 24', 'RUNTIME', 2);
+}
 export function parseOptions(args, env = process.env) {
     if (args.length === 1 && args[0] === '--help')
         return { help: true };
@@ -35,6 +37,8 @@ export function parseOptions(args, env = process.env) {
     }
     if (!options.packagePath || !options.expectedVersion)
         throw new AcceptanceError('admission', 'Explicit --package and --expected-version are required', 'USAGE', 2);
+    if (!isAbsolute(options.packagePath))
+        throw new AcceptanceError('admission', 'The explicit package path must be absolute', 'USAGE', 2);
     if (!/^\d+\.\d+\.\d+(?:-[A-Za-z0-9.-]+)?$/.test(options.expectedVersion))
         throw new AcceptanceError('admission', 'Expected version must be exact, not a range', 'USAGE', 2);
     if (!['startup', 'skill', 'component'].includes(options.mode))
@@ -48,41 +52,60 @@ export function parseOptions(args, env = process.env) {
         throw new AcceptanceError('admission', 'Legacy acceptance environment arguments are not supported; use explicit CLI options: ' + legacy.join(', '), 'USAGE', 2);
     return options;
 }
-export function assertModelTuple(state) { if (!state?.success || state.data?.model?.provider !== MODEL.provider || state.data?.model?.id !== MODEL.id || state.data?.model?.baseUrl !== MODEL.baseUrl)
-    throw new AcceptanceError('model-preflight', 'Resolved model must exactly match the allowed Ark AgentPlan GLM tuple', 'MODEL_IDENTITY'); }
+export function assertModelTuple(state) {
+    if (!state?.success || state.data?.model?.provider !== MODEL.provider || state.data?.model?.id !== MODEL.id || state.data?.model?.baseUrl !== MODEL.baseUrl)
+        throw new AcceptanceError('model-preflight', 'Resolved model must exactly match the allowed Ark AgentPlan GLM tuple', 'MODEL_IDENTITY');
+}
 export const contentBlocks = value => Array.isArray(value) ? value.filter(block => block && typeof block === 'object') : [];
 export const messageText = message => typeof message?.content === 'string' ? message.content : contentBlocks(message?.content).filter(block => block.type === 'text').map(block => block.text ?? '').join('\n');
 export const within = (root, path) => { const diff = relative(root, path); return diff === '' || diff !== '..' && !diff.startsWith('..' + sep) && !diff.startsWith(sep); };
 export async function runNode(entry, args, { cwd, env, timeout = 30000 } = {}) {
     const child = spawn(process.execPath, [entry, ...args], { cwd, env, stdio: ['ignore', 'pipe', 'pipe'] });
     let stdout = '', stderr = '', overflow = false;
-    const append = (key, chunk) => { if (stdout.length + stderr.length + chunk.length > 16 * 1024 * 1024) {
-        overflow = true;
-        child.kill('SIGTERM');
-        return;
-    } if (key === 'out')
-        stdout += chunk;
-    else
-        stderr += chunk; };
+    const append = (key, chunk) => {
+        if (stdout.length + stderr.length + chunk.length > 16 * 1024 * 1024) {
+            overflow = true;
+            child.kill('SIGTERM');
+            return;
+        }
+        if (key === 'out')
+            stdout += chunk;
+        else
+            stderr += chunk;
+    };
     child.stdout.on('data', c => append('out', c));
     child.stderr.on('data', c => append('err', c));
-    return await new Promise((res, rej) => { const timer = setTimeout(() => { child.kill('SIGKILL'); rej(new AcceptanceError('process', 'Owned command timed out')); }, timeout); child.once('error', () => { clearTimeout(timer); rej(new AcceptanceError('process', 'Could not start owned Node process')); }); child.once('close', (code, signal) => { clearTimeout(timer); if (overflow)
-        rej(new AcceptanceError('process', 'Diagnostic output exceeded acceptance bound'));
-    else
-        res({ stdout, stderr, code, signal }); }); });
+    return await new Promise((res, rej) => {
+        const timer = setTimeout(() => { child.kill('SIGKILL'); rej(new AcceptanceError('process', 'Owned command timed out')); }, timeout);
+        child.once('error', () => { clearTimeout(timer); rej(new AcceptanceError('process', 'Could not start owned Node process')); });
+        child.once('close', (code, signal) => {
+            clearTimeout(timer);
+            if (overflow)
+                rej(new AcceptanceError('process', 'Diagnostic output exceeded acceptance bound'));
+            else
+                res({ stdout, stderr, code, signal });
+        });
+    });
 }
 async function fileHash(path) { return createHash('sha256').update(await readFile(path)).digest('hex'); }
 export async function packageFingerprint(root, metadata) {
     const entries = new Map();
     let bytes = 0;
-    async function visit(path) { const info = await lstat(path); if (info.isSymbolicLink())
-        throw new AcceptanceError('identity', 'Package payload symlink is not supported for acceptance identity'); if (info.isDirectory()) {
-        for (const name of (await readdir(path)).sort())
-            await visit(join(path, name));
-        return;
-    } if (!info.isFile())
-        throw new AcceptanceError('identity', 'Package payload must contain ordinary files'); if (entries.size >= 512 || (bytes += info.size) > 32 * 1024 * 1024)
-        throw new AcceptanceError('identity', 'Package payload fingerprint bound exceeded'); entries.set(relative(root, path), await fileHash(path)); }
+    async function visit(path) {
+        const info = await lstat(path);
+        if (info.isSymbolicLink())
+            throw new AcceptanceError('identity', 'Package payload symlink is not supported for acceptance identity');
+        if (info.isDirectory()) {
+            for (const name of (await readdir(path)).sort())
+                await visit(join(path, name));
+            return;
+        }
+        if (!info.isFile())
+            throw new AcceptanceError('identity', 'Package payload must contain ordinary files');
+        if (entries.size >= 512 || (bytes += info.size) > 32 * 1024 * 1024)
+            throw new AcceptanceError('identity', 'Package payload fingerprint bound exceeded');
+        entries.set(relative(root, path), await fileHash(path));
+    }
     for (const name of ['package.json', ...(metadata.files ?? [])]) {
         const path = resolve(root, name);
         if (!within(root, path) || ['.local', '.pi', '.git', 'node_modules'].includes(name.split(/[\/]/)[0]))
@@ -98,14 +121,18 @@ export async function packageFingerprint(root, metadata) {
     }
     return createHash('sha256').update(JSON.stringify([...entries].sort(([a], [b]) => a.localeCompare(b)))).digest('hex');
 }
-export async function operatorFingerprint(cwd) { const entries = []; for (const name of ['package.json', 'package-lock.json', '.pi/settings.json', '.a2ui-acceptance-sentinel'])
-    try {
-        entries.push([name, await fileHash(join(cwd, name))]);
-    }
-    catch (error) {
-        if (error.code !== 'ENOENT')
-            throw error;
-    } return createHash('sha256').update(JSON.stringify(entries)).digest('hex'); }
+export async function operatorFingerprint(cwd) {
+    const entries = [];
+    for (const name of ['package.json', 'package-lock.json', '.pi/settings.json', '.a2ui-acceptance-sentinel'])
+        try {
+            entries.push([name, await fileHash(join(cwd, name))]);
+        }
+        catch (error) {
+            if (error.code !== 'ENOENT')
+                throw error;
+        }
+    return createHash('sha256').update(JSON.stringify(entries)).digest('hex');
+}
 export async function admitPackage(options, operatorCwd) {
     let root, metadata;
     try {
@@ -148,31 +175,76 @@ export async function verifyHelper(identity, run) {
     identity.catalog = catalog;
     return catalog;
 }
-export async function createRun(parent) { process.umask(0o077); const dir = parent ? resolve(parent) : tmpdir(); if (parent)
-    await mkdir(dir, { recursive: true }); const root = await mkdtemp(join(dir, 'pi-a2ui-accept-')); return await realpath(root); }
+async function canonicalDestination(path) {
+    const tail = [];
+    let cursor = resolve(path);
+    for (;;) {
+        try {
+            return join(await realpath(cursor), ...tail.reverse());
+        }
+        catch (error) {
+            if (error.code !== 'ENOENT')
+                throw new AcceptanceError('admission', 'Cannot resolve the requested evidence location', 'USAGE', 2);
+        }
+        const parent = dirname(cursor);
+        if (parent === cursor)
+            throw new AcceptanceError('admission', 'Cannot resolve the requested evidence location', 'USAGE', 2);
+        tail.push(cursor.slice(parent.length + (parent.endsWith(sep) ? 0 : 1)));
+        cursor = parent;
+    }
+}
+export async function validateEvidenceParent(options, identity, operatorCwd) {
+    const parent = await canonicalDestination(options.evidenceDir ?? tmpdir());
+    const protectedPaths = [identity.root, ...await Promise.all(['.pi', 'package.json', 'package-lock.json', '.a2ui-acceptance-sentinel'].map(name => canonicalDestination(join(operatorCwd, name))))];
+    if (protectedPaths.some(path => within(path, parent)))
+        throw new AcceptanceError('admission', 'Evidence location overlaps a read-only package or protected operator path', 'USAGE', 2);
+    return parent;
+}
+export async function createRun(parent) {
+    process.umask(0o077);
+    const dir = parent ? resolve(parent) : tmpdir();
+    if (parent)
+        await mkdir(dir, { recursive: true });
+    const root = await mkdtemp(join(dir, 'pi-a2ui-accept-'));
+    return await realpath(root);
+}
 export class StageReport {
     constructor(root, identity) { this.root = root; this.data = { ...identity, passed: false, stages: [], observed: {} }; }
     async save() { await writeFile(join(this.root, 'report.tmp'), JSON.stringify(this.data, null, 2), { mode: 0o600 }); await rename(join(this.root, 'report.tmp'), join(this.root, 'result.json')); }
-    async step(name, fn) { const record = { name, status: 'running' }; this.data.stages.push(record); await this.save(); try {
-        const value = await fn();
-        record.status = 'passed';
+    async step(name, fn) {
+        const record = { name, status: 'running' };
+        this.data.stages.push(record);
         await this.save();
-        return value;
+        try {
+            const value = await fn();
+            record.status = 'passed';
+            await this.save();
+            return value;
+        }
+        catch (error) {
+            record.status = 'failed';
+            this.data.failedStage ??= name;
+            record.error = error instanceof AcceptanceError ? error.message : 'Acceptance stage failed; inspect private diagnostics';
+            this.data.error ??= record.error;
+            try {
+                await writeFile(join(this.root, `stage-${this.data.stages.length}-error.log`), String(error instanceof Error ? (error.stack ?? error.message) : error).slice(0, 8192), { mode: 0o600 });
+            }
+            catch { /* Retain the original stage failure even when diagnostic writing fails. */ }
+            await this.save();
+            throw error;
+        }
     }
-    catch (error) {
-        record.status = 'failed';
-        this.data.failedStage ??= name;
-        record.error = error instanceof AcceptanceError ? error.message : 'Acceptance stage failed; inspect private diagnostics';
-        this.data.error ??= record.error;
-        await this.save();
-        throw error;
-    } }
 }
 export async function stopChild(child) {
     if (!child.pid || child.exitCode !== null || child.signalCode !== null)
         return true;
-    const waitExit = ms => new Promise(res => { const done = () => { clearTimeout(timer); child.removeListener('exit', done); res(true); }; const timer = setTimeout(() => { child.removeListener('exit', done); res(false); }, ms); child.once('exit', done); if (child.exitCode !== null || child.signalCode !== null)
-        done(); });
+    const waitExit = ms => new Promise(res => {
+        const done = () => { clearTimeout(timer); child.removeListener('exit', done); res(true); };
+        const timer = setTimeout(() => { child.removeListener('exit', done); res(false); }, ms);
+        child.once('exit', done);
+        if (child.exitCode !== null || child.signalCode !== null)
+            done();
+    });
     child.stdin?.end();
     if (await waitExit(5000))
         return true;
@@ -192,52 +264,93 @@ export class RpcProcess {
         this.exited = false;
         this.watchers = new Set();
         this.failed = false;
-        this.child.stdin.on('error', () => { this.failed = true; for (const w of this.watchers)
-            w(); });
-        this.child.on('error', () => { this.failed = true; if (!this.child.pid)
-            this.exited = true; for (const w of this.watchers)
-            w(); });
-        const collect = (key, chunk) => { if (this.stdout.length + this.stderr.length + chunk.length > 16 * 1024 * 1024) {
+        this.child.stdin.on('error', () => {
             this.failed = true;
-            this.child.kill('SIGTERM');
             for (const w of this.watchers)
                 w();
-            return;
-        } this[key] += chunk; if (key !== 'stdout')
-            return; this.pending += chunk; while (this.pending.includes('\n')) {
-            const at = this.pending.indexOf('\n'), line = this.pending.slice(0, at);
-            this.pending = this.pending.slice(at + 1);
-            try {
-                const event = JSON.parse(line);
-                if (event && typeof event === 'object' && !Array.isArray(event)) {
-                    this.events.push(event);
-                    for (const w of this.watchers)
-                        w();
-                }
+        });
+        this.child.on('error', () => {
+            this.failed = true;
+            if (!this.child.pid)
+                this.exited = true;
+            for (const w of this.watchers)
+                w();
+        });
+        const collect = (key, chunk) => {
+            if (this.stdout.length + this.stderr.length + chunk.length > 16 * 1024 * 1024) {
+                this.failed = true;
+                this.child.kill('SIGTERM');
+                for (const w of this.watchers)
+                    w();
+                return;
             }
-            catch { }
-        } };
+            this[key] += chunk;
+            if (key !== 'stdout')
+                return;
+            this.pending += chunk;
+            while (this.pending.includes('\n')) {
+                const at = this.pending.indexOf('\n'), line = this.pending.slice(0, at);
+                this.pending = this.pending.slice(at + 1);
+                try {
+                    const event = JSON.parse(line);
+                    if (event && typeof event === 'object' && !Array.isArray(event)) {
+                        this.events.push(event);
+                        for (const w of this.watchers)
+                            w();
+                    }
+                }
+                catch { }
+            }
+        };
         this.child.stdout.on('data', c => collect('stdout', c));
         this.child.stderr.on('data', c => collect('stderr', c));
-        this.child.on('exit', () => { this.exited = true; for (const w of this.watchers)
-            w(); });
+        this.child.on('exit', () => {
+            this.exited = true;
+            for (const w of this.watchers)
+                w();
+        });
     }
-    send(value) { if (this.exited || this.failed)
-        throw new AcceptanceError('rpc', 'Pi is unavailable'); this.child.stdin.write(JSON.stringify(value) + '\n'); }
-    wait(predicate, after = 0, timeout = 30000) { return new Promise((res, rej) => { const check = () => { const e = this.events.slice(after).find(predicate); if (e) {
-        clearTimeout(timer);
-        this.watchers.delete(check);
-        res(e);
+    send(value) {
+        if (this.exited || this.failed)
+            throw new AcceptanceError('rpc', 'Pi is unavailable');
+        this.child.stdin.write(JSON.stringify(value) + '\n');
     }
-    else if (this.exited || this.failed) {
-        clearTimeout(timer);
-        this.watchers.delete(check);
-        rej(new AcceptanceError('rpc', 'Pi exited or failed before expected response'));
-    } }; const timer = setTimeout(() => { this.watchers.delete(check); rej(new AcceptanceError('rpc', 'Pi RPC/agent stage timed out')); }, timeout); this.watchers.add(check); check(); }); }
-    async command(id, type, extra = {}) { this.send({ id, type, ...extra }); const response = await this.wait(e => e.type === 'response' && e.id === id); if (!response.success)
-        throw new AcceptanceError('rpc', 'Pi RPC command failed: ' + type); return response; }
-    async close(root) { const exited = await stopChild(this.child); await writeFile(join(root, 'rpc.json'), JSON.stringify(this.events), { mode: 0o600 }); await writeFile(join(root, 'pi-stdout.log'), this.stdout, { mode: 0o600 }); await writeFile(join(root, 'pi-stderr.log'), this.stderr, { mode: 0o600 }); if (!exited)
-        throw new AcceptanceError('cleanup', 'Owned Pi process did not exit'); return true; }
+    wait(predicate, after = 0, timeout = 30000) {
+        return new Promise((res, rej) => {
+            const check = () => {
+                const e = this.events.slice(after).find(predicate);
+                if (e) {
+                    clearTimeout(timer);
+                    this.watchers.delete(check);
+                    res(e);
+                }
+                else if (this.exited || this.failed) {
+                    clearTimeout(timer);
+                    this.watchers.delete(check);
+                    rej(new AcceptanceError('rpc', 'Pi exited or failed before expected response'));
+                }
+            };
+            const timer = setTimeout(() => { this.watchers.delete(check); rej(new AcceptanceError('rpc', 'Pi RPC/agent stage timed out')); }, timeout);
+            this.watchers.add(check);
+            check();
+        });
+    }
+    async command(id, type, extra = {}) {
+        this.send({ id, type, ...extra });
+        const response = await this.wait(e => e.type === 'response' && e.id === id);
+        if (!response.success)
+            throw new AcceptanceError('rpc', 'Pi RPC command failed: ' + type);
+        return response;
+    }
+    async close(root) {
+        const exited = await stopChild(this.child);
+        await writeFile(join(root, 'rpc.json'), JSON.stringify(this.events), { mode: 0o600 });
+        await writeFile(join(root, 'pi-stdout.log'), this.stdout, { mode: 0o600 });
+        await writeFile(join(root, 'pi-stderr.log'), this.stderr, { mode: 0o600 });
+        if (!exited)
+            throw new AcceptanceError('cleanup', 'Owned Pi process did not exit');
+        return true;
+    }
 }
 export function runtimeEnv(run, base = process.env, { offline = false, agentDir } = {}) {
     const env = { ...base };
@@ -275,17 +388,21 @@ export async function requireListenerClosed(origin) {
         throw new AcceptanceError('cleanup', 'Owned canvas listener is still reachable or closure is unverified');
     return true;
 }
-export async function cleanupOwned(tasks) {
+export async function cleanupOwned(tasks, { timeoutMs = 15000 } = {}) {
     const stages = [];
     let firstError;
     for (const [name, action] of tasks) {
+        let timer;
         try {
-            await action();
+            await Promise.race([Promise.resolve().then(action), new Promise((_, reject) => { timer = setTimeout(() => reject(new AcceptanceError('cleanup', 'Owned cleanup deadline exceeded')), timeoutMs); })]);
             stages.push({ name, status: 'passed' });
         }
         catch (error) {
             firstError ??= error;
             stages.push({ name, status: 'failed', error: error instanceof AcceptanceError ? error.message : 'Owned cleanup failed; inspect private diagnostics' });
+        }
+        finally {
+            clearTimeout(timer);
         }
     }
     return { stages, firstError };

@@ -18,17 +18,8 @@ export async function runComponent({ packagePath, scenario, workspace, cwd, brow
             await writeFile(join(cwd, 'a2ui-fixtures', name), await readFile(new URL('../tests/fixtures/' + name, import.meta.url)));
     }
     let testEvidence;
-    if (scenario === 'coding') {
-        await mkdir(workspace, { recursive: true });
-        const source = 'import {test} from "node:test";import assert from "node:assert/strict";test("Arithmetic",()=>assert.equal(2+2,4));\n';
-        const path = join(workspace, 'arithmetic.test.mjs');
-        await writeFile(path, source);
-        const execution = spawnSync(process.execPath, ['--test', '--test-reporter=tap', path], { encoding: 'utf8' });
-        if (execution.status !== 0 || !/^# pass 1$/m.test(execution.stdout))
-            throw new Error('Actual coding fixture did not pass; refusing invented results');
-        testEvidence = { source, exitCode: execution.status, pass: 1, fail: 0, actualExecution: true };
-        await writeFile(join(workspace, 'test-evidence.json'), JSON.stringify(testEvidence, null, 2));
-    }
+    if (scenario === 'coding')
+        testEvidence = await runCodingFixture(workspace);
     await mkdir(join(workspace, 'bin'), { recursive: true });
     for (const program of ['open', 'xdg-open'])
         await writeFile(join(workspace, 'bin', program), '#!/bin/sh\numask 077\nprintf "%s" "$1" > "$A2UI_ACCEPT_OPEN_FILE"\n', { mode: 0o700 });
@@ -176,8 +167,10 @@ export async function runComponent({ packagePath, scenario, workspace, cwd, brow
         const cleanup = await cleanupOwned([
             ['cleanup.browser', async () => { await browser?.close(); }],
             ['cleanup.pi', async () => { await rpc.close(workspace); }],
-            ['cleanup.listener', async () => { if (origin)
-                    released = await requireListenerClosed(origin); }],
+            ['cleanup.listener', async () => {
+                    if (origin)
+                        released = await requireListenerClosed(origin);
+                }],
             ['child-runtime', async () => { Object.assign(result, await checkChildRuntime(workspace, pi.pid)); }],
         ]);
         result = { ...result, node: process.version, ...(pageCreated ? { browserErrors: pageErrors.length } : {}), ...(origin ? { listenerReleased: released === true } : {}), processExited: rpc.exited, suppliedDsl: true, skillForward: false, normalRegistration: false, cleanupStages: cleanup.stages };
@@ -192,4 +185,16 @@ export async function runComponent({ packagePath, scenario, workspace, cwd, brow
     if (failure)
         throw failure;
     return result;
+}
+export async function runCodingFixture(workspace) {
+    await mkdir(workspace, { recursive: true });
+    const source = 'import {test} from "node:test";import assert from "node:assert/strict";test("Arithmetic",()=>assert.equal(2+2,4));\n';
+    const path = join(workspace, 'arithmetic.test.mjs');
+    await writeFile(path, source);
+    const execution = spawnSync(process.execPath, ['--test', '--test-reporter=tap', path], { cwd: workspace, env: runtimeEnv(workspace), encoding: 'utf8' });
+    if (execution.status !== 0 || !/^# pass 1$/m.test(execution.stdout))
+        throw new Error('Actual coding fixture did not pass; refusing invented results');
+    const testEvidence = { source, exitCode: execution.status, pass: 1, fail: 0, actualExecution: true };
+    await writeFile(join(workspace, 'test-evidence.json'), JSON.stringify(testEvidence, null, 2));
+    return testEvidence;
 }
