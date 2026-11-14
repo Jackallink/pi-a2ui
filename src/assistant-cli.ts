@@ -1,3 +1,4 @@
+import {componentGuidance,cliDiagnostic,AUTHORING_RESTRICTIONS,type DiagnosticCode} from './assistant-guidance.js';
 import {COMMAND_PALETTE_CAPABILITY} from './command-palette.ts';
 import {constants} from 'node:fs';
 import {open,readFile} from 'node:fs/promises';
@@ -6,7 +7,7 @@ import {catalogs} from './catalog.ts';
 import {LIMITS} from './protocol.ts';
 
 interface Example{name:string;requires:string[];pattern?:string;reference?:string}
-const help='Usage: node SKILL/scripts/a2ui.mjs catalog | patterns | pattern NAME | examples | example NAME | check --surface-id ID FILE_OR_-\nRead-only preflight; rendering still requires a2ui_render. Requires Node24.x.\n';
+const help='Usage: node SKILL/scripts/a2ui.mjs catalog | component NAME | patterns | pattern NAME | examples | example NAME | check --surface-id ID FILE_OR_-\nRead-only preflight; rendering still requires a2ui_render. Requires Node24.x.\n';
 async function sourceFile(path:string):Promise<string>{
  const chunks:Buffer[]=[];let size=0;
  if(path==='-'){
@@ -21,15 +22,17 @@ async function sourceFile(path:string):Promise<string>{
  return new TextDecoder('utf-8',{fatal:true,ignoreBOM:true}).decode(Buffer.concat(chunks));
 }
 export async function runCli(args:string[]):Promise<number>{
- const usage=()=>{process.stderr.write(JSON.stringify({error:'Invalid command or arguments',usage:help})+'\n');return 2;};
- if(Number(process.versions.node.split('.')[0])!==24){process.stderr.write(JSON.stringify({error:'Node24.x is required; run nvm use 24'})+'\n');return 2;}
+ const usage=()=>{process.stderr.write(JSON.stringify({...cliDiagnostic(new Error('Invalid command or arguments'),'USAGE'),usage:help})+'\n');return 2;};
+ if(Number(process.versions.node.split('.')[0])!==24){process.stderr.write(JSON.stringify(cliDiagnostic(new Error('Node24.x is required; run nvm use 24'),'RUNTIME'))+'\n');return 2;}
  if(args.length===1&&args[0]==='--help'){process.stdout.write(help);return 0;}
  const [command,...rest]=args;
- if(!['catalog','patterns','pattern','examples','example','check'].includes(command)||(['catalog','patterns','examples'].includes(command)&&rest.length)||(['example','pattern'].includes(command)&&rest.length!==1)||(command==='check'&&(rest.length!==3||rest[0]!=='--surface-id')))return usage();
+ if(!['catalog','component','patterns','pattern','examples','example','check'].includes(command)||(['catalog','patterns','examples'].includes(command)&&rest.length)||(['example','pattern','component'].includes(command)&&rest.length!==1)||(command==='check'&&(rest.length!==3||rest[0]!=='--surface-id')))return usage();
+ let stage:DiagnosticCode='LOOKUP';let activeCatalog:typeof catalogs[number]|undefined;let manifest:Example[]=[];
  try{
   // Select through the same compilation path, not a duplicate/hardcoded catalog.
   const probe=compile('preflight','root = Text(text="preflight")');
-  const catalog=catalogs.find(c=>c.id===probe.createSurface.catalogId)!;
+  const catalog=catalogs.find(c=>c.id===probe.createSurface.catalogId)!;activeCatalog=catalog;
+  if(command==='component'){const metadata=JSON.parse(await readFile(new URL('../package.json',import.meta.url),'utf8'));manifest=JSON.parse(await readFile(new URL('../skills/pi-a2ui/examples/manifest.json',import.meta.url),'utf8'));process.stdout.write(JSON.stringify({packageVersion:metadata.version,catalogId:catalog.id,scope:'This helper package, not an arbitrary running Pi instance',component:componentGuidance(catalog,rest[0],manifest),restrictions:AUTHORING_RESTRICTIONS})+'\n');return 0;}
   if(command==='catalog'){
    const metadata=JSON.parse(await readFile(new URL('../package.json',import.meta.url),'utf8'));
    process.stdout.write(JSON.stringify({packageVersion:metadata.version,nodeMajor:24,catalogId:catalog.id,components:[...catalog.components.keys()].sort(),scope:'This helper package, not an arbitrary running Pi instance'})+'\n');return 0;
@@ -49,6 +52,6 @@ export async function runCli(args:string[]):Promise<number>{
    const missing=selected.requires.filter(name=>!catalog.components.has(name));if(missing.length)throw new Error('Example unavailable in this package catalog: '+missing.join(', '));
    const source=await readFile(new URL('../skills/pi-a2ui/examples/'+selected.name+'.express',import.meta.url),'utf8');compile('preflight',source);process.stdout.write(source);return 0;
   }
-  const source=await sourceFile(rest[2]);compile(rest[1],source);process.stdout.write(JSON.stringify({surfaceId:rest[1],source})+'\n');return 0;
- }catch(error){process.stderr.write(JSON.stringify({error:error instanceof Error?error.message:'Preflight failed'})+'\n');return 1;}
+  stage='INPUT';const source=await sourceFile(rest[2]);stage='COMPILE';compile(rest[1],source);process.stdout.write(JSON.stringify({surfaceId:rest[1],source})+'\n');return 0;
+ }catch(error){if(activeCatalog&&stage==='COMPILE')try{manifest=JSON.parse(await readFile(new URL('../skills/pi-a2ui/examples/manifest.json',import.meta.url),'utf8'));}catch{/* Original compiler error remains the useful failure. */}process.stderr.write(JSON.stringify(cliDiagnostic(error,stage,activeCatalog,manifest))+'\n');return 1;}
 }

@@ -1,6 +1,5 @@
-// src/interactions.ts
-import { z as z2 } from "zod";
-import { basicCatalog } from "@a2ui/web_core/v1_0";
+// src/live.ts
+import { z } from "zod";
 
 // src/protocol.ts
 var LIMITS = {
@@ -15,11 +14,236 @@ var LIMITS = {
   queuedBytes: 256 * 1024
 };
 var UiError = class extends Error {
-  constructor(status, message) {
-    super(message);
+  constructor(status, message, options) {
+    super(message, options);
     this.status = status;
   }
 };
+
+// src/live.ts
+var logStates = ["idle", "running", "completed", "error", "paused", "interrupted"];
+var logViewApi = { name: "LogView", schema: z.object({ stream: z.literal("tools").default("tools"), text: z.string().default(""), omitted: z.boolean().default(false), state: z.enum(logStates).default("idle") }).strict() };
+var seriesSchema = z.array(z.object({ name: z.string().min(1).max(128), points: z.array(z.object({ label: z.string().max(128), value: z.number().finite() }).strict()).max(200) }).strict()).max(4);
+var chartApi = { name: "Chart", schema: z.object({ kind: z.enum(["line", "bar"]), series: seriesSchema }).strict() };
+var liveApis = [logViewApi, chartApi];
+function trimLog(input2, bytes = 65536, maxLines = 1e3) {
+  let text2 = input2;
+  let omitted = false;
+  if (text2.length > 65536) {
+    text2 = text2.slice(-65536);
+    omitted = true;
+  }
+  const rows = text2.split("\n");
+  if (rows.length > maxLines) {
+    text2 = rows.slice(-maxLines).join("\n");
+    omitted = true;
+  }
+  while (new TextEncoder().encode(JSON.stringify(text2)).byteLength > bytes) {
+    text2 = text2.slice(Math.max(1, Math.ceil(text2.length / 8)));
+    omitted = true;
+  }
+  if (text2.length && /[\uDC00-\uDFFF]/.test(text2[0])) {
+    text2 = text2.slice(1);
+    omitted = true;
+  }
+  return { text: JSON.parse(JSON.stringify(text2)), omitted };
+}
+function validateSeries(input2) {
+  const series = seriesSchema.parse(input2);
+  const names = /* @__PURE__ */ new Set();
+  for (const item of series) {
+    if (names.has(item.name)) throw new UiError(400, "Chart series names must be unique");
+    names.add(item.name);
+    if (item.points.length !== series[0].points.length || item.points.some((point, index) => point.label !== series[0].points[index].label)) throw new UiError(400, "Chart series labels must align");
+  }
+  return series;
+}
+function validateLive(message, initial = false) {
+  let logs = 0;
+  for (const component of message.createSurface.components) {
+    if (component.component === "Chart") validateSeries(component.series);
+    if (component.component === "LogView") {
+      if (++logs > 1) throw new UiError(400, "Only one LogView per surface");
+      const { id: _, component: __, ...props } = component;
+      const data = logViewApi.schema.parse(props);
+      if (initial && (data.text !== "" || data.omitted || data.state !== "idle")) throw new UiError(400, "LogView initial output is server-controlled");
+      if (trimLog(data.text).text !== data.text) throw new UiError(413, "Saved LogView exceeds its text/line budget");
+      Object.assign(component, data);
+    }
+  }
+}
+
+// src/workbench.ts
+import { z as z2 } from "zod";
+import { basicCatalog } from "@a2ui/web_core/v1_0";
+var identity = z2.string().regex(/^[A-Za-z0-9_-]{1,64}$/);
+var dataTableApi = { name: "DataTable", schema: z2.object({ caption: z2.string().min(1).max(256), columns: z2.array(z2.object({ id: identity, label: z2.string().min(1).max(128) }).strict()).min(1).max(12), rows: z2.array(z2.object({ id: identity, cells: z2.array(z2.union([z2.string().max(256), z2.number().finite(), z2.boolean(), z2.null()])).max(12) }).strict()).max(200), state: z2.enum(["ready", "loading", "error"]).default("ready"), message: z2.string().max(512).default("") }).strict() };
+var codeBlockApi = { name: "CodeBlock", schema: z2.object({ code: z2.string(), language: z2.string().max(32).default("text"), copyable: z2.boolean().default(true) }).strict() };
+var markdownApi = { name: "MarkdownView", schema: z2.object({ text: z2.string() }).strict() };
+var detailsApi = { name: "Details", schema: z2.object({ title: z2.string().min(1).max(256), child: basicCatalog.components.get("Card").schema.shape.child, open: z2.boolean().default(false) }).strict() };
+var statusBadgeApi = { name: "StatusBadge", schema: z2.object({ label: z2.string().min(1).max(256), status: z2.enum(["info", "success", "warning", "error", "running"]), provenance: z2.literal("reported").default("reported") }).strict() };
+var taskProgressApi = { name: "TaskProgress", schema: z2.object({ stream: z2.literal("tools").default("tools"), state: z2.enum(logStates).default("idle"), started: z2.number().int().min(0).max(1024).default(0), settled: z2.number().int().min(0).max(1024).default(0), failed: z2.number().int().min(0).max(1024).default(0), omitted: z2.boolean().default(false) }).strict() };
+var artifactUrl = z2.string().regex(/^\/api\/artifacts\/[a-f0-9]{32}$/);
+var artifactPreviewApi = { name: "ArtifactPreview", schema: z2.object({ src: artifactUrl, kind: z2.enum(["image", "video", "audio"]), label: z2.string().min(1).max(256) }).strict() };
+var workbenchApis = [dataTableApi, codeBlockApi, markdownApi, detailsApi, statusBadgeApi, taskProgressApi, artifactPreviewApi];
+var APPROVED_ICON_NAMES = Object.freeze(["check", "close", "error", "info", "warning", "folder", "help", "refresh", "play", "pause", "search", "settings"]);
+function validateWorkbench(message, initial = false) {
+  let progressCount = 0, modalCount = 0;
+  for (const c of message.createSurface.components) {
+    if (["Image", "Video", "AudioPlayer"].includes(c.component)) {
+      artifactUrl.parse(c.url);
+      if (c.posterUrl !== void 0) artifactUrl.parse(c.posterUrl);
+      for (const prop of ["description", "fit", "variant"]) if (c[prop] !== void 0 && typeof c[prop] !== "string") throw new UiError(400, "Artifact media props must be static");
+    }
+    if (c.component === "Icon" && !APPROVED_ICON_NAMES.includes(c.name)) throw new UiError(400, "Icon name must be a static approved local icon");
+    if (c.component === "Modal") {
+      if (++modalCount > 1) throw new UiError(400, "Only one Modal per surface");
+      const trigger = message.createSurface.components.find((node) => node.id === c.trigger);
+      if (!trigger || !["Text", "Icon"].includes(trigger.component)) throw new UiError(400, "Modal trigger must be Text or Icon");
+    }
+    if (c.component === "StatusBadge") {
+      const { id: _, component: __, ...props } = c;
+      Object.assign(c, statusBadgeApi.schema.parse(props));
+    }
+    if (c.component === "TaskProgress") {
+      const { id: _, component: __, ...props } = c;
+      const p = taskProgressApi.schema.parse(props);
+      if (++progressCount > 1 || p.failed > p.settled || p.settled > p.started) throw new UiError(400, "Invalid native tool progress counters");
+      if (initial && (p.state !== "idle" || p.started !== 0 || p.settled !== 0 || p.failed !== 0 || p.omitted)) throw new UiError(400, "TaskProgress initial values are server-controlled");
+      Object.assign(c, p);
+    }
+    if (c.component === "CodeBlock" || c.component === "MarkdownView") {
+      const { id: _, component: __, ...props } = c;
+      const p = (c.component === "CodeBlock" ? codeBlockApi : markdownApi).schema.parse(props);
+      const value = "code" in p ? p.code : p.text;
+      if (new TextEncoder().encode(value).byteLength > 16384 || value.split(/\r\n|\r|\n/).length > 512) throw new UiError(413, "Text block exceeds16KiB/512 lines");
+      Object.assign(c, p);
+    }
+    if (c.component === "DataTable") {
+      const { id: _, component: __, ...props } = c;
+      const p = dataTableApi.schema.parse(props);
+      if (new Set(p.columns.map((x) => x.id)).size !== p.columns.length || new Set(p.rows.map((x) => x.id)).size !== p.rows.length || p.rows.some((x) => x.cells.length !== p.columns.length)) throw new UiError(400, "Table requires unique IDs and one cell per column");
+      Object.assign(c, p);
+    }
+  }
+}
+
+// src/authoring-policy.ts
+import { z as z3 } from "zod";
+import { ExpressUnknownPropertyError, ExpressMissingRequiredPropertyError, ExpressUnknownComponentError } from "@a2ui/agent";
+var FORBIDDEN_AUTHORING_KEYS = Object.freeze(["checks", "path", "call", "callFunction"]);
+var inputNames = /* @__PURE__ */ new Set(["TextField", "CheckBox", "ChoicePicker", "Slider", "DateTimeInput", "SearchablePicker"]);
+var nativeNames = /* @__PURE__ */ new Set(["LogView", "TaskProgress", "ActivityTimeline"]);
+function authoringParameters(api) {
+  let schema = api.schema;
+  for (let depth = 0; depth < 8; depth++) {
+    if (schema instanceof z3.ZodObject) return Object.entries(schema.shape).filter(([name]) => !FORBIDDEN_AUTHORING_KEYS.includes(name) && (!nativeNames.has(api.name) || name === "stream")).map(([name, property]) => ({ name, required: inputNames.has(api.name) && name === "value" || !property.isOptional() }));
+    if (schema instanceof z3.ZodEffects) schema = schema.innerType();
+    else if (schema instanceof z3.ZodOptional || schema instanceof z3.ZodNullable) schema = schema.unwrap();
+    else if (schema instanceof z3.ZodDefault) schema = schema.removeDefault();
+    else break;
+  }
+  throw new Error("Authoring parameter metadata unavailable for " + api.name);
+}
+function expressCause(error) {
+  const seen = /* @__PURE__ */ new Set();
+  let current = error;
+  for (let depth = 0; depth < 8 && current instanceof Error && !seen.has(current); depth++) {
+    seen.add(current);
+    if (current instanceof ExpressUnknownPropertyError || current instanceof ExpressMissingRequiredPropertyError || current instanceof ExpressUnknownComponentError) return current;
+    current = current.cause;
+  }
+  return void 0;
+}
+function compilerErrorMessage(error, catalog) {
+  const cause = expressCause(error);
+  if (cause instanceof ExpressUnknownPropertyError || cause instanceof ExpressMissingRequiredPropertyError) {
+    const api = catalog.components.get(cause.compName);
+    let properties = [];
+    try {
+      if (api) properties = authoringParameters(api).map((p) => p.name);
+    } catch {
+    }
+    const reason = cause instanceof ExpressUnknownPropertyError ? `Property '${cause.propName}' is not a valid property of component '${cause.compName}'.` : `Component '${cause.compName}' requires property '${cause.propName}'.`;
+    let location = "";
+    if (error instanceof Error) {
+      const details = error;
+      if (Number.isSafeInteger(details.line) && details.line >= 0) location = " Line " + details.line + (Number.isSafeInteger(details.column) && details.column >= 0 ? ", Col " + details.column : "") + ".";
+    }
+    return reason + location + (properties.length ? " Allowed authoring properties: " + properties.join(", ") + "." : " Query component metadata for supported authoring properties.");
+  }
+  return error instanceof Error ? error.message : "compilation failed";
+}
+
+// src/assistant-guidance.ts
+var core = "references/core-components.md";
+var coding = "references/coding-and-live.md";
+var workbench = "references/workbench-components.md";
+var artifacts = "references/artifacts.md";
+var input = "Initialize a typed value. For interactive submission use an initialized absolute value binding and bind it directly in Event context; legacy literal initialization remains supported where the compiler permits it.";
+var layout = "Static reachable component children in one root tree; no dynamic templates. Keep existing component/depth/source/session budgets.";
+var native = 'Native tool events only: author stream="tools" and omit state, counters, text, timing and omission fields. No fabricated execution. Live updates between successful tool-result checkpoints are not separately durable.';
+var notes = {
+  Text: { reference: core, notes: ["Literal escaped plain text; Text does not render Markdown or HTML. Use MarkdownView for its limited safe Markdown subset."] },
+  Column: { reference: core, notes: [layout] },
+  Row: { reference: core, notes: [layout] },
+  Card: { reference: core, notes: [layout, "child is a component reference or nested component, not a title string."] },
+  Button: { reference: core, notes: ["Use action=Event with literal event name and literal JSON or direct initialized input value bindings. Functions are unavailable; event context follows the committed definition. Never put interactive widgets inside Button."] },
+  TextField: { reference: core, notes: [input, "value is a string; initialized value is required even though the SDK marks it optional."] },
+  CheckBox: { reference: core, notes: [input, "value is boolean; checked state is not an execution permission."] },
+  ChoicePicker: { reference: core, notes: [input, "Static allowed options and typed string-array selection, subset of declared values; mutually-exclusive mode accepts at most one. Basic filterable search stays local."] },
+  Slider: { reference: core, notes: [input, "Finite numeric value in a static min/max/steps range."] },
+  DateTimeInput: { reference: core, notes: [input, "Set enableDate/enableTime explicitly and use local YYYY-MM-DD, HH:mm or YYYY-MM-DDTHH:mm matching those flags; optional :00 seconds. Static bounds; no timezone/RFC3339-offset advice."] },
+  Tabs: { reference: core, notes: [layout, "Static title/child entries; tab navigation stays local and preserves current drafts."] },
+  Divider: { reference: core, notes: ["Local layout separator; no event or model request."] },
+  CodeDiff: { reference: coding, notes: ["Bounded immutable proposalId/source records, read-only comparison. Declared follow-up Buttons carry the current literal proposalId; a source path is reported intent, not browser read permission."] },
+  TestResults: { reference: coding, notes: ["Supplied test records/provenance are reported evidence, not proof of execution. Immutable resultId and consistent counts; follow-up Buttons carry the current literal resultId."] },
+  LogView: { reference: coding, notes: [native, "Bounded native log window; omitted earlier output stays marked."] },
+  Chart: { reference: coding, notes: ["Static finite aligned line/bar series only. Use a2ui_update_chart for data-only updates without replacing layout/drafts; no invented measurements or executable data binding."] },
+  DataTable: { reference: workbench, notes: ["Static bounded columns/rows with unique IDs, primitive cells and one cell per column. Sorting/filtering are browser-local, not remote queries or templates."] },
+  CodeBlock: { reference: workbench, notes: ["Literal escaped code up to16KiB/512lines; copy is local, never execute contents. No nesting inside Button."] },
+  MarkdownView: { reference: workbench, notes: ["Explicit limited safe Markdown subset up to16KiB/512lines; no HTML, links or images. Text remains literal."] },
+  Details: { reference: workbench, notes: [layout, "Local disclosure with title/child/open. Multiple Details compose an accordion; do not nest in Button."] },
+  StatusBadge: { reference: workbench, notes: ["Status/provenance supplied by Pi is reported, not independent verification. Native TaskProgress is the real tool lifecycle alternative."] },
+  TaskProgress: { reference: workbench, notes: [native, "Counts actual tracked native events, not an invented planned percentage; at most one per surface."] },
+  List: { reference: workbench, notes: [layout, "children is a static component list, never a template object or _template helper."] },
+  Modal: { reference: workbench, notes: ["Local dialog: trigger is Text or Icon; at most one Modal per surface, no nested Modal or interactive Button ancestor. All hidden content still validates."] },
+  Icon: { reference: workbench, notes: ["Static approved local names only: " + APPROVED_ICON_NAMES.join(", ") + ". No remote icon fetch."] },
+  Image: { reference: artifacts, notes: ["url must be the exact opaque src registered by a2ui_register_artifact in this session. No external/file/data/blob/SVG source; description is static."] },
+  Video: { reference: artifacts, notes: ["url and optional posterUrl must be exact session-registered opaque artifact refs; supported WebM/MP4 depends on browser decoding. No external/file/data/blob/SVG, autoplay or microphone."] },
+  AudioPlayer: { reference: artifacts, notes: ["url must be exact session-registered opaque artifact src, supported WAV with browser decoding. No external/file/data/blob sources, autoplay or microphone."] },
+  ArtifactPreview: { reference: artifacts, notes: ["Use the exact src/kind returned by a2ui_register_artifact; immutable session copy, not an arbitrary path/URL. Pause/reset/restore expiry may show Unavailable; label is not verified metadata."] },
+  SearchablePicker: { reference: "references/navigation-and-selection.md", notes: ["Initialized absolute string-array value binding is required; static label/unique-value options up to200, declared subset/single-or-multiple selection only. Query is local and never submitted as free text; retained choices remain removable."] },
+  FormValidation: { reference: "references/summaries-and-feedback.md", notes: ["Stable explicit input/Button IDs, distinct bound field paths and direct coverage of every ruled path in every guarded Button context. required/minLength/maxLength only, typed constraints still apply. Client/server repeat validation; invalid business draft may render but invalid guarded submit dispatches nothing. Not execution authorization."] },
+  ActivityTimeline: { reference: "references/timeline-and-evidence.md", notes: [native, "At most32 retained current-run rows with explicit omission. No model-authored entries/outcomes/durations; at most one per surface."] }
+};
+function componentGuidance(catalog, name, examples) {
+  const api = catalog.components.get(name), policy = notes[name];
+  if (!api || !policy) throw new Error("Unknown component or authoring policy; use catalog for actual types and patterns for compositions");
+  return { name, parameters: authoringParameters(api), notes: policy.notes, examples: examples.filter((example) => example.requires.includes(name)).map((example) => example.name), reference: policy.reference };
+}
+function cliDiagnostic(error, code, catalog, examples = []) {
+  const message = error instanceof Error ? error.message : String(error);
+  let hint = code === "LOOKUP" ? "Use catalog, component NAME, examples or patterns to select an actual supported item." : code === "INPUT" ? "Read one regular UTF8 Express file without BOM, within32KiB, or pipe it to check using -." : code === "USAGE" ? "Use --help for command names and exact arguments." : code === "RUNTIME" ? "Select Node24.x with nvm use 24, then run the installed helper." : "Use an unmodified matching example, adapt named arguments, then check the complete source again. No automatic repair or retry.";
+  const result = { error: message, code, hint, reference: code === "COMPILE" ? "references/syntax-and-errors.md" : "references/helper.md" };
+  const cause = expressCause(error);
+  if (code === "COMPILE" && cause && catalog) {
+    result.component = cause.compName;
+    if (catalog.components.has(cause.compName)) {
+      const guidance = componentGuidance(catalog, cause.compName, examples);
+      result.allowedProperties = guidance.parameters.map((p) => p.name);
+      result.examples = guidance.examples;
+      result.hint = "Use component " + cause.compName + " for named parameters/project notes, or example " + (guidance.examples[0] ?? "user-form") + "; then check the corrected complete source.";
+    } else result.hint = "That name is not a component in this helper catalog. Use catalog for actual names or patterns/examples for compositions; do not invent a constructor.";
+  }
+  if (code === "COMPILE" && message === "Executable expressions and checks are unavailable") result.hint = "Executable checks/functions are unavailable. Use FormValidation for declared required/minLength/maxLength rules, then check the source.";
+  return result;
+}
+var AUTHORING_RESTRICTIONS = Object.freeze(["Named arguments only in this authoring reference; no positional constructor signature is implied.", "No executable checks, functions or dynamic templates; interactive widgets cannot be inside Button.", "Helper-local metadata does not certify a different running Pi, live capacity or reported execution; actual check/tool validation remains authoritative."]);
+
+// src/interactions.ts
+import { z as z4 } from "zod";
+import { basicCatalog as basicCatalog2 } from "@a2ui/web_core/v1_0";
 
 // src/inputs.ts
 var inputTypes = /* @__PURE__ */ new Set(["TextField", "CheckBox", "ChoicePicker", "Slider", "DateTimeInput", "SearchablePicker"]);
@@ -106,67 +330,13 @@ function validateInputs(components, resolve) {
   }
 }
 
-// src/live.ts
-import { z } from "zod";
-var logStates = ["idle", "running", "completed", "error", "paused", "interrupted"];
-var logViewApi = { name: "LogView", schema: z.object({ stream: z.literal("tools").default("tools"), text: z.string().default(""), omitted: z.boolean().default(false), state: z.enum(logStates).default("idle") }).strict() };
-var seriesSchema = z.array(z.object({ name: z.string().min(1).max(128), points: z.array(z.object({ label: z.string().max(128), value: z.number().finite() }).strict()).max(200) }).strict()).max(4);
-var chartApi = { name: "Chart", schema: z.object({ kind: z.enum(["line", "bar"]), series: seriesSchema }).strict() };
-var liveApis = [logViewApi, chartApi];
-function trimLog(input, bytes = 65536, maxLines = 1e3) {
-  let text2 = input;
-  let omitted = false;
-  if (text2.length > 65536) {
-    text2 = text2.slice(-65536);
-    omitted = true;
-  }
-  const rows = text2.split("\n");
-  if (rows.length > maxLines) {
-    text2 = rows.slice(-maxLines).join("\n");
-    omitted = true;
-  }
-  while (new TextEncoder().encode(JSON.stringify(text2)).byteLength > bytes) {
-    text2 = text2.slice(Math.max(1, Math.ceil(text2.length / 8)));
-    omitted = true;
-  }
-  if (text2.length && /[\uDC00-\uDFFF]/.test(text2[0])) {
-    text2 = text2.slice(1);
-    omitted = true;
-  }
-  return { text: JSON.parse(JSON.stringify(text2)), omitted };
-}
-function validateSeries(input) {
-  const series = seriesSchema.parse(input);
-  const names = /* @__PURE__ */ new Set();
-  for (const item of series) {
-    if (names.has(item.name)) throw new UiError(400, "Chart series names must be unique");
-    names.add(item.name);
-    if (item.points.length !== series[0].points.length || item.points.some((point, index) => point.label !== series[0].points[index].label)) throw new UiError(400, "Chart series labels must align");
-  }
-  return series;
-}
-function validateLive(message, initial = false) {
-  let logs = 0;
-  for (const component of message.createSurface.components) {
-    if (component.component === "Chart") validateSeries(component.series);
-    if (component.component === "LogView") {
-      if (++logs > 1) throw new UiError(400, "Only one LogView per surface");
-      const { id: _, component: __, ...props } = component;
-      const data = logViewApi.schema.parse(props);
-      if (initial && (data.text !== "" || data.omitted || data.state !== "idle")) throw new UiError(400, "LogView initial output is server-controlled");
-      if (trimLog(data.text).text !== data.text) throw new UiError(413, "Saved LogView exceeds its text/line budget");
-      Object.assign(component, data);
-    }
-  }
-}
-
 // src/interactions.ts
-var choice = basicCatalog.components.get("ChoicePicker").schema;
-var searchablePickerApi = { name: "SearchablePicker", schema: z2.object({ label: z2.string().min(1).max(128), options: z2.array(z2.object({ label: z2.string().min(1).max(128), value: z2.string().min(1).max(128) }).strict()).max(200), value: choice.shape.value, variant: z2.enum(["mutuallyExclusive", "multipleSelection"]).default("mutuallyExclusive") }).strict() };
-var ruleSchema = z2.object({ fieldId: z2.string().min(1).max(128), message: z2.string().min(1).max(256), required: z2.boolean().optional(), minLength: z2.number().int().min(0).max(4096).optional(), maxLength: z2.number().int().min(0).max(4096).optional() }).strict();
-var formValidationApi = { name: "FormValidation", schema: z2.object({ title: z2.string().min(1).max(128).default("Check these fields"), buttons: z2.array(z2.string().min(1).max(128)).min(1).max(16), rules: z2.array(ruleSchema).min(1).max(16) }).strict() };
-var timelineEntry = z2.object({ id: z2.string().regex(/^[A-Za-z0-9_-]{1,32}$/), name: z2.string().min(1).max(64), state: z2.enum(["running", "completed", "error", "interrupted"]), startedAt: z2.number().int().min(0).max(Number.MAX_SAFE_INTEGER), elapsedMs: z2.number().int().min(0).max(Number.MAX_SAFE_INTEGER) }).strict();
-var activityTimelineApi = { name: "ActivityTimeline", schema: z2.object({ stream: z2.literal("tools").default("tools"), entries: z2.array(timelineEntry).max(32).default([]), state: z2.enum(logStates).default("idle"), omitted: z2.boolean().default(false) }).strict() };
+var choice = basicCatalog2.components.get("ChoicePicker").schema;
+var searchablePickerApi = { name: "SearchablePicker", schema: z4.object({ label: z4.string().min(1).max(128), options: z4.array(z4.object({ label: z4.string().min(1).max(128), value: z4.string().min(1).max(128) }).strict()).max(200), value: choice.shape.value, variant: z4.enum(["mutuallyExclusive", "multipleSelection"]).default("mutuallyExclusive") }).strict() };
+var ruleSchema = z4.object({ fieldId: z4.string().min(1).max(128), message: z4.string().min(1).max(256), required: z4.boolean().optional(), minLength: z4.number().int().min(0).max(4096).optional(), maxLength: z4.number().int().min(0).max(4096).optional() }).strict();
+var formValidationApi = { name: "FormValidation", schema: z4.object({ title: z4.string().min(1).max(128).default("Check these fields"), buttons: z4.array(z4.string().min(1).max(128)).min(1).max(16), rules: z4.array(ruleSchema).min(1).max(16) }).strict() };
+var timelineEntry = z4.object({ id: z4.string().regex(/^[A-Za-z0-9_-]{1,32}$/), name: z4.string().min(1).max(64), state: z4.enum(["running", "completed", "error", "interrupted"]), startedAt: z4.number().int().min(0).max(Number.MAX_SAFE_INTEGER), elapsedMs: z4.number().int().min(0).max(Number.MAX_SAFE_INTEGER) }).strict();
+var activityTimelineApi = { name: "ActivityTimeline", schema: z4.object({ stream: z4.literal("tools").default("tools"), entries: z4.array(timelineEntry).max(32).default([]), state: z4.enum(logStates).default("idle"), omitted: z4.boolean().default(false) }).strict() };
 var interactionApis = [searchablePickerApi, formValidationApi, activityTimelineApi];
 function bindingPath(value) {
   return value && typeof value === "object" && !Array.isArray(value) && "@path" in value && typeof value["@path"] === "string" ? value["@path"] : void 0;
@@ -233,69 +403,15 @@ var COMMAND_PALETTE_CAPABILITY = "command-palette";
 import { constants } from "node:fs";
 import { open, readFile } from "node:fs/promises";
 
-// src/workbench.ts
-import { z as z3 } from "zod";
-import { basicCatalog as basicCatalog2 } from "@a2ui/web_core/v1_0";
-var identity = z3.string().regex(/^[A-Za-z0-9_-]{1,64}$/);
-var dataTableApi = { name: "DataTable", schema: z3.object({ caption: z3.string().min(1).max(256), columns: z3.array(z3.object({ id: identity, label: z3.string().min(1).max(128) }).strict()).min(1).max(12), rows: z3.array(z3.object({ id: identity, cells: z3.array(z3.union([z3.string().max(256), z3.number().finite(), z3.boolean(), z3.null()])).max(12) }).strict()).max(200), state: z3.enum(["ready", "loading", "error"]).default("ready"), message: z3.string().max(512).default("") }).strict() };
-var codeBlockApi = { name: "CodeBlock", schema: z3.object({ code: z3.string(), language: z3.string().max(32).default("text"), copyable: z3.boolean().default(true) }).strict() };
-var markdownApi = { name: "MarkdownView", schema: z3.object({ text: z3.string() }).strict() };
-var detailsApi = { name: "Details", schema: z3.object({ title: z3.string().min(1).max(256), child: basicCatalog2.components.get("Card").schema.shape.child, open: z3.boolean().default(false) }).strict() };
-var statusBadgeApi = { name: "StatusBadge", schema: z3.object({ label: z3.string().min(1).max(256), status: z3.enum(["info", "success", "warning", "error", "running"]), provenance: z3.literal("reported").default("reported") }).strict() };
-var taskProgressApi = { name: "TaskProgress", schema: z3.object({ stream: z3.literal("tools").default("tools"), state: z3.enum(logStates).default("idle"), started: z3.number().int().min(0).max(1024).default(0), settled: z3.number().int().min(0).max(1024).default(0), failed: z3.number().int().min(0).max(1024).default(0), omitted: z3.boolean().default(false) }).strict() };
-var artifactUrl = z3.string().regex(/^\/api\/artifacts\/[a-f0-9]{32}$/);
-var artifactPreviewApi = { name: "ArtifactPreview", schema: z3.object({ src: artifactUrl, kind: z3.enum(["image", "video", "audio"]), label: z3.string().min(1).max(256) }).strict() };
-var workbenchApis = [dataTableApi, codeBlockApi, markdownApi, detailsApi, statusBadgeApi, taskProgressApi, artifactPreviewApi];
-function validateWorkbench(message, initial = false) {
-  let progressCount = 0, modalCount = 0;
-  for (const c of message.createSurface.components) {
-    if (["Image", "Video", "AudioPlayer"].includes(c.component)) {
-      artifactUrl.parse(c.url);
-      if (c.posterUrl !== void 0) artifactUrl.parse(c.posterUrl);
-      for (const prop of ["description", "fit", "variant"]) if (c[prop] !== void 0 && typeof c[prop] !== "string") throw new UiError(400, "Artifact media props must be static");
-    }
-    if (c.component === "Icon" && !["check", "close", "error", "info", "warning", "folder", "help", "refresh", "play", "pause", "search", "settings"].includes(c.name)) throw new UiError(400, "Icon name must be a static approved local icon");
-    if (c.component === "Modal") {
-      if (++modalCount > 1) throw new UiError(400, "Only one Modal per surface");
-      const trigger = message.createSurface.components.find((node) => node.id === c.trigger);
-      if (!trigger || !["Text", "Icon"].includes(trigger.component)) throw new UiError(400, "Modal trigger must be Text or Icon");
-    }
-    if (c.component === "StatusBadge") {
-      const { id: _, component: __, ...props } = c;
-      Object.assign(c, statusBadgeApi.schema.parse(props));
-    }
-    if (c.component === "TaskProgress") {
-      const { id: _, component: __, ...props } = c;
-      const p = taskProgressApi.schema.parse(props);
-      if (++progressCount > 1 || p.failed > p.settled || p.settled > p.started) throw new UiError(400, "Invalid native tool progress counters");
-      if (initial && (p.state !== "idle" || p.started !== 0 || p.settled !== 0 || p.failed !== 0 || p.omitted)) throw new UiError(400, "TaskProgress initial values are server-controlled");
-      Object.assign(c, p);
-    }
-    if (c.component === "CodeBlock" || c.component === "MarkdownView") {
-      const { id: _, component: __, ...props } = c;
-      const p = (c.component === "CodeBlock" ? codeBlockApi : markdownApi).schema.parse(props);
-      const value = "code" in p ? p.code : p.text;
-      if (new TextEncoder().encode(value).byteLength > 16384 || value.split(/\r\n|\r|\n/).length > 512) throw new UiError(413, "Text block exceeds16KiB/512 lines");
-      Object.assign(c, p);
-    }
-    if (c.component === "DataTable") {
-      const { id: _, component: __, ...props } = c;
-      const p = dataTableApi.schema.parse(props);
-      if (new Set(p.columns.map((x) => x.id)).size !== p.columns.length || new Set(p.rows.map((x) => x.id)).size !== p.rows.length || p.rows.some((x) => x.cells.length !== p.columns.length)) throw new UiError(400, "Table requires unique IDs and one cell per column");
-      Object.assign(c, p);
-    }
-  }
-}
-
 // src/compiler.ts
 import { A2uiGenerator, CatalogConfig, ExpressFormatFactory, RendererState } from "@a2ui/agent";
 
 // src/coding.ts
-import { z as z4 } from "zod";
-var identity2 = z4.string().regex(/^[A-Za-z0-9_-]{1,64}$/);
-var text = z4.string().min(1).max(512);
-var codeDiffApi = { name: "CodeDiff", schema: z4.object({ proposalId: identity2, filename: text, baseRevision: text, before: z4.string(), after: z4.string() }).strict() };
-var testResultsApi = { name: "TestResults", schema: z4.object({ resultId: identity2, command: text, evidence: text, cases: z4.array(z4.object({ id: identity2, name: text, status: z4.enum(["pass", "fail", "skip", "error"]), details: z4.string().max(4096).optional() }).strict()).max(128), summary: z4.object({ pass: z4.number().int().min(0).max(128), fail: z4.number().int().min(0).max(128), skip: z4.number().int().min(0).max(128), error: z4.number().int().min(0).max(128) }).strict() }).strict() };
+import { z as z5 } from "zod";
+var identity2 = z5.string().regex(/^[A-Za-z0-9_-]{1,64}$/);
+var text = z5.string().min(1).max(512);
+var codeDiffApi = { name: "CodeDiff", schema: z5.object({ proposalId: identity2, filename: text, baseRevision: text, before: z5.string(), after: z5.string() }).strict() };
+var testResultsApi = { name: "TestResults", schema: z5.object({ resultId: identity2, command: text, evidence: text, cases: z5.array(z5.object({ id: identity2, name: text, status: z5.enum(["pass", "fail", "skip", "error"]), details: z5.string().max(4096).optional() }).strict()).max(128), summary: z5.object({ pass: z5.number().int().min(0).max(128), fail: z5.number().int().min(0).max(128), skip: z5.number().int().min(0).max(128), error: z5.number().int().min(0).max(128) }).strict() }).strict() };
 var codingApis = [codeDiffApi, testResultsApi];
 function lines(value) {
   if (new TextEncoder().encode(value).byteLength > 16384) throw new UiError(413, "CodeDiff source exceeds16KiB per side");
@@ -398,7 +514,7 @@ function isBinding(value) {
 function noExpressions(value) {
   if (!value || typeof value !== "object") return;
   for (const [key, child] of Object.entries(value)) {
-    if (key === "checks" || key === "path" || key.startsWith("@") && key !== "@path" || key === "call" || key === "callFunction") throw new UiError(400, "Executable expressions and checks are unavailable");
+    if (FORBIDDEN_AUTHORING_KEYS.includes(key) || key.startsWith("@") && key !== "@path") throw new UiError(400, "Executable expressions and checks are unavailable");
     if (key === "@path" && !isBinding(value)) throw new UiError(400, "Only absolute data bindings are supported");
     noExpressions(child);
   }
@@ -406,7 +522,7 @@ function noExpressions(value) {
 function processor(surfaceId) {
   return new A2uiGenerator([new CatalogConfig(interactionsCatalog)], void 0, new ExpressFormatFactory({ surfaceId })).createProcessor({ "1.0": { supportedCatalogIds: [interactionsCatalog.id] } });
 }
-function validateSurface(input) {
+function validateSurface(input2) {
   try {
     let walk2 = function(id, depth, insideButton = false) {
       if (depth > LIMITS.depth) throw new UiError(413, "Tree depth exceeded");
@@ -428,11 +544,11 @@ function validateSurface(input) {
       }
     };
     var walk = walk2, checkBindings = checkBindings2;
-    boundedJson(input);
-    if (!record(input)) throw new UiError(400, "Expected surface message");
-    exactKeys(input, ["version", "createSurface"]);
-    if (input.version !== "1.0" || !record(input.createSurface)) throw new UiError(400, "Unsupported surface message");
-    const create = input.createSurface;
+    boundedJson(input2);
+    if (!record(input2)) throw new UiError(400, "Expected surface message");
+    exactKeys(input2, ["version", "createSurface"]);
+    if (input2.version !== "1.0" || !record(input2.createSurface)) throw new UiError(400, "Unsupported surface message");
+    const create = input2.createSurface;
     exactKeys(create, ["surfaceId", "catalogId", "components"], ["dataModel"]);
     if (typeof create.surfaceId !== "string" || !/^[A-Za-z0-9_-]{1,64}$/.test(create.surfaceId) || !catalogs.some((catalog) => catalog.id === create.catalogId) || !Array.isArray(create.components) || !create.components.length) throw new UiError(400, "Invalid surface or empty root");
     if (create.components.length > LIMITS.components) throw new UiError(413, "Component limit exceeded");
@@ -441,7 +557,7 @@ function validateSurface(input) {
       if (!record(component) || typeof component.component !== "string" || !catalogs.find((catalog) => catalog.id === create.catalogId).components.has(component.component)) throw new UiError(400, "Unsupported component");
       if ("children" in component && !Array.isArray(component.children)) throw new UiError(400, "Dynamic children are unavailable");
     }
-    const message = structuredClone(input);
+    const message = structuredClone(input2);
     const state = new RendererState(catalogs);
     state.apply(message);
     state.checkTopology([create.surfaceId]);
@@ -566,12 +682,12 @@ function compile(surfaceId, source) {
     return validateSurface(message);
   } catch (error) {
     if (error instanceof UiError) throw error;
-    throw new UiError(400, "Invalid Express source: " + (error instanceof Error ? error.message : "compilation failed"));
+    throw new UiError(400, "Invalid Express source: " + compilerErrorMessage(error, interactionsCatalog), { cause: error });
   }
 }
 
 // src/assistant-cli.ts
-var help = "Usage: node SKILL/scripts/a2ui.mjs catalog | patterns | pattern NAME | examples | example NAME | check --surface-id ID FILE_OR_-\nRead-only preflight; rendering still requires a2ui_render. Requires Node24.x.\n";
+var help = "Usage: node SKILL/scripts/a2ui.mjs catalog | component NAME | patterns | pattern NAME | examples | example NAME | check --surface-id ID FILE_OR_-\nRead-only preflight; rendering still requires a2ui_render. Requires Node24.x.\n";
 async function sourceFile(path) {
   const chunks = [];
   let size = 0;
@@ -605,11 +721,11 @@ async function sourceFile(path) {
 }
 async function runCli(args) {
   const usage = () => {
-    process.stderr.write(JSON.stringify({ error: "Invalid command or arguments", usage: help }) + "\n");
+    process.stderr.write(JSON.stringify({ ...cliDiagnostic(new Error("Invalid command or arguments"), "USAGE"), usage: help }) + "\n");
     return 2;
   };
   if (Number(process.versions.node.split(".")[0]) !== 24) {
-    process.stderr.write(JSON.stringify({ error: "Node24.x is required; run nvm use 24" }) + "\n");
+    process.stderr.write(JSON.stringify(cliDiagnostic(new Error("Node24.x is required; run nvm use 24"), "RUNTIME")) + "\n");
     return 2;
   }
   if (args.length === 1 && args[0] === "--help") {
@@ -617,10 +733,20 @@ async function runCli(args) {
     return 0;
   }
   const [command, ...rest] = args;
-  if (!["catalog", "patterns", "pattern", "examples", "example", "check"].includes(command) || ["catalog", "patterns", "examples"].includes(command) && rest.length || ["example", "pattern"].includes(command) && rest.length !== 1 || command === "check" && (rest.length !== 3 || rest[0] !== "--surface-id")) return usage();
+  if (!["catalog", "component", "patterns", "pattern", "examples", "example", "check"].includes(command) || ["catalog", "patterns", "examples"].includes(command) && rest.length || ["example", "pattern", "component"].includes(command) && rest.length !== 1 || command === "check" && (rest.length !== 3 || rest[0] !== "--surface-id")) return usage();
+  let stage = "LOOKUP";
+  let activeCatalog;
+  let manifest = [];
   try {
     const probe = compile("preflight", 'root = Text(text="preflight")');
     const catalog = catalogs.find((c) => c.id === probe.createSurface.catalogId);
+    activeCatalog = catalog;
+    if (command === "component") {
+      const metadata = JSON.parse(await readFile(new URL("../package.json", import.meta.url), "utf8"));
+      manifest = JSON.parse(await readFile(new URL("../skills/pi-a2ui/examples/manifest.json", import.meta.url), "utf8"));
+      process.stdout.write(JSON.stringify({ packageVersion: metadata.version, catalogId: catalog.id, scope: "This helper package, not an arbitrary running Pi instance", component: componentGuidance(catalog, rest[0], manifest), restrictions: AUTHORING_RESTRICTIONS }) + "\n");
+      return 0;
+    }
     if (command === "catalog") {
       const metadata = JSON.parse(await readFile(new URL("../package.json", import.meta.url), "utf8"));
       process.stdout.write(JSON.stringify({ packageVersion: metadata.version, nodeMajor: 24, catalogId: catalog.id, components: [...catalog.components.keys()].sort(), scope: "This helper package, not an arbitrary running Pi instance" }) + "\n");
@@ -658,12 +784,18 @@ async function runCli(args) {
       process.stdout.write(source2);
       return 0;
     }
+    stage = "INPUT";
     const source = await sourceFile(rest[2]);
+    stage = "COMPILE";
     compile(rest[1], source);
     process.stdout.write(JSON.stringify({ surfaceId: rest[1], source }) + "\n");
     return 0;
   } catch (error) {
-    process.stderr.write(JSON.stringify({ error: error instanceof Error ? error.message : "Preflight failed" }) + "\n");
+    if (activeCatalog && stage === "COMPILE") try {
+      manifest = JSON.parse(await readFile(new URL("../skills/pi-a2ui/examples/manifest.json", import.meta.url), "utf8"));
+    } catch {
+    }
+    process.stderr.write(JSON.stringify(cliDiagnostic(error, stage, activeCatalog, manifest)) + "\n");
     return 1;
   }
 }
