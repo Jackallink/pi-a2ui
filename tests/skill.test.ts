@@ -3,6 +3,7 @@ import{loadSkills}from'../node_modules/@earendil-works/pi-coding-agent/dist/core
 test('S1 package exposes a discoverable Pi skill, not only an extension',()=>{const pkg=JSON.parse(readFileSync('package.json','utf8'));const result=loadSkills({cwd:process.cwd(),agentDir:'/unused',includeDefaults:false,skillPaths:(pkg.pi.skills??[]).map((p:string)=>resolve(p))});assert.deepEqual(result.skills.map(s=>s.name),['pi-a2ui']);assert.deepEqual(result.diagnostics,[]);});
 import{spawnSync}from'node:child_process';import{mkdtempSync,writeFileSync,rmSync,readdirSync}from'node:fs';import{tmpdir}from'node:os';import{join}from'node:path';
 import{compile,promptSnippet}from'../src/compiler.ts';
+import{catalogs}from'../src/catalog.ts';
 const helper=resolve('skills/pi-a2ui/scripts/a2ui.mjs');
 function cli(args:string[],input?:string|Buffer,cwd=process.cwd()){return spawnSync(process.execPath,[helper,...args],{input,encoding:'utf8',cwd,timeout:10000});}
 test('S2/S5 actual parser supports named props and forward references; screenshot-shaped mistakes reject',()=>{
@@ -12,7 +13,7 @@ test('S2/S5 actual parser supports named props and forward references; screensho
  assert.doesNotMatch(promptSnippet(),/Do not output property keys/);
 });
 test('S3 template availability comes from actual catalog and every supported example compiles/covers every type',()=>{
- const catalog=cli(['catalog']);assert.equal(catalog.status,0,catalog.stderr);const names=JSON.parse(catalog.stdout).components;const list=cli(['examples']);assert.equal(list.status,0,list.stderr);const entries=JSON.parse(list.stdout)as{name:string;requires:string[];available:boolean}[];const covered=new Set<string>();
+ const catalog=cli(['catalog']);assert.equal(catalog.status,0,catalog.stderr);const reported=JSON.parse(catalog.stdout);const actual=compile('oracle','root = Text(text="catalog oracle")').createSurface.catalogId;assert.equal(reported.catalogId,actual,'Prebuilt helper must match the current extension compiler');const names=reported.components;assert.deepEqual(new Set(names),new Set(catalogs.find(c=>c.id===actual)!.components.keys()));const list=cli(['examples']);assert.equal(list.status,0,list.stderr);const entries=JSON.parse(list.stdout)as{name:string;requires:string[];available:boolean}[];const covered=new Set<string>();
  for(const entry of entries){assert.equal(entry.available,entry.requires.every(name=>names.includes(name)));const result=cli(['example',entry.name]);if(!entry.available){assert.equal(result.status,1);assert.equal(result.stdout,'');continue;}assert.equal(result.status,0,result.stderr);const components=compile('template',result.stdout).createSurface.components;assert.deepEqual(new Set(components.map(c=>c.component)),new Set(entry.requires));for(const c of components)covered.add(c.component);}
  assert.deepEqual(covered,new Set(names));if(!names.includes('DataTable'))assert.equal(entries.find(e=>e.name==='list-table')?.available,false);
 });
