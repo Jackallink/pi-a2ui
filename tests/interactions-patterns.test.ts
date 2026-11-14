@@ -31,3 +31,10 @@ test('R03 summary pattern exposes source, metric units and reported provenance w
  assert.ok(components.some(c=>c.component==='StatusBadge'&&c.provenance==='reported'));
  assert.ok(components.every(c=>['Card','Row','Column','Text','StatusBadge'].includes(c.component)));
 });
+
+test('R05 feedback pattern distinguishes actual-known states from labelled placeholders',()=>{
+ const components=example('feedback-states').createSurface.components;
+ for(const text of ['Loading — placeholder only','No results','Not run','Reported error'])assert.ok(components.some(c=>c.component==='Text'&&c.text===text));
+ assert.ok(components.some(c=>c.component==='Button'&&(c.action as any).event.name==='request_retry'));
+ assert.ok(components.every(c=>['Column','Card','Text','Icon','StatusBadge','Button'].includes(c.component)));
+});

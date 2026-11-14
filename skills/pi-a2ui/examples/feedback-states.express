@@ -1,0 +1,7 @@
+# Four sample states side by side. Choose the actual known state for a real task.
+root = Column(children=[
+  Card(child=Column(children=[Icon(name="info"),Text(text="Loading — placeholder only"),Text(text="Await actual results; no fabricated rows or percentage.")])),
+  Card(child=Column(children=[Icon(name="search"),Text(text="No results"),Text(text="The supplied example query returned no items."),Button(child=Text(text="Change search"),action=Event("request_search",{reason:"no_results"}))])),
+  Card(child=Column(children=[Icon(name="warning"),Text(text="Not run"),Text(text="Execution has not been observed."),Button(child=Text(text="Request start"),action=Event("request_start",{state:"not_run"}))])),
+  Card(child=Column(children=[Icon(name="error"),Text(text="Reported error"),StatusBadge(label="Example reported failure",status="error"),Button(child=Text(text="Request retry"),action=Event("request_retry",{state:"reported_error"}))]))
+])

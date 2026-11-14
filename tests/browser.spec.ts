@@ -407,3 +407,10 @@ root=Column(children=[picker,FormValidation(buttons=["submit"],rules=[{fieldId:"
  await alpha.press('Enter');await expect(page.locator('.a2ui-field-error')).toHaveCount(1);expect(canvas.sent).toHaveLength(0);
  await alpha.click();await expect(page.locator('.a2ui-field-error')).toHaveCount(0);await page.getByRole('button',{name:'Save chips',exact:true}).click();await expect(page.locator('#notice')).toHaveText('Sent to Pi');expect(canvas.sent).toHaveLength(1);expect(canvas.sent[0]).toContain('"chosen":["a"]');
 });
+
+
+test("R05 feedback state patterns stay local until a declared recovery intent",async({page,canvas})=>{
+ const {readFile}=await import('node:fs/promises');canvas.session.reset();canvas.session.render('feedback',await readFile('skills/pi-a2ui/examples/feedback-states.express','utf8'));await page.goto(canvas.origin);
+ for(const text of ['Loading — placeholder only','No results','Not run','Reported error'])await expect(page.getByText(text,{exact:true})).toBeVisible();
+ expect(canvas.sent).toHaveLength(0);await page.getByRole('button',{name:'Request retry',exact:true}).click();await expect(page.locator('#notice')).toHaveText('Sent to Pi');expect(canvas.sent).toHaveLength(1);expect(canvas.sent[0]).toContain('"event":"request_retry"');expect(canvas.sent[0]).toContain('"state":"reported_error"');
+});

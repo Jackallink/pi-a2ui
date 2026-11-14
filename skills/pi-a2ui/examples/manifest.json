@@ -154,5 +154,18 @@
     ],
     "pattern": "validated-form",
     "reference": "references/summaries-and-feedback.md"
+  },
+  {
+    "name": "feedback-states",
+    "requires": [
+      "Column",
+      "Card",
+      "Icon",
+      "Text",
+      "Button",
+      "StatusBadge"
+    ],
+    "pattern": "feedback-states",
+    "reference": "references/summaries-and-feedback.md"
   }
 ]
