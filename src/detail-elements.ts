@@ -8,7 +8,7 @@ export class DetailsElement extends A2uiLitElement<typeof detailsApi>{
 }
 
 function focusable(root:ParentNode):HTMLElement[]{
- const result:HTMLElement[]=[];for(const node of root.querySelectorAll<HTMLElement>('*')){if(node.matches('button,input,select,textarea,a[href],[tabindex]')&&node.tabIndex>=0&&!node.matches(':disabled')&&node.getClientRects().length)result.push(node);if(node.shadowRoot)result.push(...focusable(node.shadowRoot));}return result;
+ const result:HTMLElement[]=[];for(const node of root.querySelectorAll<HTMLElement>('*')){if(node.tabIndex>=0&&!node.matches(':disabled')&&node.getClientRects().length)result.push(node);if(node.shadowRoot)result.push(...focusable(node.shadowRoot));}return result;
 }
 const modalApi=basicCatalog.components.get('Modal')! as ComponentApi;
 const iconApi=basicCatalog.components.get('Icon')! as ComponentApi;
