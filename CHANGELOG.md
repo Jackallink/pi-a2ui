@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.6 - 2026-11-14
+
+- Prepare the authoring-reliability candidate; publication remains separately gated. No new catalog components or runtime permissions.
+- Add read-only `component NAME` guidance from actual catalog schemas with project-specific constraints, required flags, references and examples. Keep existing helper outputs and exact check arguments compatible.
+- Add structured project-aware compiler/input/usage recovery hints while filtering unsupported SDK-only checks/functions from compiler advice.
+- Start the skill with known-template → adapt → check → render; preserve all19 templates and eight progressive routes.
+- Require explicit package/version in developer acceptance, default to normally registered startup with zero inference, and separate opt-in GLM skill-forward evidence from supplied-DSL component scenarios. Keep private phase receipts, actual child Node24/cwd observations and owned resource cleanup.
+- Keep Node24.x, existing dependencies, Git/local installation and published immutable releases unchanged.
+
 ## 0.1.5 - 2026-11-14
 
 - Add all eight daily interaction groups: bounded hierarchy/breadcrumb, searchable selection, source-labelled summaries, guarded field feedback, loading/empty/not-run/error patterns, native ActivityTimeline, evidence location intents and keyboard action search.

@@ -37,7 +37,7 @@ export interface Snapshot {
 }
 export interface Operation { epoch: string; generation: number }
 export class UiError extends Error {
-  constructor(public readonly status: number, message: string) { super(message); }
+  constructor(public readonly status: number, message: string, options?: ErrorOptions) { super(message,options); }
 }
 
 export interface DataSurface {surfaceId:string;revision:number;sequence:number;components:Component[]}
