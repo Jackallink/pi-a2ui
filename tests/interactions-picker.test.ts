@@ -24,3 +24,9 @@ test('R02 empty, multiple and200 options are allowed while overflow and dynamic 
  assert.throws(()=>compile('pick',pickerSource.replace('label="Branch"','label=$/chosen')));
  const out:string[]=[];const s=new UiSession(t=>out.push(t));s.render('pick',pickerSource.replace('label="Branch"','label="Branch",variant="multipleSelection"'));s.acceptAction(action(s,['main','feat']));assert.ok(out[0].includes('"chosen":["main","feat"]'));s.close();
 });
+
+test('R02 original ChoicePicker basic filtering remains available under its legacy schema',()=>{
+ const message=compile('old','$/chosen = []\nroot = ChoicePicker(label="Basic",options=[{label:"One",value:"one"}],filterable=true,value=$/chosen)');
+ message.createSurface.catalogId='https://jackallink.github.io/pi-a2ui/catalogs/workbench-v1.json';
+ assert.equal(validateSurface(message).createSurface.components[0].filterable,true);
+});

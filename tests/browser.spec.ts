@@ -326,8 +326,11 @@ test("R02 keyboard search and hidden selections stay local across data patches",
  await expect(query).toHaveValue('Fea');await query.press('ArrowDown');
  await expect(page.getByRole('button',{name:'Feature · feat',exact:true})).toBeFocused();await page.keyboard.press('Enter');
  await expect(page.getByRole('button',{name:'Remove Feature (feat)',exact:true})).toBeVisible();
+ await page.keyboard.press('Tab');await expect(page.getByRole('button',{name:'Choose branch',exact:true})).toBeFocused();
+ await page.keyboard.press('Shift+Tab');await expect(query).toBeFocused();
  await page.keyboard.press('Escape');await expect(query).toHaveValue('');
- await page.getByRole('button',{name:'Remove Main (main)',exact:true}).click();
+ await query.press('ArrowUp');await page.keyboard.press('Home');
+ await expect(page.getByRole('button',{name:'Remove Main (main)',exact:true})).toBeFocused();await page.keyboard.press('Enter');
  await query.fill('absent');await expect(page.getByText('No matches',{exact:true})).toBeVisible();
  expect(requests).toHaveLength(0);expect(canvas.sent).toHaveLength(0);
  await page.getByRole('button',{name:'Choose branch',exact:true}).click();await expect(page.locator('#notice')).toHaveText('Sent to Pi');

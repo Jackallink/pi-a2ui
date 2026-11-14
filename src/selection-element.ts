@@ -9,10 +9,12 @@ export class SearchablePickerElement extends A2uiLitElement<typeof searchablePic
  private search(event:Event){const input=event.target as HTMLInputElement;this.query=Array.from(input.value).slice(0,128).join('');input.value=this.query;this.requestUpdate();}
  private navigate(event:KeyboardEvent){
   if(event.key==='Escape'){event.preventDefault();this.query='';this.requestUpdate();this.querySelector('input')?.focus();return;}
-  const controls=[...this.querySelectorAll<HTMLButtonElement>('.picker-options button')];
-  if(!controls.length)return;let at=controls.indexOf(event.target as HTMLButtonElement);
-  if(event.key==='ArrowDown')at=Math.min(controls.length-1,at+1);
-  else if(event.key==='ArrowUp')at=at<0?controls.length-1:Math.max(0,at-1);
+  const selected=[...this.querySelectorAll<HTMLButtonElement>('.picker-selected button')];
+  const results=[...this.querySelectorAll<HTMLButtonElement>('.picker-options button')];
+  const controls=[...selected,...results];if(!controls.length)return;
+  let at=controls.indexOf(event.target as HTMLButtonElement);
+  if(event.key==='ArrowDown')at=at<0?(results.length?selected.length:0):Math.min(controls.length-1,at+1);
+  else if(event.key==='ArrowUp')at=at<0?(selected.length?selected.length-1:controls.length-1):Math.max(0,at-1);
   else if(event.key==='Home'&&at>=0)at=0;
   else if(event.key==='End'&&at>=0)at=controls.length-1;
   else return;
@@ -21,8 +23,8 @@ export class SearchablePickerElement extends A2uiLitElement<typeof searchablePic
  render(){const p=this.controller.props;if(!p)return nothing;const selected=p.value as string[];const query=this.query.toLocaleLowerCase();const options=p.options.filter(o=>o.label.toLocaleLowerCase().includes(query));
  return html`<section aria-label=${p.label} @click=${(e:Event)=>e.stopPropagation()} @keydown=${(e:KeyboardEvent)=>{e.stopPropagation();this.navigate(e);}}>
  <label>${p.label}<input type="search" aria-label=${'Search '+p.label} .value=${this.query} @input=${this.search}></label>
- <div class="picker-selected" aria-label="Selected options">${p.options.filter(o=>selected.includes(o.value)).map(o=>html`<button type="button" aria-label=${'Remove '+o.label+' ('+o.value+')'} @click=${()=>this.choose(o.value)}>${o.label} ×</button>`)}</div>
- <div class="picker-options" role="group" aria-label=${p.label+' options'}>${options.map(o=>html`<button type="button" aria-pressed=${String(selected.includes(o.value))} @click=${()=>this.choose(o.value)}>${o.label} · ${o.value}</button>`)}</div>
+ <div class="picker-selected" aria-label="Selected options">${p.options.filter(o=>selected.includes(o.value)).map(o=>html`<button type="button" tabindex="-1" aria-label=${'Remove '+o.label+' ('+o.value+')'} @click=${()=>{this.choose(o.value);this.querySelector('input')?.focus();}}>${o.label} ×</button>`)}</div>
+ <div class="picker-options" role="group" aria-label=${p.label+' options'}>${options.map(o=>html`<button type="button" tabindex="-1" aria-pressed=${String(selected.includes(o.value))} @click=${()=>this.choose(o.value)}>${o.label} · ${o.value}</button>`)}</div>
  ${p.options.length===0?html`<p role="status">No options</p>`:options.length===0?html`<p role="status">No matches</p>`:nothing}
  </section>`;
  }
