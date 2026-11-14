@@ -1,0 +1,15 @@
+{
+  "version": "0.1.1",
+  "sourceCommit": "baae11e9430bce8dd91af435f0fa8eaed2c24073",
+  "sha256": "d56fa6b1a7d29bce5b38b9b27ef5e677258d014ee0eb070b8e4b0aa66a060870",
+  "files": 24,
+  "safeMembers": true,
+  "runtimeEqualsAcceptedV013": true,
+  "changedFromAcceptedV013": [
+    "package/package.json",
+    "package/README.md"
+  ],
+  "added": [
+    "package/CHANGELOG.md"
+  ]
+}

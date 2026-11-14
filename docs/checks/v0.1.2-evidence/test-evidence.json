@@ -1,0 +1,7 @@
+{
+  "source": "import {test} from \"node:test\";import assert from \"node:assert/strict\";test(\"Arithmetic\",()=>assert.equal(2+2,4));\n",
+  "exitCode": 0,
+  "pass": 1,
+  "fail": 0,
+  "actualExecution": true
+}

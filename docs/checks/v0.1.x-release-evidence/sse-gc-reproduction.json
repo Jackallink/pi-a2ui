@@ -1,0 +1,17 @@
+{
+  "node": "24.18.1",
+  "sourceCommit": "1c4b647d696491072692037d99e47cf25decf99d",
+  "limit": 8,
+  "probe": "Node expose-gc; six GC/event-loop iterations after opening8 SSE responses",
+  "discardedResponses": {
+    "before": 8,
+    "after": 0,
+    "ninthStatus": 200
+  },
+  "retainedResponses": {
+    "before": 8,
+    "after": 8,
+    "ninthStatus": 429
+  },
+  "runtimeChanged": false
+}

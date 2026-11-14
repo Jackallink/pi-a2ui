@@ -1,0 +1,10 @@
+{
+  "actualLocalInstall": true,
+  "correctProjectScope": true,
+  "productionOnly": true,
+  "consumerBuild": false,
+  "hostCopiesAbsent": true,
+  "esbuildAbsent": true,
+  "unrelatedSettingsPreserved": true,
+  "isolatedGlobalSettingsPreserved": true
+}

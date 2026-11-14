@@ -1,0 +1,17 @@
+{
+  "provider": "volcengine-ark",
+  "model": "glm-5.3-flash",
+  "actualToolResult": true,
+  "browserForm": true,
+  "fragmentCleared": true,
+  "local202": true,
+  "actualNextTurnAttempted": true,
+  "actualNextTurnContainsSubmittedValue": true,
+  "browserErrors": 0,
+  "typedContextAcknowledged": true,
+  "scenario": "forms",
+  "pi": "local 1.5.0",
+  "surface": "acceptance",
+  "listenerReleased": true,
+  "processExited": true
+}

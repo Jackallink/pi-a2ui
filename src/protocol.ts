@@ -26,6 +26,7 @@ export interface SurfaceMessage {
 export interface SurfaceRecord {
   surfaceId: string;
   revision: number;
+  dataSequence?: number;
   message: SurfaceMessage;
 }
 export interface Snapshot {
@@ -38,3 +39,6 @@ export interface Operation { epoch: string; generation: number }
 export class UiError extends Error {
   constructor(public readonly status: number, message: string) { super(message); }
 }
+
+export interface DataSurface {surfaceId:string;revision:number;sequence:number;components:Component[]}
+export interface DataBatch {epoch:string;surfaces:DataSurface[]}

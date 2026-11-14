@@ -1,0 +1,3 @@
+# Generated browser bundle contains meaningful whitespace inside JS literals.
+dist/* linguist-generated=true
+dist/client.js -whitespace

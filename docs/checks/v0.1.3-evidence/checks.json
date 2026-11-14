@@ -1,0 +1,15 @@
+{
+  "node": "24.18.1",
+  "liveTests": 19,
+  "nodeTests": 89,
+  "browserTests": 12,
+  "archiveSha256": "8e582b359b0db0c1be9bf7efadcccc5b200baa5e5e0f0da1ef7ffa3be3e335c0",
+  "productionOnlyInstall": true,
+  "consumerBuildRequired": false,
+  "actualModelOnThisArchive": true,
+  "backingMemoryFixIncluded": true,
+  "gcProbeInputBytes": 33554432,
+  "gcProbeRetainedHeapDeltaAfterFix": 112320,
+  "archiveFiles": 23,
+  "candidateSourceMatchesInstalledArchive": true
+}

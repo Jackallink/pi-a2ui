@@ -4,8 +4,8 @@ import {
   injectBasicCatalogStyles,
   type ActionPayload,
 } from "@a2ui/web_core/v1_0";
-import { restrictedCatalog } from "./catalog.js";
-import type { Snapshot, SurfaceRecord } from "./protocol.js";
+import { browserCatalogs } from "./browser-catalog.js";
+import type { Snapshot, SurfaceRecord, DataBatch, DataSurface } from "./protocol.js";
 
 // Consume the bootstrap credential once, before starting any network work.
 const fragment = new URLSearchParams(location.hash.slice(1));
@@ -21,6 +21,8 @@ const count = document.querySelector<HTMLElement>("#surface-count")!;
 
 interface MountedSurface {
   revision: number;
+  sequence:number;
+  liveIds:Map<string,string>;
   wrapper: HTMLElement;
   element: A2uiSurface;
   unsubscribe: () => void;
@@ -38,12 +40,13 @@ let epoch: string | undefined;
 let enabled = true;
 let pending: PendingAction | undefined;
 let stream: EventSource | undefined;
+let recovering=false;
 let processor = makeProcessor();
 const mounted = new Map<string, MountedSurface>();
 injectBasicCatalogStyles();
 
 function makeProcessor() {
-  return new MessageProcessor<LitComponentApi>([restrictedCatalog], undefined, { version: "1.0" });
+  return new MessageProcessor<LitComponentApi>(browserCatalogs, undefined, { version: "1.0" });
 }
 
 function showNotice(message: string, error = false) {
@@ -101,6 +104,8 @@ function mountSurface(record: SurfaceRecord) {
   const subscription = model.onAction.subscribe((action) => sendAction(action, capturedEpoch, record.revision));
   mounted.set(record.surfaceId, {
     revision: record.revision,
+    sequence:record.dataSequence??0,
+    liveIds:new Map(record.message.createSurface.components.filter(c=>c.component==='LogView'||c.component==='Chart').map(c=>[c.id,c.component])),
     wrapper,
     element,
     unsubscribe: () => subscription.unsubscribe(),
@@ -137,7 +142,10 @@ function applySnapshot(snapshot: Snapshot) {
     if (!currentIds.has(surfaceId)) removeSurface(surfaceId);
   }
   for (const record of snapshot.surfaces) {
-    if (mounted.get(record.surfaceId)?.revision === record.revision) continue;
+    if (mounted.get(record.surfaceId)?.revision === record.revision) {
+      applyData({surfaceId:record.surfaceId,revision:record.revision,sequence:record.dataSequence??0,components:record.message.createSurface.components.filter(c=>c.component==='LogView'||c.component==='Chart')},true);
+      continue;
+    }
     removeSurface(record.surfaceId);
     mountSurface(record);
   }
@@ -209,20 +217,37 @@ async function sendAction(action: ActionPayload, capturedEpoch: string, revision
   }
 }
 
+function applyData(record:DataSurface,snapshot=false){
+ const entry=mounted.get(record.surfaceId);if(!entry||entry.revision!==record.revision||record.sequence<=entry.sequence)return;
+ if(!Number.isSafeInteger(record.sequence)||record.sequence<0||!Array.isArray(record.components))throw new Error('Invalid live update');
+ if(!snapshot&&record.sequence!==entry.sequence+1){if(!recovering){recovering=true;stream?.close();connectEvents();}return;}
+ if(record.components.some(c=>entry.liveIds.get(c.id)!==c.component))throw new Error('Live updates cannot change layout');
+ const errors=processor.processMessagesWithErrors({version:'1.0',updateComponents:{surfaceId:record.surfaceId,components:record.components}});
+ if(errors.length)throw new Error('Invalid live component data');entry.sequence=record.sequence;
+}
 function connectEvents() {
   setConnection("Connecting", "waiting");
-  stream = new EventSource("/api/events");
-  stream.onopen = () => {
+  const current=new EventSource("/api/events");
+  stream=current;
+  current.onopen = () => {
+    if(stream!==current)return;
     setConnection("Connected to Pi", "live");
   };
-  stream.addEventListener("snapshot", (event: MessageEvent<string>) => {
+  current.addEventListener("snapshot", (event: MessageEvent<string>) => {
+    if(stream!==current)return;
     try {
       applySnapshot(JSON.parse(event.data) as Snapshot);
+      recovering=false;
     } catch {
       showNotice("This canvas could not be displayed. Run /a2ui in Pi to reconnect.", true);
     }
   });
-  stream.onerror = () => {
+  current.addEventListener("data",(event:MessageEvent<string>)=>{
+    if(stream!==current||recovering)return;
+    try{const batch=JSON.parse(event.data) as DataBatch;if(batch.epoch!==epoch)return;if(!Array.isArray(batch.surfaces))throw new Error();for(const record of batch.surfaces){if(stream!==current)break;applyData(record);}}catch{showNotice("Live data could not be displayed. Reopen /a2ui to reconnect.",true);}
+  });
+  current.onerror = () => {
+    if(stream!==current)return;
     if (stream?.readyState === EventSource.CLOSED) {
       setConnection("Connection closed", "closed");
       showNotice("Open this canvas again with /a2ui in Pi to reconnect.", true);

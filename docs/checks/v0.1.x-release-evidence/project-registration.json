@@ -1,0 +1,41 @@
+[
+  {
+    "version": "0.1.1",
+    "projectRegistration": true,
+    "explicitCommandApproval": true,
+    "correctProjectScope": true,
+    "storedPathBase": "project/.pi",
+    "unrelatedProjectRegistrationPreserved": true,
+    "unrelatedSettingPreserved": true,
+    "isolatedGlobalSettingsUnchanged": true,
+    "noPackageDirectoryRegistration": true,
+    "installedArchiveFilesUnchanged": true,
+    "modelRequests": false
+  },
+  {
+    "version": "0.1.2",
+    "projectRegistration": true,
+    "explicitCommandApproval": true,
+    "correctProjectScope": true,
+    "storedPathBase": "project/.pi",
+    "unrelatedProjectRegistrationPreserved": true,
+    "unrelatedSettingPreserved": true,
+    "isolatedGlobalSettingsUnchanged": true,
+    "noPackageDirectoryRegistration": true,
+    "installedArchiveFilesUnchanged": true,
+    "modelRequests": false
+  },
+  {
+    "version": "0.1.3",
+    "projectRegistration": true,
+    "explicitCommandApproval": true,
+    "correctProjectScope": true,
+    "storedPathBase": "project/.pi",
+    "unrelatedProjectRegistrationPreserved": true,
+    "unrelatedSettingPreserved": true,
+    "isolatedGlobalSettingsUnchanged": true,
+    "noPackageDirectoryRegistration": true,
+    "installedArchiveFilesUnchanged": true,
+    "modelRequests": false
+  }
+]

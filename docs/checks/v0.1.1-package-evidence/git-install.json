@@ -1,0 +1,13 @@
+{
+  "source": "git:github.com/Jackallink/pi-a2ui@baae11e9430bce8dd91af435f0fa8eaed2c24073",
+  "sourceCommit": "baae11e9430bce8dd91af435f0fa8eaed2c24073",
+  "actualPiManagedGitInstall": true,
+  "correctProjectScope": true,
+  "unrelatedSettingsPreserved": true,
+  "isolatedGlobalSettingsPreserved": true,
+  "prebuiltResourcesMatch": true,
+  "consumerBuild": false,
+  "hostCopiesAbsent": true,
+  "esbuildAbsent": true,
+  "modelRequests": false
+}

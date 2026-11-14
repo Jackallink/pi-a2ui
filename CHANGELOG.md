@@ -1,6 +1,15 @@
 # Changelog
 
-## 0.1.0 — 2026-11-13
+## 0.1.1 - 2026-11-14
+
+- Add official CheckBox, ChoicePicker, Slider, DateTimeInput, Tabs and Divider with validated typed values and tab-slot traversal; preserve legacy shared TextField bindings.
+- Add read-only CodeDiff and structured TestResults in a versioned Pi catalog, immutable bounded IDs and exact current-record follow-up actions. TestResults displays Pi-supplied evidence rather than independently certifying test execution.
+- Add bounded native-tool LogView, constrained line/bar Chart and a2ui_update_chart; lifecycle ownership, coalesced SSE data sequences and gap recovery preserve unsent inputs. No model request per log chunk.
+- Distribute ready browser assets through both Git and local installs; retain complete third-party licenses, include this changelog and declare host packages as wildcard peers. No npm registry publication.
+- Pin contributor runtime to Node24; retain the existing Node22.19/Pi1.5 runtime floor.
+- This release combines the former three unpublished iteration candidates. Known upstream Zod advisory remains unchanged.
+
+## 0.1.0 - 2026-11-13
 
 Initial MVP checkpoint for local Pi/browser interaction.
 

@@ -1,0 +1,44 @@
+[
+  {
+    "provider": "volcengine-ark",
+    "model": "glm-5.3-flash",
+    "restoreOnly": true,
+    "restoredActualModelToolResult": true,
+    "browserForm": true,
+    "fragmentCleared": true,
+    "browserErrors": 0,
+    "listenerReleased": true,
+    "processExited": true,
+    "version": "0.1.1",
+    "modelRequests": false,
+    "originalFixturePreserved": true
+  },
+  {
+    "provider": "volcengine-ark",
+    "model": "glm-5.3-flash",
+    "restoreOnly": true,
+    "restoredActualModelToolResult": true,
+    "browserForm": true,
+    "fragmentCleared": true,
+    "browserErrors": 0,
+    "listenerReleased": true,
+    "processExited": true,
+    "version": "0.1.2",
+    "modelRequests": false,
+    "originalFixturePreserved": true
+  },
+  {
+    "provider": "volcengine-ark",
+    "model": "glm-5.3-flash",
+    "restoreOnly": true,
+    "restoredActualModelToolResult": true,
+    "browserForm": true,
+    "fragmentCleared": true,
+    "browserErrors": 0,
+    "listenerReleased": true,
+    "processExited": true,
+    "version": "0.1.3",
+    "modelRequests": false,
+    "originalFixturePreserved": true
+  }
+]

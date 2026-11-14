@@ -4,32 +4,36 @@ A local interactive canvas for the Pi coding agent. Pi keeps the conversation an
 
 Requires Node >=22.19.0 and Pi >=1.5.0. A2UI protocol 1.0, pinned Agent SDK 0.1.0 and Web Core/Lit 0.15.0.
 
-Version 0.1.0 is the initial local-use MVP checkpoint. It supports forms, choices and task cards alongside Pi; it does not add a separate model or change Pi's tool permissions. Real model acceptance used Volcengine Ark Agent Plan `glm-5.3-flash`. The extension uses whichever model you select in Pi.
+Version 0.1.1 combines typed forms/layout, coding review components and bounded native logs/charts. It supports forms, choices and task cards alongside Pi; it does not add a separate model or change Pi's tool permissions. Real model acceptance used Volcengine Ark Agent Plan `glm-5.3-flash`. The extension uses whichever model you select in Pi.
 
 Project source is MIT licensed. The bundled browser libraries retain their own licenses; complete third-party license/notice texts are included in `THIRD_PARTY_LICENSES.txt` in the distribution.
 
 ## Install
 
-Download `pi-a2ui-0.1.0.tgz` and `SHA256SUMS` from the [v0.1.0 GitHub Release](https://github.com/Jackallink/pi-a2ui/releases/tag/v0.1.0). From the download directory:
+The package is distributed through Git and local paths; it is not published to npm. Requires Node >=22.19.0 and Pi >=1.5.0; development and acceptance use Node24 (`nvm use 24`).
+
+### Git
+
+From the Pi project where you want this package enabled:
 
 ```sh
-shasum -a 256 -c SHA256SUMS
-mkdir -p "$HOME/.local/share/pi-a2ui/0.1.0"
-tar -xzf pi-a2ui-0.1.0.tgz -C "$HOME/.local/share/pi-a2ui/0.1.0"
-cd "$HOME/.local/share/pi-a2ui/0.1.0/package"
-npm install --omit=dev --ignore-scripts
-pi install "$PWD"
+pi install -l --approve git:github.com/Jackallink/pi-a2ui@v0.1.1
 ```
 
-The archive includes built browser assets; installing it does not require a build. `pi install -l "$PWD"` registers only the current project. This is a GitHub distribution; no npm registry publication is required.
+Pi clones the pinned ref and installs production dependencies. Ready browser assets and full third-party licenses are committed in the repository; no browser build is required. Tags/commits are pinned: `pi update --extensions` does not advance a configured tag to the next release. To upgrade, select the new release ref.
 
-For development from a checkout:
+### Local package
+
+Use an existing checkout or an unpacked release. Keep your intended Pi project as the working directory and substitute the package's absolute path:
 
 ```sh
-npm ci
-npm run build
-pi install /absolute/path/to/pi-a2ui
+npm install --prefix /absolute/path/to/pi-a2ui --omit=dev --ignore-scripts --legacy-peer-deps
+pi install -l --approve /absolute/path/to/pi-a2ui
 ```
+
+Pi loads local paths in place and does not install their dependencies; the first command prepares them. The production install skips developer/host peers and does not rebuild the browser. Both routes preserve the target project cwd. `-l` writes only that project's package settings; omit `-l` intentionally for user-wide installation. Pi's `--approve` trusts project-local files for this command, so run it in a project you trust.
+
+When switching between Git and local installation, remove the prior registration in the same scope first: Pi identifies a Git source by repository URL and a local source by its resolved path, so they can otherwise both load. Existing Pi sessions and credentials are retained.
 
 Restart Pi or run `/reload`. In Pi:
 
@@ -52,7 +56,7 @@ root = Card(Column([
 ]))
 ```
 
-Allowed components: Text, Column, Row, Card, Button, TextField. Text is escaped plain text. Functions, checks, dynamic templates, media, HTML and general RPC are unavailable. Bind submitted values directly to absolute TextField value paths; values are strings. Literal event context is checked against the committed definition.
+Version 0.1.1 includes bounded native-tool LogView and finite line/bar Chart; a2ui_update_chart updates series without replacing inputs. Native log collection uses Pi events and makes no model request per chunk. Log display can be paused locally; earlier omitted content is marked. The version also includes read-only CodeDiff and TestResults under a versioned Pi catalog. It also adds CheckBox, ChoicePicker, Slider, DateTimeInput, Tabs and Divider to Text, Column, Row, Card, Button and TextField. Text and source content are escaped plain text. Coding follow-up buttons carry literal proposalId/resultId; source/test records are immutable within a session. TestResults displays supplied case records and provenance reported by Pi; it does not certify a test execution. Functions, checks, dynamic templates, media, HTML and general RPC are unavailable. Bind submitted values directly to absolute input value paths. TextField uses string, CheckBox boolean, Slider finite bounded number, ChoicePicker string array; DateTimeInput uses explicit date/time flags and local calendar strings (optional :00 seconds), with static bounds. Literal event context is checked against the committed definition.
 
 Rendering validates the entire replacement before publishing it. Invalid source leaves the old surface intact. A tool result does not wait for a human; the browser action becomes a later structured user message, with `followUp` during generation. “Sent to Pi” acknowledges one local dispatch attempt, not model success; asynchronous failures appear in Pi. Ambiguous network failures are not automatically retried.
 
@@ -67,6 +71,8 @@ Known upstream dependency risk: `npm audit` reports GHSA-mrhx-c7xc-m3w5 in Zod, 
 ## Develop and verify
 
 ```sh
+nvm use
+npm ci
 npm run build
 npm run check
 npm test
@@ -74,24 +80,24 @@ npm run test:browser
 npm pack
 ```
 
-Browser tests require a Playwright Chromium installation (`npx playwright install chromium`). Browser bundling is a development/release step. No CDN or WebSocket dependency is used at runtime. Spec, walkthrough and acceptance mappings: [MVP design](https://github.com/Jackallink/pi-a2ui/blob/v0.1.0/docs/specs/001-pi-a2ui-mvp.md).
+The checked-in `dist/` files must match `npm run build`; commit regenerated assets and full third-party notices together with source changes. Browser tests require a Playwright Chromium installation (`npx playwright install chromium`). Browser bundling is a development/release step. No CDN or WebSocket dependency is used at runtime. Spec, walkthrough and acceptance mappings: [MVP design](https://github.com/Jackallink/pi-a2ui/blob/v0.1.0/docs/specs/001-pi-a2ui-mvp.md).
 
 Live acceptance defaults to Agent Plan `volcengine-ark/glm-5.3-flash` and checks the resolved model and Agent Plan endpoint before making a request. Credentials stay in Pi. Select an installed Chromium executable with `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` when needed.
 
-## Releases and iteration scope
+## Release scope
 
-See the [changelog](https://github.com/Jackallink/pi-a2ui/blob/v0.1.0/CHANGELOG.md), [v0.1.0 checkpoint](https://github.com/Jackallink/pi-a2ui/blob/v0.1.0/docs/releases/v0.1.0.md), and [roadmap](https://github.com/Jackallink/pi-a2ui/blob/main/ROADMAP.md).
+[Version0.1.1](docs/releases/v0.1.1.md) contains all three slices: typed forms/layout, CodeDiff/TestResults, and LogView/Chart. Earlier0.1.2/0.1.3 labels describe unpublished development candidates; they are included in0.1.1 and are not separate releases. The immutable [v0.1.0 checkpoint](https://github.com/Jackallink/pi-a2ui/releases/tag/v0.1.0) remains available.
 
-- **0.1.1:** form and layout components: CheckBox, ChoicePicker, Slider, DateTimeInput, Tabs, Divider.
-- **0.1.2:** coding components: CodeDiff and TestResults.
-- **0.1.3:** live data components: LogView and Chart.
-
-These are planned iterations, not capabilities included in 0.1.0. Each iteration requires its own walkthrough, TDD mapping, independent review and release checks.
+See [CHANGELOG.md](CHANGELOG.md), [ROADMAP.md](ROADMAP.md), and the [Pi package distribution contract](docs/specs/005-v0.1.1-distribution.md). Historical design/test evidence preserves each original feature slice and artifact identity.
 
 ## Remove
 
 ```sh
-pi remove /absolute/path/used/when/installing
+pi remove -l --approve git:github.com/Jackallink/pi-a2ui@v0.1.1
+# For the local route instead:
+pi remove -l --approve /absolute/path/to/pi-a2ui
 ```
 
-For project-local installs, use `pi install -l` and `pi remove -l`. Existing Pi sessions and credentials are retained.
+Run removal from the same project used for installation; omit `-l` only for a user-wide registration. Existing Pi sessions and credentials are retained.
+
+Development runtime: run `nvm use` (Node24, pinned by `.nvmrc`) before installing or testing. The version-specific acceptance scenarios use `A2UI_ACCEPT_SCENARIO=forms`, `coding` or `live` with the production-installed package.

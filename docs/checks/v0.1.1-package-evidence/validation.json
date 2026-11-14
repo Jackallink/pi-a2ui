@@ -1,0 +1,22 @@
+[
+  {
+    "check": "build",
+    "exitCode": 0,
+    "seconds": 0.25
+  },
+  {
+    "check": "check",
+    "exitCode": 0,
+    "seconds": 3.42
+  },
+  {
+    "check": "node",
+    "exitCode": 0,
+    "seconds": 1.37
+  },
+  {
+    "check": "browser",
+    "exitCode": 0,
+    "seconds": 3.89
+  }
+]
