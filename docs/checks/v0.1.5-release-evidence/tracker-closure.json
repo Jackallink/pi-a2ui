@@ -1,0 +1,63 @@
+{
+  "issues": [
+    {
+      "closedAt": "2026-11-14T10:11:23Z",
+      "number": 19,
+      "state": "CLOSED"
+    },
+    {
+      "closedAt": "2026-11-14T10:11:28Z",
+      "number": 20,
+      "state": "CLOSED"
+    },
+    {
+      "closedAt": "2026-11-14T10:11:33Z",
+      "number": 21,
+      "state": "CLOSED"
+    },
+    {
+      "closedAt": "2026-11-14T10:11:39Z",
+      "number": 22,
+      "state": "CLOSED"
+    },
+    {
+      "closedAt": "2026-11-14T10:11:44Z",
+      "number": 23,
+      "state": "CLOSED"
+    },
+    {
+      "closedAt": "2026-11-14T10:11:49Z",
+      "number": 24,
+      "state": "CLOSED"
+    },
+    {
+      "closedAt": "2026-11-14T10:11:55Z",
+      "number": 25,
+      "state": "CLOSED"
+    },
+    {
+      "closedAt": "2026-11-14T10:12:00Z",
+      "number": 26,
+      "state": "CLOSED"
+    },
+    {
+      "closedAt": "2026-11-14T10:12:05Z",
+      "number": 32,
+      "state": "CLOSED"
+    },
+    {
+      "closedAt": "2026-11-14T10:12:11Z",
+      "number": 17,
+      "state": "CLOSED"
+    }
+  ],
+  "milestone": {
+    "number": 5,
+    "title": "v0.1.5",
+    "state": "closed",
+    "openIssues": 0,
+    "closedIssues": 10
+  },
+  "releaseURL": "https://github.com/Jackallink/pi-a2ui/releases/tag/v0.1.5",
+  "evidenceURL": "https://github.com/Jackallink/pi-a2ui/blob/c5c0d1c/docs/checks/048-v0.1.5-publication.md"
+}
