@@ -1,0 +1,1 @@
+root = Column(children=[StatusBadge(label="Awaiting execution",status="info"),TaskProgress(stream="tools"),LogView(stream="tools")])

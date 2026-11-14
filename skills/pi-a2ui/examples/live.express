@@ -1,0 +1,3 @@
+$/form/note = ""
+chart = Chart(kind="bar", series=[{name:"Reported values",points:[{label:"one",value:1},{label:"two",value:2}]}])
+root = Column(children=[TextField(label="Note",value=$/form/note),LogView(stream="tools"),chart,Button(child=Text(text="Continue"),action=Event("continue",{note:$/form/note}))])

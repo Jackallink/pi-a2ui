@@ -1,0 +1,1 @@
+root = Modal(trigger=Icon(name="settings"),content=Column(children=[Text(text="Local details"),Button(child=Text(text="Continue"),action=Event("continue"))]))

@@ -10,6 +10,9 @@
 
 - `a2ui_render` attempts to open the local canvas in the default browser on the first successful render when no browser client is connected; the attempt happens at most once per session episode, failures notify once without retrying and never surface through a stale post-reload, post-branch-switch or post-shutdown context, and `/a2ui` remains the manual fallback sharing the same platform open logic.
 
+- Bundle pi-a2ui skill, progressive component/error references and11 capability-gated Express templates. Add read-only catalog/example/preflight script using prebuiltJS and the existing compiler; no extra runtime dependency or provider.
+- Correct contradictory SDK prompt wording about named arguments. Existing published tags remain immutable.
+
 ## 0.1.3 - 2026-11-14
 
 - Version-alignment checkpoint: publish the complete v0.1.1 functionality as v0.1.3 to remove ambiguity with historical development version labels.

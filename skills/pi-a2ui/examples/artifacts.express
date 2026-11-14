@@ -1,0 +1,2 @@
+// Syntax-only opaque references, not registered resources. Register real files and substitute every returned src before rendering.
+root = Column(children=[ArtifactPreview(src="/api/artifacts/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",kind="image",label="Preview"),Image(url="/api/artifacts/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",description="Image artifact"),Video(url="/api/artifacts/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"),AudioPlayer(url="/api/artifacts/cccccccccccccccccccccccccccccccc",description="Audio artifact")])

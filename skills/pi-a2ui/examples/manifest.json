@@ -1,0 +1,110 @@
+[
+  {
+    "name": "user-form",
+    "requires": [
+      "Card",
+      "Column",
+      "Text",
+      "TextField",
+      "Button"
+    ]
+  },
+  {
+    "name": "typed-form",
+    "requires": [
+      "CheckBox",
+      "Slider",
+      "ChoicePicker",
+      "DateTimeInput",
+      "Button",
+      "Column",
+      "Text"
+    ]
+  },
+  {
+    "name": "layout",
+    "requires": [
+      "Tabs",
+      "Card",
+      "Column",
+      "Row",
+      "Text",
+      "Divider"
+    ]
+  },
+  {
+    "name": "review",
+    "requires": [
+      "Column",
+      "CodeDiff",
+      "TestResults",
+      "Button",
+      "Text"
+    ]
+  },
+  {
+    "name": "live",
+    "requires": [
+      "TextField",
+      "LogView",
+      "Chart",
+      "Button",
+      "Column",
+      "Text"
+    ]
+  },
+  {
+    "name": "list-table",
+    "requires": [
+      "List",
+      "DataTable",
+      "Text"
+    ]
+  },
+  {
+    "name": "reading",
+    "requires": [
+      "Column",
+      "CodeBlock",
+      "MarkdownView"
+    ]
+  },
+  {
+    "name": "details",
+    "requires": [
+      "Column",
+      "Details",
+      "Text",
+      "CodeBlock"
+    ]
+  },
+  {
+    "name": "status",
+    "requires": [
+      "Column",
+      "StatusBadge",
+      "TaskProgress",
+      "LogView"
+    ]
+  },
+  {
+    "name": "modal",
+    "requires": [
+      "Modal",
+      "Icon",
+      "Column",
+      "Text",
+      "Button"
+    ]
+  },
+  {
+    "name": "artifacts",
+    "requires": [
+      "Column",
+      "ArtifactPreview",
+      "Image",
+      "Video",
+      "AudioPlayer"
+    ]
+  }
+]

@@ -1,0 +1,8 @@
+$/form/username = ""
+$/form/email = ""
+root = Card(child=Column(children=[
+  Text(text="用户信息"),
+  TextField(label="用户名", value=$/form/username),
+  TextField(label="邮箱", value=$/form/email),
+  Button(child=Text(text="确认"), action=Event("submit", {username: $/form/username, email: $/form/email}))
+]))

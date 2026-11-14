@@ -1,0 +1,518 @@
+// src/assistant-cli.ts
+import { constants } from "node:fs";
+import { open, readFile } from "node:fs/promises";
+
+// src/compiler.ts
+import { A2uiGenerator, CatalogConfig, ExpressFormatFactory, RendererState } from "@a2ui/agent";
+
+// src/protocol.ts
+var LIMITS = {
+  sourceBytes: 32 * 1024,
+  snapshotBytes: 256 * 1024,
+  bodyBytes: 64 * 1024,
+  components: 64,
+  surfaces: 4,
+  depth: 16,
+  clients: 8,
+  events: 1024,
+  queuedBytes: 256 * 1024
+};
+var UiError = class extends Error {
+  constructor(status, message) {
+    super(message);
+    this.status = status;
+  }
+};
+
+// src/inputs.ts
+var inputTypes = /* @__PURE__ */ new Set(["TextField", "CheckBox", "ChoicePicker", "Slider", "DateTimeInput"]);
+function inputPaths(components) {
+  const paths = /* @__PURE__ */ new Map();
+  for (const component of components) {
+    if (!inputTypes.has(component.component)) continue;
+    const value = component.value;
+    if (!value || typeof value !== "object" || !("@path" in value)) continue;
+    const path = value["@path"];
+    const previous = paths.get(path);
+    if (previous && (previous.component !== "TextField" || component.component !== "TextField")) throw new UiError(400, "Typed input bindings must not share paths");
+    paths.set(path, component);
+  }
+  return paths;
+}
+function datePart(value) {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+  if (!match) return false;
+  const [year, month, day] = match.slice(1).map(Number);
+  const leap = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
+  const days = [31, leap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  return year >= 1 && month >= 1 && month <= 12 && day >= 1 && day <= days[month - 1];
+}
+function dateValue(component, value, empty) {
+  if (typeof value !== "string") throw new UiError(400, "Date/time input must be a string");
+  if (empty && value === "") return "";
+  const date = component.enableDate;
+  const time = component.enableTime;
+  const parts = date && time ? value.split("T") : [value];
+  const valid = date && time ? parts.length === 2 && datePart(parts[0]) && timePart(parts[1]) : date ? datePart(value) : timePart(value);
+  if (!valid) throw new UiError(400, "Invalid local calendar date/time");
+  return time && (date ? parts[1] : value).length === 8 ? value.slice(0, -3) : value;
+}
+function timePart(value) {
+  return /^(?:[01]\d|2[0-3]):[0-5]\d(?::00)?$/.test(value);
+}
+function validateInput(component, value) {
+  switch (component.component) {
+    case "TextField":
+      if (typeof value !== "string") throw new UiError(400, "TextField context must be a string");
+      break;
+    case "CheckBox":
+      if (typeof value !== "boolean") throw new UiError(400, "CheckBox value must be a boolean");
+      break;
+    case "ChoicePicker": {
+      const options = component.options;
+      const allowed = new Set(options.map((option) => option.value));
+      if (allowed.size !== options.length) throw new UiError(400, "Duplicate choice option IDs");
+      if (!Array.isArray(value) || value.some((item) => typeof item !== "string" || !allowed.has(item)) || new Set(value).size !== value.length || component.variant !== "multipleSelection" && value.length > 1) throw new UiError(400, "Invalid choice selection");
+      break;
+    }
+    case "Slider": {
+      const min = component.min ?? 0;
+      const max = component.max;
+      if (typeof min !== "number" || typeof max !== "number" || !Number.isFinite(min) || !Number.isFinite(max) || min >= max || !Number.isFinite(max - min)) throw new UiError(400, "Invalid static slider range");
+      if (typeof value !== "number" || !Number.isFinite(value) || value < min || value > max) throw new UiError(400, "Slider value outside the declared range");
+      if (component.steps !== void 0) {
+        const steps = component.steps;
+        if (typeof steps !== "number" || !Number.isSafeInteger(steps) || steps < 1) throw new UiError(400, "Invalid slider divisions");
+        const index = (value - min) / (max - min) * steps;
+        if (Math.abs(index - Math.round(index)) > 1e-8) throw new UiError(400, "Slider value is off the declared grid");
+      }
+      break;
+    }
+    case "DateTimeInput": {
+      if (typeof component.enableDate !== "boolean" || typeof component.enableTime !== "boolean" || !component.enableDate && !component.enableTime) throw new UiError(400, "Date/time flags must be explicit and enable at least one input");
+      const current = dateValue(component, value, true);
+      const min = component.min === void 0 ? void 0 : dateValue(component, component.min, false);
+      const max = component.max === void 0 ? void 0 : dateValue(component, component.max, false);
+      if (min !== void 0 && max !== void 0 && min > max || current !== "" && (min !== void 0 && current < min || max !== void 0 && current > max)) throw new UiError(400, "Date/time value outside the declared range");
+      break;
+    }
+  }
+}
+function validateInputs(components, resolve) {
+  const entries = [...components];
+  inputPaths(entries);
+  for (const component of entries) {
+    if (!inputTypes.has(component.component)) continue;
+    const value = component.value;
+    validateInput(component, value && typeof value === "object" && "@path" in value ? resolve(value["@path"]) : value);
+  }
+}
+
+// src/live.ts
+import { z } from "zod";
+var logStates = ["idle", "running", "completed", "error", "paused", "interrupted"];
+var logViewApi = { name: "LogView", schema: z.object({ stream: z.literal("tools").default("tools"), text: z.string().default(""), omitted: z.boolean().default(false), state: z.enum(logStates).default("idle") }).strict() };
+var seriesSchema = z.array(z.object({ name: z.string().min(1).max(128), points: z.array(z.object({ label: z.string().max(128), value: z.number().finite() }).strict()).max(200) }).strict()).max(4);
+var chartApi = { name: "Chart", schema: z.object({ kind: z.enum(["line", "bar"]), series: seriesSchema }).strict() };
+var liveApis = [logViewApi, chartApi];
+function trimLog(input, bytes = 65536, maxLines = 1e3) {
+  let text2 = input;
+  let omitted = false;
+  if (text2.length > 65536) {
+    text2 = text2.slice(-65536);
+    omitted = true;
+  }
+  const rows = text2.split("\n");
+  if (rows.length > maxLines) {
+    text2 = rows.slice(-maxLines).join("\n");
+    omitted = true;
+  }
+  while (new TextEncoder().encode(JSON.stringify(text2)).byteLength > bytes) {
+    text2 = text2.slice(Math.max(1, Math.ceil(text2.length / 8)));
+    omitted = true;
+  }
+  if (text2.length && /[\uDC00-\uDFFF]/.test(text2[0])) {
+    text2 = text2.slice(1);
+    omitted = true;
+  }
+  return { text: JSON.parse(JSON.stringify(text2)), omitted };
+}
+function validateSeries(input) {
+  const series = seriesSchema.parse(input);
+  const names = /* @__PURE__ */ new Set();
+  for (const item of series) {
+    if (names.has(item.name)) throw new UiError(400, "Chart series names must be unique");
+    names.add(item.name);
+    if (item.points.length !== series[0].points.length || item.points.some((point, index) => point.label !== series[0].points[index].label)) throw new UiError(400, "Chart series labels must align");
+  }
+  return series;
+}
+function validateLive(message, initial = false) {
+  let logs = 0;
+  for (const component of message.createSurface.components) {
+    if (component.component === "Chart") validateSeries(component.series);
+    if (component.component === "LogView") {
+      if (++logs > 1) throw new UiError(400, "Only one LogView per surface");
+      const { id: _, component: __, ...props } = component;
+      const data = logViewApi.schema.parse(props);
+      if (initial && (data.text !== "" || data.omitted || data.state !== "idle")) throw new UiError(400, "LogView initial output is server-controlled");
+      if (trimLog(data.text).text !== data.text) throw new UiError(413, "Saved LogView exceeds its text/line budget");
+      Object.assign(component, data);
+    }
+  }
+}
+
+// src/coding.ts
+import { z as z2 } from "zod";
+var identity = z2.string().regex(/^[A-Za-z0-9_-]{1,64}$/);
+var text = z2.string().min(1).max(512);
+var codeDiffApi = { name: "CodeDiff", schema: z2.object({ proposalId: identity, filename: text, baseRevision: text, before: z2.string(), after: z2.string() }).strict() };
+var testResultsApi = { name: "TestResults", schema: z2.object({ resultId: identity, command: text, evidence: text, cases: z2.array(z2.object({ id: identity, name: text, status: z2.enum(["pass", "fail", "skip", "error"]), details: z2.string().max(4096).optional() }).strict()).max(128), summary: z2.object({ pass: z2.number().int().min(0).max(128), fail: z2.number().int().min(0).max(128), skip: z2.number().int().min(0).max(128), error: z2.number().int().min(0).max(128) }).strict() }).strict() };
+var codingApis = [codeDiffApi, testResultsApi];
+function lines(value) {
+  if (new TextEncoder().encode(value).byteLength > 16384) throw new UiError(413, "CodeDiff source exceeds16KiB per side");
+  const result = value === "" ? [] : value.split("\n");
+  if (result.length > 512) throw new UiError(413, "CodeDiff source exceeds512 lines per side");
+  return result;
+}
+function diffLines(before, after) {
+  const old = lines(before), next = lines(after);
+  let prefix = 0, suffix = 0;
+  while (prefix < old.length && prefix < next.length && old[prefix] === next[prefix]) prefix++;
+  while (suffix < old.length - prefix && suffix < next.length - prefix && old[old.length - 1 - suffix] === next[next.length - 1 - suffix]) suffix++;
+  const result = [];
+  for (let i = 0; i < prefix; i++) result.push({ kind: "context", text: old[i], before: i + 1, after: i + 1 });
+  for (let i = prefix; i < old.length - suffix; i++) result.push({ kind: "remove", text: old[i], before: i + 1 });
+  for (let i = prefix; i < next.length - suffix; i++) result.push({ kind: "add", text: next[i], after: i + 1 });
+  for (let i = 0; i < suffix; i++) result.push({ kind: "context", text: old[old.length - suffix + i], before: old.length - suffix + i + 1, after: next.length - suffix + i + 1 });
+  return result;
+}
+function validateCoding(message) {
+  let proposal, result;
+  for (const component of message.createSurface.components) {
+    if (component.component === "CodeDiff") {
+      if (proposal !== void 0) throw new UiError(400, "Only one CodeDiff per surface");
+      proposal = component.proposalId;
+      diffLines(component.before, component.after);
+    }
+    if (component.component === "TestResults") {
+      if (result !== void 0) throw new UiError(400, "Only one TestResults per surface");
+      result = component.resultId;
+      const rows = component.cases;
+      const counts = { pass: 0, fail: 0, skip: 0, error: 0 };
+      const ids = /* @__PURE__ */ new Set();
+      for (const row of rows) {
+        if (ids.has(row.id)) throw new UiError(400, "Duplicate test case ID");
+        ids.add(row.id);
+        counts[row.status]++;
+      }
+      const summary = component.summary;
+      if (Object.keys(counts).some((key) => counts[key] !== summary[key])) throw new UiError(400, "Test summary does not match case records");
+    }
+  }
+  for (const component of message.createSurface.components) {
+    if (component.component !== "Button") continue;
+    const context = component.action?.event?.context;
+    if ((proposal !== void 0 || result !== void 0) && (context?.proposalId !== proposal || context?.resultId !== result)) throw new UiError(400, "Coding actions must reference current literal record IDs");
+  }
+}
+
+// src/catalog.ts
+import { basicCatalog } from "@a2ui/web_core/v1_0";
+var official = basicCatalog.derive({
+  catalogId: basicCatalog.id,
+  components: ["Text", "Column", "Row", "Card", "Button", "TextField", "CheckBox", "ChoicePicker", "Slider", "DateTimeInput", "Tabs", "Divider"],
+  functions: [],
+  instructions: "Use only the twelve declared components. Text is literal escaped plain text. Use event actions only. No functions, checks, templates, URLs, media or executable expressions. Bind event context only to absolute value paths of reachable inputs. Initialize TextField with strings, CheckBox booleans, Slider bounded finite numbers, ChoicePicker string arrays. Use explicit enableDate/enableTime flags and local YYYY-MM-DD / HH:mm / YYYY-MM-DDTHH:mm date/time strings, optional :00 seconds. Declare static ranges/options."
+});
+var base = official;
+var legacyCatalog = base.derive({ catalogId: official.id, functions: [], instructions: official.instructions, components: [...official.components.values()].map(({ element: _element, tagName: _tagName, ...api }) => api) });
+var codingCatalog = legacyCatalog.derive({ catalogId: "https://jackallink.github.io/pi-a2ui/catalogs/coding-v1.json", functions: [], components: [...legacyCatalog.components.values(), ...codingApis], instructions: legacyCatalog.instructions?.replace("Use only the twelve declared components.", "Use only the declared components/signatures.") + " CodeDiff and TestResults are static read-only records. Each surface has at most one of each; every Button must include current literal proposalId/resultId. IDs are immutable within a session. Test results are supplied tool evidence, not independently certified by the browser." });
+var restrictedCatalog = codingCatalog.derive({ catalogId: "https://jackallink.github.io/pi-a2ui/catalogs/live-v1.json", functions: [], components: [...codingCatalog.components.values(), ...liveApis], instructions: codingCatalog.instructions + ' LogView(stream="tools") is server-controlled native tool output; omit its text/state/omitted initial values. Never place it inside a Button. Chart supports only static line/bar aligned finite series. Use a2ui_update_chart to update an existing Chart without replacing inputs. No model call per output chunk.' });
+var catalogs = [legacyCatalog, codingCatalog, restrictedCatalog];
+
+// src/compiler.ts
+function record(value) {
+  return value !== null && typeof value === "object" && !Array.isArray(value) && (Object.getPrototypeOf(value) === Object.prototype || Object.getPrototypeOf(value) === null);
+}
+function exactKeys(value, required, optional = []) {
+  if (required.some((key) => !Object.hasOwn(value, key)) || Object.keys(value).some((key) => !required.includes(key) && !optional.includes(key))) throw new UiError(400, "Unexpected or missing fields");
+}
+function boundedJson(value, bytes = LIMITS.snapshotBytes) {
+  const ancestors = /* @__PURE__ */ new Set();
+  let entries = 0;
+  function visit(item, depth) {
+    if (++entries > 4096) throw new UiError(413, "JSON total entries limit exceeded");
+    if (typeof item === "string" && Buffer.byteLength(item, "utf8") > bytes) throw new UiError(413, "JSON byte limit exceeded");
+    if (depth > LIMITS.depth) throw new UiError(413, "JSON nesting exceeds limit");
+    if (item === null || typeof item === "string" || typeof item === "boolean" || typeof item === "number" && Number.isFinite(item)) return;
+    if (!Array.isArray(item) && !record(item)) throw new UiError(400, "Expected JSON data");
+    if ((Array.isArray(item) ? item.length : Object.keys(item).length) > 256) throw new UiError(413, "JSON collection cardinality limit exceeded");
+    if (ancestors.has(item)) throw new UiError(400, "Cyclic JSON data");
+    ancestors.add(item);
+    for (const [key, child] of Object.entries(item)) {
+      if (["__proto__", "prototype", "constructor"].includes(key)) throw new UiError(400, "Unsafe data key");
+      visit(child, depth + 1);
+    }
+    ancestors.delete(item);
+  }
+  visit(value, 0);
+  if (Buffer.byteLength(JSON.stringify(value), "utf8") > bytes) throw new UiError(413, "JSON byte limit exceeded");
+}
+function isBinding(value) {
+  return record(value) && Object.keys(value).length === 1 && typeof value["@path"] === "string" && /^(?:\/(?:[^~/\x00-\x1f\x7f]|~[01])+)+$/.test(value["@path"]);
+}
+function noExpressions(value) {
+  if (!value || typeof value !== "object") return;
+  for (const [key, child] of Object.entries(value)) {
+    if (key === "checks" || key === "path" || key.startsWith("@") && key !== "@path" || key === "call" || key === "callFunction") throw new UiError(400, "Executable expressions and checks are unavailable");
+    if (key === "@path" && !isBinding(value)) throw new UiError(400, "Only absolute data bindings are supported");
+    noExpressions(child);
+  }
+}
+function processor(surfaceId) {
+  return new A2uiGenerator([new CatalogConfig(restrictedCatalog)], void 0, new ExpressFormatFactory({ surfaceId })).createProcessor({ "1.0": { supportedCatalogIds: [restrictedCatalog.id] } });
+}
+function validateSurface(input) {
+  try {
+    let walk2 = function(id, depth, insideButton = false) {
+      if (depth > LIMITS.depth) throw new UiError(413, "Tree depth exceeded");
+      if (reachable.has(id)) throw new UiError(400, "Components must form a tree without repeated children");
+      const component = components.get(id);
+      if (!component) throw new UiError(400, "Missing root or child");
+      if (insideButton && component.component === "LogView") throw new UiError(400, "LogView must not be nested in a Button");
+      reachable.add(id);
+      const children = component.component === "Tabs" && Array.isArray(component.tabs) ? component.tabs.map((tab) => tab.child) : Array.isArray(component.children) ? component.children : typeof component.child === "string" ? [component.child] : [];
+      for (const child of children) {
+        if (typeof child !== "string") throw new UiError(400, "Expected static child ID");
+        walk2(child, depth + 1, insideButton || component.component === "Button");
+      }
+    }, checkBindings2 = function(value) {
+      if (isBinding(value)) {
+        dataModel.get(value["@path"]);
+      } else if (value && typeof value === "object") {
+        for (const child of Object.values(value)) checkBindings2(child);
+      }
+    };
+    var walk = walk2, checkBindings = checkBindings2;
+    boundedJson(input);
+    if (!record(input)) throw new UiError(400, "Expected surface message");
+    exactKeys(input, ["version", "createSurface"]);
+    if (input.version !== "1.0" || !record(input.createSurface)) throw new UiError(400, "Unsupported surface message");
+    const create = input.createSurface;
+    exactKeys(create, ["surfaceId", "catalogId", "components"], ["dataModel"]);
+    if (typeof create.surfaceId !== "string" || !/^[A-Za-z0-9_-]{1,64}$/.test(create.surfaceId) || !catalogs.some((catalog) => catalog.id === create.catalogId) || !Array.isArray(create.components) || !create.components.length) throw new UiError(400, "Invalid surface or empty root");
+    if (create.components.length > LIMITS.components) throw new UiError(413, "Component limit exceeded");
+    noExpressions(create);
+    for (const component of create.components) {
+      if (!record(component) || typeof component.component !== "string" || !catalogs.find((catalog) => catalog.id === create.catalogId).components.has(component.component)) throw new UiError(400, "Unsupported component");
+      if ("children" in component && !Array.isArray(component.children)) throw new UiError(400, "Dynamic children are unavailable");
+    }
+    const message = structuredClone(input);
+    const state = new RendererState(catalogs);
+    state.apply(message);
+    state.checkTopology([create.surfaceId]);
+    const components = new Map(message.createSurface.components.map((component) => [component.id, component]));
+    const reachable = /* @__PURE__ */ new Set();
+    walk2("root", 1);
+    if (reachable.size !== components.size) throw new UiError(400, "Unreachable component");
+    const dataModel = state.getSurface(create.surfaceId).dataModel;
+    checkBindings2(message.createSurface.components);
+    for (const component of components.values()) {
+      const properties = component.component === "Text" ? ["text"] : component.component === "TextField" ? ["label", "value", "placeholder"] : ["CheckBox", "ChoicePicker", "Slider", "DateTimeInput"].includes(component.component) ? ["label"] : [];
+      const strings = properties.map((property) => [property, component[property]]);
+      if (component.component === "Tabs") for (const tab of component.tabs) strings.push(["tabs.title", tab.title]);
+      if (component.component === "ChoicePicker") for (const option of component.options) strings.push(["options.label", option.label]);
+      if (record(component.accessibility)) {
+        strings.push(["accessibility.label", component.accessibility.label], ["accessibility.description", component.accessibility.description]);
+      }
+      for (const [property, binding] of strings) {
+        if (isBinding(binding) && typeof dataModel.get(binding["@path"]) !== "string") throw new UiError(400, `Bound ${component.component}.${property} must resolve to an initialized string`);
+      }
+    }
+    validateInputs(components.values(), (path) => dataModel.get(path));
+    const fields = inputPaths(components.values());
+    for (const component of components.values()) {
+      if (component.component !== "Button") continue;
+      const action = component.action;
+      if (!record(action) || !record(action.event)) throw new UiError(400, "Only event actions are supported");
+      exactKeys(action, ["event"]);
+      exactKeys(action.event, ["name"], ["context"]);
+      const context = action.event.context ?? {};
+      if (!record(context)) throw new UiError(400, "Expected event context");
+      for (const value of Object.values(context)) {
+        if (isBinding(value)) {
+          if (!fields.has(value["@path"])) throw new UiError(400, "Context must bind to a reachable input");
+        } else if (JSON.stringify(value).includes('"@path"')) throw new UiError(400, "Nested context bindings are unavailable");
+      }
+    }
+    validateCoding(message);
+    validateLive(message);
+    return message;
+  } catch (error) {
+    if (error instanceof UiError) throw error;
+    throw new UiError(400, "Invalid A2UI surface: " + (error instanceof Error ? error.message : "validation failed"));
+  }
+}
+function preflightSource(source) {
+  let tokens = 0;
+  const delimiters = [];
+  for (let index = 0; index < source.length; ) {
+    if (/\s/.test(source[index])) {
+      index++;
+      continue;
+    }
+    if (source[index] === "#" || source.startsWith("//", index)) {
+      while (index < source.length && source[index] !== "\n" && source[index] !== "\r") index++;
+      continue;
+    }
+    if (source.startsWith("/*", index)) {
+      const end = source.indexOf("*/", index + 2);
+      if (end < 0) throw new UiError(400, "Unterminated source comment");
+      index = end + 2;
+      continue;
+    }
+    if (++tokens > 4096) throw new UiError(413, "Source token limit exceeded");
+    if (source[index] === '"') {
+      const triple = source.startsWith('"""', index);
+      const delimiter = triple ? '"""' : '"';
+      const raw = index > 0 && /[rR]/.test(source[index - 1]);
+      index += delimiter.length;
+      while (index < source.length) {
+        if (!raw && source[index] === "\\") {
+          index += 2;
+          continue;
+        }
+        if (source.startsWith(delimiter, index)) {
+          index += delimiter.length;
+          break;
+        }
+        index++;
+      }
+    } else if ("([{".includes(source[index])) {
+      delimiters.push(source[index]);
+      if (delimiters.length > 64) throw new UiError(413, "Source delimiter nesting limit exceeded");
+      index++;
+    } else if (")]}".includes(source[index])) {
+      if (delimiters.pop() !== "([{".charAt(")]}".indexOf(source[index]))) throw new UiError(400, "Unmatched source delimiter");
+      index++;
+    } else if (/[A-Za-z0-9_.~@-]/.test(source[index])) {
+      do {
+        index++;
+      } while (index < source.length && /[A-Za-z0-9_.~@-]/.test(source[index]));
+    } else index++;
+  }
+}
+function compile(surfaceId, source) {
+  if (!/^[A-Za-z0-9_-]{1,64}$/.test(surfaceId)) throw new UiError(400, "Invalid surface ID");
+  if (typeof source !== "string" || !source.trim()) throw new UiError(400, "Source must be nonempty");
+  if (Buffer.byteLength(source, "utf8") > LIMITS.sourceBytes) throw new UiError(413, "Source byte limit exceeded");
+  preflightSource(source);
+  try {
+    const state = new RendererState([restrictedCatalog]);
+    const parts = processor(surfaceId).parseResponse(source, { wrapped: false, state });
+    let creates = 0;
+    for (const part of parts) {
+      if (part.type !== "a2ui") throw new UiError(400, "Expected only UI content");
+      for (const message2 of part.a2ui) {
+        const wire = message2;
+        const command = wire.createSurface ?? wire.updateComponents ?? wire.updateDataModel;
+        if (!command || command.surfaceId !== surfaceId) throw new UiError(400, "Only the requested surface may be changed");
+        if (wire.createSurface) creates++;
+      }
+    }
+    if (creates !== 1 || state.surfaceIds.length !== 1 || state.surfaceIds[0] !== surfaceId) throw new UiError(400, "Exactly one complete surface is required");
+    state.checkTopology([surfaceId]);
+    const surface = state.getSurface(surfaceId);
+    const message = { version: "1.0", createSurface: { surfaceId, catalogId: restrictedCatalog.id, components: [...surface.componentsModel.getAll().values()].map((component) => component.componentTree), dataModel: surface.dataModel.get("/") } };
+    validateLive(message, true);
+    return validateSurface(message);
+  } catch (error) {
+    if (error instanceof UiError) throw error;
+    throw new UiError(400, "Invalid Express source: " + (error instanceof Error ? error.message : "compilation failed"));
+  }
+}
+
+// src/assistant-cli.ts
+var help = "Usage: node SKILL/scripts/a2ui.mjs catalog | examples | example NAME | check --surface-id ID FILE_OR_-\nRead-only preflight; rendering still requires a2ui_render. Requires Node24.x.\n";
+async function sourceFile(path) {
+  const chunks = [];
+  let size = 0;
+  if (path === "-") {
+    if (process.stdin.isTTY) throw new Error("Pipe Express source to stdin or provide a source file");
+    for await (const value of process.stdin) {
+      const chunk = Buffer.isBuffer(value) ? value : Buffer.from(value);
+      size += chunk.length;
+      if (size > LIMITS.sourceBytes) throw new Error("Source byte limit exceeded");
+      chunks.push(chunk);
+    }
+  } else {
+    const handle = await open(path, constants.O_RDONLY | constants.O_NONBLOCK);
+    try {
+      const stat = await handle.stat();
+      if (!stat.isFile()) throw new Error("Expected a regular source file");
+      if (stat.size > LIMITS.sourceBytes) throw new Error("Source byte limit exceeded");
+      const buffer = Buffer.alloc(LIMITS.sourceBytes + 1);
+      while (size < buffer.length) {
+        const read = await handle.read(buffer, size, buffer.length - size, size);
+        if (!read.bytesRead) break;
+        size += read.bytesRead;
+      }
+      if (size > LIMITS.sourceBytes) throw new Error("Source byte limit exceeded");
+      chunks.push(buffer.subarray(0, size));
+    } finally {
+      await handle.close();
+    }
+  }
+  return new TextDecoder("utf-8", { fatal: true, ignoreBOM: true }).decode(Buffer.concat(chunks));
+}
+async function runCli(args) {
+  const usage = () => {
+    process.stderr.write(JSON.stringify({ error: "Invalid command or arguments", usage: help }) + "\n");
+    return 2;
+  };
+  if (Number(process.versions.node.split(".")[0]) !== 24) {
+    process.stderr.write(JSON.stringify({ error: "Node24.x is required; run nvm use 24" }) + "\n");
+    return 2;
+  }
+  if (args.length === 1 && args[0] === "--help") {
+    process.stdout.write(help);
+    return 0;
+  }
+  const [command, ...rest] = args;
+  if (!["catalog", "examples", "example", "check"].includes(command) || ["catalog", "examples"].includes(command) && rest.length || command === "example" && rest.length !== 1 || command === "check" && (rest.length !== 3 || rest[0] !== "--surface-id")) return usage();
+  try {
+    const probe = compile("preflight", 'root = Text(text="preflight")');
+    const catalog = catalogs.find((c) => c.id === probe.createSurface.catalogId);
+    if (command === "catalog") {
+      const metadata = JSON.parse(await readFile(new URL("../package.json", import.meta.url), "utf8"));
+      process.stdout.write(JSON.stringify({ packageVersion: metadata.version, nodeMajor: 24, catalogId: catalog.id, components: [...catalog.components.keys()].sort(), scope: "This helper package, not an arbitrary running Pi instance" }) + "\n");
+      return 0;
+    }
+    if (command === "examples" || command === "example") {
+      const examples = JSON.parse(await readFile(new URL("../skills/pi-a2ui/examples/manifest.json", import.meta.url), "utf8"));
+      if (command === "examples") {
+        process.stdout.write(JSON.stringify(examples.map((e) => ({ ...e, available: e.requires.every((name) => catalog.components.has(name)) }))) + "\n");
+        return 0;
+      }
+      const selected = examples.find((e) => e.name === rest[0]);
+      if (!selected) throw new Error("Unknown example; use examples to list allowed names");
+      const missing = selected.requires.filter((name) => !catalog.components.has(name));
+      if (missing.length) throw new Error("Example unavailable in this package catalog: " + missing.join(", "));
+      const source2 = await readFile(new URL("../skills/pi-a2ui/examples/" + selected.name + ".express", import.meta.url), "utf8");
+      compile("preflight", source2);
+      process.stdout.write(source2);
+      return 0;
+    }
+    const source = await sourceFile(rest[2]);
+    compile(rest[1], source);
+    process.stdout.write(JSON.stringify({ surfaceId: rest[1], source }) + "\n");
+    return 0;
+  } catch (error) {
+    process.stderr.write(JSON.stringify({ error: error instanceof Error ? error.message : "Preflight failed" }) + "\n");
+    return 1;
+  }
+}
+export {
+  runCli
+};

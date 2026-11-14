@@ -1,0 +1,1 @@
+root = List(children=[Text(text="Files"),DataTable(caption="Changes",columns=[{id:"file",label:"File"},{id:"count",label:"Lines"}],rows=[{id:"a",cells:["a.ts",10]},{id:"b",cells:["b.ts",2]}])])

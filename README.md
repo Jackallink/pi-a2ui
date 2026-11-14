@@ -47,6 +47,27 @@ Restart Pi or run `/reload`. In Pi:
 
 Ask Pi: “Use a2ui_render to show a form asking for my implementation plan. When I submit it, summarize the submitted value.” The first successful render while no browser is connected attempts to open your default browser automatically; if nothing opened or you closed the tab later, `/a2ui` opens the authenticated canvas again. Each Pi instance has its own random loopback port and access credential. Browser refresh restores committed UI; unsubmitted input is browser-local and is lost on refresh or replacement of that surface.
 
+## Companion skill and preflight helper
+
+This branch adds the bundled **pi-a2ui** skill, component subdocuments and11 executable templates. The existing publishedv0.1.3 tag does not contain this addition; use a checkout/ref that actually ships `skills/pi-a2ui/SKILL.md`. Package discovery loads the extension and skill together via `pi.extensions`/`pi.skills`; no extra global skill or CLI installation is needed. Run `/reload` after selecting the new package/ref, then:
+
+```text
+/skill:pi-a2ui 生成用户信息表单，包含用户名、邮箱和确认按钮
+```
+
+For smaller/local models, explicit invocation gives a known-good named-argument template plus links to the needed component reference. See [skill entry](skills/pi-a2ui/SKILL.md), [core16 component signatures](skills/pi-a2ui/references/core-components.md), [coding/live components](skills/pi-a2ui/references/coding-and-live.md), [optionalv0.1.4 components](skills/pi-a2ui/references/workbench-components.md), [media registration](skills/pi-a2ui/references/artifacts.md), [syntax/error guide](skills/pi-a2ui/references/syntax-and-errors.md) and [helper commands](skills/pi-a2ui/references/helper.md).
+
+With **Node24.x** selected, this read-only helper uses the same compiler as the tool and runs from a production install without a TS loader or build:
+
+```sh
+nvm use 24
+node /absolute/path/to/pi-a2ui/skills/pi-a2ui/scripts/a2ui.mjs catalog
+node /absolute/path/to/pi-a2ui/skills/pi-a2ui/scripts/a2ui.mjs example user-form
+node /absolute/path/to/pi-a2ui/skills/pi-a2ui/scripts/a2ui.mjs check --surface-id user-form /absolute/path/to/form.express
+```
+
+`catalog` describes that installed package, not an arbitrary active Pi process. `check` returns `{surfaceId,source}` for a2ui_render and publishes nothing; actual session/action/resource validation remains in the tool. v0.1.4-only examples refuse when the catalog lacks their types. Reference presence is not runtime support. Card takes a component child, not a title string; children need commas; forward references work, so declaration order alone is not a sufficient diagnosis.
+
 ## Model tool
 
 `a2ui_render({surfaceId, source})` accepts complete raw A2UI Express DSL. No wrapper tags or Markdown fences. The tool description includes official SDK-generated signatures.

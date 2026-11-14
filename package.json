@@ -10,6 +10,9 @@
   "pi": {
     "extensions": [
       "./extension.ts"
+    ],
+    "skills": [
+      "./skills"
     ]
   },
   "files": [
@@ -19,7 +22,8 @@
     "README.md",
     "CHANGELOG.md",
     "THIRD_PARTY_LICENSES.txt",
-    "LICENSE"
+    "LICENSE",
+    "skills/"
   ],
   "scripts": {
     "test": "node --import tsx --test tests/*.test.ts",
