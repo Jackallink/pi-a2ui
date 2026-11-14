@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync, mkdtempSync, rmSync, existsSync} from 'node:fs';
+import {readFileSync, writeFileSync, mkdtempSync, rmSync, existsSync} from 'node:fs';
 import {spawnSync} from 'node:child_process';
 import {join, resolve, dirname} from 'node:path';
 import {tmpdir} from 'node:os';
@@ -12,9 +12,11 @@ test('A03 the first skill recipe produces exact tool arguments for the known tem
   assert.ok(recipe, 'skill must contain an executable fast path');
   const cwd = mkdtempSync(join(tmpdir(), 'a2ui skill recipe '));
   try {
+    writeFileSync(join(cwd,'form.express'),'USER-OWNED-SOURCE');
     const command = recipe.replaceAll('<absolute-skill-path>', skillDir);
     const r = spawnSync('/bin/sh', ['-eu', '-c', command], {cwd, env: process.env, encoding:'utf8', timeout:10000});
     assert.equal(r.status, 0, r.stderr);
+    assert.equal(readFileSync(join(cwd,'form.express'),'utf8'),'USER-OWNED-SOURCE','documented recipe must preserve existing project files');
     const args = JSON.parse(r.stdout);
     assert.deepEqual(Object.keys(args).sort(), ['source', 'surfaceId']);
     assert.equal(args.surfaceId, 'form');

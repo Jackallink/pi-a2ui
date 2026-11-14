@@ -2,13 +2,14 @@ import { mkdir, writeFile, readFile, access } from 'node:fs/promises';
 import { constants } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { MODEL, PI_ENTRY, AcceptanceError, assertModelTuple, RpcProcess, runNode, runtimeEnv, checkChildRuntime, requireListenerClosed, cleanupOwned, messageText } from './acceptance-support.mjs';
-export async function preflightBrowser() {
+export async function preflightBrowser({ browserType, timeoutMs = 15000 } = {}) {
     try {
-        const { chromium } = await import('@playwright/test');
+        const chromium = browserType ?? (await import('@playwright/test')).chromium;
         const path = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH || chromium.executablePath();
         await access(path, constants.X_OK);
         const browser = await chromium.launch({ headless: true, executablePath: path });
-        await browser.close();
+        const cleanup = await cleanupOwned([['preflight.browser', () => browser.close()]], {timeoutMs});
+        if (cleanup.firstError) throw cleanup.firstError;
         return path;
     }
     catch {

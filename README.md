@@ -63,14 +63,14 @@ With **Node24.x** selected, this read-only helper uses the same compiler as the 
 
 ```sh
 nvm use 24
-node "/absolute/path/to/pi-a2ui/skills/pi-a2ui/scripts/a2ui.mjs" example user-form > form.express
-# Adapt form.express, then check and pass the exact output to a2ui_render:
-node "/absolute/path/to/pi-a2ui/skills/pi-a2ui/scripts/a2ui.mjs" check --surface-id user-form form.express
+# Unchanged template, no file writes; pass the check output to a2ui_render:
+node "/absolute/path/to/pi-a2ui/skills/pi-a2ui/scripts/a2ui.mjs" example user-form |
+  node "/absolute/path/to/pi-a2ui/skills/pi-a2ui/scripts/a2ui.mjs" check --surface-id user-form -
 # 0.1.6+ when a parameter is uncertain:
 node "/absolute/path/to/pi-a2ui/skills/pi-a2ui/scripts/a2ui.mjs" component TextField
 ```
 
-For a known task take the example directly; unknown tasks can use `patterns`/`pattern`, and unknown parameters use `component NAME` on0.1.6+. Errors carry project-aware hints and selected references. `catalog`/`patterns` describe that installed package, not an arbitrary active Pi process. `pattern` returns metadata, not DSL: choose its template with `example`, adapt it and `check`, then call a2ui_render. Template availability and local shell capabilities are separate. `check` returns `{surfaceId,source}` for a2ui_render and publishes nothing; actual session/action/resource validation remains in the tool. Examples refuse when the selected catalog lacks their types. Reference presence is not runtime support. Card takes a component child, not a title string; children need commas; forward references work, so declaration order alone is not a sufficient diagnosis.
+For customization use stdin or create a new unique source file with `mktemp` as shown in the skill; preserve existing project files. For a known task take the example directly; unknown tasks can use `patterns`/`pattern`, and unknown parameters use `component NAME` on0.1.6+. Errors carry project-aware hints and selected references. `catalog`/`patterns` describe that installed package, not an arbitrary active Pi process. `pattern` returns metadata, not DSL: choose its template with `example`, adapt it and `check`, then call a2ui_render. Template availability and local shell capabilities are separate. `check` returns `{surfaceId,source}` for a2ui_render and publishes nothing; actual session/action/resource validation remains in the tool. Examples refuse when the selected catalog lacks their types. Reference presence is not runtime support. Card takes a component child, not a title string; children need commas; forward references work, so declaration order alone is not a sufficient diagnosis.
 
 ## Model tool
 

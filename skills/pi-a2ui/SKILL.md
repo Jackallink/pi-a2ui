@@ -11,14 +11,17 @@ Use Pi's `a2ui_render` tool to publish. The helper only prepares/checks source; 
 
 ## Known task: example → adapt → check → render
 
-If the task already names a template, start there. For a guarded form use `validated-form`; for a basic form use `user-form`. With Node24 selected, use the absolute skill directory supplied by Pi, keep your current project cwd, and create temporary source there (never inside the installed package):
+If the task already names a template, start there. For a guarded form use `validated-form`; for a basic form use `user-form`. With Node24 selected, use the absolute skill directory supplied by Pi, keep your current project cwd, and create a new unique temporary source there (never inside the installed package or over an existing project file):
 
 ```sh
-node "<absolute-skill-path>/scripts/a2ui.mjs" example validated-form > form.express
-node "<absolute-skill-path>/scripts/a2ui.mjs" check --surface-id form form.express
+source_file="$(mktemp ./a2ui-form-XXXXXX)"
+printf 'Template file: %s\n' "$source_file" >&2
+node "<absolute-skill-path>/scripts/a2ui.mjs" example validated-form > "$source_file"
+# Adapt this new file to the request before the final check, if needed.
+node "<absolute-skill-path>/scripts/a2ui.mjs" check --surface-id form "$source_file"
 ```
 
-Adapt `form.express` to the request before the final check. Pass the successful check output **unchanged as the arguments** to `a2ui_render`. Only that tool displays UI. A known template does not need a preceding `patterns`/`pattern`/`catalog` tour or a second `read` of the example already returned by the helper. Model transport errors and missing tools/skills need loading/configuration diagnosis, not another DSL rewrite.
+Use the new file path shown above to adapt the template before the final check; stdin is also supported. Do not redirect over existing files. Pass the successful check output **unchanged as the arguments** to `a2ui_render`. Only that tool displays UI. A known template does not need a preceding `patterns`/`pattern`/`catalog` tour or a second `read` of the example already returned by the helper. Model transport errors and missing tools/skills need loading/configuration diagnosis, not another DSL rewrite.
 
 If a parameter is uncertain, ask only for that component:
 

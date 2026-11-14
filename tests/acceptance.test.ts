@@ -374,3 +374,9 @@ test('A02 review evidence admission rejects readonly package descendants includi
         rmSync(folder, { recursive: true, force: true });
     }
 });
+
+test('A02 review browser preflight also bounds a never-settling close before model setup',async()=>{
+ const {preflightBrowser}=await import(new URL('../scripts/skill-acceptance.mjs',import.meta.url).href);
+ const browserType={executablePath:()=>process.execPath,launch:async()=>({close:()=>new Promise(()=>{})})};
+ const observed=await Promise.race([preflightBrowser({browserType,timeoutMs:50}).then(()=> 'unexpected success',()=> 'rejected'),new Promise(res=>setTimeout(()=>res('still pending'),500))]);assert.equal(observed,'rejected','preflight close must reach a failed receipt instead of hanging before Pi/cleanup');
+});
