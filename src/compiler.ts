@@ -84,7 +84,7 @@ export function validateSurface(input: unknown): SurfaceMessage {
       if (reachable.has(id)) throw new UiError(400, 'Components must form a tree without repeated children');
       const component = components.get(id);
       if (!component) throw new UiError(400, 'Missing root or child');
-      if(insideButton && ['LogView','DataTable','CodeBlock','Details'].includes(component.component)) throw new UiError(400,component.component+' must not be nested in a Button');
+      if(insideButton && ['LogView','DataTable','CodeBlock','Details','TaskProgress'].includes(component.component)) throw new UiError(400,component.component+' must not be nested in a Button');
       reachable.add(id);
       const children = component.component === 'Tabs' && Array.isArray(component.tabs) ? component.tabs.map(tab => (tab as {child:string}).child) : Array.isArray(component.children) ? component.children : typeof component.child === 'string' ? [component.child] : [];
       for (const child of children) {

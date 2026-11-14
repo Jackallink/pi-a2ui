@@ -46,6 +46,7 @@ export default function a2ui(pi: ExtensionAPI) {
     async execute(_toolCallId, params, signal) {
       if (!controller.session.enabled) throw new UiError(503,"A2UI is disabled; use /a2ui-toggle to enable");
       const snapshot = await controller.render(params.surfaceId, params.source, signal);
+      live.refresh();
       const surface = snapshot.surfaces.find(item => item.surfaceId === params.surfaceId)!;
       return {
         content:[{type:"text",text:`Rendered ${params.surfaceId} (revision ${surface.revision}). Use /a2ui to open the local canvas. Continue your response; form actions arrive as later user messages.`}],

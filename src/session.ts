@@ -1,3 +1,4 @@
+import {type ToolProgress} from './workbench.ts';
 import { trimLog, validateSeries, type LogState } from './live.ts';
 import { inputPaths, validateInput } from './inputs.ts';
 import { codingIdentities } from './coding.ts';
@@ -45,7 +46,7 @@ export class UiSession {
   private checkCapacity(snapshot:Snapshot):void {
     if (snapshot.surfaces.length>LIMITS.surfaces || snapshot.surfaces.reduce((count,surface)=>count+surface.message.createSurface.components.length,0)>LIMITS.components) throw new UiError(413,'Surface or total component limit exceeded');
     boundedJson(snapshot);
-    const live=snapshot.surfaces.flatMap(s=>s.message.createSurface.components.filter(c=>c.component==='LogView'||c.component==='Chart'));
+    const live=snapshot.surfaces.flatMap(s=>s.message.createSurface.components.filter(c=>c.component==='LogView'||c.component==='Chart'||c.component==='TaskProgress'));
     const logs=live.filter(c=>c.component==='LogView');
     if(logs.length){
       const budget=Math.floor(65536/logs.length);
@@ -99,7 +100,7 @@ export class UiSession {
         const message=validateSurface(item.message);
         if(item.surfaceId!==message.createSurface.surfaceId || typeof item.revision!=='number' || !Number.isSafeInteger(item.revision) || item.revision<1 || ids.has(item.surfaceId as string)) throw new UiError(400,'Invalid surface revision or identity');
         ids.add(item.surfaceId as string);
-        for(const c of message.createSurface.components)if(c.component==='LogView'&&c.state==='running')c.state='interrupted';
+        for(const c of message.createSurface.components)if((c.component==='LogView'||c.component==='TaskProgress')&&c.state==='running')c.state='interrupted';
         return {surfaceId:item.surfaceId as string,revision:item.revision,dataSequence:Number(item.dataSequence??0),message};
       });
     }
@@ -119,7 +120,7 @@ export class UiSession {
     const next=this.snapshot();
     for(const s of next.surfaces){
       let changed=this.pendingData.has(s.surfaceId);
-      for(const c of s.message.createSurface.components)if(c.component==='LogView'){c.state=enabled?'idle':'paused';changed=true;}
+      for(const c of s.message.createSurface.components)if(c.component==='LogView'||c.component==='TaskProgress'){c.state=enabled?'idle':'paused';if(enabled&&c.component==='TaskProgress')Object.assign(c,{started:0,settled:0,failed:0,omitted:false});changed=true;}
       if(changed){if((s.dataSequence??0)>=Number.MAX_SAFE_INTEGER)throw new UiError(413,'Data sequence limit reached');s.dataSequence=(s.dataSequence??0)+1;}
     }
     next.enabled=enabled;this.checkCapacity(next);
@@ -143,16 +144,16 @@ export class UiSession {
     this.dataTimer=undefined;if(this.stopped||!this.enabled){this.pendingData.clear();return;}
     const batch:DataBatch={epoch:this.state.epoch,surfaces:[]};
     for(const [id,revision]of this.pendingData){const s=this.state.surfaces.find(s=>s.surfaceId===id);if(!s||s.revision!==revision)continue;
-      s.dataSequence=(s.dataSequence??0)+1;batch.surfaces.push({surfaceId:id,revision,sequence:s.dataSequence,components:structuredClone(s.message.createSurface.components.filter(c=>c.component==='LogView'||c.component==='Chart'))});}
+      s.dataSequence=(s.dataSequence??0)+1;batch.surfaces.push({surfaceId:id,revision,sequence:s.dataSequence,components:structuredClone(s.message.createSurface.components.filter(c=>c.component==='LogView'||c.component==='Chart'||c.component==='TaskProgress'))});}
     this.pendingData.clear();if(!batch.surfaces.length)return;this.lastDataAt=Date.now();
     for(const listener of this.dataListeners){try{const value:unknown=listener(structuredClone(batch));if(value!==undefined)void Promise.resolve(value).catch(()=>{});}catch{}}
   }
-  updateLog(text:string,state:LogState,omitted:boolean,operation?:Operation):Snapshot{
+  updateLog(text:string,state:LogState,omitted:boolean,operation?:Operation,progress?:ToolProgress):Snapshot{
     this.available(operation);
     const next=this.snapshot();const count=next.surfaces.filter(s=>s.message.createSurface.components.some(c=>c.component==='LogView')).length;
     const bounded=trimLog(text,Math.max(2,Math.floor(65536/Math.max(1,count))));const ids:string[]=[];
-    for(const s of next.surfaces){const c=s.message.createSurface.components.find(c=>c.component==='LogView');if(!c)continue;
-      Object.assign(c,{text:bounded.text,state,omitted:omitted||bounded.omitted});validateSurface(s.message);ids.push(s.surfaceId);}
+    for(const s of next.surfaces){const c=s.message.createSurface.components.find(c=>c.component==='LogView');const p=s.message.createSurface.components.find(c=>c.component==='TaskProgress');if(!c&&!(p&&progress))continue;
+      if(c)Object.assign(c,{text:bounded.text,state,omitted:omitted||bounded.omitted});if(p&&progress)Object.assign(p,progress);validateSurface(s.message);ids.push(s.surfaceId);}
     return ids.length?this.commitData(next,ids):this.snapshot();
   }
   updateChart(surfaceId:string,revision:number,componentId:string,series:unknown,options:{operation?:Operation;signal?:AbortSignal}={}):Snapshot{
