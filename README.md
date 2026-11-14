@@ -43,7 +43,7 @@ Restart Pi or run `/reload`. In Pi:
 - `/a2ui-status` shows listening/enabled status and surface/client counts.
 - `/a2ui-toggle` pauses or enables UI rendering and actions.
 
-Ask Pi: “Use a2ui_render to show a form asking for my implementation plan. When I submit it, summarize the submitted value.” Open `/a2ui` and submit the form. Each Pi instance has its own random loopback port and access credential. Browser refresh restores committed UI; unsubmitted input is browser-local and is lost on refresh or replacement of that surface.
+Ask Pi: “Use a2ui_render to show a form asking for my implementation plan. When I submit it, summarize the submitted value.” The first successful render while no browser is connected attempts to open your default browser automatically; if nothing opened or you closed the tab later, `/a2ui` opens the authenticated canvas again. Each Pi instance has its own random loopback port and access credential. Browser refresh restores committed UI; unsubmitted input is browser-local and is lost on refresh or replacement of that surface.
 
 ## Model tool
 
