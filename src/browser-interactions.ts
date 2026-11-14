@@ -16,7 +16,7 @@ export function currentModal():HTMLDialogElement|null{
 export function availableControl(element:HTMLElement,modal=currentModal()):boolean{
  if(!element.isConnected||!element.getClientRects().length||element.matches(':disabled')||element.getAttribute('aria-disabled')==='true')return false;
  if(document.querySelector('dialog:modal')&&(!modal||!within(modal,element)))return false;
- for(let current:HTMLElement|null=element;current;current=parent(current)){const style=getComputedStyle(current);if(current.hidden||current.inert||style.visibility==='hidden'||style.display==='none'||style.opacity==='0')return false;}
+ for(let current:HTMLElement|null=element;current;current=parent(current)){if(current instanceof HTMLDetailsElement&&!current.open){const summary=[...current.children].find(child=>child.tagName==='SUMMARY') as HTMLElement|undefined;if(!summary||!within(summary,element))return false;}const style=getComputedStyle(current);if(current.hidden||current.inert||style.visibility==='hidden'||style.display==='none'||style.opacity==='0')return false;}
  return true;
 }
 export function nativeControls(host:HTMLElement):HTMLElement[]{return [...elements(host)].filter(element=>element.matches('input,textarea,select,button,[tabindex]'));}

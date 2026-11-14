@@ -193,5 +193,16 @@
     ],
     "pattern": "evidence-location",
     "reference": "references/timeline-and-evidence.md"
+  },
+  {
+    "name": "command-actions",
+    "requires": [
+      "Column",
+      "Text",
+      "Row",
+      "Button"
+    ],
+    "pattern": "command-actions",
+    "reference": "references/keyboard-actions.md"
   }
 ]

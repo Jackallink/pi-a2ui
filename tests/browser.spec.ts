@@ -433,3 +433,52 @@ test("R07 source location returns immutable intent with no file or external requ
  await page.goto(canvas.origin);await expect(page.getByText('Evidence ID: compiler-entry',{exact:true})).toBeVisible();await expect(page.getByText('Sample source location: src/compiler.ts:1',{exact:true})).toBeVisible();expect(await page.locator('a[href]').count()).toBe(0);
  await page.getByRole('button',{name:'Inspect compiler.ts:1',exact:true}).click();await expect(page.locator('#notice')).toHaveText('Sent to Pi');expect(canvas.sent).toHaveLength(1);expect(canvas.sent[0]).toContain('"file":"src/compiler.ts","line":1');expect(outside).toEqual([]);
 });
+
+
+test("R08 palette chooses a current declared action using the latest form draft",async({page,canvas})=>{
+ await open(page,canvas);const input=page.getByRole('textbox');await input.fill('Before palette');
+ await expect(page.getByRole('button',{name:'Find actions',exact:true})).toBeVisible();await page.getByRole('button',{name:'Find actions',exact:true}).click();const palette=page.getByRole('dialog',{name:'Find actions'});await expect(palette).toBeVisible();
+ await page.evaluate(()=>{const input=document.querySelector<HTMLInputElement>('input[type=text]')!;input.value='Latest draft';input.dispatchEvent(new Event('input',{bubbles:true}));});
+ await palette.getByRole('searchbox',{name:'Search actions'}).fill('Submit');await palette.getByRole('searchbox',{name:'Search actions'}).press('Enter');
+ await expect(palette).not.toBeVisible();await expect(page.locator('#notice')).toHaveText('Sent to Pi');expect(canvas.sent).toHaveLength(1);expect(canvas.sent[0]).toContain('"name":"Latest draft"');
+});
+
+test("R08 palette excludes local hidden actions and invalidates stale paused or pending targets",async({page,canvas})=>{
+ await delayActions(page);canvas.session.render('local','hidden=Button(child=Text(text="Hidden action"),action=Event("hidden"))\nroot=Column([CodeBlock(code="local"),Details(title="Hidden",child=hidden)])');await open(page,canvas);
+ await page.keyboard.press('Control+k');const palette=page.getByRole('dialog',{name:'Find actions'});await expect(palette).toBeVisible();await expect(palette.getByRole('button',{name:'Hidden action',exact:true})).toHaveCount(0);await expect(palette.getByRole('button',{name:/Copy/})).toHaveCount(0);
+ await page.keyboard.press('Escape');await expect(palette).not.toBeVisible();expect(canvas.sent).toHaveLength(0);
+ await page.getByRole('button',{name:'Find actions',exact:true}).click();canvas.session.render('form',form('Replaced palette source'));await expect(palette).not.toBeVisible();expect(canvas.sent).toHaveLength(0);
+ await page.getByRole('button',{name:'Find actions',exact:true}).click();canvas.session.reset();canvas.session.render('form',form('New palette epoch'));await expect(palette).not.toBeVisible();expect(canvas.sent).toHaveLength(0);
+ canvas.session.setEnabled(false);await expect(page.getByRole('button',{name:'Find actions',exact:true})).toBeDisabled();canvas.session.setEnabled(true);await expect(page.getByRole('button',{name:'Find actions',exact:true})).toBeEnabled();
+ await page.getByRole('button',{name:'Find actions',exact:true}).click();await palette.getByRole('searchbox',{name:'Search actions'}).press('Enter');await expect.poll(()=>heldCount(page)).toBe(1);await expect(page.getByRole('button',{name:'Find actions',exact:true})).toBeDisabled();await page.keyboard.press('Enter');expect(await heldCount(page)).toBe(1);await finishAction(page,0);
+});
+
+
+test("R08 unopened palette never steals input focus during reconnect",async({page,canvas})=>{
+ await open(page,canvas);const input=page.getByRole('textbox');await input.fill('Focus stays');
+ await page.evaluate(()=>{window.dispatchEvent(new PageTransitionEvent('pagehide'));window.dispatchEvent(new PageTransitionEvent('pageshow',{persisted:true}));});
+ await expect(page.locator('#connection')).toHaveText('Connected to Pi');await expect(input).toBeFocused();await expect(input).toHaveValue('Focus stays');
+});
+
+
+test("R08 keyboard focus duplicate labels empty query and another Modal stay local",async({page,canvas})=>{
+ canvas.session.render('other','root=Column([Button(child=Text(text="Submit"),action=Event("other")),Modal(trigger=Text(text="Show details"),content=Text(text="Local modal"))])');await open(page,canvas);const input=page.getByRole('textbox');await input.fill('Keyboard draft');await page.keyboard.press('Control+k');
+ const palette=page.getByRole('dialog',{name:'Find actions'});await expect(palette.getByRole('button',{name:/^Submit ·/})).toHaveCount(2);const query=palette.getByRole('searchbox',{name:'Search actions'});await query.press('ArrowDown');await expect(palette.getByRole('button',{name:/^Submit · form ·/})).toBeFocused();await page.keyboard.press('End');await expect(palette.getByRole('button',{name:/^Submit · other ·/})).toBeFocused();await page.keyboard.press('Home');await page.keyboard.press('Tab');await expect(palette.getByRole('button',{name:'Close actions',exact:true})).toBeFocused();await page.keyboard.press('Escape');await expect(input).toBeFocused();
+ await page.getByRole('button',{name:'Show details',exact:true}).click();await page.keyboard.press('Control+k');await expect(palette).not.toBeVisible();await page.getByRole('button',{name:'Close details',exact:true}).click();
+ await page.getByRole('button',{name:'Find actions',exact:true}).click();await query.fill('not-an-action');await expect(palette.getByText('No matching actions',{exact:true})).toBeVisible();await query.press('Enter');expect(canvas.sent).toHaveLength(0);await page.keyboard.press('Escape');
+});
+
+
+test("R08 choosing rechecks source visibility after the list was opened",async({page,canvas})=>{
+ await open(page,canvas);await page.getByRole('button',{name:'Find actions',exact:true}).click();const palette=page.getByRole('dialog',{name:'Find actions'});
+ await page.evaluate(()=>{document.querySelector<HTMLElement>('[data-surface-id="form"] button')!.hidden=true;});
+ await palette.getByRole('searchbox',{name:'Search actions'}).press('Enter');await expect(palette).not.toBeVisible();await expect(page.locator('#notice')).toContainText('no longer available');expect(canvas.sent).toHaveLength(0);
+});
+
+test("R04 closed Details input focuses visible error summary without opening disclosure",async({page,canvas})=>{
+ canvas.session.reset();canvas.session.render('form',`$/value=""
+field=TextField(label="Hidden field",value=$/value)
+save=Button(child=Text(text="Save hidden"),action=Event("save",{value:$/value}))
+root=Column([Details(title="Hidden input",child=field),FormValidation(buttons=["save"],rules=[{fieldId:"field",message:"Enter value",required:true}]),save])`);await page.goto(canvas.origin);await page.getByRole('button',{name:'Save hidden',exact:true}).click();
+ await expect(page.locator('pi-a2ui-form-validation section')).toBeFocused();await expect(page.locator('details')).not.toHaveAttribute('open');expect(canvas.sent).toHaveLength(0);
+});

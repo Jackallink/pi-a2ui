@@ -46,3 +46,10 @@ test('R07 source-location pattern sends only an immutable evidence intent to Pi'
  const envelope={epoch:snapshot.epoch,revision:1,eventId:'inspect',message:{version:'1.0',action:{surfaceId:'pattern',sourceComponentId:button.id,name:event.name,timestamp:'2026-11-14T00:00:00Z',context:{...event.context,line:2}}}};
  assert.throws(()=>s.acceptAction(envelope),{status:403});envelope.message.action.context={...event.context};s.acceptAction(envelope);assert.equal(sent.length,1);assert.ok(sent[0].includes('"event":"inspect_source"'));s.close();
 });
+
+test('R08 action bar is existing declared Buttons rather than a fake CommandPalette component',()=>{
+ const components=example('command-actions').createSurface.components;
+ const events=components.filter(c=>c.component==='Button').map(c=>(c.action as any).event);
+ assert.deepEqual(events.map(e=>e.context.choice),['continue','modify','cancel']);
+ assert.ok(components.every(c=>['Column','Row','Text','Button'].includes(c.component)));
+});

@@ -1,3 +1,4 @@
+import {CommandPalette} from './command-palette.js';
 import {BrowserValidation} from './browser-interactions.js';
 import { A2uiSurface, type LitComponentApi } from "@a2ui/lit";
 import {
@@ -23,6 +24,7 @@ const count = document.querySelector<HTMLElement>("#surface-count")!;
 interface MountedSurface {
   revision: number;
   validation:BrowserValidation;
+  buttonIds:string[];
   sequence:number;
   liveIds:Map<string,string>;
   wrapper: HTMLElement;
@@ -45,6 +47,7 @@ let stream: EventSource | undefined;
 let recovering=false;
 let processor = makeProcessor();
 const mounted = new Map<string, MountedSurface>();
+const palette=new CommandPalette(document.querySelector<HTMLElement>('.canvas-bar')!,()=>({epoch,revisionKey:JSON.stringify([...mounted].map(([id,entry])=>[id,entry.revision])),available:enabled&&!pending,sources:[...mounted].flatMap(([surfaceId,entry])=>entry.buttonIds.map(sourceId=>({surfaceId,revision:entry.revision,sourceId,root:entry.wrapper})))}),showNotice);
 injectBasicCatalogStyles();
 
 function makeProcessor() {
@@ -69,6 +72,7 @@ function updateAvailability() {
   // Native modal dialogs escape ancestor inertness; apply availability explicitly.
   for(const dialog of surfaces.querySelectorAll<HTMLDialogElement>('dialog'))dialog.inert=!enabled||sending;
   surfaces.setAttribute("aria-busy", String(sending));
+  palette.refresh();
   status.textContent = !enabled ? "Canvas paused" : sending ? "Sending…" : "Ready for your input";
 }
 
@@ -110,6 +114,7 @@ function mountSurface(record: SurfaceRecord) {
   const subscription = model.onAction.subscribe((action) => sendAction(action, capturedEpoch, record.revision));
   mounted.set(record.surfaceId, {
     revision: record.revision,
+    buttonIds:record.message.createSurface.components.filter(c=>c.component==='Button').map(c=>c.id),
     validation:new BrowserValidation(wrapper,record.message.createSurface.components,path=>model.dataModel.get(path),()=>enabled&&!pending&&epoch===capturedEpoch&&mounted.get(record.surfaceId)?.revision===record.revision,{element:notice,show:showNotice}),
     sequence:record.dataSequence??0,
     liveIds:new Map(record.message.createSurface.components.filter(c=>c.component==='LogView'||c.component==='Chart'||c.component==='TaskProgress'||c.component==='ActivityTimeline').map(c=>[c.id,c.component])),
@@ -289,6 +294,7 @@ async function start() {
 function pauseMedia(){for(const media of document.querySelectorAll<HTMLMediaElement>('video,audio'))media.pause();}
 window.addEventListener("pagehide", () => {
   pauseMedia();
+  palette.close();
   stream?.close();
 });
 // Back/forward cache keeps the same models and drafts, but the stream needs reopening.
