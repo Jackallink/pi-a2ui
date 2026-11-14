@@ -18,7 +18,7 @@
 | Invalid field submit | escaped inline errors + summary; first visible input or visible summary focused | zero browser POST; direct bypass403; no event-ID consumption |
 | Stale epoch/revision/current button absent | palette closes/refresh notice; old errors removed |409/no dispatch; exact duplicate remains idempotent |
 | Busy/paused/other Modal | palette unavailable/closed; no hidden execution | existing availability restrictions remain |
-| Native cap/headroom pressure | omitted indicator or render-capacity error; no false complete data | bounded32rows/active,1024seen,16KiB per timeline surface plus log reserve |
+| Native cap/headroom pressure | omitted indicator or render-capacity error; no false complete data | bounded32rows/active,1024seen,32KiB per timeline surface plus log reserve |
 | Reset/restore/pause/close | running rows interrupted; paused container or empty idle on resume | no execution restart/old ownership/resource re-read |
 | Connection loss/15sec timeout | reconnect/uncertainty notices; drafts retained when structure same | no automatic action retries |
 | Old package/helper/unsupported catalog | explicit unsupported feature or latest-compatible restoration notice | no silent migration/destructive session rewrite |
