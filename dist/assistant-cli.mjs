@@ -2,8 +2,8 @@
 import { constants } from "node:fs";
 import { open, readFile } from "node:fs/promises";
 
-// src/compiler.ts
-import { A2uiGenerator, CatalogConfig, ExpressFormatFactory, RendererState } from "@a2ui/agent";
+// src/live.ts
+import { z } from "zod";
 
 // src/protocol.ts
 var LIMITS = {
@@ -23,6 +23,116 @@ var UiError = class extends Error {
     this.status = status;
   }
 };
+
+// src/live.ts
+var logStates = ["idle", "running", "completed", "error", "paused", "interrupted"];
+var logViewApi = { name: "LogView", schema: z.object({ stream: z.literal("tools").default("tools"), text: z.string().default(""), omitted: z.boolean().default(false), state: z.enum(logStates).default("idle") }).strict() };
+var seriesSchema = z.array(z.object({ name: z.string().min(1).max(128), points: z.array(z.object({ label: z.string().max(128), value: z.number().finite() }).strict()).max(200) }).strict()).max(4);
+var chartApi = { name: "Chart", schema: z.object({ kind: z.enum(["line", "bar"]), series: seriesSchema }).strict() };
+var liveApis = [logViewApi, chartApi];
+function trimLog(input, bytes = 65536, maxLines = 1e3) {
+  let text2 = input;
+  let omitted = false;
+  if (text2.length > 65536) {
+    text2 = text2.slice(-65536);
+    omitted = true;
+  }
+  const rows = text2.split("\n");
+  if (rows.length > maxLines) {
+    text2 = rows.slice(-maxLines).join("\n");
+    omitted = true;
+  }
+  while (new TextEncoder().encode(JSON.stringify(text2)).byteLength > bytes) {
+    text2 = text2.slice(Math.max(1, Math.ceil(text2.length / 8)));
+    omitted = true;
+  }
+  if (text2.length && /[\uDC00-\uDFFF]/.test(text2[0])) {
+    text2 = text2.slice(1);
+    omitted = true;
+  }
+  return { text: JSON.parse(JSON.stringify(text2)), omitted };
+}
+function validateSeries(input) {
+  const series = seriesSchema.parse(input);
+  const names = /* @__PURE__ */ new Set();
+  for (const item of series) {
+    if (names.has(item.name)) throw new UiError(400, "Chart series names must be unique");
+    names.add(item.name);
+    if (item.points.length !== series[0].points.length || item.points.some((point, index) => point.label !== series[0].points[index].label)) throw new UiError(400, "Chart series labels must align");
+  }
+  return series;
+}
+function validateLive(message, initial = false) {
+  let logs = 0;
+  for (const component of message.createSurface.components) {
+    if (component.component === "Chart") validateSeries(component.series);
+    if (component.component === "LogView") {
+      if (++logs > 1) throw new UiError(400, "Only one LogView per surface");
+      const { id: _, component: __, ...props } = component;
+      const data = logViewApi.schema.parse(props);
+      if (initial && (data.text !== "" || data.omitted || data.state !== "idle")) throw new UiError(400, "LogView initial output is server-controlled");
+      if (trimLog(data.text).text !== data.text) throw new UiError(413, "Saved LogView exceeds its text/line budget");
+      Object.assign(component, data);
+    }
+  }
+}
+
+// src/workbench.ts
+import { z as z2 } from "zod";
+import { basicCatalog } from "@a2ui/web_core/v1_0";
+var identity = z2.string().regex(/^[A-Za-z0-9_-]{1,64}$/);
+var dataTableApi = { name: "DataTable", schema: z2.object({ caption: z2.string().min(1).max(256), columns: z2.array(z2.object({ id: identity, label: z2.string().min(1).max(128) }).strict()).min(1).max(12), rows: z2.array(z2.object({ id: identity, cells: z2.array(z2.union([z2.string().max(256), z2.number().finite(), z2.boolean(), z2.null()])).max(12) }).strict()).max(200), state: z2.enum(["ready", "loading", "error"]).default("ready"), message: z2.string().max(512).default("") }).strict() };
+var codeBlockApi = { name: "CodeBlock", schema: z2.object({ code: z2.string(), language: z2.string().max(32).default("text"), copyable: z2.boolean().default(true) }).strict() };
+var markdownApi = { name: "MarkdownView", schema: z2.object({ text: z2.string() }).strict() };
+var detailsApi = { name: "Details", schema: z2.object({ title: z2.string().min(1).max(256), child: basicCatalog.components.get("Card").schema.shape.child, open: z2.boolean().default(false) }).strict() };
+var statusBadgeApi = { name: "StatusBadge", schema: z2.object({ label: z2.string().min(1).max(256), status: z2.enum(["info", "success", "warning", "error", "running"]), provenance: z2.literal("reported").default("reported") }).strict() };
+var taskProgressApi = { name: "TaskProgress", schema: z2.object({ stream: z2.literal("tools").default("tools"), state: z2.enum(logStates).default("idle"), started: z2.number().int().min(0).max(1024).default(0), settled: z2.number().int().min(0).max(1024).default(0), failed: z2.number().int().min(0).max(1024).default(0), omitted: z2.boolean().default(false) }).strict() };
+var artifactUrl = z2.string().regex(/^\/api\/artifacts\/[a-f0-9]{32}$/);
+var artifactPreviewApi = { name: "ArtifactPreview", schema: z2.object({ src: artifactUrl, kind: z2.enum(["image", "video", "audio"]), label: z2.string().min(1).max(256) }).strict() };
+var workbenchApis = [dataTableApi, codeBlockApi, markdownApi, detailsApi, statusBadgeApi, taskProgressApi, artifactPreviewApi];
+function validateWorkbench(message, initial = false) {
+  let progressCount = 0, modalCount = 0;
+  for (const c of message.createSurface.components) {
+    if (["Image", "Video", "AudioPlayer"].includes(c.component)) {
+      artifactUrl.parse(c.url);
+      if (c.posterUrl !== void 0) artifactUrl.parse(c.posterUrl);
+      for (const prop of ["description", "fit", "variant"]) if (c[prop] !== void 0 && typeof c[prop] !== "string") throw new UiError(400, "Artifact media props must be static");
+    }
+    if (c.component === "Icon" && !["check", "close", "error", "info", "warning", "folder", "help", "refresh", "play", "pause", "search", "settings"].includes(c.name)) throw new UiError(400, "Icon name must be a static approved local icon");
+    if (c.component === "Modal") {
+      if (++modalCount > 1) throw new UiError(400, "Only one Modal per surface");
+      const trigger = message.createSurface.components.find((node) => node.id === c.trigger);
+      if (!trigger || !["Text", "Icon"].includes(trigger.component)) throw new UiError(400, "Modal trigger must be Text or Icon");
+    }
+    if (c.component === "StatusBadge") {
+      const { id: _, component: __, ...props } = c;
+      Object.assign(c, statusBadgeApi.schema.parse(props));
+    }
+    if (c.component === "TaskProgress") {
+      const { id: _, component: __, ...props } = c;
+      const p = taskProgressApi.schema.parse(props);
+      if (++progressCount > 1 || p.failed > p.settled || p.settled > p.started) throw new UiError(400, "Invalid native tool progress counters");
+      if (initial && (p.state !== "idle" || p.started !== 0 || p.settled !== 0 || p.failed !== 0 || p.omitted)) throw new UiError(400, "TaskProgress initial values are server-controlled");
+      Object.assign(c, p);
+    }
+    if (c.component === "CodeBlock" || c.component === "MarkdownView") {
+      const { id: _, component: __, ...props } = c;
+      const p = (c.component === "CodeBlock" ? codeBlockApi : markdownApi).schema.parse(props);
+      const value = "code" in p ? p.code : p.text;
+      if (new TextEncoder().encode(value).byteLength > 16384 || value.split(/\r\n|\r|\n/).length > 512) throw new UiError(413, "Text block exceeds16KiB/512 lines");
+      Object.assign(c, p);
+    }
+    if (c.component === "DataTable") {
+      const { id: _, component: __, ...props } = c;
+      const p = dataTableApi.schema.parse(props);
+      if (new Set(p.columns.map((x) => x.id)).size !== p.columns.length || new Set(p.rows.map((x) => x.id)).size !== p.rows.length || p.rows.some((x) => x.cells.length !== p.columns.length)) throw new UiError(400, "Table requires unique IDs and one cell per column");
+      Object.assign(c, p);
+    }
+  }
+}
+
+// src/compiler.ts
+import { A2uiGenerator, CatalogConfig, ExpressFormatFactory, RendererState } from "@a2ui/agent";
 
 // src/inputs.ts
 var inputTypes = /* @__PURE__ */ new Set(["TextField", "CheckBox", "ChoicePicker", "Slider", "DateTimeInput"]);
@@ -108,66 +218,12 @@ function validateInputs(components, resolve) {
   }
 }
 
-// src/live.ts
-import { z } from "zod";
-var logStates = ["idle", "running", "completed", "error", "paused", "interrupted"];
-var logViewApi = { name: "LogView", schema: z.object({ stream: z.literal("tools").default("tools"), text: z.string().default(""), omitted: z.boolean().default(false), state: z.enum(logStates).default("idle") }).strict() };
-var seriesSchema = z.array(z.object({ name: z.string().min(1).max(128), points: z.array(z.object({ label: z.string().max(128), value: z.number().finite() }).strict()).max(200) }).strict()).max(4);
-var chartApi = { name: "Chart", schema: z.object({ kind: z.enum(["line", "bar"]), series: seriesSchema }).strict() };
-var liveApis = [logViewApi, chartApi];
-function trimLog(input, bytes = 65536, maxLines = 1e3) {
-  let text2 = input;
-  let omitted = false;
-  if (text2.length > 65536) {
-    text2 = text2.slice(-65536);
-    omitted = true;
-  }
-  const rows = text2.split("\n");
-  if (rows.length > maxLines) {
-    text2 = rows.slice(-maxLines).join("\n");
-    omitted = true;
-  }
-  while (new TextEncoder().encode(JSON.stringify(text2)).byteLength > bytes) {
-    text2 = text2.slice(Math.max(1, Math.ceil(text2.length / 8)));
-    omitted = true;
-  }
-  if (text2.length && /[\uDC00-\uDFFF]/.test(text2[0])) {
-    text2 = text2.slice(1);
-    omitted = true;
-  }
-  return { text: JSON.parse(JSON.stringify(text2)), omitted };
-}
-function validateSeries(input) {
-  const series = seriesSchema.parse(input);
-  const names = /* @__PURE__ */ new Set();
-  for (const item of series) {
-    if (names.has(item.name)) throw new UiError(400, "Chart series names must be unique");
-    names.add(item.name);
-    if (item.points.length !== series[0].points.length || item.points.some((point, index) => point.label !== series[0].points[index].label)) throw new UiError(400, "Chart series labels must align");
-  }
-  return series;
-}
-function validateLive(message, initial = false) {
-  let logs = 0;
-  for (const component of message.createSurface.components) {
-    if (component.component === "Chart") validateSeries(component.series);
-    if (component.component === "LogView") {
-      if (++logs > 1) throw new UiError(400, "Only one LogView per surface");
-      const { id: _, component: __, ...props } = component;
-      const data = logViewApi.schema.parse(props);
-      if (initial && (data.text !== "" || data.omitted || data.state !== "idle")) throw new UiError(400, "LogView initial output is server-controlled");
-      if (trimLog(data.text).text !== data.text) throw new UiError(413, "Saved LogView exceeds its text/line budget");
-      Object.assign(component, data);
-    }
-  }
-}
-
 // src/coding.ts
-import { z as z2 } from "zod";
-var identity = z2.string().regex(/^[A-Za-z0-9_-]{1,64}$/);
-var text = z2.string().min(1).max(512);
-var codeDiffApi = { name: "CodeDiff", schema: z2.object({ proposalId: identity, filename: text, baseRevision: text, before: z2.string(), after: z2.string() }).strict() };
-var testResultsApi = { name: "TestResults", schema: z2.object({ resultId: identity, command: text, evidence: text, cases: z2.array(z2.object({ id: identity, name: text, status: z2.enum(["pass", "fail", "skip", "error"]), details: z2.string().max(4096).optional() }).strict()).max(128), summary: z2.object({ pass: z2.number().int().min(0).max(128), fail: z2.number().int().min(0).max(128), skip: z2.number().int().min(0).max(128), error: z2.number().int().min(0).max(128) }).strict() }).strict() };
+import { z as z3 } from "zod";
+var identity2 = z3.string().regex(/^[A-Za-z0-9_-]{1,64}$/);
+var text = z3.string().min(1).max(512);
+var codeDiffApi = { name: "CodeDiff", schema: z3.object({ proposalId: identity2, filename: text, baseRevision: text, before: z3.string(), after: z3.string() }).strict() };
+var testResultsApi = { name: "TestResults", schema: z3.object({ resultId: identity2, command: text, evidence: text, cases: z3.array(z3.object({ id: identity2, name: text, status: z3.enum(["pass", "fail", "skip", "error"]), details: z3.string().max(4096).optional() }).strict()).max(128), summary: z3.object({ pass: z3.number().int().min(0).max(128), fail: z3.number().int().min(0).max(128), skip: z3.number().int().min(0).max(128), error: z3.number().int().min(0).max(128) }).strict() }).strict() };
 var codingApis = [codeDiffApi, testResultsApi];
 function lines(value) {
   if (new TextEncoder().encode(value).byteLength > 16384) throw new UiError(413, "CodeDiff source exceeds16KiB per side");
@@ -218,9 +274,9 @@ function validateCoding(message) {
 }
 
 // src/catalog.ts
-import { basicCatalog } from "@a2ui/web_core/v1_0";
-var official = basicCatalog.derive({
-  catalogId: basicCatalog.id,
+import { basicCatalog as basicCatalog2 } from "@a2ui/web_core/v1_0";
+var official = basicCatalog2.derive({
+  catalogId: basicCatalog2.id,
   components: ["Text", "Column", "Row", "Card", "Button", "TextField", "CheckBox", "ChoicePicker", "Slider", "DateTimeInput", "Tabs", "Divider"],
   functions: [],
   instructions: "Use only the twelve declared components. Text is literal escaped plain text. Use event actions only. No functions, checks, templates, URLs, media or executable expressions. Bind event context only to absolute value paths of reachable inputs. Initialize TextField with strings, CheckBox booleans, Slider bounded finite numbers, ChoicePicker string arrays. Use explicit enableDate/enableTime flags and local YYYY-MM-DD / HH:mm / YYYY-MM-DDTHH:mm date/time strings, optional :00 seconds. Declare static ranges/options."
@@ -229,7 +285,11 @@ var base = official;
 var legacyCatalog = base.derive({ catalogId: official.id, functions: [], instructions: official.instructions, components: [...official.components.values()].map(({ element: _element, tagName: _tagName, ...api }) => api) });
 var codingCatalog = legacyCatalog.derive({ catalogId: "https://jackallink.github.io/pi-a2ui/catalogs/coding-v1.json", functions: [], components: [...legacyCatalog.components.values(), ...codingApis], instructions: legacyCatalog.instructions?.replace("Use only the twelve declared components.", "Use only the declared components/signatures.") + " CodeDiff and TestResults are static read-only records. Each surface has at most one of each; every Button must include current literal proposalId/resultId. IDs are immutable within a session. Test results are supplied tool evidence, not independently certified by the browser." });
 var restrictedCatalog = codingCatalog.derive({ catalogId: "https://jackallink.github.io/pi-a2ui/catalogs/live-v1.json", functions: [], components: [...codingCatalog.components.values(), ...liveApis], instructions: codingCatalog.instructions + ' LogView(stream="tools") is server-controlled native tool output; omit its text/state/omitted initial values. Never place it inside a Button. Chart supports only static line/bar aligned finite series. Use a2ui_update_chart to update an existing Chart without replacing inputs. No model call per output chunk.' });
-var catalogs = [legacyCatalog, codingCatalog, restrictedCatalog];
+var workbenchCatalog = restrictedCatalog.derive({ catalogId: "https://jackallink.github.io/pi-a2ui/catalogs/workbench-v1.json", functions: [], components: [...restrictedCatalog.components.values(), ...workbenchApis, ...["List", "Modal", "Icon", "Image", "Video", "AudioPlayer"].map((name) => {
+  const { element: _, tagName: __, ...api } = basicCatalog2.components.get(name);
+  return api;
+})], instructions: restrictedCatalog.instructions?.replace("No functions, checks, templates, URLs, media or executable expressions.", "No functions, checks, templates or executable expressions. URLs only in registered artifact media props.") + ' List has static children. DataTable contains bounded primitive cells and unique row/column IDs. Table sorting and filtering are browser-local. CodeBlock preserves literal code with a local copy button; never nest it or DataTable in Button. MarkdownView explicitly renders a safe limited subset; no links/images/HTML. Text stays literal. Details(title,child,open?) is a local disclosure; Accordion is multiple Details. Never place local interactive widgets inside Button. StatusBadge is reported/unverified. TaskProgress(stream="tools") is native-server controlled; omit counters/state/omitted initial values, never fabricate a planned percentage. Modal(trigger,content) has a local Text/Icon-only trigger; at most one per surface. Image/Video/AudioPlayer.url (Video.posterUrl too) and ArtifactPreview.src must be the exact opaque src returned by a2ui_register_artifact. No external/file/data/blob URLs or SVG. Native media controls are local; no autoplay/microphone. Video supports WebM/MP4, AudioPlayer WAV; browser codec failures are visible. Artifacts expire on reset/pause; label is not verified metadata. Icon names are static local check/close/error/info/warning/folder/help/refresh/play/pause/search/settings.' });
+var catalogs = [legacyCatalog, codingCatalog, restrictedCatalog, workbenchCatalog];
 
 // src/compiler.ts
 function record(value) {
@@ -271,7 +331,7 @@ function noExpressions(value) {
   }
 }
 function processor(surfaceId) {
-  return new A2uiGenerator([new CatalogConfig(restrictedCatalog)], void 0, new ExpressFormatFactory({ surfaceId })).createProcessor({ "1.0": { supportedCatalogIds: [restrictedCatalog.id] } });
+  return new A2uiGenerator([new CatalogConfig(workbenchCatalog)], void 0, new ExpressFormatFactory({ surfaceId })).createProcessor({ "1.0": { supportedCatalogIds: [workbenchCatalog.id] } });
 }
 function validateSurface(input) {
   try {
@@ -280,9 +340,9 @@ function validateSurface(input) {
       if (reachable.has(id)) throw new UiError(400, "Components must form a tree without repeated children");
       const component = components.get(id);
       if (!component) throw new UiError(400, "Missing root or child");
-      if (insideButton && component.component === "LogView") throw new UiError(400, "LogView must not be nested in a Button");
+      if (insideButton && ["LogView", "DataTable", "CodeBlock", "Details", "TaskProgress", "Modal", "Image", "ArtifactPreview", "Video", "AudioPlayer"].includes(component.component)) throw new UiError(400, component.component + " must not be nested in a Button");
       reachable.add(id);
-      const children = component.component === "Tabs" && Array.isArray(component.tabs) ? component.tabs.map((tab) => tab.child) : Array.isArray(component.children) ? component.children : typeof component.child === "string" ? [component.child] : [];
+      const children = component.component === "Modal" ? [component.trigger, component.content] : component.component === "Tabs" && Array.isArray(component.tabs) ? component.tabs.map((tab) => tab.child) : Array.isArray(component.children) ? component.children : typeof component.child === "string" ? [component.child] : [];
       for (const child of children) {
         if (typeof child !== "string") throw new UiError(400, "Expected static child ID");
         walk2(child, depth + 1, insideButton || component.component === "Button");
@@ -348,6 +408,7 @@ function validateSurface(input) {
     }
     validateCoding(message);
     validateLive(message);
+    validateWorkbench(message);
     return message;
   } catch (error) {
     if (error instanceof UiError) throw error;
@@ -409,7 +470,7 @@ function compile(surfaceId, source) {
   if (Buffer.byteLength(source, "utf8") > LIMITS.sourceBytes) throw new UiError(413, "Source byte limit exceeded");
   preflightSource(source);
   try {
-    const state = new RendererState([restrictedCatalog]);
+    const state = new RendererState([workbenchCatalog]);
     const parts = processor(surfaceId).parseResponse(source, { wrapped: false, state });
     let creates = 0;
     for (const part of parts) {
@@ -424,8 +485,9 @@ function compile(surfaceId, source) {
     if (creates !== 1 || state.surfaceIds.length !== 1 || state.surfaceIds[0] !== surfaceId) throw new UiError(400, "Exactly one complete surface is required");
     state.checkTopology([surfaceId]);
     const surface = state.getSurface(surfaceId);
-    const message = { version: "1.0", createSurface: { surfaceId, catalogId: restrictedCatalog.id, components: [...surface.componentsModel.getAll().values()].map((component) => component.componentTree), dataModel: surface.dataModel.get("/") } };
+    const message = { version: "1.0", createSurface: { surfaceId, catalogId: workbenchCatalog.id, components: [...surface.componentsModel.getAll().values()].map((component) => component.componentTree), dataModel: surface.dataModel.get("/") } };
     validateLive(message, true);
+    validateWorkbench(message, true);
     return validateSurface(message);
   } catch (error) {
     if (error instanceof UiError) throw error;

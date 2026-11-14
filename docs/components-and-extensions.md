@@ -1,10 +1,10 @@
 # 组件支持与日常交互扩展
 
-当前运行环境：**Node 24.x**，先执行 `nvm use 24`。本分支为0.1.4候选，已发布稳定版仍为0.1.3；实现、运行验收与发布分别记录，禁止浏览器直接执行命令或读写文件。
+当前运行环境：**Node 24.x**，先执行 `nvm use 24`。0.1.4包含完整组件、自动打开和配套skill；实现、运行验收与发布分别记录，禁止浏览器直接执行命令或读写文件。
 
-## 候选版本支持什么
+## 0.1.4支持什么
 
-锁定Web Core/Lit0.15.0的官方Basic共18类，本候选全部接入受审schema/实现，另加11类Pi组件，共29类。以实际catalog为准，不在运行时下载代码。
+锁定Web Core/Lit0.15.0的官方Basic共18类，0.1.4全部接入受审schema/实现，另加11类Pi组件，共29类。以实际catalog为准，不在运行时下载代码。
 
 | 组件 | 日常价值与边界 |
 | --- | --- |
@@ -19,7 +19,7 @@
 
 ## v0.1.4已纳入的七组交互能力
 
-以下七组完整范围为v0.1.4（C01–C14），包括Video/AudioPlayer。优先级只决定顺序；完整范围、用户故事/AC与入场门禁以[spec007](specs/007-v0.1.4-usability.md)为准。详细设计/TDD已独立GO（Check024），实现与测试见Check025–031；候选验收不等于发布。
+以下七组完整范围为v0.1.4（C01–C14），包括Video/AudioPlayer。优先级只决定顺序；完整范围、用户故事/AC与入场门禁以[spec007](specs/007-v0.1.4-usability.md)为准。详细设计/TDD已独立GO（Check024），实现与测试见Check025–031；合并和发布证据独立记录在Check034/035。
 
 | 优先级/方向 | 用户眼前的问题 | 推荐实现方式与边界 |
 | --- | --- | --- |
@@ -61,3 +61,5 @@
 - [官方Catalog概念与基础组件清单](https://a2ui.org/concepts/catalogs/)：基础组件、schema与渲染实现的共同契约。
 - [官方定义Catalog指南](https://a2ui.org/guides/defining-a-catalog/)：声明schema、Agent加载、客户端注册及schema一致性。
 - 本仓库实际能力：`src/catalog.ts`、`src/browser-catalog.ts`、`src/compiler.ts`、`src/session.ts`；数量由锁定SDK和workbenchCatalog实际枚举确认，functions当前为0。
+
+配套[pi-a2ui skill](../skills/pi-a2ui/SKILL.md)和[组件子文档/完整样例](../skills/pi-a2ui/references/core-components.md)随0.1.4包分发。Node24只读helper通过同一compiler提供catalog/examples/example/check；首次成功渲染在无浏览器连接时最多每会话episode尝试打开一次，/a2ui仍可手动打开。

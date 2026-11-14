@@ -4,9 +4,9 @@ A local interactive canvas for the Pi coding agent. Pi keeps the conversation an
 
 Requires **Node 24.x** and Pi >=1.5.0. A2UI protocol 1.0, pinned Agent SDK 0.1.0 and Web Core/Lit 0.15.0.
 
-Version **0.1.4 candidate** adds readable results, code/Markdown, collapsible evidence, native progress and bounded local artifact/media previews. It uses Pi's existing model and tools; it makes no separate model request per UI event or output chunk. Project live acceptance uses only Volcengine Ark Agent Plan `glm-5.3-flash`.
+Version **0.1.4** adds readable results, code/Markdown, collapsible evidence, native progress and bounded local artifact/media previews. It uses Pi's existing model and tools; it makes no separate model request per UI event or output chunk. Project live acceptance uses only Volcengine Ark Agent Plan `glm-5.3-flash`.
 
-This branch is not a published release. The latest published tag remains **v0.1.3**; use the local route below to test this candidate.
+This version combines the workbench components, automatic browser opening and packaged skill/preflight helper. See [release scope and installation](docs/releases/v0.1.4.md).
 
 Project source is MIT licensed. The bundled browser libraries retain their own licenses; complete third-party license/notice texts are included in `THIRD_PARTY_LICENSES.txt` in the distribution.
 
@@ -14,18 +14,18 @@ Project source is MIT licensed. The bundled browser libraries retain their own l
 
 The package is distributed through Git and local paths; it is not published to npm. Requires **Node 24.x** and Pi >=1.5.0; select it with `nvm use 24` before installation or use.
 
-### Git (published v0.1.3)
+### Git
 
 From the Pi project where you want this package enabled:
 
 ```sh
 nvm use 24
-pi install -l --approve git:github.com/Jackallink/pi-a2ui@v0.1.3
+pi install -l --approve git:github.com/Jackallink/pi-a2ui@v0.1.4
 ```
 
 Pi clones the pinned ref and installs production dependencies. Ready browser assets and full third-party licenses are committed in the repository; no browser build is required. Tags/commits are pinned: `pi update --extensions` does not advance a configured tag to the next release. To upgrade, select the new release ref.
 
-### Local package (including the v0.1.4 candidate)
+### Local package
 
 Use an existing checkout or an unpacked release. Keep your intended Pi project as the working directory and substitute the package's absolute path:
 
@@ -49,13 +49,13 @@ Ask Pi: “Use a2ui_render to show a form asking for my implementation plan. Whe
 
 ## Companion skill and preflight helper
 
-This branch adds the bundled **pi-a2ui** skill, component subdocuments and11 executable templates. The existing publishedv0.1.3 tag does not contain this addition; use a checkout/ref that actually ships `skills/pi-a2ui/SKILL.md`. Package discovery loads the extension and skill together via `pi.extensions`/`pi.skills`; no extra global skill or CLI installation is needed. Run `/reload` after selecting the new package/ref, then:
+Version0.1.4 bundles the **pi-a2ui** skill, component subdocuments and11 executable templates. Older pinned tags do not gain these files on reload; selectv0.1.4 to upgrade. Package discovery loads the extension and skill together via `pi.extensions`/`pi.skills`; no extra global skill or CLI installation is needed. Run `/reload` after selecting the new package/ref, then:
 
 ```text
 /skill:pi-a2ui 生成用户信息表单，包含用户名、邮箱和确认按钮
 ```
 
-For smaller/local models, explicit invocation gives a known-good named-argument template plus links to the needed component reference. See [skill entry](skills/pi-a2ui/SKILL.md), [core16 component signatures](skills/pi-a2ui/references/core-components.md), [coding/live components](skills/pi-a2ui/references/coding-and-live.md), [optionalv0.1.4 components](skills/pi-a2ui/references/workbench-components.md), [media registration](skills/pi-a2ui/references/artifacts.md), [syntax/error guide](skills/pi-a2ui/references/syntax-and-errors.md) and [helper commands](skills/pi-a2ui/references/helper.md).
+For smaller/local models, explicit invocation gives a known-good named-argument template plus links to the needed component reference. See [skill entry](skills/pi-a2ui/SKILL.md), [core16 component signatures](skills/pi-a2ui/references/core-components.md), [coding/live components](skills/pi-a2ui/references/coding-and-live.md), [workbench components](skills/pi-a2ui/references/workbench-components.md), [media registration](skills/pi-a2ui/references/artifacts.md), [syntax/error guide](skills/pi-a2ui/references/syntax-and-errors.md) and [helper commands](skills/pi-a2ui/references/helper.md).
 
 With **Node24.x** selected, this read-only helper uses the same compiler as the tool and runs from a production install without a TS loader or build:
 
@@ -66,7 +66,7 @@ node /absolute/path/to/pi-a2ui/skills/pi-a2ui/scripts/a2ui.mjs example user-form
 node /absolute/path/to/pi-a2ui/skills/pi-a2ui/scripts/a2ui.mjs check --surface-id user-form /absolute/path/to/form.express
 ```
 
-`catalog` describes that installed package, not an arbitrary active Pi process. `check` returns `{surfaceId,source}` for a2ui_render and publishes nothing; actual session/action/resource validation remains in the tool. v0.1.4-only examples refuse when the catalog lacks their types. Reference presence is not runtime support. Card takes a component child, not a title string; children need commas; forward references work, so declaration order alone is not a sufficient diagnosis.
+`catalog` describes that installed package, not an arbitrary active Pi process. `check` returns `{surfaceId,source}` for a2ui_render and publishes nothing; actual session/action/resource validation remains in the tool. Examples refuse when the selected catalog lacks their types. Reference presence is not runtime support. Card takes a component child, not a title string; children need commas; forward references work, so declaration order alone is not a sufficient diagnosis.
 
 ## Model tool
 
@@ -87,7 +87,7 @@ Rendering validates the entire replacement before publishing it. Invalid source 
 
 ## Component support and extension opportunities
 
-The candidate exposes **18 official Basic types +11 custom Pi types**:
+This version exposes **18 official Basic types +11 custom Pi types**:
 
 | Group | Components / interaction | Purpose |
 | --- | --- | --- |
@@ -128,8 +128,7 @@ Live acceptance defaults to Agent Plan `volcengine-ark/glm-5.3-flash` and checks
 
 ## Release scope
 
-[Version0.1.3](docs/releases/v0.1.3.md) aligns the public version with historical development labels. It has the same complete functionality as published [v0.1.1](docs/releases/v0.1.1.md), which first delivered all three slices. The earlier development candidates named0.1.3 were not published; the new v0.1.3 tag identifies this reviewed checkpoint. Version0.1.2 remains unpublished. Existing v0.1.0/v0.1.1 tags and assets are immutable.
-
+[Version0.1.4](docs/releases/v0.1.4.md) combines PR#27 (automatic browser opening), PR#28 (all seven interaction groups) and PR#30 (skill/helper). The previous0.1.3 version-alignment checkpoint and0.1.0/0.1.1 tags/assets remain immutable;0.1.2 remains unpublished. Source/package/test/publication identity is recorded separately from feature acceptance.
 See [CHANGELOG.md](CHANGELOG.md), [ROADMAP.md](ROADMAP.md), the [Pi package distribution contract](docs/specs/005-v0.1.1-distribution.md), and the [version-alignment contract](docs/specs/006-v0.1.3-version-alignment.md). Historical design/test evidence preserves each original feature slice and artifact identity.
 
 ## Next scope: v0.1.5
@@ -139,11 +138,11 @@ All eight additional groups are assigned to [v0.1.5](docs/specs/008-v0.1.5-inter
 ## Remove
 
 ```sh
-pi remove -l --approve git:github.com/Jackallink/pi-a2ui@v0.1.3
+pi remove -l --approve git:github.com/Jackallink/pi-a2ui@v0.1.4
 # For the local route instead:
 pi remove -l --approve /absolute/path/to/pi-a2ui
 ```
 
 Run removal from the same project used for installation; omit `-l` only for a user-wide registration. Existing Pi sessions and credentials are retained.
 
-Supported runtime: **Node 24.x only**. Run `nvm use 24` (also pinned by `.nvmrc`) before installing or testing. The version-specific acceptance scenarios use `A2UI_ACCEPT_SCENARIO=forms`, `coding` or `live` with the production-installed package.
+Supported runtime: **Node 24.x only**. Run `nvm use 24` (also pinned by `.nvmrc`) before installing or testing. The version-specific acceptance scenarios use `A2UI_ACCEPT_SCENARIO=forms`, `coding`, `live` or `workbench` with the production-installed package.
