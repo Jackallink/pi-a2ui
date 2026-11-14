@@ -1,0 +1,4 @@
+$/branch = []
+picker = SearchablePicker(label="Branch",options=[{label:"Main",value:"main"},{label:"Feature",value:"feature"}],value=$/branch)
+choose = Button(child=Text(text="Choose branch"),action=Event("choose_branch",{branch:$/branch}))
+root = Column(children=[picker,choose])

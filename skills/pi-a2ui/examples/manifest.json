@@ -118,5 +118,16 @@
     ],
     "pattern": "tree-navigation",
     "reference": "references/navigation-and-selection.md"
+  },
+  {
+    "name": "searchable-picker",
+    "requires": [
+      "Column",
+      "Button",
+      "Text",
+      "SearchablePicker"
+    ],
+    "pattern": "searchable-picker",
+    "reference": "references/navigation-and-selection.md"
   }
 ]

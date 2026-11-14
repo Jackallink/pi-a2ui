@@ -1,6 +1,6 @@
 import { UiError, type Component } from './protocol.ts';
 
-const inputTypes = new Set(['TextField','CheckBox','ChoicePicker','Slider','DateTimeInput']);
+const inputTypes = new Set(['TextField','CheckBox','ChoicePicker','Slider','DateTimeInput','SearchablePicker']);
 export function inputPaths(components: Iterable<Component>): Map<string, Component> {
   const paths = new Map<string, Component>();
   for (const component of components) {
@@ -42,7 +42,8 @@ export function validateInput(component: Component, value: unknown): void {
     case 'CheckBox':
       if (typeof value !== 'boolean') throw new UiError(400,'CheckBox value must be a boolean');
       break;
-    case 'ChoicePicker': {
+    case 'ChoicePicker':
+    case 'SearchablePicker': {
       const options = component.options as Array<{value:string}>;
       const allowed = new Set(options.map(option=>option.value));
       if (allowed.size!==options.length) throw new UiError(400,'Duplicate choice option IDs');

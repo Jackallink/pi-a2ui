@@ -309,3 +309,29 @@ test("R01 hierarchy disclosure stays local and leaf intent is declared",async({p
  await expect(page.locator('#notice')).toHaveText('Sent to Pi');
  expect(actions).toHaveLength(1);expect(canvas.sent).toHaveLength(1);expect(canvas.sent[0]).toContain('"nodeId":"compiler"');
 });
+
+
+test("R02 keyboard search and hidden selections stay local across data patches",async({page,canvas})=>{
+ const source=`$/chosen = ["main"]
+ picker = SearchablePicker(label="Branch",variant="multipleSelection",options=[{label:"Main",value:"main"},{label:"Feature",value:"feat"}],value=$/chosen)
+ submit = Button(child=Text(text="Choose branch"),action=Event("choose",{chosen:$/chosen}))
+ chart = Chart(kind="line",series=[])
+ root = Column(children=[picker,submit,chart])`;
+ canvas.session.reset();canvas.session.render('pick',source);
+ const requests:string[]=[];const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>{if(r.url().endsWith('/api/actions'))requests.push(r.url());});
+ await page.goto(canvas.origin);const query=page.getByRole('searchbox',{name:'Search Branch'});
+ await query.fill('Fea');await expect(page.getByRole('button',{name:'Main · main',exact:true})).toHaveCount(0);
+ await expect(page.getByRole('button',{name:'Remove Main (main)',exact:true})).toBeVisible();
+ canvas.session.updateChart('pick',1,'chart',[{name:'Run',points:[{label:'now',value:1}]}]);
+ await expect(query).toHaveValue('Fea');await query.press('ArrowDown');
+ await expect(page.getByRole('button',{name:'Feature · feat',exact:true})).toBeFocused();await page.keyboard.press('Enter');
+ await expect(page.getByRole('button',{name:'Remove Feature (feat)',exact:true})).toBeVisible();
+ await page.keyboard.press('Escape');await expect(query).toHaveValue('');
+ await page.getByRole('button',{name:'Remove Main (main)',exact:true}).click();
+ await query.fill('absent');await expect(page.getByText('No matches',{exact:true})).toBeVisible();
+ expect(requests).toHaveLength(0);expect(canvas.sent).toHaveLength(0);
+ await page.getByRole('button',{name:'Choose branch',exact:true}).click();await expect(page.locator('#notice')).toHaveText('Sent to Pi');
+ expect(requests).toHaveLength(1);expect(canvas.sent[0]).toContain('"chosen":["feat"]');expect(errors).toEqual([]);
+ canvas.session.render('pick','$/chosen = []\nroot = SearchablePicker(label="Branch",options=[],value=$/chosen)');
+ await expect(page.getByText('No options',{exact:true})).toBeVisible();
+});
