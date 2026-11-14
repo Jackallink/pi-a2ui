@@ -1,0 +1,25 @@
+{
+  "node": "v24.18.1",
+  "onlyOwnedPrivateTestRegistrationsRemoved": true,
+  "registrations": [
+    {
+      "sourceKind": "local-package",
+      "normalRemoveExit": 0,
+      "remainingProjectPackages": 0,
+      "projectMarkerPreserved": true,
+      "privateGlobalSettingsUnchanged": true
+    },
+    {
+      "sourceKind": "git-tag",
+      "normalRemoveExit": 0,
+      "remainingProjectPackages": 0,
+      "projectMarkerPreserved": true,
+      "privateGlobalSettingsUnchanged": true
+    }
+  ],
+  "privateGitCloneRemovedByPi": true,
+  "originalSessionHashesUnchanged": true,
+  "archiveSHA256Unchanged": true,
+  "immutableTagTargetUnchanged": true,
+  "userInstallationUntouched": true
+}

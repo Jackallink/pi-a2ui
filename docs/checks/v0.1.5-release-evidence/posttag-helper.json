@@ -1,0 +1,13 @@
+{
+  "node": "v24.18.1",
+  "normalGitTagInstallation": true,
+  "tag": "v0.1.5",
+  "sourceSha": "0fc7b65895f7eff9ac1f4197658025d858b1b967",
+  "archiveSHA256": "9b33ccc1929baade75aca1cf490962f48d89070733286867b74490b4d93af8f6",
+  "installedPayloadFiles": 71,
+  "downloadedArchiveAndGitFilesEqual": true,
+  "catalogTypes": 32,
+  "patterns": 8,
+  "examplesCompiledAndChecked": 19,
+  "noConsumerBuildOrDevHostCopies": true
+}
