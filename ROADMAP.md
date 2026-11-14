@@ -54,4 +54,4 @@ Issues [#1](https://github.com/Jackallink/pi-a2ui/issues/1), [#2](https://github
 
 ## v0.1.5：八组已纳入能力
 
-用户已将R01–R08全部归入v0.1.5：[spec008](docs/specs/008-v0.1.5-interactions.md)、[milestone5](https://github.com/Jackallink/pi-a2ui/milestone/5)、[总任务#17](https://github.com/Jackallink/pi-a2ui/issues/17)。原候选状态被替代；先完成0.1.4，不自动启动0.1.5实施。
+用户已将R01–R08全部归入v0.1.5：[spec008](docs/specs/008-v0.1.5-interactions.md)、[milestone5](https://github.com/Jackallink/pi-a2ui/milestone/5)、[总任务#17](https://github.com/Jackallink/pi-a2ui/issues/17)。0.1.4已发布；0.1.5继续按spec008的八组及配套skill/CLI #32推进。活跃进度看issue，验证看Check036及后续，不把规划/单组GO写成整版发布。

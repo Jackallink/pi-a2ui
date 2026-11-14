@@ -33,20 +33,23 @@
 
 同版T01组合示例也提高可读性：用现有Card/Row/Column/Text组成键值摘要、方案对比、步骤清单；使用已有Button收集“继续/修改/放弃”意图。它们仍回到同一Pi会话，由Pi执行工具和权限判断。
 
-## 已归入v0.1.5的八组后续能力
+## v0.1.5八组能力与实际实现
 
-用户已将R01–R08全部纳入v0.1.5（[spec008](specs/008-v0.1.5-interactions.md)）；先评估现有组件组合，逐组设计/评审后实现。它们大多不是官方Basic组件，不挤掉0.1.4 C01–C14。
+用户已将R01–R08全部纳入v0.1.5（[spec008](specs/008-v0.1.5-interactions.md)）；使用现有组合、三个增强API与本地shell实现；具体props/AC/资源与错误边界见spec008，实际支持以本包helper和active tool为准。它们大多不是官方Basic组件，不挤掉0.1.4 C01–C14。
 
 | ID | 组件/模式 | 日常价值 | 取舍 |
 | --- | --- | --- | --- |
-| R01 | TreeView / Breadcrumbs | 文件树、调用层级、任务位置一目了然 | 自定义；选择只发送当前作用域内的意图，不直接读文件；限定节点和深度 |
-| R02 | SearchablePicker / ComboBox | 从较长分支、文件或选项列表快速选中 | 先评估TextField+ChoicePicker组合；键盘筛选且值必须属于已授权选项 |
-| R03 | KeyValueView / MetricCard | 把环境、构建摘要、耗时和参数压缩为清楚的键值信息 | 优先复用现有Card/Row/Column/Text模板，不先造新catalog类型；数值有来源 |
-| R04 | InlineValidation / FormErrorSummary | 错误直接定位到具体字段和原因 | 客户端反馈配合服务端复验；不把模型给出的checks当授权或放开任意函数 |
-| R05 | Callout / EmptyState / Skeleton | 分清失败、无结果、未执行与加载中，并给恢复动作 | 可先做现有组件组合；状态从实际请求/工具生命周期推导 |
-| R06 | ActivityTimeline | 回看工具执行顺序、耗时和失败节点 | 共用真实事件源和有界窗口；不建立无限历史库或编造时序 |
-| R07 | EvidenceLink / SourceLocation | 从结论定位文件行、测试记录或来源 | 携带固定来源ID/位置；由Pi确认处理，浏览器不开放任意file://或路径读取 |
-| R08 | CommandPalette / ActionBar | 键盘查找当前可用动作，减少鼠标往返 | 只引用当前epoch/revision的现有动作；不增加直接命令执行权限 |
+| R01 | TreeView / Breadcrumbs | 小层级/当前位置可导航 | Details/Column/Row/Text/Button组合，非同名API；沿用64组件/16深度，不扫描文件系统 |
+| R02 | SearchablePicker / ComboBox | 键盘筛选且保留可移除已选项 | 基础筛选可用既有ChoicePicker(filterable=true)；增强SearchablePicker支持有界query/选项/键盘，服务端复验string-array选项；无ComboBox API |
+| R03 | KeyValueView / MetricCard | 环境/构建/耗时摘要易读 | Card/Row/Text组合，单位与来源可见；不把报告数值变成原生测量 |
+| R04 | InlineValidation / FormErrorSummary | 就地纠正字段/汇总错误 | 实际FormValidation API限定guarded Buttons/输入ID/路径；required/min/max长度，浏览器零无效POST，服务端复验；不开放SDK函数checks |
+| R05 | Callout / EmptyState / Skeleton | 区分加载/空/未运行/错误及下一步 | 既有组件组合，明确占位/报告来源，恢复动作只发Pi意图，不自动重试 |
+| R06 | ActivityTimeline | 回看当前run真实工具时序/耗时 | 原生事件32行窗口，遗漏明确、暂停/恢复隔离、预留byte/JSON节点容量；重启仅恢复既有工具结果快照checkpoint，不是完整审计库 |
+| R07 | EvidenceLink / SourceLocation | 结论指向来源ID/文件/行 | 可见Text+固定Event context组合，由Pi后续确认工具/权限，浏览器不生成href/file://或读文件 |
+| R08 | CommandPalette / ActionBar | 快捷查找当前可用动作 | shell Find actions/Ctrl-Cmd-K + Row/Button组合；重新查当前Button点击路径/最新草稿，IME确认不执行，不增命令RPC |
+
+本候选实际32类：已发布0.1.4的29类+SearchablePicker/FormValidation/ActivityTimeline。其它营销名称是组合模式或shell能力，不是虚构构造函数。每组完整示例和约束见[skill入口](../skills/pi-a2ui/SKILL.md)及其四份按需子文档；只读helper patterns→pattern→example→check→a2ui_render。helper身份不证明另一运行Pi/浏览器已加载同版。
+
 
 ## 本插件如何扩展
 

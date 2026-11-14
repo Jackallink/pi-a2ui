@@ -1,7 +1,3 @@
-// src/assistant-cli.ts
-import { constants } from "node:fs";
-import { open, readFile } from "node:fs/promises";
-
 // src/interactions.ts
 import { z as z2 } from "zod";
 import { basicCatalog } from "@a2ui/web_core/v1_0";
@@ -229,6 +225,13 @@ function validateInteractions(message, initial = false) {
     }
   }
 }
+
+// src/command-palette.ts
+var COMMAND_PALETTE_CAPABILITY = "command-palette";
+
+// src/assistant-cli.ts
+import { constants } from "node:fs";
+import { open, readFile } from "node:fs/promises";
 
 // src/workbench.ts
 import { z as z3 } from "zod";
@@ -568,7 +571,7 @@ function compile(surfaceId, source) {
 }
 
 // src/assistant-cli.ts
-var help = "Usage: node SKILL/scripts/a2ui.mjs catalog | examples | example NAME | check --surface-id ID FILE_OR_-\nRead-only preflight; rendering still requires a2ui_render. Requires Node24.x.\n";
+var help = "Usage: node SKILL/scripts/a2ui.mjs catalog | patterns | pattern NAME | examples | example NAME | check --surface-id ID FILE_OR_-\nRead-only preflight; rendering still requires a2ui_render. Requires Node24.x.\n";
 async function sourceFile(path) {
   const chunks = [];
   let size = 0;
@@ -614,13 +617,30 @@ async function runCli(args) {
     return 0;
   }
   const [command, ...rest] = args;
-  if (!["catalog", "examples", "example", "check"].includes(command) || ["catalog", "examples"].includes(command) && rest.length || command === "example" && rest.length !== 1 || command === "check" && (rest.length !== 3 || rest[0] !== "--surface-id")) return usage();
+  if (!["catalog", "patterns", "pattern", "examples", "example", "check"].includes(command) || ["catalog", "patterns", "examples"].includes(command) && rest.length || ["example", "pattern"].includes(command) && rest.length !== 1 || command === "check" && (rest.length !== 3 || rest[0] !== "--surface-id")) return usage();
   try {
     const probe = compile("preflight", 'root = Text(text="preflight")');
     const catalog = catalogs.find((c) => c.id === probe.createSurface.catalogId);
     if (command === "catalog") {
       const metadata = JSON.parse(await readFile(new URL("../package.json", import.meta.url), "utf8"));
       process.stdout.write(JSON.stringify({ packageVersion: metadata.version, nodeMajor: 24, catalogId: catalog.id, components: [...catalog.components.keys()].sort(), scope: "This helper package, not an arbitrary running Pi instance" }) + "\n");
+      return 0;
+    }
+    if (command === "patterns" || command === "pattern") {
+      const examples = JSON.parse(await readFile(new URL("../skills/pi-a2ui/examples/manifest.json", import.meta.url), "utf8"));
+      const metadata = JSON.parse(await readFile(new URL("../package.json", import.meta.url), "utf8"));
+      const identity3 = { packageVersion: metadata.version, catalogId: catalog.id, scope: "This helper package, not an arbitrary running Pi instance", shellCapabilities: [COMMAND_PALETTE_CAPABILITY] };
+      const patterns = examples.filter((example) => example.pattern).map((example) => {
+        if (!example.reference) throw new Error("Pattern reference missing");
+        return { name: example.pattern, template: example.name, reference: example.reference, requires: example.requires, templateAvailable: example.requires.every((name) => catalog.components.has(name)), requiresShellCapabilities: example.pattern === "command-actions" ? [COMMAND_PALETTE_CAPABILITY] : [] };
+      });
+      if (command === "patterns") {
+        process.stdout.write(JSON.stringify({ ...identity3, patterns }) + "\n");
+        return 0;
+      }
+      const selected = patterns.find((pattern) => pattern.name === rest[0]);
+      if (!selected) throw new Error("Unknown pattern; use patterns to list allowed names");
+      process.stdout.write(JSON.stringify({ ...identity3, pattern: selected }) + "\n");
       return 0;
     }
     if (command === "examples" || command === "example") {

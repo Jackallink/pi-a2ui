@@ -4,9 +4,9 @@ A local interactive canvas for the Pi coding agent. Pi keeps the conversation an
 
 Requires **Node 24.x** and Pi >=1.5.0. A2UI protocol 1.0, pinned Agent SDK 0.1.0 and Web Core/Lit 0.15.0.
 
-Version **0.1.4** adds readable results, code/Markdown, collapsible evidence, native progress and bounded local artifact/media previews. It uses Pi's existing model and tools; it makes no separate model request per UI event or output chunk. Project live acceptance uses only Volcengine Ark Agent Plan `glm-5.3-flash`.
+Version **0.1.5 candidate** adds eight daily interaction groups,19 skill templates and read-only pattern discovery to the readable workbench delivered in0.1.4. It uses Pi's existing model and tools; it makes no separate model request per UI event or output chunk. Project live acceptance uses only Volcengine Ark Agent Plan `glm-5.3-flash`.
 
-This version combines the workbench components, automatic browser opening and packaged skill/preflight helper. See [release scope and installation](docs/releases/v0.1.4.md).
+This branch prepares v0.1.5; the published stable Git tag remains v0.1.4 until a new release is published. Use the local route to evaluate this candidate. See [candidate scope](docs/releases/v0.1.5.md) and [published0.1.4 guide](docs/releases/v0.1.4.md).
 
 Project source is MIT licensed. The bundled browser libraries retain their own licenses; complete third-party license/notice texts are included in `THIRD_PARTY_LICENSES.txt` in the distribution.
 
@@ -49,7 +49,7 @@ Ask Pi: “Use a2ui_render to show a form asking for my implementation plan. Whe
 
 ## Companion skill and preflight helper
 
-Version0.1.4 bundles the **pi-a2ui** skill, component subdocuments and11 executable templates. Older pinned tags do not gain these files on reload; selectv0.1.4 to upgrade. Package discovery loads the extension and skill together via `pi.extensions`/`pi.skills`; no extra global skill or CLI installation is needed. Run `/reload` after selecting the new package/ref, then:
+The0.1.5 candidate bundles the **pi-a2ui** skill, component subdocuments,19 executable templates and eight pattern routes. Published0.1.4 has11 templates; older pinned tags do not gain new files on reload. Package discovery loads the extension and skill together via `pi.extensions`/`pi.skills`; no extra global skill or CLI installation is needed. Run `/reload` after selecting the new package/ref, then:
 
 ```text
 /skill:pi-a2ui 生成用户信息表单，包含用户名、邮箱和确认按钮
@@ -62,11 +62,13 @@ With **Node24.x** selected, this read-only helper uses the same compiler as the 
 ```sh
 nvm use 24
 node /absolute/path/to/pi-a2ui/skills/pi-a2ui/scripts/a2ui.mjs catalog
+node /absolute/path/to/pi-a2ui/skills/pi-a2ui/scripts/a2ui.mjs patterns
+node /absolute/path/to/pi-a2ui/skills/pi-a2ui/scripts/a2ui.mjs pattern validated-form
 node /absolute/path/to/pi-a2ui/skills/pi-a2ui/scripts/a2ui.mjs example user-form
 node /absolute/path/to/pi-a2ui/skills/pi-a2ui/scripts/a2ui.mjs check --surface-id user-form /absolute/path/to/form.express
 ```
 
-`catalog` describes that installed package, not an arbitrary active Pi process. `check` returns `{surfaceId,source}` for a2ui_render and publishes nothing; actual session/action/resource validation remains in the tool. Examples refuse when the selected catalog lacks their types. Reference presence is not runtime support. Card takes a component child, not a title string; children need commas; forward references work, so declaration order alone is not a sufficient diagnosis.
+`catalog`/`patterns` describe that installed package, not an arbitrary active Pi process. `pattern` returns metadata, not DSL: choose its template with `example`, adapt it and `check`, then call a2ui_render. Template availability and local shell capabilities are separate. `check` returns `{surfaceId,source}` for a2ui_render and publishes nothing; actual session/action/resource validation remains in the tool. Examples refuse when the selected catalog lacks their types. Reference presence is not runtime support. Card takes a component child, not a title string; children need commas; forward references work, so declaration order alone is not a sufficient diagnosis.
 
 ## Model tool
 
@@ -81,16 +83,17 @@ root = Card(Column([
 ]))
 ```
 
-Supported components include bounded native-tool LogView and finite line/bar Chart; a2ui_update_chart updates series without replacing inputs. Native log collection uses Pi events and makes no model request per chunk. Log display can be paused locally; earlier omitted content is marked. The version also includes read-only CodeDiff and TestResults under a versioned Pi catalog. It also adds CheckBox, ChoicePicker, Slider, DateTimeInput, Tabs and Divider to Text, Column, Row, Card, Button and TextField. Text and source content are escaped plain text. Coding follow-up buttons carry literal proposalId/resultId; source/test records are immutable within a session. TestResults displays supplied case records and provenance reported by Pi; it does not certify a test execution. Functions, checks, dynamic templates, HTML and general RPC are unavailable. MarkdownView explicitly renders a bounded safe subset; Text remains literal. Bind submitted values directly to absolute input value paths. TextField uses string, CheckBox boolean, Slider finite bounded number, ChoicePicker string array; DateTimeInput uses explicit date/time flags and local calendar strings (optional :00 seconds), with static bounds. Literal event context is checked against the committed definition.
+Supported components include bounded native-tool LogView and finite line/bar Chart; a2ui_update_chart updates series without replacing inputs. Native log collection uses Pi events and makes no model request per chunk. Log display can be paused locally; earlier omitted content is marked. The version also includes read-only CodeDiff and TestResults under a versioned Pi catalog. It also adds CheckBox, ChoicePicker, Slider, DateTimeInput, Tabs and Divider to Text, Column, Row, Card, Button and TextField. Text and source content are escaped plain text. Coding follow-up buttons carry literal proposalId/resultId; source/test records are immutable within a session. TestResults displays supplied case records and provenance reported by Pi; it does not certify a test execution. Functions, SDK executable checks, dynamic templates, HTML and general RPC are unavailable. Declarative FormValidation rules guard chosen submit Buttons and are repeated on the server; they do not authorize tool execution. MarkdownView explicitly renders a bounded safe subset; Text remains literal. Bind submitted values directly to absolute input value paths. TextField uses string, CheckBox boolean, Slider finite bounded number, ChoicePicker string array; DateTimeInput uses explicit date/time flags and local calendar strings (optional :00 seconds), with static bounds. Literal event context is checked against the committed definition.
 
 Rendering validates the entire replacement before publishing it. Invalid source leaves the old surface intact. A tool result does not wait for a human; the browser action becomes a later structured user message, with `followUp` during generation. “Sent to Pi” acknowledges one local dispatch attempt, not model success; asynchronous failures appear in Pi. Ambiguous network failures are not automatically retried.
 
 ## Component support and extension opportunities
 
-This version exposes **18 official Basic types +11 custom Pi types**:
+This version exposes **18 official Basic types +14 custom Pi types =32** in interactions-v1 (published workbench-v1 has29):
 
 | Group | Components / interaction | Purpose |
 | --- | --- | --- |
+| Daily enhanced APIs | SearchablePicker, FormValidation, ActivityTimeline | Local searchable typed choices, guarded field errors, actual bounded native execution history |
 | Layout and forms | Text, Column, Row, Card, Button, TextField, CheckBox, ChoicePicker, Slider, DateTimeInput, Tabs, Divider, List | Collect typed input, compare options and list steps |
 | Reading | DataTable, CodeBlock with local copy, MarkdownView, Details / Accordion composition | Sort/filter supplied rows, read/copy code and fold evidence |
 | Evidence and state | CodeDiff, TestResults, LogView, Chart, StatusBadge, TaskProgress | Distinguish supplied claims from real native tool lifecycle |
@@ -131,9 +134,9 @@ Live acceptance defaults to Agent Plan `volcengine-ark/glm-5.3-flash` and checks
 [Version0.1.4](docs/releases/v0.1.4.md) combines PR#27 (automatic browser opening), PR#28 (all seven interaction groups) and PR#30 (skill/helper). The previous0.1.3 version-alignment checkpoint and0.1.0/0.1.1 tags/assets remain immutable;0.1.2 remains unpublished. Source/package/test/publication identity is recorded separately from feature acceptance.
 See [CHANGELOG.md](CHANGELOG.md), [ROADMAP.md](ROADMAP.md), the [Pi package distribution contract](docs/specs/005-v0.1.1-distribution.md), and the [version-alignment contract](docs/specs/006-v0.1.3-version-alignment.md). Historical design/test evidence preserves each original feature slice and artifact identity.
 
-## Next scope: v0.1.5
+## v0.1.5 candidate scope
 
-All eight additional groups are assigned to [v0.1.5](docs/specs/008-v0.1.5-interactions.md), milestone5/issues19–26: TreeView/Breadcrumbs, SearchablePicker/ComboBox, KeyValueView/MetricCard, inline/form validation, Callout/EmptyState/Skeleton, ActivityTimeline, EvidenceLink/SourceLocation and CommandPalette/ActionBar. They are planned scope; their implementation has not started.
+All eight additional groups are assigned to [v0.1.5](docs/specs/008-v0.1.5-interactions.md), milestone5/issues19–26: TreeView/Breadcrumbs, SearchablePicker/ComboBox, KeyValueView/MetricCard, inline/form validation, Callout/EmptyState/Skeleton, ActivityTimeline, EvidenceLink/SourceLocation and CommandPalette/ActionBar. The canonical scope is spec008; implementation/review and acceptance receipts are tracked in [#17](https://github.com/Jackallink/pi-a2ui/issues/17) and [candidate PR#33](https://github.com/Jackallink/pi-a2ui/pull/33), separately from publication. The same version includes companion skill/CLI [#32](https://github.com/Jackallink/pi-a2ui/issues/32).
 
 ## Remove
 
