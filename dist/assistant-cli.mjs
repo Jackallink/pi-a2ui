@@ -3,7 +3,7 @@ import { constants } from "node:fs";
 import { open, readFile } from "node:fs/promises";
 
 // src/interactions.ts
-import { z } from "zod";
+import { z as z2 } from "zod";
 import { basicCatalog } from "@a2ui/web_core/v1_0";
 
 // src/protocol.ts
@@ -110,65 +110,12 @@ function validateInputs(components, resolve) {
   }
 }
 
-// src/interactions.ts
-var choice = basicCatalog.components.get("ChoicePicker").schema;
-var searchablePickerApi = { name: "SearchablePicker", schema: z.object({ label: z.string().min(1).max(128), options: z.array(z.object({ label: z.string().min(1).max(128), value: z.string().min(1).max(128) }).strict()).max(200), value: choice.shape.value, variant: z.enum(["mutuallyExclusive", "multipleSelection"]).default("mutuallyExclusive") }).strict() };
-var ruleSchema = z.object({ fieldId: z.string().min(1).max(128), message: z.string().min(1).max(256), required: z.boolean().optional(), minLength: z.number().int().min(0).max(4096).optional(), maxLength: z.number().int().min(0).max(4096).optional() }).strict();
-var formValidationApi = { name: "FormValidation", schema: z.object({ title: z.string().min(1).max(128).default("Check these fields"), buttons: z.array(z.string().min(1).max(128)).min(1).max(16), rules: z.array(ruleSchema).min(1).max(16) }).strict() };
-var interactionApis = [searchablePickerApi, formValidationApi];
-function bindingPath(value) {
-  return value && typeof value === "object" && !Array.isArray(value) && "@path" in value && typeof value["@path"] === "string" ? value["@path"] : void 0;
-}
-function declaration(component) {
-  return component?.action?.event?.context ?? {};
-}
-function validateInteractions(message, _initial = false) {
-  const components = message.createSurface.components;
-  let validations = 0;
-  for (const c of components) {
-    if (c.component === "SearchablePicker") {
-      const { id: _, component: __, ...props } = c;
-      const parsed = searchablePickerApi.schema.parse(props);
-      if (!bindingPath(parsed.value)) throw new UiError(400, "SearchablePicker requires an initialized absolute value binding");
-      Object.assign(c, parsed);
-    }
-    if (c.component === "FormValidation") {
-      if (++validations > 1) throw new UiError(400, "Only one FormValidation per surface");
-      const { id: _, component: __, ...props } = c;
-      const data = formValidationApi.schema.parse(props);
-      if (new Set(data.buttons).size !== data.buttons.length) throw new UiError(400, "FormValidation buttons must be distinct");
-      const fields = /* @__PURE__ */ new Set();
-      const paths = /* @__PURE__ */ new Set();
-      for (const rule of data.rules) {
-        const field = components.find((n) => n.id === rule.fieldId);
-        const path = bindingPath(field?.value);
-        if (!field || !["TextField", "CheckBox", "ChoicePicker", "SearchablePicker", "Slider", "DateTimeInput"].includes(field.component) || !path) throw new UiError(400, "Validation field must be a reachable bound input");
-        if (fields.has(rule.fieldId) || paths.has(path)) throw new UiError(400, "Validation rules must not share fields or paths");
-        fields.add(rule.fieldId);
-        paths.add(path);
-        if (rule.required !== true && !(rule.minLength !== void 0 && rule.minLength > 0) && rule.maxLength === void 0) throw new UiError(400, "Validation rule needs a meaningful constraint");
-        if (rule.minLength !== void 0 || rule.maxLength !== void 0) {
-          if (!["TextField", "ChoicePicker", "SearchablePicker"].includes(field.component)) throw new UiError(400, "Length rules require text or choices");
-          if ((rule.minLength ?? 0) > (rule.maxLength ?? 4096)) throw new UiError(400, "Reversed validation lengths");
-        }
-      }
-      for (const id of data.buttons) {
-        const button = components.find((n) => n.id === id);
-        if (button?.component !== "Button") throw new UiError(400, "Validation guard must name a reachable Button");
-        const values = Object.values(declaration(button));
-        for (const path of paths) if (!values.some((value) => bindingPath(value) === path)) throw new UiError(400, "Guarded Button must bind every ruled input path");
-      }
-      Object.assign(c, data);
-    }
-  }
-}
-
 // src/live.ts
-import { z as z2 } from "zod";
+import { z } from "zod";
 var logStates = ["idle", "running", "completed", "error", "paused", "interrupted"];
-var logViewApi = { name: "LogView", schema: z2.object({ stream: z2.literal("tools").default("tools"), text: z2.string().default(""), omitted: z2.boolean().default(false), state: z2.enum(logStates).default("idle") }).strict() };
-var seriesSchema = z2.array(z2.object({ name: z2.string().min(1).max(128), points: z2.array(z2.object({ label: z2.string().max(128), value: z2.number().finite() }).strict()).max(200) }).strict()).max(4);
-var chartApi = { name: "Chart", schema: z2.object({ kind: z2.enum(["line", "bar"]), series: seriesSchema }).strict() };
+var logViewApi = { name: "LogView", schema: z.object({ stream: z.literal("tools").default("tools"), text: z.string().default(""), omitted: z.boolean().default(false), state: z.enum(logStates).default("idle") }).strict() };
+var seriesSchema = z.array(z.object({ name: z.string().min(1).max(128), points: z.array(z.object({ label: z.string().max(128), value: z.number().finite() }).strict()).max(200) }).strict()).max(4);
+var chartApi = { name: "Chart", schema: z.object({ kind: z.enum(["line", "bar"]), series: seriesSchema }).strict() };
 var liveApis = [logViewApi, chartApi];
 function trimLog(input, bytes = 65536, maxLines = 1e3) {
   let text2 = input;
@@ -213,6 +160,72 @@ function validateLive(message, initial = false) {
       if (initial && (data.text !== "" || data.omitted || data.state !== "idle")) throw new UiError(400, "LogView initial output is server-controlled");
       if (trimLog(data.text).text !== data.text) throw new UiError(413, "Saved LogView exceeds its text/line budget");
       Object.assign(component, data);
+    }
+  }
+}
+
+// src/interactions.ts
+var choice = basicCatalog.components.get("ChoicePicker").schema;
+var searchablePickerApi = { name: "SearchablePicker", schema: z2.object({ label: z2.string().min(1).max(128), options: z2.array(z2.object({ label: z2.string().min(1).max(128), value: z2.string().min(1).max(128) }).strict()).max(200), value: choice.shape.value, variant: z2.enum(["mutuallyExclusive", "multipleSelection"]).default("mutuallyExclusive") }).strict() };
+var ruleSchema = z2.object({ fieldId: z2.string().min(1).max(128), message: z2.string().min(1).max(256), required: z2.boolean().optional(), minLength: z2.number().int().min(0).max(4096).optional(), maxLength: z2.number().int().min(0).max(4096).optional() }).strict();
+var formValidationApi = { name: "FormValidation", schema: z2.object({ title: z2.string().min(1).max(128).default("Check these fields"), buttons: z2.array(z2.string().min(1).max(128)).min(1).max(16), rules: z2.array(ruleSchema).min(1).max(16) }).strict() };
+var timelineEntry = z2.object({ id: z2.string().regex(/^[A-Za-z0-9_-]{1,32}$/), name: z2.string().min(1).max(64), state: z2.enum(["running", "completed", "error", "interrupted"]), startedAt: z2.number().int().min(0).max(Number.MAX_SAFE_INTEGER), elapsedMs: z2.number().int().min(0).max(Number.MAX_SAFE_INTEGER) }).strict();
+var activityTimelineApi = { name: "ActivityTimeline", schema: z2.object({ stream: z2.literal("tools").default("tools"), entries: z2.array(timelineEntry).max(32).default([]), state: z2.enum(logStates).default("idle"), omitted: z2.boolean().default(false) }).strict() };
+var interactionApis = [searchablePickerApi, formValidationApi, activityTimelineApi];
+function bindingPath(value) {
+  return value && typeof value === "object" && !Array.isArray(value) && "@path" in value && typeof value["@path"] === "string" ? value["@path"] : void 0;
+}
+function declaration(component) {
+  return component?.action?.event?.context ?? {};
+}
+function validateInteractions(message, initial = false) {
+  const components = message.createSurface.components;
+  let validations = 0, timelines = 0;
+  for (const c of components) {
+    if (c.component === "SearchablePicker") {
+      const { id: _, component: __, ...props } = c;
+      const parsed = searchablePickerApi.schema.parse(props);
+      if (!bindingPath(parsed.value)) throw new UiError(400, "SearchablePicker requires an initialized absolute value binding");
+      Object.assign(c, parsed);
+    }
+    if (c.component === "ActivityTimeline") {
+      if (c.id.length > 512) throw new UiError(413, "Timeline component ID exceeds512 UTF-16 units");
+      if (++timelines > 1) throw new UiError(400, "Only one ActivityTimeline per surface");
+      const { id: _, component: __, ...props } = c;
+      const data = activityTimelineApi.schema.parse(props);
+      if (new Set(data.entries.map((row) => row.id)).size !== data.entries.length) throw new UiError(400, "Duplicate timeline row IDs");
+      if (initial && (data.entries.length || data.state !== "idle" || data.omitted)) throw new UiError(400, "ActivityTimeline initial values are server-controlled");
+      if (data.state !== "running" && data.entries.some((row) => row.state === "running") || data.state === "idle" && data.entries.length) throw new UiError(400, "Inconsistent timeline state");
+      Object.assign(c, data);
+      if (new TextEncoder().encode(JSON.stringify(c)).byteLength > 32768) throw new UiError(413, "Timeline complete component exceeds32KiB");
+    }
+    if (c.component === "FormValidation") {
+      if (++validations > 1) throw new UiError(400, "Only one FormValidation per surface");
+      const { id: _, component: __, ...props } = c;
+      const data = formValidationApi.schema.parse(props);
+      if (new Set(data.buttons).size !== data.buttons.length) throw new UiError(400, "FormValidation buttons must be distinct");
+      const fields = /* @__PURE__ */ new Set();
+      const paths = /* @__PURE__ */ new Set();
+      for (const rule of data.rules) {
+        const field = components.find((n) => n.id === rule.fieldId);
+        const path = bindingPath(field?.value);
+        if (!field || !["TextField", "CheckBox", "ChoicePicker", "SearchablePicker", "Slider", "DateTimeInput"].includes(field.component) || !path) throw new UiError(400, "Validation field must be a reachable bound input");
+        if (fields.has(rule.fieldId) || paths.has(path)) throw new UiError(400, "Validation rules must not share fields or paths");
+        fields.add(rule.fieldId);
+        paths.add(path);
+        if (rule.required !== true && !(rule.minLength !== void 0 && rule.minLength > 0) && rule.maxLength === void 0) throw new UiError(400, "Validation rule needs a meaningful constraint");
+        if (rule.minLength !== void 0 || rule.maxLength !== void 0) {
+          if (!["TextField", "ChoicePicker", "SearchablePicker"].includes(field.component)) throw new UiError(400, "Length rules require text or choices");
+          if ((rule.minLength ?? 0) > (rule.maxLength ?? 4096)) throw new UiError(400, "Reversed validation lengths");
+        }
+      }
+      for (const id of data.buttons) {
+        const button = components.find((n) => n.id === id);
+        if (button?.component !== "Button") throw new UiError(400, "Validation guard must name a reachable Button");
+        const values = Object.values(declaration(button));
+        for (const path of paths) if (!values.some((value) => bindingPath(value) === path)) throw new UiError(400, "Guarded Button must bind every ruled input path");
+      }
+      Object.assign(c, data);
     }
   }
 }
@@ -345,7 +358,7 @@ var workbenchCatalog = restrictedCatalog.derive({ catalogId: "https://jackallink
   const { element: _, tagName: __, ...api } = basicCatalog3.components.get(name);
   return api;
 })], instructions: restrictedCatalog.instructions?.replace("No functions, checks, templates, URLs, media or executable expressions.", "No functions, checks, templates or executable expressions. URLs only in registered artifact media props.") + ' List has static children. DataTable contains bounded primitive cells and unique row/column IDs. Table sorting and filtering are browser-local. CodeBlock preserves literal code with a local copy button; never nest it or DataTable in Button. MarkdownView explicitly renders a safe limited subset; no links/images/HTML. Text stays literal. Details(title,child,open?) is a local disclosure; Accordion is multiple Details. Never place local interactive widgets inside Button. StatusBadge is reported/unverified. TaskProgress(stream="tools") is native-server controlled; omit counters/state/omitted initial values, never fabricate a planned percentage. Modal(trigger,content) has a local Text/Icon-only trigger; at most one per surface. Image/Video/AudioPlayer.url (Video.posterUrl too) and ArtifactPreview.src must be the exact opaque src returned by a2ui_register_artifact. No external/file/data/blob URLs or SVG. Native media controls are local; no autoplay/microphone. Video supports WebM/MP4, AudioPlayer WAV; browser codec failures are visible. Artifacts expire on reset/pause; label is not verified metadata. Icon names are static local check/close/error/info/warning/folder/help/refresh/play/pause/search/settings.' });
-var interactionsCatalog = workbenchCatalog.derive({ catalogId: "https://jackallink.github.io/pi-a2ui/catalogs/interactions-v1.json", functions: [], components: [...workbenchCatalog.components.values(), ...interactionApis], instructions: workbenchCatalog.instructions + " SearchablePicker(label,options,value,variant?) has static label/options and an initialized absolute string-array value binding. Single mutuallyExclusive or multipleSelection; query/filter/removal is browser-local and never submits arbitrary text. At most200 distinct option values; never nest in a Button. FormValidation(title?,buttons,rules) names reachable input field IDs and guarded Button IDs. Every guard must bind every ruled path; only required/minLength/maxLength constraints, no functions/checks. Initial business-invalid drafts are allowed; only guarded submits require valid values. Never nest validation in a Button." });
+var interactionsCatalog = workbenchCatalog.derive({ catalogId: "https://jackallink.github.io/pi-a2ui/catalogs/interactions-v1.json", functions: [], components: [...workbenchCatalog.components.values(), ...interactionApis], instructions: workbenchCatalog.instructions + ' SearchablePicker(label,options,value,variant?) has static label/options and an initialized absolute string-array value binding. Single mutuallyExclusive or multipleSelection; query/filter/removal is browser-local and never submits arbitrary text. At most200 distinct option values; never nest in a Button. FormValidation(title?,buttons,rules) names reachable input field IDs and guarded Button IDs. Every guard must bind every ruled path; only required/minLength/maxLength constraints, no functions/checks. Initial business-invalid drafts are allowed; only guarded submits require valid values. Never nest validation in a Button. ActivityTimeline(stream="tools") is native-only observed order/timing; omit entries/state/omitted initial values, at most1 per surface, no Button ancestor.32row window, omissions explicit, no invented execution/duration. Use a separate Details to fold long evidence.' });
 var catalogs = [legacyCatalog, codingCatalog, restrictedCatalog, workbenchCatalog, interactionsCatalog];
 
 // src/compiler.ts
@@ -397,7 +410,7 @@ function validateSurface(input) {
       if (reachable.has(id)) throw new UiError(400, "Components must form a tree without repeated children");
       const component = components.get(id);
       if (!component) throw new UiError(400, "Missing root or child");
-      if (insideButton && ["LogView", "DataTable", "CodeBlock", "Details", "TaskProgress", "Modal", "Image", "ArtifactPreview", "Video", "AudioPlayer", "SearchablePicker", "FormValidation"].includes(component.component)) throw new UiError(400, component.component + " must not be nested in a Button");
+      if (insideButton && ["LogView", "DataTable", "CodeBlock", "Details", "TaskProgress", "Modal", "Image", "ArtifactPreview", "Video", "AudioPlayer", "SearchablePicker", "FormValidation", "ActivityTimeline"].includes(component.component)) throw new UiError(400, component.component + " must not be nested in a Button");
       reachable.add(id);
       const children = component.component === "Modal" ? [component.trigger, component.content] : component.component === "Tabs" && Array.isArray(component.tabs) ? component.tabs.map((tab) => tab.child) : Array.isArray(component.children) ? component.children : typeof component.child === "string" ? [component.child] : [];
       for (const child of children) {

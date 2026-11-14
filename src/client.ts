@@ -112,7 +112,7 @@ function mountSurface(record: SurfaceRecord) {
     revision: record.revision,
     validation:new BrowserValidation(wrapper,record.message.createSurface.components,path=>model.dataModel.get(path),()=>enabled&&!pending&&epoch===capturedEpoch&&mounted.get(record.surfaceId)?.revision===record.revision,{element:notice,show:showNotice}),
     sequence:record.dataSequence??0,
-    liveIds:new Map(record.message.createSurface.components.filter(c=>c.component==='LogView'||c.component==='Chart'||c.component==='TaskProgress').map(c=>[c.id,c.component])),
+    liveIds:new Map(record.message.createSurface.components.filter(c=>c.component==='LogView'||c.component==='Chart'||c.component==='TaskProgress'||c.component==='ActivityTimeline').map(c=>[c.id,c.component])),
     wrapper,
     element,
     unsubscribe: () => subscription.unsubscribe(),
@@ -151,7 +151,7 @@ function applySnapshot(snapshot: Snapshot) {
   }
   for (const record of snapshot.surfaces) {
     if (mounted.get(record.surfaceId)?.revision === record.revision) {
-      applyData({surfaceId:record.surfaceId,revision:record.revision,sequence:record.dataSequence??0,components:record.message.createSurface.components.filter(c=>c.component==='LogView'||c.component==='Chart'||c.component==='TaskProgress')},true);
+      applyData({surfaceId:record.surfaceId,revision:record.revision,sequence:record.dataSequence??0,components:record.message.createSurface.components.filter(c=>c.component==='LogView'||c.component==='Chart'||c.component==='TaskProgress'||c.component==='ActivityTimeline')},true);
       continue;
     }
     removeSurface(record.surfaceId);

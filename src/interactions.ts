@@ -2,21 +2,35 @@ import {z} from 'zod';
 import {basicCatalog,type ComponentApi} from '@a2ui/web_core/v1_0';
 import {UiError,type Component,type SurfaceMessage} from './protocol.ts';
 import {validateInput} from './inputs.ts';
+import {logStates} from './live.ts';
 const choice=basicCatalog.components.get('ChoicePicker')!.schema as z.ZodObject<any>;
 export const searchablePickerApi={name:'SearchablePicker',schema:z.object({label:z.string().min(1).max(128),options:z.array(z.object({label:z.string().min(1).max(128),value:z.string().min(1).max(128)}).strict()).max(200),value:choice.shape.value,variant:z.enum(['mutuallyExclusive','multipleSelection']).default('mutuallyExclusive')}).strict()} satisfies ComponentApi;
 const ruleSchema=z.object({fieldId:z.string().min(1).max(128),message:z.string().min(1).max(256),required:z.boolean().optional(),minLength:z.number().int().min(0).max(4096).optional(),maxLength:z.number().int().min(0).max(4096).optional()}).strict();
 export const formValidationApi={name:'FormValidation',schema:z.object({title:z.string().min(1).max(128).default('Check these fields'),buttons:z.array(z.string().min(1).max(128)).min(1).max(16),rules:z.array(ruleSchema).min(1).max(16)}).strict()} satisfies ComponentApi;
-export const interactionApis:ComponentApi[]=[searchablePickerApi,formValidationApi];
+const timelineEntry=z.object({id:z.string().regex(/^[A-Za-z0-9_-]{1,32}$/),name:z.string().min(1).max(64),state:z.enum(['running','completed','error','interrupted']),startedAt:z.number().int().min(0).max(Number.MAX_SAFE_INTEGER),elapsedMs:z.number().int().min(0).max(Number.MAX_SAFE_INTEGER)}).strict();
+export const activityTimelineApi={name:'ActivityTimeline',schema:z.object({stream:z.literal('tools').default('tools'),entries:z.array(timelineEntry).max(32).default([]),state:z.enum(logStates).default('idle'),omitted:z.boolean().default(false)}).strict()} satisfies ComponentApi;
+export type TimelineEntry=z.infer<typeof timelineEntry>;
+export type ToolTimeline=z.infer<typeof activityTimelineApi.schema>;
+export const interactionApis:ComponentApi[]=[searchablePickerApi,formValidationApi,activityTimelineApi];
 type Rules=z.infer<typeof formValidationApi.schema>;
 export interface ValidationIssue{fieldId:string;message:string}
 function bindingPath(value:unknown):string|undefined{return value&&typeof value==='object'&&!Array.isArray(value)&&'@path' in value&&typeof value['@path']==='string'?value['@path']:undefined;}
 function declaration(component:Component|undefined):Record<string,unknown>{return (component?.action as {event?:{context?:Record<string,unknown>}})?.event?.context??{};}
-export function validateInteractions(message:SurfaceMessage,_initial=false):void{
- const components=message.createSurface.components;let validations=0;
+export function validateInteractions(message:SurfaceMessage,initial=false):void{
+ const components=message.createSurface.components;let validations=0,timelines=0;
  for(const c of components){
   if(c.component==='SearchablePicker'){
    const {id:_,component:__,...props}=c;const parsed=searchablePickerApi.schema.parse(props);
    if(!bindingPath(parsed.value))throw new UiError(400,'SearchablePicker requires an initialized absolute value binding');Object.assign(c,parsed);
+  }
+  if(c.component==='ActivityTimeline'){
+   if(c.id.length>512)throw new UiError(413,'Timeline component ID exceeds512 UTF-16 units');
+   if(++timelines>1)throw new UiError(400,'Only one ActivityTimeline per surface');
+   const {id:_,component:__,...props}=c;const data=activityTimelineApi.schema.parse(props);
+   if(new Set(data.entries.map(row=>row.id)).size!==data.entries.length)throw new UiError(400,'Duplicate timeline row IDs');
+   if(initial&&(data.entries.length||data.state!=='idle'||data.omitted))throw new UiError(400,'ActivityTimeline initial values are server-controlled');
+   if(data.state!=='running'&&data.entries.some(row=>row.state==='running')||data.state==='idle'&&data.entries.length)throw new UiError(400,'Inconsistent timeline state');
+   Object.assign(c,data);if(new TextEncoder().encode(JSON.stringify(c)).byteLength>32768)throw new UiError(413,'Timeline complete component exceeds32KiB');
   }
   if(c.component==='FormValidation'){
    if(++validations>1)throw new UiError(400,'Only one FormValidation per surface');

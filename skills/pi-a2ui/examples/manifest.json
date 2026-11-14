@@ -167,5 +167,20 @@
     ],
     "pattern": "feedback-states",
     "reference": "references/summaries-and-feedback.md"
+  },
+  {
+    "name": "activity-timeline",
+    "requires": [
+      "Column",
+      "TextField",
+      "TaskProgress",
+      "Details",
+      "ActivityTimeline",
+      "LogView",
+      "Button",
+      "Text"
+    ],
+    "pattern": "activity-timeline",
+    "reference": "references/timeline-and-evidence.md"
   }
 ]

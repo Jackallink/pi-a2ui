@@ -414,3 +414,15 @@ test("R05 feedback state patterns stay local until a declared recovery intent",a
  for(const text of ['Loading — placeholder only','No results','Not run','Reported error'])await expect(page.getByText(text,{exact:true})).toBeVisible();
  expect(canvas.sent).toHaveLength(0);await page.getByRole('button',{name:'Request retry',exact:true}).click();await expect(page.locator('#notice')).toHaveText('Sent to Pi');expect(canvas.sent).toHaveLength(1);expect(canvas.sent[0]).toContain('"event":"request_retry"');expect(canvas.sent[0]).toContain('"state":"reported_error"');
 });
+
+
+test("R06 native timeline data patches and reconnect preserve form and disclosure",async({page,canvas})=>{
+ const {readFile}=await import('node:fs/promises');const {LiveTools}=await import('../src/live-tools.ts');canvas.session.reset();canvas.session.render('activity',await readFile('skills/pi-a2ui/examples/activity-timeline.express','utf8'));const live=new LiveTools(canvas.session);
+ try{await page.goto(canvas.origin);const input=page.getByRole('textbox');await input.fill('Timeline draft');await input.evaluate(e=>(window as any).timelineDraft=e);
+ const widget=page.locator('pi-a2ui-activity-timeline');await expect(widget).toContainText('No tracked tool events');live.beginRun();live.start('one','read');await expect(widget).toContainText('read · running');await expect(widget).toContainText('last observed');
+ live.end('one',{content:[]},false);live.start('two','bash');live.end('two',{content:[]},true);live.finishRun();await expect(widget).toContainText('read · completed');await expect(widget).toContainText('bash · error');
+ await expect(input).toHaveValue('Timeline draft');await expect(page.locator('details')).toHaveAttribute('open','');expect(await input.evaluate(e=>e===(window as any).timelineDraft)).toBe(true);
+ await page.evaluate(()=>{window.dispatchEvent(new PageTransitionEvent('pagehide'));window.dispatchEvent(new PageTransitionEvent('pageshow',{persisted:true}));});await expect(page.locator('#connection')).toHaveText('Connected to Pi');await expect(widget).toContainText('bash · error');await expect(input).toHaveValue('Timeline draft');
+ canvas.session.setEnabled(false);await expect(widget).toContainText('timeline · paused');canvas.session.setEnabled(true);await expect(widget).toContainText('No tracked tool events');await expect(input).toHaveValue('Timeline draft');expect(canvas.sent).toHaveLength(0);
+ }finally{live.close();}
+});
