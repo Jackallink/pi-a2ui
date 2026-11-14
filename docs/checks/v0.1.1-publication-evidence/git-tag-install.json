@@ -1,0 +1,13 @@
+{
+  "source": "git:github.com/Jackallink/pi-a2ui@v0.1.1",
+  "actualFreshGitInstallAtFinalTag": true,
+  "sourceCommit": "d8da3153b84a18ebb8c3171088f7b5c7c38922ab",
+  "all24ArchiveFilesMatchInstalledTag": true,
+  "consumerBuild": false,
+  "esbuildAbsent": true,
+  "hostCopiesAbsent": true,
+  "unrelatedSettingsPreserved": true,
+  "privateGlobalSettingsPreserved": true,
+  "realUserInstallationChanged": false,
+  "modelRequests": false
+}
