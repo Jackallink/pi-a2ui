@@ -129,5 +129,17 @@
     ],
     "pattern": "searchable-picker",
     "reference": "references/navigation-and-selection.md"
+  },
+  {
+    "name": "summary-metrics",
+    "requires": [
+      "Column",
+      "Card",
+      "Row",
+      "Text",
+      "StatusBadge"
+    ],
+    "pattern": "summary-metrics",
+    "reference": "references/summaries-and-feedback.md"
   }
 ]

@@ -23,3 +23,11 @@ test('R01 hierarchy overflow rejects atomically under existing tree and total-co
  assert.throws(()=>session.render('keep',wide),/Component limit/);
  assert.deepEqual(session.snapshot(),before);session.close();
 });
+
+test('R03 summary pattern exposes source, metric units and reported provenance without phantom types',()=>{
+ const components=example('summary-metrics').createSurface.components;
+ assert.ok(components.some(c=>c.component==='Text'&&c.text==='Build duration: 12 s'));
+ assert.ok(components.some(c=>c.component==='Text'&&c.text==='Source: example build output — replace with actual evidence'));
+ assert.ok(components.some(c=>c.component==='StatusBadge'&&c.provenance==='reported'));
+ assert.ok(components.every(c=>['Card','Row','Column','Text','StatusBadge'].includes(c.component)));
+});

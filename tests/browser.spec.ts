@@ -338,3 +338,13 @@ test("R02 keyboard search and hidden selections stay local across data patches",
  canvas.session.render('pick','$/chosen = []\nroot = SearchablePicker(label="Branch",options=[],value=$/chosen)');
  await expect(page.getByText('No options',{exact:true})).toBeVisible();
 });
+
+
+test("R03 compact summary keeps units source and reported status visible",async({page,canvas})=>{
+ const {readFile}=await import('node:fs/promises');canvas.session.reset();canvas.session.render('summary',await readFile('skills/pi-a2ui/examples/summary-metrics.express','utf8'));
+ await page.goto(canvas.origin);
+ await expect(page.getByText('Build duration: 12 s',{exact:true})).toBeVisible();
+ await expect(page.getByText('Source: example build output — replace with actual evidence',{exact:true})).toBeVisible();
+ await expect(page.getByText('Reported by Pi · not independently verified',{exact:true})).toBeVisible();
+ expect(canvas.sent).toHaveLength(0);
+});

@@ -31,6 +31,7 @@ Call `a2ui_render` with `surfaceId: "user-form"` and that entire source as `sour
 | Task | Read / template |
 | --- | --- |
 | Small hierarchy / breadcrumbs / searchable choices | [Navigation and selection](references/navigation-and-selection.md); `tree-navigation` (composition), `searchable-picker` (requires SearchablePicker API) |
+| Source-labelled key/value / metric summaries | [Summaries and feedback](references/summaries-and-feedback.md); `summary-metrics` (composition) |
 | Text, layout, forms and buttons (baseline16 types) | [Core components](references/core-components.md); `user-form`, `typed-form`, `layout` |
 | Diff, test records, native logs or charts | [Coding/live components](references/coding-and-live.md); `review`, `live` |
 | Table, code/Markdown, details, progress, dialog/icon (v0.1.4 capability required) | [Workbench components](references/workbench-components.md); `list-table`, `reading`, `details`, `status`, `modal` |
