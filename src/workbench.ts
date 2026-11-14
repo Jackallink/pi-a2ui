@@ -10,10 +10,13 @@ export const detailsApi={name:'Details',schema:z.object({title:z.string().min(1)
 export const statusBadgeApi={name:'StatusBadge',schema:z.object({label:z.string().min(1).max(256),status:z.enum(['info','success','warning','error','running']),provenance:z.literal('reported').default('reported')}).strict()} satisfies ComponentApi;
 export const taskProgressApi={name:'TaskProgress',schema:z.object({stream:z.literal('tools').default('tools'),state:z.enum(logStates).default('idle'),started:z.number().int().min(0).max(1024).default(0),settled:z.number().int().min(0).max(1024).default(0),failed:z.number().int().min(0).max(1024).default(0),omitted:z.boolean().default(false)}).strict()} satisfies ComponentApi;
 export type ToolProgress=z.infer<typeof taskProgressApi.schema>;
-export const workbenchApis:ComponentApi[]=[dataTableApi,codeBlockApi,markdownApi,detailsApi,statusBadgeApi,taskProgressApi];
+const artifactUrl=z.string().regex(/^\/api\/artifacts\/[a-f0-9]{32}$/);
+export const artifactPreviewApi={name:'ArtifactPreview',schema:z.object({src:artifactUrl,kind:z.enum(['image','video','audio']),label:z.string().min(1).max(256)}).strict()} satisfies ComponentApi;
+export const workbenchApis:ComponentApi[]=[dataTableApi,codeBlockApi,markdownApi,detailsApi,statusBadgeApi,taskProgressApi,artifactPreviewApi];
 export function validateWorkbench(message:SurfaceMessage,initial=false):void{
  let progressCount=0,modalCount=0;
  for(const c of message.createSurface.components){
+  if(c.component==='Image'){artifactUrl.parse(c.url);for(const prop of ['description','fit','variant'])if(c[prop]!==undefined&&typeof c[prop]!=='string')throw new UiError(400,'Artifact media props must be static');}
   if(c.component==='Icon'&&!['check','close','error','info','warning','folder','help','refresh','play','pause','search','settings'].includes(c.name as string))throw new UiError(400,'Icon name must be a static approved local icon');
   if(c.component==='Modal'){
    if(++modalCount>1)throw new UiError(400,'Only one Modal per surface');const trigger=message.createSurface.components.find(node=>node.id===c.trigger);

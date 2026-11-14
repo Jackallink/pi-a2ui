@@ -1,3 +1,4 @@
+import {ArtifactStore,type ArtifactKind,type ArtifactMeta} from './artifact-store.ts';
 import {type ToolProgress} from './workbench.ts';
 import { trimLog, validateSeries, type LogState } from './live.ts';
 import { inputPaths, validateInput } from './inputs.ts';
@@ -13,6 +14,7 @@ function canonical(value: unknown): string {
   return JSON.stringify(value);
 }
 export class UiSession {
+  readonly artifacts=new ArtifactStore();
   private state: Snapshot = {version:1,epoch:randomUUID(),enabled:true,surfaces:[]};
   private dataListeners = new Set<(batch:DataBatch)=>void>();
   private pendingData = new Map<string,number>();
@@ -85,7 +87,7 @@ export class UiSession {
     this.pendingData.delete(surfaceId);
     return this.publish(next);
   }
-  reset(saved?:unknown):void {
+  reset(saved?:unknown,root?:string):void {
     let surfaces:SurfaceRecord[]=[];
     if(saved!==undefined) {
       boundedJson(saved);
@@ -107,6 +109,7 @@ export class UiSession {
     const next:Snapshot={version:1,epoch:randomUUID(),enabled:this.enabled,surfaces};
     this.checkCapacity(next);
     const identities=this.admitIdentities(surfaces,new Map());
+    this.artifacts.reset(root);
     this.clearData();
     this.lastDataAt=-Infinity;
     this.identities=identities;
@@ -124,9 +127,9 @@ export class UiSession {
       if(changed){if((s.dataSequence??0)>=Number.MAX_SAFE_INTEGER)throw new UiError(413,'Data sequence limit reached');s.dataSequence=(s.dataSequence??0)+1;}
     }
     next.enabled=enabled;this.checkCapacity(next);
-    if(!enabled)this.generation++;this.clearData();this.publish(next);
+    if(!enabled){this.generation++;this.artifacts.reset();}this.clearData();this.publish(next);
   }
-  close():void { this.stopped=true;this.generation++;this.listeners.clear();this.dataListeners.clear();this.clearData(); }
+  close():void { this.stopped=true;this.generation++;this.artifacts.close();this.listeners.clear();this.dataListeners.clear();this.clearData(); }
   subscribe(listener:(snapshot:Snapshot)=>void):()=>void { this.listeners.add(listener);return ()=>{this.listeners.delete(listener);}; }
   private clearData():void{clearTimeout(this.dataTimer);this.dataTimer=undefined;this.pendingData.clear();}
   subscribeData(listener:(batch:DataBatch)=>void):()=>void{this.dataListeners.add(listener);return()=>{this.dataListeners.delete(listener);};}
@@ -161,6 +164,9 @@ export class UiSession {
     const s=next.surfaces.find(s=>s.surfaceId===surfaceId);if(!s||s.revision!==revision)throw new UiError(409,'Stale chart surface revision');
     const chart=s.message.createSurface.components.find(c=>c.id===componentId);if(chart?.component!=='Chart')throw new UiError(400,'Chart update requires an existing Chart');
     chart.series=structuredClone(series);validateSurface(s.message);this.available(options.operation,options.signal);return this.commitData(next,[surfaceId]);
+  }
+  async registerArtifact(path:string,kind:ArtifactKind,root:string,options:{operation?:Operation;signal?:AbortSignal}={}):Promise<ArtifactMeta>{
+    const operation=options.operation??this.beginOperation();this.available(operation,options.signal);const meta=await this.artifacts.register(path,kind,options.signal,root);try{this.available(operation,options.signal);return meta;}catch(error){this.artifacts.revoke(meta.artifactId);throw error;}
   }
   acceptAction(input:unknown):{accepted:true;duplicate:boolean} {
     this.available();
