@@ -98,3 +98,12 @@ test("a stalled SSE client is disconnected at the queue bound and a fresh client
   const recovered=await fetch(`${server.origin}/api/events`,{headers:{cookie},signal:abort.signal});assert.equal(recovered.status,200);
   const first=await recovered.body!.getReader().read();assert.ok(first.value!.length>0);abort.abort();
 });
+
+test('live SSE uses the same bounded queue and releases its data subscription',async t=>{
+ const state=session();let emit!:(batch:import('../src/protocol.ts').DataBatch)=>void;let unsubscribed=false;
+ state.subscribeData=listener=>{emit=listener;return()=>{unsubscribed=true;};};const server=await startServer(state);t.after(()=>server.close());const cookie=await connect(server);
+ const stalled=await new Promise<import('node:http').IncomingMessage>((resolve,reject)=>{const req=request(`${server.origin}/api/events`,{headers:{cookie}},res=>{res.once('data',()=>{res.pause();resolve(res);});res.on('error',()=>{});});req.on('error',reject);req.end();});t.after(()=>stalled.destroy());
+ const series=Array.from({length:4},(_,i)=>({name:'s'+i,points:Array.from({length:200},(_,j)=>({label:String(j).padStart(128,'x'),value:j}))}));
+ for(let i=1;i<=40;i++)emit({epoch:'epoch-a',surfaces:[{surfaceId:'chart',revision:1,sequence:i,components:[{id:'root',component:'Chart',kind:'line',series}]}]});assert.equal(server.clients,0);
+ const abort=new AbortController();t.after(()=>abort.abort());const recovered=await fetch(`${server.origin}/api/events`,{headers:{cookie},signal:abort.signal});assert.equal(recovered.status,200);assert.match(new TextDecoder().decode((await recovered.body!.getReader().read()).value),/event: snapshot/);abort.abort();await server.close();assert.equal(unsubscribed,true);
+});

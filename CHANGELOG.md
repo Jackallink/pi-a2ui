@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.3 — Unreleased
+
+- Add bounded native-tool LogView with local display pause, lifecycle ownership and explicit omission markers; no model calls per log chunk.
+- Add constrained line/bar SVG charts and current-revision a2ui_update_chart tool.
+- Coalesce bounded SSE data batches independently of structural revisions; recover gaps and preserve unsent input/DOM identity.
+- Preserve all earlier catalog snapshots and chart-result restore authority; reserve snapshot headroom and global serialized log budget.
+
+
 ## 0.1.2 — Unreleased
 
 - Add read-only CodeDiff and structured TestResults in a versioned Pi catalog with shared server/browser schemas.

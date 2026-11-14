@@ -62,3 +62,19 @@ test("Pi adapter exposes render and commands, saves bounded history and releases
     assert.equal(sent.length,0);
   }finally{await handlers.get("session_shutdown")({reason:"quit"},context);}
 });
+
+test('native tool lifecycle updates only current run logs and chart snapshots restore without new messages',async()=>{
+ const tools=new Map<string,any>(),handlers=new Map<string,any>();const sent:string[]=[];
+ const host={registerTool(t:any){tools.set(t.name,t);},registerCommand(){},on(n:string,h:any){handlers.set(n,h);},sendUserMessage(t:string){sent.push(t);},getActiveTools:()=>['a2ui_render','a2ui_update_chart'],setActiveTools(){}} as unknown as ExtensionAPI;
+ install(host);let branch:any[]=[];const ctx={sessionManager:{getBranch:()=>branch},ui:{notify(){}}};await handlers.get('session_start')({},ctx);handlers.get('agent_start')({});
+ const render=await tools.get('a2ui_render').execute('render',{surfaceId:'native',source:'chart = Chart(kind="line",series=[])\nroot = Column([LogView(stream="tools"),chart])'});
+ const update=()=>tools.get('a2ui_update_chart').execute('chart-tool',{surfaceId:'native',revision:1,componentId:'chart',series:[{name:'A',points:[{label:'one',value:1}]}]});
+ try{
+  handlers.get('tool_execution_start')({toolCallId:'native-tool',toolName:'bash'});handlers.get('tool_execution_update')({toolCallId:'native-tool',partialResult:{content:[{type:'text',text:'NATIVE OUTPUT'}]}});handlers.get('tool_execution_end')({toolCallId:'native-tool',result:{content:[{type:'text',text:'NATIVE OUTPUT'}]},isError:false});
+  handlers.get('agent_end')({messages:[{role:'assistant',stopReason:'error'}]});await new Promise(r=>setTimeout(r,120));
+  let result=await update();let snapshot=result.details.a2uiSnapshot;let log=snapshot.surfaces[0].message.createSurface.components.find((c:any)=>c.component==='LogView');assert.equal(log.state,'error');assert.match(log.text,/NATIVE OUTPUT/);
+  handlers.get('agent_settled')({aborted:true});await new Promise(r=>setTimeout(r,120));result=await update();snapshot=result.details.a2uiSnapshot;log=snapshot.surfaces[0].message.createSurface.components.find((c:any)=>c.component==='LogView');assert.equal(log.state,'interrupted');
+  branch=[{type:'message',message:{role:'toolResult',toolName:'a2ui_update_chart',isError:false,details:result.details}}];await handlers.get('session_tree')({},ctx);handlers.get('tool_execution_update')({toolCallId:'native-tool',partialResult:{content:[{type:'text',text:'LATE OLD SESSION'}]}});handlers.get('agent_settled')({aborted:true});await new Promise(r=>setTimeout(r,120));
+  result=await update();assert.notEqual(result.details.a2uiSnapshot.epoch,snapshot.epoch);assert.doesNotMatch(JSON.stringify(result.details),/LATE OLD SESSION/);assert.equal(sent.length,0);assert.equal(render.details.a2uiSnapshot.surfaces[0].revision,1);
+ }finally{await handlers.get('session_shutdown')({});}
+});

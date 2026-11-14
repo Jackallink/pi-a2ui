@@ -39,7 +39,7 @@ export function restoreBranch(session: UiSession, entries: readonly unknown[]) {
   for (let index = entries.length - 1; index >= 0; index--) {
     const entry = entries[index] as {type?: string; message?: {role?: string;toolName?: string;isError?: boolean;details?: {a2uiSnapshot?: unknown}}};
     if (!entry || entry.type !== "message" || entry.message?.role !== "toolResult"
-      || entry.message.toolName !== "a2ui_render" || entry.message.isError !== false) continue;
+      || !["a2ui_render","a2ui_update_chart"].includes(entry.message.toolName??"") || entry.message.isError !== false) continue;
     const saved = entry.message.details?.a2uiSnapshot;
     if (saved === undefined) continue;
     try { session.reset(saved); return; }

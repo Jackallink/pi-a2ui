@@ -1,5 +1,6 @@
 import { A2uiGenerator, CatalogConfig, ExpressFormatFactory, RendererState } from '@a2ui/agent';
 import { inputPaths, validateInputs } from './inputs.ts';
+import { validateLive } from './live.ts';
 import { validateCoding } from './coding.ts';
 import { restrictedCatalog, catalogs } from './catalog.ts';
 import { LIMITS, UiError, type Component, type SurfaceMessage } from './protocol.ts';
@@ -77,16 +78,17 @@ export function validateSurface(input: unknown): SurfaceMessage {
     state.checkTopology([create.surfaceId]);
     const components = new Map(message.createSurface.components.map(component => [component.id, component]));
     const reachable = new Set<string>();
-    function walk(id: string, depth: number): void {
+    function walk(id: string, depth: number, insideButton=false): void {
       if (depth > LIMITS.depth) throw new UiError(413, 'Tree depth exceeded');
       if (reachable.has(id)) throw new UiError(400, 'Components must form a tree without repeated children');
       const component = components.get(id);
       if (!component) throw new UiError(400, 'Missing root or child');
+      if(insideButton && component.component==='LogView') throw new UiError(400,'LogView must not be nested in a Button');
       reachable.add(id);
       const children = component.component === 'Tabs' && Array.isArray(component.tabs) ? component.tabs.map(tab => (tab as {child:string}).child) : Array.isArray(component.children) ? component.children : typeof component.child === 'string' ? [component.child] : [];
       for (const child of children) {
         if (typeof child !== 'string') throw new UiError(400, 'Expected static child ID');
-        walk(child, depth + 1);
+        walk(child, depth + 1, insideButton || component.component==='Button');
       }
     }
     walk('root', 1);
@@ -130,6 +132,7 @@ export function validateSurface(input: unknown): SurfaceMessage {
       }
     }
     validateCoding(message);
+    validateLive(message);
     return message;
   } catch (error) {
     if (error instanceof UiError) throw error;
@@ -196,7 +199,9 @@ export function compile(surfaceId: string, source: string): SurfaceMessage {
     if (creates !== 1 || state.surfaceIds.length !== 1 || state.surfaceIds[0] !== surfaceId) throw new UiError(400, 'Exactly one complete surface is required');
     state.checkTopology([surfaceId]);
     const surface = state.getSurface(surfaceId)!;
-    return validateSurface({version:'1.0',createSurface:{surfaceId,catalogId:restrictedCatalog.id,components:[...surface.componentsModel.getAll().values()].map(component=>component.componentTree as Component),dataModel:surface.dataModel.get('/')}});
+    const message:SurfaceMessage={version:'1.0',createSurface:{surfaceId,catalogId:restrictedCatalog.id,components:[...surface.componentsModel.getAll().values()].map(component=>component.componentTree as Component),dataModel:surface.dataModel.get('/')}};
+    validateLive(message,true);
+    return validateSurface(message);
   } catch (error) {
     if (error instanceof UiError) throw error;
     throw new UiError(400, 'Invalid Express source: ' + (error instanceof Error ? error.message : 'compilation failed'));

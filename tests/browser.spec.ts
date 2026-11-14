@@ -188,3 +188,40 @@ test('coding components escape source and display exact reported outcomes before
  await expect(page.locator('#notice')).toHaveText('Sent to Pi');
  expect(JSON.parse(canvas.sent[0].split('\n')[1]).context).toEqual({proposalId:'p-browser',resultId:'r-browser'});expect(errors).toEqual([]);
 });
+
+const liveSource=`$/name = ""
+chart = Chart(kind="line",series=[{name:"A",points:[{label:"one",value:1}]}])
+root = Column([TextField("Live draft",$/name),LogView(stream="tools"),chart,Button(Text("Continue live"),action=Event("continue",{name:$/name}))])`;
+test('live batches preserve input identity, pause selection and current form authority',async({page,canvas})=>{
+ canvas.session.render('form',liveSource);await page.goto(canvas.origin);const input=page.locator('input[type=text]');await input.fill('Unsent live draft');await input.evaluate(e=>(window as any).liveInput=e);
+ canvas.session.updateLog('first output','running',false);await expect(page.locator('pi-a2ui-log-view pre')).toHaveText('first output');
+ await page.getByRole('button',{name:'Pause log display',exact:true}).click();
+ await page.locator('pi-a2ui-log-view pre').evaluate(e=>{const r=document.createRange();r.selectNodeContents(e);const s=getSelection()!;s.removeAllRanges();s.addRange(r);});
+ canvas.session.updateLog('second output','running',false);canvas.session.updateChart('form',2,'chart',[{name:'A',points:[{label:'one',value:3}]}]);
+ await expect(page.locator('pi-a2ui-chart tbody tr td').last()).toHaveText('3');
+ await expect(page.locator('pi-a2ui-log-view pre')).toHaveText('first output');expect(await page.evaluate(()=>getSelection()?.toString())).toBe('first output');
+ await page.getByRole('button',{name:'Resume log display',exact:true}).click();await expect(page.locator('pi-a2ui-log-view pre')).toHaveText('second output');
+ await expect(input).toHaveValue('Unsent live draft');expect(await input.evaluate(e=>e===(window as any).liveInput)).toBe(true);
+ await page.getByRole('button',{name:'Continue live',exact:true}).click();await expect(page.locator('#notice')).toHaveText('Sent to Pi');expect(canvas.sent[0]).toContain('"name":"Unsent live draft"');
+});
+test('live sequence gap reconnects a bounded snapshot and ignores superseded source events',async({page,canvas})=>{
+ await page.addInitScript(()=>{const Native=window.EventSource;const streams:EventSource[]=[];(window as any).testStreams=streams;window.EventSource=class extends Native{constructor(url:string|URL,options?:EventSourceInit){super(url,options);streams.push(this);}};});
+ canvas.session.render('form',liveSource);await page.goto(canvas.origin);const input=page.locator('input[type=text]');await input.fill('Gap draft');await input.evaluate(e=>(window as any).liveInput=e);
+ canvas.session.updateLog('coherent snapshot','running',false);await expect(page.locator('pi-a2ui-log-view pre')).toHaveText('coherent snapshot');
+ const snapshot=canvas.session.snapshot();const record=snapshot.surfaces[0];const log=record.message.createSurface.components.find(c=>c.component==='LogView')!;
+ const gap={epoch:snapshot.epoch,surfaces:[{surfaceId:'form',revision:record.revision,sequence:(record.dataSequence??0)+2,components:[{...log,text:'GAP SHOULD NOT APPLY'}]}]};
+ await page.evaluate(batch=>(window as any).testStreams[0].dispatchEvent(new MessageEvent('data',{data:JSON.stringify(batch)})),gap);
+ await expect.poll(()=>page.evaluate(()=>(window as any).testStreams.length)).toBe(2);await expect(page.locator('#connection')).toHaveText('Connected to Pi');
+ await expect(page.locator('pi-a2ui-log-view pre')).toHaveText('coherent snapshot');
+ await page.evaluate(batch=>(window as any).testStreams[0].dispatchEvent(new MessageEvent('data',{data:JSON.stringify(batch)})),{...gap,surfaces:[{...gap.surfaces[0],sequence:(record.dataSequence??0)+1,components:[{...log,text:'STALE SOURCE'}]}]});
+ canvas.session.updateLog('latest after recovery','completed',false);await expect(page.locator('pi-a2ui-log-view pre')).toHaveText('latest after recovery');await expect(input).toHaveValue('Gap draft');expect(await input.evaluate(e=>e===(window as any).liveInput)).toBe(true);
+});
+test('chart SVG coordinates remain finite for extreme signed data and match accessible values',async({page,canvas})=>{
+ canvas.session.render('form',`root = Chart(kind="bar",series=[{name:"Signed",points:[{label:"negative",value:-1e308},{label:"zero",value:0},{label:"positive",value:1e308}]}])`);await page.goto(canvas.origin);await expect(page.locator('pi-a2ui-chart rect')).toHaveCount(3);expect(await page.locator('pi-a2ui-chart svg').evaluate(e=>e.outerHTML)).not.toMatch(/NaN|Infinity/);await expect(page.locator('pi-a2ui-chart tbody tr td').last()).toHaveText('1e+308');
+ canvas.session.updateChart('form',2,'root',[{name:'Signed',points:[]}]);await expect(page.getByText('No data yet',{exact:true})).toBeVisible();
+});
+
+test('log view follows the bottom until the user scrolls upward',async({page,canvas})=>{
+ canvas.session.render('form',liveSource);await page.goto(canvas.origin);const pre=page.locator('pi-a2ui-log-view pre');const text=Array.from({length:200},(_,i)=>'line '+i).join('\n');canvas.session.updateLog(text,'running',false);await expect(pre).toHaveText(text);
+ await expect.poll(()=>pre.evaluate(e=>e.scrollTop+e.clientHeight>=e.scrollHeight-2)).toBe(true);await pre.evaluate(e=>{e.scrollTop=0;});canvas.session.updateLog(text+'\nnew line','running',false);await expect(pre).toContainText('new line');expect(await pre.evaluate(e=>e.scrollTop)).toBe(0);
+});
