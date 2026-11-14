@@ -1,0 +1,12 @@
+# Small declared hierarchy, not a live filesystem listing.
+root = Column(children=[
+  Row(children=[
+    Button(child=Text(text="Workspace"),action=Event("navigate",{nodeId:"workspace"})),
+    Text(text="/ src")
+  ]),
+  Details(title="workspace",child=Column(children=[
+    Details(title="src",child=Column(children=[
+      Button(child=Text(text="compiler.ts"),action=Event("select_node",{nodeId:"compiler"}))
+    ]))
+  ]))
+])

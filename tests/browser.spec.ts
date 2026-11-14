@@ -292,3 +292,20 @@ test('W7 decoder failure and expired media have visible fallback while forms rem
  const {mkdtemp,writeFile,rm}=await import('node:fs/promises');const {tmpdir}=await import('node:os');const {join}=await import('node:path');const root=await mkdtemp(join(tmpdir(),'pi-a2ui-codec-'));try{await writeFile(join(root,'bad.wav'),'RIFF0000WAVE');const meta=await canvas.session.registerArtifact('bad.wav','audio',root);canvas.session.render('other',`root = AudioPlayer(url="${meta.src}",description="Bad audio")`);await open(page,canvas);await expect(page.getByText('Unavailable: media could not be played',{exact:true})).toBeVisible();await page.locator('input[type=text]').fill('Still usable');const video=await canvas.session.registerArtifact('tests/fixtures/blue.webm','video',process.cwd());canvas.session.render('other',`root = Video(url="${video.src}")`);canvas.session.reset(canvas.session.snapshot());await expect(page.getByText('Unavailable: media could not be played',{exact:true})).toBeVisible();await page.locator('input[type=text]').fill('Restored form');await expect(page.locator('input[type=text]')).toHaveValue('Restored form');}finally{await rm(root,{recursive:true,force:true});}
 });
 test('W7 paused canvas makes top-layer modal media controls inert',async({page,canvas})=>{const audio=await canvas.session.registerArtifact('tests/fixtures/tone.wav','audio',process.cwd());canvas.session.render('form',`root = Modal(trigger=Text("Open media"),content=AudioPlayer(url="${audio.src}",description="Modal audio"))`);await page.goto(canvas.origin);await page.getByRole('button',{name:'Open media',exact:true}).click();await expect.poll(()=>page.locator('audio').evaluate(e=>(e as HTMLMediaElement).readyState)).toBeGreaterThan(0);canvas.session.setEnabled(false);await expect(page.locator('#status')).toHaveText('Canvas paused');const audioBox=await page.locator('audio').boundingBox();await page.mouse.click(audioBox!.x+25,audioBox!.y+audioBox!.height-27);await page.waitForTimeout(150);expect(await page.locator('audio').evaluate(e=>(e as HTMLMediaElement).paused)).toBe(true);expect(await page.locator('dialog').evaluate(e=>(e as HTMLElement).inert)).toBe(true);canvas.session.setEnabled(true);await expect.poll(()=>page.locator('dialog').evaluate(e=>(e as HTMLElement).inert)).toBe(false);});
+
+
+test("R01 hierarchy disclosure stays local and leaf intent is declared",async({page,canvas})=>{
+ const {readFile}=await import('node:fs/promises');
+ canvas.session.reset();canvas.session.render('navigation',await readFile('skills/pi-a2ui/examples/tree-navigation.express','utf8'));
+ const actions:string[]=[];page.on('request',r=>{if(r.url().endsWith('/api/actions'))actions.push(r.url());});
+ await page.goto(canvas.origin);
+ await expect(page.getByRole('button',{name:'Workspace',exact:true})).toBeVisible();
+ await expect(page.getByRole('button',{name:'compiler.ts',exact:true})).toBeHidden();
+ await page.locator('summary').filter({hasText:/^workspace$/}).press('Enter');
+ await page.locator('summary').filter({hasText:/^src$/}).press('Enter');
+ await expect(page.getByRole('button',{name:'compiler.ts',exact:true})).toBeVisible();
+ expect(actions).toHaveLength(0);expect(canvas.sent).toHaveLength(0);
+ await page.getByRole('button',{name:'compiler.ts',exact:true}).click();
+ await expect(page.locator('#notice')).toHaveText('Sent to Pi');
+ expect(actions).toHaveLength(1);expect(canvas.sent).toHaveLength(1);expect(canvas.sent[0]).toContain('"nodeId":"compiler"');
+});

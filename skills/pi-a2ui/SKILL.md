@@ -30,6 +30,7 @@ Call `a2ui_render` with `surfaceId: "user-form"` and that entire source as `sour
 
 | Task | Read / template |
 | --- | --- |
+| Small hierarchy / breadcrumbs | [Navigation and selection](references/navigation-and-selection.md); `tree-navigation` (existing component composition) |
 | Text, layout, forms and buttons (baseline16 types) | [Core components](references/core-components.md); `user-form`, `typed-form`, `layout` |
 | Diff, test records, native logs or charts | [Coding/live components](references/coding-and-live.md); `review`, `live` |
 | Table, code/Markdown, details, progress, dialog/icon (v0.1.4 capability required) | [Workbench components](references/workbench-components.md); `list-table`, `reading`, `details`, `status`, `modal` |

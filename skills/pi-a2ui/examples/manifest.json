@@ -106,5 +106,17 @@
       "Video",
       "AudioPlayer"
     ]
+  },
+  {
+    "name": "tree-navigation",
+    "requires": [
+      "Column",
+      "Row",
+      "Button",
+      "Text",
+      "Details"
+    ],
+    "pattern": "tree-navigation",
+    "reference": "references/navigation-and-selection.md"
   }
 ]
