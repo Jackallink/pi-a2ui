@@ -13,8 +13,17 @@ export default function a2ui(pi: ExtensionAPI) {
   let controller = makeController();
   let live=new LiveTools(controller.session);
   let endedRun:LiveTools|undefined;
+  let autoOpenAttempted = false;
+  let episodeSequence = 0;
+  const openInBrowser = async (url:string) => {
+    const program = process.platform === "darwin" ? "open" : process.platform === "win32" ? "rundll32" : "xdg-open";
+    const args = process.platform === "win32" ? ["url.dll,FileProtocolHandler",url] : [url];
+    const result = await pi.exec(program,args,{timeout:10_000});
+    if (result.code !== 0) throw new Error("browser open failed");
+  };
   const restore = (_event: unknown, ctx: ExtensionContext) => {
-    live.close();endedRun=undefined;
+    episodeSequence++;
+    live.close();endedRun=undefined;autoOpenAttempted=false;
     if (controller.session.closed) controller = makeController();
     restoreBranch(controller.session, ctx.sessionManager.getBranch(),ctx.cwd);
     live=new LiveTools(controller.session);
@@ -43,13 +52,25 @@ export default function a2ui(pi: ExtensionAPI) {
       surfaceId:Type.String({pattern:"^[A-Za-z0-9_-]{1,64}$",description:"Stable name of the surface to create or fully replace."}),
       source:Type.String({minLength:1,maxLength:LIMITS.sourceBytes,description:"Complete raw A2UI Express DSL, no wrapper tags. Match the signatures in the tool description."}),
     },{additionalProperties:false}),
-    async execute(_toolCallId, params, signal) {
+    async execute(_toolCallId, params, signal, _onUpdate, ctx) {
       if (!controller.session.enabled) throw new UiError(503,"A2UI is disabled; use /a2ui-toggle to enable");
       const snapshot = await controller.render(params.surfaceId, params.source, signal);
       live.refresh();
       const surface = snapshot.surfaces.find(item => item.surfaceId === params.surfaceId)!;
+      const server = controller.server;
+      let note = "";
+      if (server && !autoOpenAttempted && server.clients === 0) {
+        autoOpenAttempted = true;
+        const episode = controller;
+        const episodeId = episodeSequence;
+        note = " Attempted to open the canvas automatically; if nothing opened, run /a2ui.";
+        void openInBrowser(server.openUrl).catch(() => {
+          if (episodeId !== episodeSequence || episode.session.closed) return; // episode ended via reload/branch switch or shutdown; stale ctx is unsafe
+          try { ctx?.ui?.notify("Could not open a browser automatically. Run /a2ui to open the canvas.","info"); } catch { /* stale context invalidated by reload; notify is best-effort */ }
+        });
+      }
       return {
-        content:[{type:"text",text:`Rendered ${params.surfaceId} (revision ${surface.revision}). Use /a2ui to open the local canvas. Continue your response; form actions arrive as later user messages.`}],
+        content:[{type:"text",text:`Rendered ${params.surfaceId} (revision ${surface.revision}).${note||" Use /a2ui to open the local canvas."} Continue your response; form actions arrive as later user messages.`}],
         details:{a2uiSnapshot:snapshot},
       };
     },
@@ -65,11 +86,8 @@ export default function a2ui(pi: ExtensionAPI) {
     description:"Open this session's local A2UI canvas",
     handler:async (_args,ctx) => {
       const server = await controller.ensureServer();
-      const program = process.platform === "darwin" ? "open" : process.platform === "win32" ? "rundll32" : "xdg-open";
-      const args = process.platform === "win32" ? ["url.dll,FileProtocolHandler",server.openUrl] : [server.openUrl];
       try {
-        const result = await pi.exec(program,args,{timeout:10_000});
-        if (result.code !== 0) throw new Error("browser open failed");
+        await openInBrowser(server.openUrl);
         ctx.ui.notify(`A2UI canvas opened at ${server.origin}`,"info");
       } catch { ctx.ui.notify("Could not open a local browser. Run /a2ui again in a desktop session.","error"); }
     },

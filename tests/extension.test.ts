@@ -78,3 +78,116 @@ test('native tool lifecycle updates only current run logs and chart snapshots re
   result=await update();assert.notEqual(result.details.a2uiSnapshot.epoch,snapshot.epoch);assert.doesNotMatch(JSON.stringify(result.details),/LATE OLD SESSION/);assert.equal(sent.length,0);assert.equal(render.details.a2uiSnapshot.surfaces[0].revision,1);
  }finally{await handlers.get('session_shutdown')({});}
 });
+
+test('first render with no connected browser auto-opens once, success path',async()=>{
+ const tools=new Map<string,any>(),handlers=new Map<string,any>();const execCalls:unknown[][]=[];
+ const host={registerTool(t:any){tools.set(t.name,t);},registerCommand(){},on(n:string,h:any){handlers.set(n,h);},sendUserMessage(){},exec:(...args:unknown[])=>{execCalls.push(args);return Promise.resolve({code:0,stdout:'',stderr:''});},getActiveTools:()=>['read'],setActiveTools(){}} as unknown as ExtensionAPI;
+ install(host);const ctx={sessionManager:{getBranch:()=>[]},ui:{notify(){}}};await handlers.get('session_start')({},ctx);
+ try{
+  const first=await tools.get('a2ui_render').execute('t1',{surfaceId:'auto',source:'root = Text("Auto open")'},undefined,undefined,ctx);
+  assert.match(first.content[0].text,/automatically/);
+  await new Promise(r=>setTimeout(r,20));assert.equal(execCalls.length,1);
+  assert.equal(execCalls[0][0],process.platform==='darwin'?'open':process.platform==='win32'?'rundll32':'xdg-open');
+  const openArgs=execCalls[0][1] as string[];
+  assert.match(openArgs[openArgs.length-1],/^http:\/\/127\.0\.0\.1:\d+\/#token=/);
+  const second=await tools.get('a2ui_render').execute('t2',{surfaceId:'auto',source:'root = Text("Second")'},undefined,undefined,ctx);
+  await new Promise(r=>setTimeout(r,20));assert.equal(execCalls.length,1);
+  assert.match(second.content[0].text,/Use \/a2ui to open/);
+ }finally{await handlers.get('session_shutdown')({});}
+});
+
+test('failed auto-open notifies once and does not retry on later renders',async()=>{
+ const tools=new Map<string,any>(),handlers=new Map<string,any>();const notes:string[]=[];let attempts=0;
+ const host={registerTool(t:any){tools.set(t.name,t);},registerCommand(){},on(n:string,h:any){handlers.set(n,h);},sendUserMessage(){},exec:async()=>{attempts++;return {code:1,stdout:'',stderr:''};},getActiveTools:()=>['read'],setActiveTools(){}} as unknown as ExtensionAPI;
+ install(host);const ctx={sessionManager:{getBranch:()=>[]},ui:{notify:(value:string)=>notes.push(value)}};await handlers.get('session_start')({},ctx);
+ try{
+  const first=await tools.get('a2ui_render').execute('t1',{surfaceId:'auto',source:'root = Text("Fail open")'},undefined,undefined,ctx);
+  assert.match(first.content[0].text,/automatically/);
+  await new Promise(r=>setTimeout(r,20));assert.equal(attempts,1);
+  await tools.get('a2ui_render').execute('t2',{surfaceId:'auto',source:'root = Text("Again")'},undefined,undefined,ctx);
+  await new Promise(r=>setTimeout(r,20));assert.equal(attempts,1);
+  assert.match(notes.join('\n'),/Could not open a browser automatically/);
+  assert.equal(notes.length,1);
+ }finally{await handlers.get('session_shutdown')({});}
+});
+
+test('pending auto-open attempt that fails after session shutdown never rejects unhandled',async()=>{
+ const tools=new Map<string,any>(),handlers=new Map<string,any>();const notes:string[]=[];
+ let release:()=>void=()=>{};
+ const gated=new Promise<void>(resolve=>{release=()=>resolve();});
+ const host={registerTool(t:any){tools.set(t.name,t);},registerCommand(){},on(n:string,h:any){handlers.set(n,h);},sendUserMessage(){},exec:()=>gated.then(()=>({code:1,stdout:'',stderr:''})),getActiveTools:()=>['read'],setActiveTools(){}} as unknown as ExtensionAPI;
+ install(host);const ctx={sessionManager:{getBranch:()=>[]},ui:{notify:(value:string)=>notes.push(value)}};await handlers.get('session_start')({},ctx);
+ try{
+  await tools.get('a2ui_render').execute('t1',{surfaceId:'auto',source:'root = Text("Pending")'},undefined,undefined,ctx);
+  await new Promise(r=>setTimeout(r,10)); // attempt started, exec still pending
+  let unhandled:unknown;const onUnhandled=(err:unknown)=>{unhandled=err;};
+  process.on('unhandledRejection',onUnhandled);
+  try{
+   await handlers.get('session_shutdown')({});
+   release();
+   await new Promise(r=>setTimeout(r,20));
+  }finally{process.off('unhandledRejection',onUnhandled);}
+  assert.equal(unhandled,undefined);
+  assert.equal(notes.length,0);
+ }finally{release();}
+});
+
+test('session_tree branch switch invalidates an in-flight attempt and the new episode may retry once',async()=>{
+ const tools=new Map<string,any>(),handlers=new Map<string,any>();const notes:string[]=[];const execCalls:unknown[][]=[];
+ let release:()=>void=()=>{};
+ const gated=new Promise<void>(resolve=>{release=()=>resolve();});
+ const host={registerTool(t:any){tools.set(t.name,t);},registerCommand(){},on(n:string,h:any){handlers.set(n,h);},sendUserMessage(){},exec:(...args:unknown[])=>{execCalls.push(args);return gated.then(()=>({code:1,stdout:'',stderr:''}));},getActiveTools:()=>['read'],setActiveTools(){}} as unknown as ExtensionAPI;
+ install(host);const ctx={sessionManager:{getBranch:()=>[]},ui:{notify:(value:string)=>notes.push(value)}};await handlers.get('session_start')({},ctx);
+ try{
+  await tools.get('a2ui_render').execute('t1',{surfaceId:'auto',source:'root = Text("Branch")'},undefined,undefined,ctx);
+  await new Promise(r=>setTimeout(r,10)); // attempt pending when the branch switches
+  let unhandled:unknown;const onUnhandled=(err:unknown)=>{unhandled=err;};
+  process.on('unhandledRejection',onUnhandled);
+  try{
+   await handlers.get('session_tree')({},ctx);
+   release();
+   await new Promise(r=>setTimeout(r,20));
+  }finally{process.off('unhandledRejection',onUnhandled);}
+  assert.equal(unhandled,undefined);
+  assert.equal(notes.length,0);
+  await tools.get('a2ui_render').execute('t2',{surfaceId:'auto',source:'root = Text("Retry")'},undefined,undefined,ctx);
+  await new Promise(r=>setTimeout(r,20));assert.equal(execCalls.length,2);
+  assert.equal(notes.length,1);
+  await tools.get('a2ui_render').execute('t3',{surfaceId:'auto',source:'root = Text("Third")'},undefined,undefined,ctx);
+  await new Promise(r=>setTimeout(r,20));assert.equal(execCalls.length,2); // still at most one attempt per episode
+  assert.equal(notes.length,1);
+ }finally{release();await handlers.get('session_shutdown')({});}
+});
+
+test('stale context whose ui getter throws cannot produce an unhandled rejection',async()=>{
+ const tools=new Map<string,any>(),handlers=new Map<string,any>();
+ const host={registerTool(t:any){tools.set(t.name,t);},registerCommand(){},on(n:string,h:any){handlers.set(n,h);},sendUserMessage(){},exec:async()=>({code:1,stdout:'',stderr:''}),getActiveTools:()=>['read'],setActiveTools(){}} as unknown as ExtensionAPI;
+ install(host);
+ const staleCtx:any={sessionManager:{getBranch:()=>[]}};
+ Object.defineProperty(staleCtx,'ui',{get(){throw new Error('stale context invalidated');}});
+ await handlers.get('session_start')({},staleCtx);
+ try{
+  const first=await tools.get('a2ui_render').execute('t1',{surfaceId:'auto',source:'root = Text("Getter")'},undefined,undefined,staleCtx);
+  assert.match(first.content[0].text,/automatically/);
+  let unhandled:unknown;const onUnhandled=(err:unknown)=>{unhandled=err;};
+  process.on('unhandledRejection',onUnhandled);
+  try{await new Promise(r=>setTimeout(r,20));}finally{process.off('unhandledRejection',onUnhandled);}
+  assert.equal(unhandled,undefined);
+ }finally{await handlers.get('session_shutdown')({});}
+});
+
+test('notify sink that throws synchronously cannot produce an unhandled rejection',async()=>{
+ const tools=new Map<string,any>(),handlers=new Map<string,any>();
+ const host={registerTool(t:any){tools.set(t.name,t);},registerCommand(){},on(n:string,h:any){handlers.set(n,h);},sendUserMessage(){},exec:async()=>({code:1,stdout:'',stderr:''}),getActiveTools:()=>['read'],setActiveTools(){}} as unknown as ExtensionAPI;
+ install(host);
+ const ctx={sessionManager:{getBranch:()=>[]},ui:{notify(){throw new Error('notify sink closed');}}};
+ await handlers.get('session_start')({},ctx);
+ try{
+  const first=await tools.get('a2ui_render').execute('t1',{surfaceId:'auto',source:'root = Text("Sink")'},undefined,undefined,ctx);
+  assert.match(first.content[0].text,/automatically/);
+  let unhandled:unknown;const onUnhandled=(err:unknown)=>{unhandled=err;};
+  process.on('unhandledRejection',onUnhandled);
+  try{await new Promise(r=>setTimeout(r,20));}finally{process.off('unhandledRejection',onUnhandled);}
+  assert.equal(unhandled,undefined);
+ }finally{await handlers.get('session_shutdown')({});}
+});
