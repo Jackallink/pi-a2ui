@@ -482,3 +482,16 @@ save=Button(child=Text(text="Save hidden"),action=Event("save",{value:$/value}))
 root=Column([Details(title="Hidden input",child=field),FormValidation(buttons=["save"],rules=[{fieldId:"field",message:"Enter value",required:true}]),save])`);await page.goto(canvas.origin);await page.getByRole('button',{name:'Save hidden',exact:true}).click();
  await expect(page.locator('pi-a2ui-form-validation section')).toBeFocused();await expect(page.locator('details')).not.toHaveAttribute('open');expect(canvas.sent).toHaveLength(0);
 });
+
+
+test("R08 shortcut works from picker without consuming an IME confirmation",async({page,canvas})=>{
+ canvas.session.render('picker','$/chosen=[]\nroot=SearchablePicker(label="Branch",options=[{label:"Feature",value:"feature"}],value=$/chosen)');await open(page,canvas);const query=page.getByRole('searchbox',{name:'Search Branch'});await query.fill('F');await query.press('Control+k');const palette=page.getByRole('dialog',{name:'Find actions'});await expect(palette).toBeVisible();await page.keyboard.press('Escape');await expect(query).toBeFocused();await expect(query).toHaveValue('F');expect(canvas.sent).toHaveLength(0);
+});
+
+test("R08 real Chromium composition Enter confirms text rather than executing an action",async({page,canvas})=>{
+ await open(page,canvas);await page.getByRole('button',{name:'Find actions',exact:true}).click();const palette=page.getByRole('dialog',{name:'Find actions'});const query=palette.getByRole('searchbox',{name:'Search actions'});const cdp=await page.context().newCDPSession(page);
+ await cdp.send('Input.imeSetComposition',{text:'Submit',selectionStart:6,selectionEnd:6});await page.keyboard.press('Escape');await expect(palette).toBeVisible();expect(canvas.sent).toHaveLength(0);
+ await cdp.send('Input.imeSetComposition',{text:'Submit',selectionStart:6,selectionEnd:6});await page.keyboard.press('ArrowDown');await expect(query).toBeFocused();await page.keyboard.press('Enter');await expect(palette).toBeVisible();expect(canvas.sent).toHaveLength(0);
+ await cdp.send('Input.insertText',{text:'Submit'});await query.evaluate(node=>node.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter',keyCode:229,bubbles:true})));await expect(palette).toBeVisible();expect(canvas.sent).toHaveLength(0);
+ await query.press('Enter');await expect(palette).not.toBeVisible();await expect(page.locator('#notice')).toHaveText('Sent to Pi');expect(canvas.sent).toHaveLength(1);await cdp.detach();
+});

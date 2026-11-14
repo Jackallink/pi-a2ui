@@ -1,4 +1,4 @@
-import {availableControl,componentHost,nativeControls} from './browser-interactions.js';
+import {isComposingKey,availableControl,componentHost,nativeControls} from './browser-interactions.js';
 export const COMMAND_PALETTE_CAPABILITY='command-palette';
 export interface PaletteSource{surfaceId:string;revision:number;sourceId:string;root:HTMLElement}
 interface PaletteState{epoch?:string;revisionKey:string;available:boolean;sources:PaletteSource[]}
@@ -12,7 +12,7 @@ export class CommandPalette{
   const heading=document.createElement('h2');heading.textContent='Find actions';const label=document.createElement('label');label.textContent='Search actions';this.query.type='search';this.query.setAttribute('aria-label','Search actions');label.append(this.query);this.query.addEventListener('input',()=>{this.query.value=Array.from(this.query.value).slice(0,128).join('');this.render();});
   this.list.setAttribute('aria-label','Available canvas actions');this.empty.setAttribute('role','status');this.dialog.append(this.closeButton,heading,label,this.list,this.empty);document.body.append(this.dialog);
   this.dialog.addEventListener('keydown',e=>this.keys(e));this.dialog.addEventListener('cancel',e=>{e.preventDefault();this.close();});this.dialog.addEventListener('close',()=>{if(this.previous)this.close();});
-  document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'&&!e.repeat){if(this.dialog.open){e.preventDefault();this.close();}else if(!document.querySelector('dialog:modal')&&this.state().available){e.preventDefault();this.open();}}});this.refresh();
+  document.addEventListener('keydown',e=>{if(!isComposingKey(e)&&(e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'&&!e.repeat){if(this.dialog.open){e.preventDefault();this.close();}else if(!document.querySelector('dialog:modal')&&this.state().available){e.preventDefault();this.open();}}},true);this.refresh();
  }
  private control(source:PaletteSource):HTMLButtonElement|undefined{const host=componentHost(source.root,source.sourceId);return host?nativeControls(host).find((element):element is HTMLButtonElement=>element instanceof HTMLButtonElement&&availableControl(element)):undefined;}
  open(){const state=this.state();if(this.dialog.open||!state.available||!state.epoch||document.querySelector('dialog:modal'))return;
@@ -31,6 +31,7 @@ export class CommandPalette{
   control.click();
  }
  private keys(event:KeyboardEvent){
+  if(isComposingKey(event))return;
   if(event.key==='Escape'){event.preventDefault();this.close();return;}
   const buttons=[...this.list.querySelectorAll('button')];const at=buttons.indexOf(document.activeElement as HTMLButtonElement);
   if(event.key==='Tab'){const items=[...this.dialog.querySelectorAll<HTMLElement>('button,input,[tabindex]')].filter(item=>item.tabIndex>=0&&availableControl(item,this.dialog));if(event.shiftKey&&document.activeElement===items[0]){event.preventDefault();items.at(-1)?.focus();}else if(!event.shiftKey&&document.activeElement===items.at(-1)){event.preventDefault();items[0]?.focus();}return;}

@@ -1,6 +1,7 @@
 import {validateSubmission,type ValidationIssue} from './interactions.js';
 import type {Component} from './protocol.js';
 import type {FormValidationElement,DisplayIssue} from './validation-element.js';
+export function isComposingKey(event:KeyboardEvent):boolean{return event.isComposing||event.keyCode===229;}
 type Host=HTMLElement&{context?:{componentModel:{id:string}}};
 export function* elements(root:ParentNode):Generator<HTMLElement>{
  for(const element of root.querySelectorAll<HTMLElement>('*')){yield element;if(element.shadowRoot)yield*elements(element.shadowRoot);}
