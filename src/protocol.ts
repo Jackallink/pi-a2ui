@@ -35,6 +35,16 @@ export interface Snapshot {
   enabled: boolean;
   surfaces: SurfaceRecord[];
 }
+export interface SnapshotUsage {
+  components: {used:number;limit:number};
+  surfaces: {used:number;limit:number};
+}
+export function snapshotUsage(snapshot:Snapshot):SnapshotUsage {
+  return {
+    components:{used:snapshot.surfaces.reduce((count,surface)=>count+surface.message.createSurface.components.length,0),limit:LIMITS.components},
+    surfaces:{used:snapshot.surfaces.length,limit:LIMITS.surfaces},
+  };
+}
 export interface Operation { epoch: string; generation: number }
 export interface UiDiagnostic {
   surfaceId?: string;

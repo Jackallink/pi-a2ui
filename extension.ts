@@ -4,7 +4,7 @@ import { Type } from "typebox";
 import { promptSnippet } from "./src/compiler.ts";
 import { CanvasController, restoreBranch } from "./src/controller.ts";
 import { UiSession } from "./src/session.ts";
-import { LIMITS, UiError } from "./src/protocol.ts";
+import { LIMITS, UiError, snapshotUsage } from "./src/protocol.ts";
 
 export default function a2ui(pi: ExtensionAPI) {
   const makeController = () => new CanvasController(new UiSession(text => {
@@ -57,6 +57,7 @@ export default function a2ui(pi: ExtensionAPI) {
       const snapshot = await controller.render(params.surfaceId, params.source, signal);
       live.refresh();
       const surface = snapshot.surfaces.find(item => item.surfaceId === params.surfaceId)!;
+      const usage = {...snapshotUsage(snapshot),surface:{surfaceId:surface.surfaceId,components:surface.message.createSurface.components.length}};
       const server = controller.server;
       let note = "";
       if (server && !autoOpenAttempted && server.clients === 0) {
@@ -70,8 +71,8 @@ export default function a2ui(pi: ExtensionAPI) {
         });
       }
       return {
-        content:[{type:"text",text:`Rendered ${params.surfaceId} (revision ${surface.revision}).${note||" Use /a2ui to open the local canvas."} Continue your response; form actions arrive as later user messages.`}],
-        details:{a2uiSnapshot:snapshot},
+        content:[{type:"text",text:`Rendered ${params.surfaceId} (revision ${surface.revision}); components ${usage.components.used}/${usage.components.limit}, surfaces ${usage.surfaces.used}/${usage.surfaces.limit}; this surface ${usage.surface.components}.${note||" Use /a2ui to open the local canvas."} Continue your response; form actions arrive as later user messages.`}],
+        details:{a2uiSnapshot:snapshot,a2uiUsage:usage},
       };
     },
   });

@@ -78,7 +78,7 @@ export function validateSurface(input: unknown): SurfaceMessage {
     exactKeys(create, ['surfaceId', 'catalogId', 'components'], ['dataModel']);
     if (typeof create.surfaceId !== 'string' || !/^[A-Za-z0-9_-]{1,64}$/.test(create.surfaceId) || !catalogs.some(catalog=>catalog.id===create.catalogId) || !Array.isArray(create.components) || !create.components.length) throw new UiError(400, 'Invalid surface or empty root');
     surfaceId=create.surfaceId;
-    if (create.components.length > LIMITS.components) throw new UiError(413, 'Component limit exceeded');
+    if (create.components.length > LIMITS.components) throw new UiError(413, `Component limit exceeded: ${create.components.length}/${LIMITS.components}`);
     noExpressions(create);
     for (const component of create.components) {
       if (!record(component) || typeof component.component !== 'string' || !catalogs.find(catalog=>catalog.id===create.catalogId)!.components.has(component.component)) throw componentError(new UiError(400, 'Unsupported component'),component,surfaceId);
