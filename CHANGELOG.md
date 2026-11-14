@@ -1,29 +1,15 @@
 # Changelog
 
-## 0.1.3 — Unreleased
+## 0.1.1 - 2026-11-14
 
-- Add bounded native-tool LogView with local display pause, lifecycle ownership and explicit omission markers; no model calls per log chunk.
-- Add constrained line/bar SVG charts and current-revision a2ui_update_chart tool.
-- Coalesce bounded SSE data batches independently of structural revisions; recover gaps and preserve unsent input/DOM identity.
-- Preserve all earlier catalog snapshots and chart-result restore authority; reserve snapshot headroom and global serialized log budget.
+- Add official CheckBox, ChoicePicker, Slider, DateTimeInput, Tabs and Divider with validated typed values and tab-slot traversal; preserve legacy shared TextField bindings.
+- Add read-only CodeDiff and structured TestResults in a versioned Pi catalog, immutable bounded IDs and exact current-record follow-up actions. TestResults displays Pi-supplied evidence rather than independently certifying test execution.
+- Add bounded native-tool LogView, constrained line/bar Chart and a2ui_update_chart; lifecycle ownership, coalesced SSE data sequences and gap recovery preserve unsent inputs. No model request per log chunk.
+- Distribute ready browser assets through both Git and local installs; retain complete third-party licenses, include this changelog and declare host packages as wildcard peers. No npm registry publication.
+- Pin contributor runtime to Node24; retain the existing Node22.19/Pi1.5 runtime floor.
+- This release combines the former three unpublished iteration candidates. Known upstream Zod advisory remains unchanged.
 
-
-## 0.1.2 — Unreleased
-
-- Add read-only CodeDiff and structured TestResults in a versioned Pi catalog with shared server/browser schemas.
-- Preserve legacy Basic snapshots and enforce immutable bounded record IDs plus current ID-bound follow-up actions.
-- Display case-count consistency and explicit Pi-reported evidence provenance without certifying test execution.
-
-
-## 0.1.1 — Unreleased
-
-- Add official CheckBox, ChoicePicker, Slider, DateTimeInput, Tabs and Divider.
-- Validate initialized and submitted typed values, static ranges/options, calendar values and all tab slots; preserve shared legacy TextField bindings.
-- Pin development runtime to Node24 through .nvmrc.
-- Per-version package/live validation and independent review are tracked separately from publication.
-
-
-## 0.1.0 — 2026-11-13
+## 0.1.0 - 2026-11-13
 
 Initial MVP checkpoint for local Pi/browser interaction.
 
