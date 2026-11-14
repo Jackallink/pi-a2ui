@@ -4,7 +4,9 @@ A local interactive canvas for the Pi coding agent. Pi keeps the conversation an
 
 Requires **Node 24.x** and Pi >=1.5.0. A2UI protocol 1.0, pinned Agent SDK 0.1.0 and Web Core/Lit 0.15.0.
 
-Version **0.1.5** adds eight daily interaction groups,19 skill templates and read-only pattern discovery to the readable workbench delivered in0.1.4. It uses Pi's existing model and tools; it makes no separate model request per UI event or output chunk. Project live acceptance uses only Volcengine Ark Agent Plan `glm-5.3-flash`.
+Published **0.1.5** adds eight daily interaction groups,19 skill templates and read-only pattern discovery to the readable workbench delivered in0.1.4. It uses Pi's existing model and tools. Native live updates and local sort/copy controls need no extra inference; a declared Button action can start the next Pi model turn. Project live acceptance uses only Volcengine Ark Agent Plan `glm-5.3-flash`.
+
+This branch prepares **0.1.6**: component parameter queries, project-aware errors and a shorter skill path. It is a candidate, not a published tag. Installation commands below stay on the published0.1.5.
 
 See the [v0.1.5 guide](docs/releases/v0.1.5.md) for installation, compatibility and acceptance boundaries. The [v0.1.4 guide](docs/releases/v0.1.4.md) remains available for rollback.
 
@@ -37,7 +39,7 @@ pi install -l --approve /absolute/path/to/pi-a2ui
 
 Pi loads local paths in place and does not install their dependencies; the first command prepares them. The production install skips developer/host peers and does not rebuild the browser. Both routes preserve the target project cwd. `-l` writes only that project's package settings; omit `-l` intentionally for user-wide installation. Pi's `--approve` trusts project-local files for this command, so run it in a project you trust.
 
-When switching between Git and local installation, remove the prior registration in the same scope first: Pi identifies a Git source by repository URL and a local source by its resolved path, so they can otherwise both load. Existing Pi sessions and credentials are retained.
+When switching between Git and local installation, inspect `pi list` and remove the prior registration in its original scope first (also check user-wide vs project-local registrations): Pi identifies a Git source by repository URL and a local source by its resolved path, so they can otherwise both load. Existing Pi sessions and credentials are retained.
 
 Restart Pi or run `/reload`. In Pi:
 
@@ -49,7 +51,7 @@ Ask Pi: “Use a2ui_render to show a form asking for my implementation plan. Whe
 
 ## Companion skill and preflight helper
 
-Version0.1.5 bundles the **pi-a2ui** skill, component subdocuments,19 executable templates and eight pattern routes. Published0.1.4 has11 templates; older pinned tags do not gain new files on reload. Package discovery loads the extension and skill together via `pi.extensions`/`pi.skills`; no extra global skill or CLI installation is needed. Run `/reload` after selecting the new package/ref, then:
+Version0.1.5+ bundles the **pi-a2ui** skill, component subdocuments,19 executable templates and eight pattern routes. Published0.1.4 has11 templates; older pinned tags do not gain new files on reload. Package discovery loads the extension and skill together via `pi.extensions`/`pi.skills`; no extra global skill or CLI installation is needed. Run `/reload` after selecting the new package/ref, then:
 
 ```text
 /skill:pi-a2ui 生成用户信息表单，包含用户名、邮箱和确认按钮
@@ -61,14 +63,14 @@ With **Node24.x** selected, this read-only helper uses the same compiler as the 
 
 ```sh
 nvm use 24
-node /absolute/path/to/pi-a2ui/skills/pi-a2ui/scripts/a2ui.mjs catalog
-node /absolute/path/to/pi-a2ui/skills/pi-a2ui/scripts/a2ui.mjs patterns
-node /absolute/path/to/pi-a2ui/skills/pi-a2ui/scripts/a2ui.mjs pattern validated-form
-node /absolute/path/to/pi-a2ui/skills/pi-a2ui/scripts/a2ui.mjs example user-form
-node /absolute/path/to/pi-a2ui/skills/pi-a2ui/scripts/a2ui.mjs check --surface-id user-form /absolute/path/to/form.express
+node "/absolute/path/to/pi-a2ui/skills/pi-a2ui/scripts/a2ui.mjs" example user-form > form.express
+# Adapt form.express, then check and pass the exact output to a2ui_render:
+node "/absolute/path/to/pi-a2ui/skills/pi-a2ui/scripts/a2ui.mjs" check --surface-id user-form form.express
+# 0.1.6+ when a parameter is uncertain:
+node "/absolute/path/to/pi-a2ui/skills/pi-a2ui/scripts/a2ui.mjs" component TextField
 ```
 
-`catalog`/`patterns` describe that installed package, not an arbitrary active Pi process. `pattern` returns metadata, not DSL: choose its template with `example`, adapt it and `check`, then call a2ui_render. Template availability and local shell capabilities are separate. `check` returns `{surfaceId,source}` for a2ui_render and publishes nothing; actual session/action/resource validation remains in the tool. Examples refuse when the selected catalog lacks their types. Reference presence is not runtime support. Card takes a component child, not a title string; children need commas; forward references work, so declaration order alone is not a sufficient diagnosis.
+For a known task take the example directly; unknown tasks can use `patterns`/`pattern`, and unknown parameters use `component NAME` on0.1.6+. Errors carry project-aware hints and selected references. `catalog`/`patterns` describe that installed package, not an arbitrary active Pi process. `pattern` returns metadata, not DSL: choose its template with `example`, adapt it and `check`, then call a2ui_render. Template availability and local shell capabilities are separate. `check` returns `{surfaceId,source}` for a2ui_render and publishes nothing; actual session/action/resource validation remains in the tool. Examples refuse when the selected catalog lacks their types. Reference presence is not runtime support. Card takes a component child, not a title string; children need commas; forward references work, so declaration order alone is not a sufficient diagnosis.
 
 ## Model tool
 
@@ -127,7 +129,28 @@ npm pack
 
 The checked-in `dist/` files must match `npm run build`; commit regenerated assets and full third-party notices together with source changes. Browser tests require a Playwright Chromium installation (`npx playwright install chromium`). Browser bundling is a development/release step. No CDN or WebSocket dependency is used at runtime. Spec, walkthrough and acceptance mappings: [MVP design](https://github.com/Jackallink/pi-a2ui/blob/v0.1.0/docs/specs/001-pi-a2ui-mvp.md).
 
-Live acceptance defaults to Agent Plan `volcengine-ark/glm-5.3-flash` and checks the resolved model and Agent Plan endpoint before making a request. Credentials stay in Pi. Select an installed Chromium executable with `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` when needed.
+Developer acceptance requires an **explicit package path and exact expected version**. The default is a private project using normal package registration and skill discovery, with **zero inference**. It creates a fresh0700 run directory, keeps private receipts, verifies actual Node24 child cwd/runtime and removes only its owned registration/processes. It preserves existing project files and user-wide installation; an explicit evidence parent may receive only a new owned run. Evidence inside the package or protected project settings is rejected before writing. Developer scripts require the checkout's development dependencies and are not shipped in the production payload.
+
+```sh
+nvm use 24
+node scripts/live-acceptance.mjs --package /absolute/path/to/installed/pi-a2ui --expected-version 0.1.6
+# Optional parent for new private run directories:
+node scripts/live-acceptance.mjs --package /absolute/path/to/installed/pi-a2ui --expected-version 0.1.6 --evidence-dir /absolute/private/evidence
+```
+
+The0.1.6 value targets a locally prepared candidate; use the exact installed version when checking another package. No implicit `.local/installed/package` or environment-based scenario/restore override remains. Help and invalid arguments do not start Pi/browser/model work. Startup observes registration/discovery/status, not browser rendering or model compliance.
+
+Real model acceptance is separately **opt-in** and uses only existing Agent Plan `volcengine-ark/glm-5.3-flash`, verified against `https://ark.cn-beijing.volces.com/api/plan/v3` before the prompt. Credentials stay in Pi and are never copied. Select an installed Chromium executable; no download is attempted:
+
+```sh
+nvm use 24
+export PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH="/absolute/path/to/installed/chromium"
+node scripts/live-acceptance.mjs --package /absolute/path/to/installed/pi-a2ui --expected-version 0.1.6 --mode skill --allow-model
+# Supplied-DSL component acceptance, distinct from skill-forward proof:
+node scripts/live-acceptance.mjs --package /absolute/path/to/installed/pi-a2ui --expected-version 0.1.6 --mode component --scenario basic --allow-model
+```
+
+Skill mode uses an explicit package+skill profile to avoid a duplicate globally installed package. It proves model-authored template/check/render, invalid submission0POST/no new model run, valid submission1POST and typed acknowledgement; it does not establish normal package discovery (the default startup tier does). Component mode retains `basic`, `forms`, `coding`, `live` and `workbench` scenarios with supplied DSL. Every mode uses a new private cwd and reports source/package identity, observed stages and cleanup. A failed setup/transport/metadata stage remains a failed run; partial observations are retained, not presented as full acceptance. No auto retry or model fallback. Raw session/opener/config files in receipts are private; share only reviewed sanitized summaries.
 
 ## Release scope
 
@@ -148,4 +171,4 @@ pi remove -l --approve /absolute/path/to/pi-a2ui
 
 Run removal from the same project used for installation; omit `-l` only for a user-wide registration. Existing Pi sessions and credentials are retained.
 
-Supported runtime: **Node 24.x only**. Run `nvm use 24` (also pinned by `.nvmrc`) before installing or testing. The version-specific acceptance scenarios use `A2UI_ACCEPT_SCENARIO=forms`, `coding`, `live` or `workbench` with the production-installed package.
+Supported runtime: **Node 24.x only**. Run `nvm use 24` (also pinned by `.nvmrc`) before installing or testing. Use the explicit developer acceptance commands above; old `A2UI_ACCEPT_*` environment options are rejected.
