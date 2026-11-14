@@ -21,3 +21,18 @@ export class ImageElement extends A2uiLitElement<typeof imageApi>{
  disconnectedCallback(){this.querySelector('img')?.removeAttribute('src');super.disconnectedCallback();}
  render(){const p=this.controller.props;if(!p)return nothing;return this.failed?html`<p role="status">Unavailable: image could not be displayed</p>`:html`<img src=${p.url} alt=${p.description??'Image artifact'} style=${'object-fit:'+(p.fit??'contain')} @error=${()=>{this.failed=true;this.requestUpdate();}}>`;}
 }
+
+class MediaElement extends A2uiLitElement<ComponentApi>{
+ protected failed=false;private source='';createRenderRoot(){return this;}
+ static styles=css`:host{display:block}video{width:100%;max-height:32em;display:block}audio{max-width:100%;display:block}`;
+ willUpdate(changed:Map<PropertyKey,unknown>){super.willUpdate(changed);const p=this.controller.props;if(p&&p.url!==this.source){this.source=p.url;this.failed=false;}}
+ disconnectedCallback(){const media=this.querySelector<HTMLMediaElement>('video,audio');if(media){media.pause();media.removeAttribute('src');media.load();}super.disconnectedCallback();}
+ protected unavailable(){return html`<p role="status">Unavailable: media could not be played</p>`;}
+ protected error(){this.failed=true;this.requestUpdate();}
+}
+export class VideoElement extends MediaElement{
+ render(){const p=this.controller.props;if(!p)return nothing;return this.failed?this.unavailable():html`<video controls preload="metadata" src=${p.url} poster=${p.posterUrl??nothing} aria-label="Video artifact" @error=${this.error}></video>`;}
+}
+export class AudioElement extends MediaElement{
+ render(){const p=this.controller.props;if(!p)return nothing;return this.failed?this.unavailable():html`<audio controls preload="metadata" src=${p.url} aria-label=${p.description??'Audio artifact'} @error=${this.error}></audio>`;}
+}

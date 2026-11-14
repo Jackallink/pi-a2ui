@@ -51,11 +51,17 @@ export class ArtifactStore{
  close(){this.stopped=true;this.reset();}
  async serve(id:string,req:IncomingMessage,res:ServerResponse):Promise<void>{
   const item=this.entries.get(id);if(!item||this.stopped)throw new UiError(404,'Artifact unavailable');
+  let start=0,end=item.meta.size-1;const range=req.headers.range;
+  if(range!==undefined){
+   const match=/^bytes=(\d*)-(\d*)$/.exec(range);let valid=!!match&&(match[1]!==''||match[2]!=='');
+   if(valid&&match){if(match[1]===''){const suffix=Number(match[2]);valid=Number.isSafeInteger(suffix)&&suffix>0;if(valid)start=Math.max(0,item.meta.size-suffix);}else{start=Number(match[1]);const requested=match[2]===''?end:Number(match[2]);valid=Number.isSafeInteger(start)&&Number.isSafeInteger(requested)&&start<item.meta.size&&requested>=start;end=Math.min(end,requested);}}
+   if(!valid){res.statusCode=416;res.setHeader('content-range','bytes */'+item.meta.size);res.setHeader('content-length',0);res.end();return;}res.statusCode=206;res.setHeader('content-range',`bytes ${start}-${end}/${item.meta.size}`);
+  }
   if(req.method!=='HEAD'&&this.responses.size>=2)throw new UiError(429,'Artifact responses busy');
-  res.setHeader('content-type',item.meta.mime);res.setHeader('content-length',item.meta.size);res.setHeader('content-disposition','inline; filename="artifact"');res.setHeader('x-a2ui-artifact-name',encodeURIComponent(item.meta.name));res.setHeader('x-content-type-options','nosniff');res.setHeader('cache-control','no-store');
+  res.setHeader('content-type',item.meta.mime);res.setHeader('content-length',end-start+1);res.setHeader('accept-ranges','bytes');res.setHeader('content-disposition','inline; filename="artifact"');res.setHeader('x-a2ui-artifact-name',encodeURIComponent(item.meta.name));res.setHeader('x-content-type-options','nosniff');res.setHeader('cache-control','no-store');
   if(req.method==='HEAD'){res.end();return;}
   this.responses.set(res,id);let timer:ReturnType<typeof setTimeout>|undefined;const arm=()=>{clearTimeout(timer);timer=setTimeout(()=>res.destroy(),15000);timer.unref();};const closed=()=>{clearTimeout(timer);this.responses.delete(res);};res.once('close',closed);arm();
-  try{for(let offset=0;offset<item.bytes.length&&!res.destroyed;offset+=65536){const chunk=item.bytes.subarray(offset,Math.min(offset+65536,item.bytes.length));if(!res.write(chunk))await new Promise<void>(resolve=>{const done=()=>{res.off('drain',done);res.off('close',done);res.off('error',done);resolve();};res.once('drain',done);res.once('close',done);res.once('error',done);});if(!res.destroyed)arm();}if(!res.destroyed)res.end();}catch{res.destroy();}
+  try{for(let offset=start;offset<=end&&!res.destroyed;offset+=65536){const chunk=item.bytes.subarray(offset,Math.min(offset+65536,end+1));if(!res.write(chunk))await new Promise<void>(resolve=>{const done=()=>{res.off('drain',done);res.off('close',done);res.off('error',done);resolve();};res.once('drain',done);res.once('close',done);res.once('error',done);});if(!res.destroyed)arm();}if(!res.destroyed)res.end();}catch{res.destroy();}
   // Slots and old response references remain charged until actual response close.
  }
 }
