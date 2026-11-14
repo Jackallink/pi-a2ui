@@ -1,0 +1,12 @@
+{
+  "node": "24.18.1",
+  "version": "0.1.1",
+  "nodeTests": 57,
+  "browserTests": 7,
+  "formsTests": 13,
+  "archiveSha256": "497c5e30f75d9684174e235f8c21ba814575735c1cf6bb16156ab9574df7455a",
+  "productionOnlyInstall": true,
+  "consumerBuildRequired": false,
+  "model": "volcengine-ark/glm-5.3-flash",
+  "actualModelOnFinalArchive": true
+}

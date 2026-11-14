@@ -52,12 +52,15 @@ test("SSE rejects foreign Host/Origin, cross-instance credentials, and client ca
   const foreignStatus=await new Promise<number>((resolve,reject)=>{
     const req=request(`${a.origin}/api/events`,{headers:{cookie,host:"evil.invalid"}},res=>{res.resume();resolve(res.statusCode!);});req.on("error",reject);req.end();
   });assert.equal(foreignStatus,403);
-  const aborts: AbortController[]=[];t.after(()=>aborts.forEach(a=>a.abort()));
+  const aborts: AbortController[]=[];const responses: Response[]=[];t.after(()=>aborts.forEach(a=>a.abort()));
   for(let i=0;i<LIMITS.clients;i++){
     const controller=new AbortController();aborts.push(controller);
-    const res=await fetch(`${a.origin}/api/events`,{headers:{cookie},signal:controller.signal});assert.equal(res.status,200);
+    const res=await fetch(`${a.origin}/api/events`,{headers:{cookie},signal:controller.signal});responses.push(res);assert.equal(res.status,200);
   }
+  globalThis.gc?.();await new Promise<void>(resolve=>setImmediate(resolve));
+  assert.equal(a.clients,LIMITS.clients);
   assert.equal((await fetch(`${a.origin}/api/events`,{headers:{cookie}})).status,429);
+  assert.equal(responses.length,LIMITS.clients);
   aborts.forEach(a=>a.abort());
 });
 

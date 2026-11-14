@@ -1,4 +1,5 @@
 import { A2uiGenerator, CatalogConfig, ExpressFormatFactory, RendererState } from '@a2ui/agent';
+import { inputPaths, validateInputs } from './inputs.ts';
 import { restrictedCatalog } from './catalog.ts';
 import { LIMITS, UiError, type Component, type SurfaceMessage } from './protocol.ts';
 
@@ -81,7 +82,7 @@ export function validateSurface(input: unknown): SurfaceMessage {
       const component = components.get(id);
       if (!component) throw new UiError(400, 'Missing root or child');
       reachable.add(id);
-      const children = Array.isArray(component.children) ? component.children : typeof component.child === 'string' ? [component.child] : [];
+      const children = component.component === 'Tabs' && Array.isArray(component.tabs) ? component.tabs.map(tab => (tab as {child:string}).child) : Array.isArray(component.children) ? component.children : typeof component.child === 'string' ? [component.child] : [];
       for (const child of children) {
         if (typeof child !== 'string') throw new UiError(400, 'Expected static child ID');
         walk(child, depth + 1);
@@ -100,8 +101,10 @@ export function validateSurface(input: unknown): SurfaceMessage {
     }
     checkBindings(message.createSurface.components);
     for (const component of components.values()) {
-      const properties = component.component === 'Text' ? ['text'] : component.component === 'TextField' ? ['label', 'value', 'placeholder'] : [];
+      const properties = component.component === 'Text' ? ['text'] : component.component === 'TextField' ? ['label', 'value', 'placeholder'] : ['CheckBox','ChoicePicker','Slider','DateTimeInput'].includes(component.component) ? ['label'] : [];
       const strings: Array<[string, unknown]> = properties.map(property => [property, component[property]]);
+      if (component.component==='Tabs') for (const tab of component.tabs as Array<{title:unknown}>) strings.push(['tabs.title',tab.title]);
+      if (component.component==='ChoicePicker') for (const option of component.options as Array<{label:unknown}>) strings.push(['options.label',option.label]);
       if (record(component.accessibility)) {
         strings.push(['accessibility.label', component.accessibility.label], ['accessibility.description', component.accessibility.description]);
       }
@@ -109,7 +112,8 @@ export function validateSurface(input: unknown): SurfaceMessage {
         if (isBinding(binding) && typeof dataModel.get(binding['@path']) !== 'string') throw new UiError(400, `Bound ${component.component}.${property} must resolve to an initialized string`);
       }
     }
-    const fields = new Set([...components.values()].filter(component => component.component === 'TextField' && isBinding(component.value)).map(component => (component.value as { '@path': string })['@path']));
+    validateInputs(components.values(), path => dataModel.get(path));
+    const fields = inputPaths(components.values());
     for (const component of components.values()) {
       if (component.component !== 'Button') continue;
       const action = component.action;
@@ -120,7 +124,7 @@ export function validateSurface(input: unknown): SurfaceMessage {
       if (!record(context)) throw new UiError(400, 'Expected event context');
       for (const value of Object.values(context)) {
         if (isBinding(value)) {
-          if (!fields.has(value['@path'])) throw new UiError(400, 'Context must bind to a reachable TextField');
+          if (!fields.has(value['@path'])) throw new UiError(400, 'Context must bind to a reachable input');
         } else if (JSON.stringify(value).includes('"@path"')) throw new UiError(400, 'Nested context bindings are unavailable');
       }
     }

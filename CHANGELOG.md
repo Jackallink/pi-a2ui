@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.1 — Unreleased
+
+- Add official CheckBox, ChoicePicker, Slider, DateTimeInput, Tabs and Divider.
+- Validate initialized and submitted typed values, static ranges/options, calendar values and all tab slots; preserve shared legacy TextField bindings.
+- Pin development runtime to Node24 through .nvmrc.
+- Per-version package/live validation and independent review are tracked separately from publication.
+
+
 ## 0.1.0 — 2026-11-13
 
 Initial MVP checkpoint for local Pi/browser interaction.
