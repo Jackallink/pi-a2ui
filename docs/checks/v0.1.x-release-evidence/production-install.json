@@ -1,0 +1,29 @@
+[
+  {
+    "version": "0.1.1",
+    "productionOnly": true,
+    "consumerBuild": false,
+    "installedWithPrefixFromTargetProject": true,
+    "esbuildAbsent": true,
+    "duplicateHostTypeboxAbsent": true,
+    "exitCode": 0
+  },
+  {
+    "version": "0.1.2",
+    "productionOnly": true,
+    "consumerBuild": false,
+    "installedWithPrefixFromTargetProject": true,
+    "esbuildAbsent": true,
+    "duplicateHostTypeboxAbsent": true,
+    "exitCode": 0
+  },
+  {
+    "version": "0.1.3",
+    "productionOnly": true,
+    "consumerBuild": false,
+    "installedWithPrefixFromTargetProject": true,
+    "esbuildAbsent": true,
+    "duplicateHostTypeboxAbsent": true,
+    "exitCode": 0
+  }
+]

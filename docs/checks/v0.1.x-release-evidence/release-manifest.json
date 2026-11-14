@@ -1,0 +1,41 @@
+[
+  {
+    "version": "0.1.1",
+    "featureCommit": "703c6dcadeff5a66c71d24710a619ea3a54d5dd1",
+    "releaseCommit": "e560f9f27f6d34797dadcc590350be6cb2e67071",
+    "sha256": "731f7f24a1604135451f06a2272ff6b9c70dfb6437710e8130a821763bbaf03b",
+    "files": 17,
+    "differentFromAcceptedArtifact": [
+      "package/README.md"
+    ],
+    "runtimeBytesIdentical": true,
+    "shippedFilesMatchReleaseTree": true,
+    "archive": "pi-a2ui-0.1.1.tgz"
+  },
+  {
+    "version": "0.1.2",
+    "featureCommit": "1c4b647d696491072692037d99e47cf25decf99d",
+    "releaseCommit": "91472156b20484c3740d840f02add24dca365107",
+    "sha256": "c728aa30b047d4008d16a658955218ad8e3602a11f2109539e8b0f2eb75cc2ad",
+    "files": 20,
+    "differentFromAcceptedArtifact": [
+      "package/README.md"
+    ],
+    "runtimeBytesIdentical": true,
+    "shippedFilesMatchReleaseTree": true,
+    "archive": "pi-a2ui-0.1.2.tgz"
+  },
+  {
+    "version": "0.1.3",
+    "featureCommit": "8d128c5ff34483ef075104848147a56f633ebcb0",
+    "releaseCommit": "2ab34db3c4d187357ad96fc4867b33e980cc9e0a",
+    "sha256": "f77e9380dfd04ae16302a2feff8f0d3bc69ecbb1380fb7da4c91085130855d88",
+    "files": 23,
+    "differentFromAcceptedArtifact": [
+      "package/README.md"
+    ],
+    "runtimeBytesIdentical": true,
+    "shippedFilesMatchReleaseTree": true,
+    "archive": "pi-a2ui-0.1.3.tgz"
+  }
+]
