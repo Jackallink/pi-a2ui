@@ -182,5 +182,16 @@
     ],
     "pattern": "activity-timeline",
     "reference": "references/timeline-and-evidence.md"
+  },
+  {
+    "name": "evidence-location",
+    "requires": [
+      "Button",
+      "Text",
+      "Card",
+      "Column"
+    ],
+    "pattern": "evidence-location",
+    "reference": "references/timeline-and-evidence.md"
   }
 ]

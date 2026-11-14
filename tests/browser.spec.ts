@@ -426,3 +426,10 @@ test("R06 native timeline data patches and reconnect preserve form and disclosur
  canvas.session.setEnabled(false);await expect(widget).toContainText('timeline · paused');canvas.session.setEnabled(true);await expect(widget).toContainText('No tracked tool events');await expect(input).toHaveValue('Timeline draft');expect(canvas.sent).toHaveLength(0);
  }finally{live.close();}
 });
+
+
+test("R07 source location returns immutable intent with no file or external request",async({page,canvas})=>{
+ const {readFile}=await import('node:fs/promises');canvas.session.reset();canvas.session.render('evidence',await readFile('skills/pi-a2ui/examples/evidence-location.express','utf8'));const outside:string[]=[];page.on('request',r=>{if(!r.url().startsWith(canvas.origin))outside.push(r.url());});
+ await page.goto(canvas.origin);await expect(page.getByText('Sample source location: src/compiler.ts:1',{exact:true})).toBeVisible();expect(await page.locator('a[href]').count()).toBe(0);
+ await page.getByRole('button',{name:'Inspect compiler.ts:1',exact:true}).click();await expect(page.locator('#notice')).toHaveText('Sent to Pi');expect(canvas.sent).toHaveLength(1);expect(canvas.sent[0]).toContain('"file":"src/compiler.ts","line":1');expect(outside).toEqual([]);
+});

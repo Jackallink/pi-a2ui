@@ -38,3 +38,11 @@ test('R05 feedback pattern distinguishes actual-known states from labelled place
  assert.ok(components.some(c=>c.component==='Button'&&(c.action as any).event.name==='request_retry'));
  assert.ok(components.every(c=>['Column','Card','Text','Icon','StatusBadge','Button'].includes(c.component)));
 });
+
+test('R07 source-location pattern sends only an immutable evidence intent to Pi',async()=>{
+ const surface=example('evidence-location');const {UiSession}=await import('../src/session.ts');const sent:string[]=[];const s=new UiSession(t=>sent.push(t));s.reset({version:1,epoch:'old',enabled:true,surfaces:[{surfaceId:'pattern',revision:1,message:surface}]});
+ const snapshot=s.snapshot();const button=surface.createSurface.components.find(c=>c.component==='Button')!;const event=(button.action as any).event;
+ assert.deepEqual(event.context,{evidenceId:'compiler-entry',file:'src/compiler.ts',line:1});
+ const envelope={epoch:snapshot.epoch,revision:1,eventId:'inspect',message:{version:'1.0',action:{surfaceId:'pattern',sourceComponentId:button.id,name:event.name,timestamp:'2026-11-14T00:00:00Z',context:{...event.context,line:2}}}};
+ assert.throws(()=>s.acceptAction(envelope),{status:403});envelope.message.action.context={...event.context};s.acceptAction(envelope);assert.equal(sent.length,1);assert.ok(sent[0].includes('"event":"inspect_source"'));s.close();
+});

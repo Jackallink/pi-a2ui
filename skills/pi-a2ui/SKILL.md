@@ -33,7 +33,7 @@ Call `a2ui_render` with `surfaceId: "user-form"` and that entire source as `sour
 | Small hierarchy / breadcrumbs / searchable choices | [Navigation and selection](references/navigation-and-selection.md); `tree-navigation` (composition), `searchable-picker` (requires SearchablePicker API) |
 | Summaries / field validation / loading-empty-error feedback | [Summaries and feedback](references/summaries-and-feedback.md); `summary-metrics` (composition), `validated-form` (requires FormValidation), `feedback-states` (composition) |
 | Text, layout, forms and buttons (baseline16 types) | [Core components](references/core-components.md); `user-form`, `typed-form`, `layout` |
-| Native tool order / observed duration | [Timeline and evidence](references/timeline-and-evidence.md); `activity-timeline` (requires ActivityTimeline) |
+| Native timeline / source evidence intent | [Timeline and evidence](references/timeline-and-evidence.md); `activity-timeline` (requires ActivityTimeline), `evidence-location` (composition) |
 | Diff, test records, native logs or charts | [Coding/live components](references/coding-and-live.md); `review`, `live` |
 | Table, code/Markdown, details, progress, dialog/icon (v0.1.4 capability required) | [Workbench components](references/workbench-components.md); `list-table`, `reading`, `details`, `status`, `modal` |
 | Image, artifacts, video or audio (v0.1.4 capability required) | [Artifacts/media](references/artifacts.md); `artifacts` |
