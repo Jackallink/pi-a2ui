@@ -367,19 +367,19 @@ test("R04 invalid submit shows inline errors without POST then corrected values 
 });
 
 test("R04 hidden errors use active Modal notice without echoing bound values or late focus",async({page,canvas})=>{
- canvas.session.reset();canvas.session.render('form',`$/secret = "private-fixture-42"
+ canvas.session.reset();canvas.session.render('older','root = Modal(trigger=Text(text="Other dialog"),content=Text(text="Older dialog"))');canvas.session.render('form',`$/secret = "private-fixture-42"
  field = TextField(label=$/secret,value=$/secret)
  submit = Button(child=Text(text="Validate inside"),action=Event("save",{value:$/secret}))
  validation = FormValidation(buttons=["submit"],rules=[{fieldId:"field",message:"Enter at least20 characters",minLength:20}])
  root = Column(children=[field,Details(title="Hidden errors",child=validation),Modal(trigger=Text(text="Open validation"),content=submit)])`);
  const requests:string[]=[];page.on('request',r=>{if(r.url().endsWith('/api/actions'))requests.push(r.url());});
- await page.goto(canvas.origin);await page.getByRole('button',{name:'Open validation',exact:true}).click();const dialog=page.getByRole('dialog');
+ await page.goto(canvas.origin);await page.getByRole('button',{name:'Other dialog',exact:true}).click();await page.locator('[data-surface-id="form"] dialog').evaluate((node:HTMLDialogElement)=>node.showModal());const dialog=page.locator('[data-surface-id="form"] dialog');
  await dialog.getByRole('button',{name:'Validate inside',exact:true}).click();const local=dialog.locator('.a2ui-validation-notice');
  await expect(local).toHaveText('field: Enter at least20 characters');await expect(local).toBeFocused();await expect(local).not.toContainText('private-fixture-42');
  await page.keyboard.press('Tab');await expect(dialog.getByRole('button',{name:'Close details'})).toBeFocused();
- expect(requests).toHaveLength(0);await dialog.getByRole('button',{name:'Close details'}).click();await expect(page.locator('.a2ui-validation-notice')).toHaveCount(0);
+ expect(requests).toHaveLength(0);await dialog.getByRole('button',{name:'Close details'}).click();await expect(page.locator('.a2ui-validation-notice')).toHaveCount(0);await page.locator('[data-surface-id="older"] dialog').evaluate((node:HTMLDialogElement)=>node.close());
  await page.getByRole('button',{name:'Open validation',exact:true}).click();
- await page.evaluate(()=>{document.querySelector<HTMLButtonElement>('dialog button:not(.modal-close)')?.click();document.querySelector<HTMLDialogElement>('dialog')?.close();});
+ await page.evaluate(()=>{const active=document.querySelector<HTMLDialogElement>('[data-surface-id="form"] dialog');active?.querySelector<HTMLButtonElement>('button:not(.modal-close)')?.click();active?.close();});
  await expect(page.locator('.a2ui-validation-notice')).toHaveCount(0);
  canvas.session.reset();canvas.session.render('form','root = Text(text="Replacement")');
  await expect(page.getByText('Replacement',{exact:true})).toBeVisible();await expect(page.locator('.a2ui-field-error')).toHaveCount(0);expect(requests).toHaveLength(0);
@@ -394,4 +394,16 @@ root=Column(children=[picker,FormValidation(buttons=["submit"],rules=[{fieldId:"
  await page.goto(canvas.origin);await page.getByRole('button',{name:'Save choice',exact:true}).click();await expect(page.locator('.a2ui-field-error')).toHaveCount(1);
  await page.getByRole('button',{name:'Alpha · a',exact:true}).click();await expect(page.locator('.a2ui-field-error')).toHaveCount(0);expect(canvas.sent).toHaveLength(0);
  await page.getByRole('button',{name:'Save choice',exact:true}).click();await expect(page.locator('#notice')).toHaveText('Sent to Pi');expect(canvas.sent).toHaveLength(1);expect(canvas.sent[0]).toContain('"chosen":["a"]');
+});
+
+
+test("R04 existing ChoicePicker chips revalidate after their SDK click setter",async({page,canvas})=>{
+ canvas.session.reset();canvas.session.render('form',`$/chosen=[]
+picker=ChoicePicker(label="Legacy chips",displayStyle="chips",variant="multipleSelection",options=[{label:"Alpha",value:"a"}],value=$/chosen)
+submit=Button(child=Text(text="Save chips"),action=Event("save",{chosen:$/chosen}))
+root=Column(children=[picker,FormValidation(buttons=["submit"],rules=[{fieldId:"picker",message:"Choose one chip",required:true}]),submit])`);
+ await page.goto(canvas.origin);await page.getByRole('button',{name:'Save chips',exact:true}).click();await expect(page.locator('.a2ui-field-error')).toHaveCount(1);
+ const alpha=page.getByRole('button',{name:'Alpha',exact:true});await alpha.press('Space');await expect(alpha).toHaveAttribute('aria-pressed','true');await expect(page.locator('.a2ui-field-error')).toHaveCount(0);
+ await alpha.press('Enter');await expect(page.locator('.a2ui-field-error')).toHaveCount(1);expect(canvas.sent).toHaveLength(0);
+ await alpha.click();await expect(page.locator('.a2ui-field-error')).toHaveCount(0);await page.getByRole('button',{name:'Save chips',exact:true}).click();await expect(page.locator('#notice')).toHaveText('Sent to Pi');expect(canvas.sent).toHaveLength(1);expect(canvas.sent[0]).toContain('"chosen":["a"]');
 });

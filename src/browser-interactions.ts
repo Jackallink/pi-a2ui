@@ -1,7 +1,7 @@
 import {validateSubmission,type ValidationIssue} from './interactions.js';
 import type {Component} from './protocol.js';
 import type {FormValidationElement,DisplayIssue} from './validation-element.js';
-type Host=HTMLElement&{context?:{componentModel:{id:string;type?:string}}};
+type Host=HTMLElement&{context?:{componentModel:{id:string}}};
 export function* elements(root:ParentNode):Generator<HTMLElement>{
  for(const element of root.querySelectorAll<HTMLElement>('*')){yield element;if(element.shadowRoot)yield*elements(element.shadowRoot);}
 }
@@ -26,8 +26,11 @@ export class BrowserValidation{
  private spans:HTMLElement[]=[];private attributes:Array<{control:HTMLElement;invalid:string|null;described:string|null}>=[];private dialogNotice?:HTMLElement;
  constructor(private wrapper:HTMLElement,private components:Component[],private resolve:(path:string)=>unknown,private isCurrent:()=>boolean,private notice:Notice){
   for(const name of ['input','change','a2ui-input-change'])wrapper.addEventListener(name,this.edited);
+  wrapper.addEventListener('click',this.chipsEdited);
   wrapper.addEventListener('close',this.closed,true);
  }
+ // SDK chips call their setter on the target's click; observe bubbling after that setter.
+ private chipsEdited=(event:Event)=>{const path=event.composedPath();if(!path.some(node=>node instanceof HTMLButtonElement))return;if(path.some(node=>node instanceof HTMLElement&&this.components.some(c=>c.component==='ChoicePicker'&&c.id===(node as Host).context?.componentModel.id)))this.edited();};
  private closed=()=>{this.lastButton=undefined;this.clear();};
  private edited=()=>{if(this.scheduled||!this.lastButton)return;this.scheduled=true;queueMicrotask(()=>{this.scheduled=false;if(this.disposed||!this.isCurrent()||!this.lastButton)return;const button=this.components.find(c=>c.id===this.lastButton);const declared=(button?.action as {event:{context?:Record<string,unknown>}}).event.context??{};const context:Record<string,unknown>={};try{for(const [key,value]of Object.entries(declared))context[key]=value&&typeof value==='object'&&'@path'in value?this.resolve(String(value['@path'])):value;this.present(validateSubmission(this.components,this.lastButton,context),false);}catch{this.notice.show('This form could not be validated. Reopen /a2ui to reconnect.',true);}});};
  check(sourceId:string,context:Record<string,unknown>):boolean{
@@ -59,5 +62,5 @@ export class BrowserValidation{
    if(focus&&target&&availableControl(target,modal))target.focus();
   }).catch(()=>{/* A disposed renderer must not move focus or send an action. */});
  }
- dispose(){if(this.disposed)return;this.disposed=true;this.lastButton=undefined;for(const name of ['input','change','a2ui-input-change'])this.wrapper.removeEventListener(name,this.edited);this.wrapper.removeEventListener('close',this.closed,true);this.clear();}
+ dispose(){if(this.disposed)return;this.disposed=true;this.lastButton=undefined;for(const name of ['input','change','a2ui-input-change'])this.wrapper.removeEventListener(name,this.edited);this.wrapper.removeEventListener('click',this.chipsEdited);this.wrapper.removeEventListener('close',this.closed,true);this.clear();}
 }
