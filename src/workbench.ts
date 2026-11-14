@@ -12,8 +12,13 @@ export const taskProgressApi={name:'TaskProgress',schema:z.object({stream:z.lite
 export type ToolProgress=z.infer<typeof taskProgressApi.schema>;
 export const workbenchApis:ComponentApi[]=[dataTableApi,codeBlockApi,markdownApi,detailsApi,statusBadgeApi,taskProgressApi];
 export function validateWorkbench(message:SurfaceMessage,initial=false):void{
- let progressCount=0;
+ let progressCount=0,modalCount=0;
  for(const c of message.createSurface.components){
+  if(c.component==='Icon'&&!['check','close','error','info','warning','folder','help','refresh','play','pause','search','settings'].includes(c.name as string))throw new UiError(400,'Icon name must be a static approved local icon');
+  if(c.component==='Modal'){
+   if(++modalCount>1)throw new UiError(400,'Only one Modal per surface');const trigger=message.createSurface.components.find(node=>node.id===c.trigger);
+   if(!trigger||!['Text','Icon'].includes(trigger.component))throw new UiError(400,'Modal trigger must be Text or Icon');
+  }
   if(c.component==='StatusBadge'){const {id:_,component:__,...props}=c;Object.assign(c,statusBadgeApi.schema.parse(props));}
   if(c.component==='TaskProgress'){
    const {id:_,component:__,...props}=c;const p=taskProgressApi.schema.parse(props);
