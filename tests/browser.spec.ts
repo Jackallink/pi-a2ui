@@ -234,3 +234,9 @@ test('W1 List and DataTable sort numeric cells, filter locally and distinguish e
  await table.getByRole('searchbox').fill('script');await expect(table.locator('tbody tr')).toHaveCount(1);expect(canvas.sent).toHaveLength(0);await expect(page.locator('input[type=text]')).toHaveValue('Keep draft');
  for(const [state,text]of [['ready','No results'],['loading','Loading data'],['error','Data unavailable']]){canvas.session.render('other',`root = DataTable(caption="Empty",columns=[{id:"a",label:"A"}],rows=[],state="${state}")`);await expect(page.getByText(text,{exact:true})).toBeVisible();}
 });
+
+test('W1 table mixed-type order is deterministic and ties stable; bounded table scrolls',async({page,canvas})=>{
+ const rows=[{id:'n',cells:[null,'null']},{id:'f',cells:[false,'false']},{id:'t',cells:[true,'true']},{id:'a',cells:[2,'first']},{id:'b',cells:[2,'second']},{id:'s',cells:['2','string']}];
+ canvas.session.render('form',`root = DataTable(caption="Types",columns=[{id:"v",label:"Value"},{id:"id",label:"Row"}],rows=${JSON.stringify(rows)})`);await page.goto(canvas.origin);const table=page.locator('pi-a2ui-data-table');await table.getByRole('button',{name:'Value',exact:true}).click();expect(await table.locator('tbody tr td:last-child').allTextContents()).toEqual(['null','false','true','first','second','string']);
+ const many=Array.from({length:200},(_,i)=>({id:'r'+i,cells:[i]}));canvas.session.render('form',`root = DataTable(caption="Many",columns=[{id:"a",label:"A"}],rows=${JSON.stringify(many)})`);await expect(table.locator('tbody tr')).toHaveCount(200);expect(await table.locator('.table-scroll').evaluate(e=>e.scrollHeight>e.clientHeight)).toBe(true);
+});

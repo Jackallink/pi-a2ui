@@ -8,3 +8,13 @@ test('W1 table invalid replacement is atomic and old catalogs stay closed',()=>{
 
 
 test('W1 table cannot nest inside an event Button',()=>{assert.throws(()=>compile('table',tableSource.replace('root = List([','root = Button(List([').replace('])])','])]),action=Event("send"))')),/must not be nested in a Button/);});
+
+test('W1 table edges and List topology fail before atomic replacement',()=>{
+ const s=new UiSession(()=>{});s.render('work',tableSource);const original=s.snapshot();
+ const valid=compile('work',tableSource);const table=valid.createSurface.components.find(c=>c.component==='DataTable')!;
+ for(const [key,value]of [['rows',Array.from({length:201},(_,i)=>({id:'r'+i,cells:['x',i]}))],['columns',Array.from({length:13},(_,i)=>({id:'c'+i,label:'C'}))],['rows',[{id:'a',cells:['a'.repeat(257),2]}]]]as const){const bad=structuredClone(original);Object.assign(bad.surfaces[0].message.createSurface.components.find(c=>c.component==='DataTable')!,{[key]:value});assert.throws(()=>s.reset(bad));assert.deepEqual(s.snapshot(),original);}
+ table.rows=Array.from({length:200},(_,i)=>({id:'r'+i,cells:['x',i]}));assert.doesNotThrow(()=>validateSurface(valid));
+ for(const children of [['missing'],['root'],['root_children_0','root_children_0']]){const bad=structuredClone(valid);bad.createSurface.components[0].children=children;assert.throws(()=>validateSurface(bad));}
+ assert.throws(()=>compile('deep','root = '+ 'List(['.repeat(17)+'Text("x")'+'])'.repeat(17)));s.close();
+});
+test('W1 T01 example is executable with the frozen catalog',async()=>{const {readFile}=await import('node:fs/promises');assert.ok(compile('examples',await readFile('docs/examples/v0.1.4.express','utf8')));});
