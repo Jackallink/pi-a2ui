@@ -51,3 +51,7 @@ Issues [#1](https://github.com/Jackallink/pi-a2ui/issues/1), [#2](https://github
 ## v0.1.4跟踪入口
 
 [Milestone](https://github.com/Jackallink/pi-a2ui/milestone/4) · [总任务#9](https://github.com/Jackallink/pi-a2ui/issues/9)；七个必选分组issue#10–#16，新增候选#17单独登记。当前仍为draft规划，不升发行版本。
+
+## v0.1.5：八组已纳入能力
+
+用户已将R01–R08全部归入v0.1.5：[spec008](docs/specs/008-v0.1.5-interactions.md)、[milestone5](https://github.com/Jackallink/pi-a2ui/milestone/5)、[总任务#17](https://github.com/Jackallink/pi-a2ui/issues/17)。原候选状态被替代；先完成0.1.4，不自动启动0.1.5实施。
