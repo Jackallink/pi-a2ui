@@ -14,6 +14,8 @@ Release path:0.1.0 →0.1.1 (all three steps) →0.1.3 (version alignment only).
 
 ## Shared requirements
 
+- Current supported runtime is Node 24.x only (`nvm use 24`, `.nvmrc=24`); previous lower-floor statements belong to historical releases.
+
 - Retain Pi as conversation/tool/permission owner. Browser actions express user intent, not direct filesystem/shell authority.
 - Preserve epoch/revision isolation, snapshot recovery, atomic failure and bounded payloads/resources.
 - Compile and render matching versioned catalog contracts; derive model instructions from the supported contract.

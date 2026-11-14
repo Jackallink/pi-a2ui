@@ -2,7 +2,7 @@
 
 A local interactive canvas for the Pi coding agent. Pi keeps the conversation and coding tools; the official A2UI renderer displays forms and cards in your browser.
 
-Requires Node >=22.19.0 and Pi >=1.5.0. A2UI protocol 1.0, pinned Agent SDK 0.1.0 and Web Core/Lit 0.15.0.
+Requires **Node 24.x** and Pi >=1.5.0. A2UI protocol 1.0, pinned Agent SDK 0.1.0 and Web Core/Lit 0.15.0.
 
 Version 0.1.3 is a version-alignment checkpoint with the same complete functionality as v0.1.1: typed forms/layout, coding review components and bounded native logs/charts. It supports forms, choices and task cards alongside Pi; it does not add a separate model or change Pi's tool permissions. Real model acceptance used Volcengine Ark Agent Plan `glm-5.3-flash`. The extension uses whichever model you select in Pi.
 
@@ -10,13 +10,14 @@ Project source is MIT licensed. The bundled browser libraries retain their own l
 
 ## Install
 
-The package is distributed through Git and local paths; it is not published to npm. Requires Node >=22.19.0 and Pi >=1.5.0; development and acceptance use Node24 (`nvm use 24`).
+The package is distributed through Git and local paths; it is not published to npm. Requires **Node 24.x** and Pi >=1.5.0; select it with `nvm use 24` before installation or use.
 
 ### Git
 
 From the Pi project where you want this package enabled:
 
 ```sh
+nvm use 24
 pi install -l --approve git:github.com/Jackallink/pi-a2ui@v0.1.3
 ```
 
@@ -27,6 +28,7 @@ Pi clones the pinned ref and installs production dependencies. Ready browser ass
 Use an existing checkout or an unpacked release. Keep your intended Pi project as the working directory and substitute the package's absolute path:
 
 ```sh
+nvm use 24
 npm install --prefix /absolute/path/to/pi-a2ui --omit=dev --ignore-scripts --legacy-peer-deps
 pi install -l --approve /absolute/path/to/pi-a2ui
 ```
@@ -60,6 +62,10 @@ Supported components include bounded native-tool LogView and finite line/bar Cha
 
 Rendering validates the entire replacement before publishing it. Invalid source leaves the old surface intact. A tool result does not wait for a human; the browser action becomes a later structured user message, with `followUp` during generation. “Sent to Pi” acknowledges one local dispatch attempt, not model success; asynchronous failures appear in Pi. Ambiguous network failures are not automatically retried.
 
+## Component support and extension opportunities
+
+This version exposes12 official Basic components plus4 custom Pi components (CodeDiff, TestResults, LogView, Chart). Official List, Modal, Icon, Image, Video and AudioPlayer are not enabled. Proposed tables, code blocks, collapsible details and status/progress widgets are future work, not shipped features. See the [component inventory and practical extension guide](https://github.com/Jackallink/pi-a2ui/blob/v0.1.3/docs/components-and-extensions.md).
+
 ## State and local boundary
 
 The current branch's latest valid successful tool-result snapshot restores on reload/navigation. Credentials, duplicate caches and draft keystrokes are never saved in tool details. Old epochs/revisions cannot submit actions to new UI. The service closes clients and listener on Pi shutdown/reload.
@@ -71,7 +77,7 @@ Known upstream dependency risk: `npm audit` reports GHSA-mrhx-c7xc-m3w5 in Zod, 
 ## Develop and verify
 
 ```sh
-nvm use
+nvm use 24
 npm ci
 npm run build
 npm run check
@@ -100,4 +106,4 @@ pi remove -l --approve /absolute/path/to/pi-a2ui
 
 Run removal from the same project used for installation; omit `-l` only for a user-wide registration. Existing Pi sessions and credentials are retained.
 
-Development runtime: run `nvm use` (Node24, pinned by `.nvmrc`) before installing or testing. The version-specific acceptance scenarios use `A2UI_ACCEPT_SCENARIO=forms`, `coding` or `live` with the production-installed package.
+Supported runtime: **Node 24.x only**. Run `nvm use 24` (also pinned by `.nvmrc`) before installing or testing. The version-specific acceptance scenarios use `A2UI_ACCEPT_SCENARIO=forms`, `coding` or `live` with the production-installed package.

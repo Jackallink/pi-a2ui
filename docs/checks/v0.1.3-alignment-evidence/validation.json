@@ -2,21 +2,21 @@
   {
     "check": "build",
     "exitCode": 0,
-    "seconds": 0.29
+    "seconds": 0.25
   },
   {
     "check": "check",
     "exitCode": 0,
-    "seconds": 3.19
+    "seconds": 3.16
   },
   {
     "check": "node",
     "exitCode": 0,
-    "seconds": 1.21
+    "seconds": 1.12
   },
   {
     "check": "browser",
     "exitCode": 0,
-    "seconds": 3.9
+    "seconds": 3.93
   }
 ]

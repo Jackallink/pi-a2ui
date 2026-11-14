@@ -42,3 +42,17 @@ test("P05 distribution includes a current0.1.3 changelog while preserving delive
   const current = readFileSync("CHANGELOG.md", "utf8").split(/^## 0\.1\.0/m)[0];
   for (const component of ["CheckBox", "CodeDiff", "TestResults", "LogView", "Chart"]) assert.ok(current.includes(component));
 });
+
+// Explicit user support contract; historical releases may have older engine claims.
+test("V06 only Node24 is supported and current installation guidance pins that major", () => {
+  const lock = JSON.parse(readFileSync("package-lock.json", "utf8"));
+  assert.equal(metadata.engines.node, ">=24.0.0 <25.0.0");
+  assert.equal(lock.packages[""].engines.node, metadata.engines.node);
+  assert.equal(readFileSync(".nvmrc", "utf8").trim(), "24");
+  for (const file of ["README.md", "docs/releases/v0.1.3.md"]) {
+    const guidance = readFileSync(file, "utf8");
+    assert.match(guidance, /Node 24\.x/);
+    assert.match(guidance, /nvm use 24/);
+    assert.doesNotMatch(guidance, /Node\s*(?:>=\s*)?22(?:\b|\.)/i);
+  }
+});

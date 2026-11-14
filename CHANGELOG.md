@@ -3,7 +3,8 @@
 ## 0.1.3 - 2026-11-14
 
 - Version-alignment checkpoint: publish the complete v0.1.1 functionality as v0.1.3 to remove ambiguity with historical development version labels.
-- Update package/lock metadata and current Git installation/removal references. No runtime, browser bundle, dependency version or feature change.
+- Require Node 24.x only in engine metadata/current installation guidance; use `nvm use 24`. Older runtime claims in historical version records are superseded for this release.
+- Update package/lock metadata and current Git installation/removal references; document component support and future extension opportunities. No runtime implementation, browser bundle or dependency version change.
 - Preserve immutable v0.1.1 source/assets and its feature history below. Version0.1.2 remains unpublished.
 
 ## 0.1.1 - 2026-11-14

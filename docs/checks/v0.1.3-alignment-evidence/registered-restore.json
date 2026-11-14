@@ -9,6 +9,7 @@
   "listenerReleased": true,
   "processExited": true,
   "version": "0.1.3",
+  "nodeSupport": "24.x only",
   "normalRegisteredDiscovery": true,
   "explicitExtensionArgument": false,
   "restoredChartBars": 3,
