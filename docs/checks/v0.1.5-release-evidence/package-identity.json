@@ -1,0 +1,12 @@
+{
+  "sourceSha": "0253ef35c01e0e4556ef2070b9b9bc8423f59c64",
+  "archiveSHA256": "9b33ccc1929baade75aca1cf490962f48d89070733286867b74490b4d93af8f6",
+  "payloadFiles": 71,
+  "sourceArchiveInstalledEqual": true,
+  "deltaFromReviewedCandidate": [
+    "package/README.md"
+  ],
+  "runtimeDistSkillCompilerDependenciesUnchanged": true,
+  "productionOnlyInstall": true,
+  "node": "v24.18.1"
+}
