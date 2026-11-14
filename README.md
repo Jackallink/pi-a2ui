@@ -4,7 +4,7 @@ A local interactive canvas for the Pi coding agent. Pi keeps the conversation an
 
 Requires Node >=22.19.0 and Pi >=1.5.0. A2UI protocol 1.0, pinned Agent SDK 0.1.0 and Web Core/Lit 0.15.0.
 
-Version 0.1.1 combines typed forms/layout, coding review components and bounded native logs/charts. It supports forms, choices and task cards alongside Pi; it does not add a separate model or change Pi's tool permissions. Real model acceptance used Volcengine Ark Agent Plan `glm-5.3-flash`. The extension uses whichever model you select in Pi.
+Version 0.1.3 is a version-alignment checkpoint with the same complete functionality as v0.1.1: typed forms/layout, coding review components and bounded native logs/charts. It supports forms, choices and task cards alongside Pi; it does not add a separate model or change Pi's tool permissions. Real model acceptance used Volcengine Ark Agent Plan `glm-5.3-flash`. The extension uses whichever model you select in Pi.
 
 Project source is MIT licensed. The bundled browser libraries retain their own licenses; complete third-party license/notice texts are included in `THIRD_PARTY_LICENSES.txt` in the distribution.
 
@@ -17,7 +17,7 @@ The package is distributed through Git and local paths; it is not published to n
 From the Pi project where you want this package enabled:
 
 ```sh
-pi install -l --approve git:github.com/Jackallink/pi-a2ui@v0.1.1
+pi install -l --approve git:github.com/Jackallink/pi-a2ui@v0.1.3
 ```
 
 Pi clones the pinned ref and installs production dependencies. Ready browser assets and full third-party licenses are committed in the repository; no browser build is required. Tags/commits are pinned: `pi update --extensions` does not advance a configured tag to the next release. To upgrade, select the new release ref.
@@ -56,7 +56,7 @@ root = Card(Column([
 ]))
 ```
 
-Version 0.1.1 includes bounded native-tool LogView and finite line/bar Chart; a2ui_update_chart updates series without replacing inputs. Native log collection uses Pi events and makes no model request per chunk. Log display can be paused locally; earlier omitted content is marked. The version also includes read-only CodeDiff and TestResults under a versioned Pi catalog. It also adds CheckBox, ChoicePicker, Slider, DateTimeInput, Tabs and Divider to Text, Column, Row, Card, Button and TextField. Text and source content are escaped plain text. Coding follow-up buttons carry literal proposalId/resultId; source/test records are immutable within a session. TestResults displays supplied case records and provenance reported by Pi; it does not certify a test execution. Functions, checks, dynamic templates, media, HTML and general RPC are unavailable. Bind submitted values directly to absolute input value paths. TextField uses string, CheckBox boolean, Slider finite bounded number, ChoicePicker string array; DateTimeInput uses explicit date/time flags and local calendar strings (optional :00 seconds), with static bounds. Literal event context is checked against the committed definition.
+Supported components include bounded native-tool LogView and finite line/bar Chart; a2ui_update_chart updates series without replacing inputs. Native log collection uses Pi events and makes no model request per chunk. Log display can be paused locally; earlier omitted content is marked. The version also includes read-only CodeDiff and TestResults under a versioned Pi catalog. It also adds CheckBox, ChoicePicker, Slider, DateTimeInput, Tabs and Divider to Text, Column, Row, Card, Button and TextField. Text and source content are escaped plain text. Coding follow-up buttons carry literal proposalId/resultId; source/test records are immutable within a session. TestResults displays supplied case records and provenance reported by Pi; it does not certify a test execution. Functions, checks, dynamic templates, media, HTML and general RPC are unavailable. Bind submitted values directly to absolute input value paths. TextField uses string, CheckBox boolean, Slider finite bounded number, ChoicePicker string array; DateTimeInput uses explicit date/time flags and local calendar strings (optional :00 seconds), with static bounds. Literal event context is checked against the committed definition.
 
 Rendering validates the entire replacement before publishing it. Invalid source leaves the old surface intact. A tool result does not wait for a human; the browser action becomes a later structured user message, with `followUp` during generation. “Sent to Pi” acknowledges one local dispatch attempt, not model success; asynchronous failures appear in Pi. Ambiguous network failures are not automatically retried.
 
@@ -86,14 +86,14 @@ Live acceptance defaults to Agent Plan `volcengine-ark/glm-5.3-flash` and checks
 
 ## Release scope
 
-[Version0.1.1](docs/releases/v0.1.1.md) contains all three slices: typed forms/layout, CodeDiff/TestResults, and LogView/Chart. Earlier0.1.2/0.1.3 labels describe unpublished development candidates; they are included in0.1.1 and are not separate releases. The immutable [v0.1.0 checkpoint](https://github.com/Jackallink/pi-a2ui/releases/tag/v0.1.0) remains available.
+[Version0.1.3](docs/releases/v0.1.3.md) aligns the public version with historical development labels. It has the same complete functionality as published [v0.1.1](docs/releases/v0.1.1.md), which first delivered all three slices. The earlier development candidates named0.1.3 were not published; the new v0.1.3 tag identifies this reviewed checkpoint. Version0.1.2 remains unpublished. Existing v0.1.0/v0.1.1 tags and assets are immutable.
 
-See [CHANGELOG.md](CHANGELOG.md), [ROADMAP.md](ROADMAP.md), and the [Pi package distribution contract](docs/specs/005-v0.1.1-distribution.md). Historical design/test evidence preserves each original feature slice and artifact identity.
+See [CHANGELOG.md](CHANGELOG.md), [ROADMAP.md](ROADMAP.md), the [Pi package distribution contract](docs/specs/005-v0.1.1-distribution.md), and the [version-alignment contract](docs/specs/006-v0.1.3-version-alignment.md). Historical design/test evidence preserves each original feature slice and artifact identity.
 
 ## Remove
 
 ```sh
-pi remove -l --approve git:github.com/Jackallink/pi-a2ui@v0.1.1
+pi remove -l --approve git:github.com/Jackallink/pi-a2ui@v0.1.3
 # For the local route instead:
 pi remove -l --approve /absolute/path/to/pi-a2ui
 ```

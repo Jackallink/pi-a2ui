@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.3 - 2026-11-14
+
+- Version-alignment checkpoint: publish the complete v0.1.1 functionality as v0.1.3 to remove ambiguity with historical development version labels.
+- Update package/lock metadata and current Git installation/removal references. No runtime, browser bundle, dependency version or feature change.
+- Preserve immutable v0.1.1 source/assets and its feature history below. Version0.1.2 remains unpublished.
+
 ## 0.1.1 - 2026-11-14
 
 - Add official CheckBox, ChoicePicker, Slider, DateTimeInput, Tabs and Divider with validated typed values and tab-slot traversal; preserve legacy shared TextField bindings.

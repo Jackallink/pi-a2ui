@@ -6,9 +6,9 @@ import { parseChangelog } from "../node_modules/@earendil-works/pi-coding-agent/
 
 const metadata = JSON.parse(readFileSync("package.json", "utf8"));
 
-test("P01 all approved feature slices ship as one0.1.1 with matching lockfile identity", () => {
+test("P01 all approved feature slices ship in the current0.1.3 checkpoint with matching lockfile identity", () => {
   const lock = JSON.parse(readFileSync("package-lock.json", "utf8"));
-  assert.equal(metadata.version, "0.1.1");
+  assert.equal(metadata.version, "0.1.3");
   assert.equal(lock.version, metadata.version);
   assert.equal(lock.packages[""].version, metadata.version);
 });
@@ -32,12 +32,13 @@ test("P02 fresh Git distribution contains ready assets and complete legal materi
   }
 });
 
-test("P05 distribution includes a Pi-readable0.1.1 changelog with every delivered slice", () => {
+test("P05 distribution includes a current0.1.3 changelog while preserving delivered0.1.1 history", () => {
   const packed = JSON.parse(execFileSync("npm", ["pack", "--dry-run", "--ignore-scripts", "--json"], { encoding: "utf8" }));
   assert.ok(packed[0].files.some((file: { path: string }) => file.path === "CHANGELOG.md"));
   const entries = parseChangelog("CHANGELOG.md");
+  assert.deepEqual([entries[0]?.major, entries[0]?.minor, entries[0]?.patch], [0, 1, 3]);
   assert.ok(entries.some(entry => entry.major === 0 && entry.minor === 1 && entry.patch === 1));
-  assert.ok(!entries.some(entry => entry.major === 0 && entry.minor === 1 && [2, 3].includes(entry.patch)));
+  assert.ok(!entries.some(entry => entry.major === 0 && entry.minor === 1 && entry.patch === 2));
   const current = readFileSync("CHANGELOG.md", "utf8").split(/^## 0\.1\.0/m)[0];
   for (const component of ["CheckBox", "CodeDiff", "TestResults", "LogView", "Chart"]) assert.ok(current.includes(component));
 });
