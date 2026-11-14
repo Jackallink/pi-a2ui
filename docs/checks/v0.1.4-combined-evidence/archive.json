@@ -1,0 +1,7 @@
+{
+  "source": "64eebf7df938e8ca7a86ce07cb95761c1b28975e",
+  "sha256": "e1c75b224c7d07408582fb1405e4959dd992e0f7eecd5e9489971b797da7cf29",
+  "files": 53,
+  "allPayloadBytesMatchSourceAndConsumer": true,
+  "node": "24.18.1"
+}
