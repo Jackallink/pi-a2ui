@@ -10,7 +10,7 @@ export function validateWorkbench(message:SurfaceMessage,initial=false):void{
  for(const c of message.createSurface.components){
   if(c.component==='CodeBlock'||c.component==='MarkdownView'){
    const {id:_,component:__,...props}=c;const p=(c.component==='CodeBlock'?codeBlockApi:markdownApi).schema.parse(props);const value='code' in p?p.code:p.text;
-   if(new TextEncoder().encode(value).byteLength>16384||value.split('\n').length>512)throw new UiError(413,'Text block exceeds16KiB/512 lines');Object.assign(c,p);
+   if(new TextEncoder().encode(value).byteLength>16384||value.split(/\r\n|\r|\n/).length>512)throw new UiError(413,'Text block exceeds16KiB/512 lines');Object.assign(c,p);
   }
   if(c.component==='DataTable'){
    const {id:_,component:__,...props}=c;const p=dataTableApi.schema.parse(props);

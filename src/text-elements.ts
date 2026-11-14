@@ -7,7 +7,7 @@ function inline(text:string):Array<string|TemplateResult>{
  for(const match of text.matchAll(pattern)){nodes.push(text.slice(offset,match.index));const value=match[0];nodes.push(value.startsWith('`')?html`<code>${value.slice(1,-1)}</code>`:value.startsWith('**')?html`<strong>${value.slice(2,-2)}</strong>`:html`<em>${value.slice(1,-1)}</em>`);offset=match.index!+value.length;}nodes.push(text.slice(offset));return nodes;
 }
 function markdown(text:string):TemplateResult[]{
- const lines=text.split('\n');const nodes:TemplateResult[]=[];
+ const lines=text.split(/\r\n|\r|\n/);const nodes:TemplateResult[]=[];
  for(let index=0;index<lines.length;){const line=lines[index];
   if(!line.trim()){index++;continue;}
   if(/^```[^`]*$/.test(line)){const code:string[]=[];index++;while(index<lines.length&&!/^```\s*$/.test(lines[index]))code.push(lines[index++]);if(index<lines.length)index++;nodes.push(html`<pre><code>${code.join('\n')}</code></pre>`);continue;}

@@ -253,3 +253,5 @@ test('W2 code preserves whitespace, clipboard success/failure stays local, Markd
 test('W2 native clipboard receives exact code from user click',async({page,context,canvas})=>{
  await context.grantPermissions(['clipboard-read','clipboard-write'],{origin:canvas.origin});const code='  hello\n\t世界\n';canvas.session.render('form',`root = CodeBlock(code=${JSON.stringify(code)})`);await page.goto(canvas.origin);await page.getByRole('button',{name:'Copy code',exact:true}).click();await expect(page.getByRole('status').filter({hasText:'Copied'})).toBeVisible();expect(await page.evaluate(()=>navigator.clipboard.readText())).toBe(code);expect(canvas.sent).toEqual([]);
 });
+
+test('W2 Markdown treats CRLF and CR as logical line breaks',async({page,canvas})=>{canvas.session.render('form',`root = MarkdownView(text=${JSON.stringify('# Title\r\n\r\n- One\r- Two')})`);await page.goto(canvas.origin);await expect(page.getByRole('heading',{name:'Title',exact:true})).toBeVisible();await expect(page.locator('pi-a2ui-markdown li')).toHaveCount(2);});
