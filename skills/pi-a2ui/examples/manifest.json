@@ -106,5 +106,103 @@
       "Video",
       "AudioPlayer"
     ]
+  },
+  {
+    "name": "tree-navigation",
+    "requires": [
+      "Column",
+      "Row",
+      "Button",
+      "Text",
+      "Details"
+    ],
+    "pattern": "tree-navigation",
+    "reference": "references/navigation-and-selection.md"
+  },
+  {
+    "name": "searchable-picker",
+    "requires": [
+      "Column",
+      "Button",
+      "Text",
+      "SearchablePicker"
+    ],
+    "pattern": "searchable-picker",
+    "reference": "references/navigation-and-selection.md"
+  },
+  {
+    "name": "summary-metrics",
+    "requires": [
+      "Column",
+      "Card",
+      "Row",
+      "Text",
+      "StatusBadge"
+    ],
+    "pattern": "summary-metrics",
+    "reference": "references/summaries-and-feedback.md"
+  },
+  {
+    "name": "validated-form",
+    "requires": [
+      "TextField",
+      "CheckBox",
+      "Button",
+      "Text",
+      "FormValidation",
+      "Column"
+    ],
+    "pattern": "validated-form",
+    "reference": "references/summaries-and-feedback.md"
+  },
+  {
+    "name": "feedback-states",
+    "requires": [
+      "Column",
+      "Card",
+      "Icon",
+      "Text",
+      "Button",
+      "StatusBadge"
+    ],
+    "pattern": "feedback-states",
+    "reference": "references/summaries-and-feedback.md"
+  },
+  {
+    "name": "activity-timeline",
+    "requires": [
+      "Column",
+      "TextField",
+      "TaskProgress",
+      "Details",
+      "ActivityTimeline",
+      "LogView",
+      "Button",
+      "Text"
+    ],
+    "pattern": "activity-timeline",
+    "reference": "references/timeline-and-evidence.md"
+  },
+  {
+    "name": "evidence-location",
+    "requires": [
+      "Button",
+      "Text",
+      "Card",
+      "Column"
+    ],
+    "pattern": "evidence-location",
+    "reference": "references/timeline-and-evidence.md"
+  },
+  {
+    "name": "command-actions",
+    "requires": [
+      "Column",
+      "Text",
+      "Row",
+      "Button"
+    ],
+    "pattern": "command-actions",
+    "reference": "references/keyboard-actions.md"
   }
 ]

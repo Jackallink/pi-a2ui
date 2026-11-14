@@ -1,0 +1,3 @@
+# Supplied sample reference, not a browser file link or verified source record.
+inspect = Button(child=Text(text="Inspect compiler.ts:1"),action=Event("inspect_source",{evidenceId:"compiler-entry",file:"src/compiler.ts",line:1}))
+root = Card(child=Column(children=[Text(text="Evidence ID: compiler-entry"),Text(text="Sample source location: src/compiler.ts:1"),Text(text="Reported reference — Pi must inspect the source under its normal permissions."),inspect]))

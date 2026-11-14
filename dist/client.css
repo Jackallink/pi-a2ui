@@ -75,3 +75,5 @@ code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0
 @media (prefers-reduced-motion: no-preference) {
   #surfaces { transition: opacity 150ms ease; }
 }
+
+.command-palette{width:min(92vw,38rem);max-height:85vh;overflow:auto;border:1px solid #94a3b8;border-radius:12px;padding:1.2rem}.command-palette::backdrop{background:#0f172a88}.command-palette label{display:grid;gap:.4rem}.command-palette input{padding:.6rem}.command-palette ul{list-style:none;padding:0;max-height:50vh;overflow:auto}.command-palette li button{width:100%;text-align:left;padding:.6rem;margin:.2rem 0}.command-palette button[data-current=true]{outline:2px solid #2563eb}

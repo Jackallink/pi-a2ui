@@ -1,9 +1,6 @@
-// src/assistant-cli.ts
-import { constants } from "node:fs";
-import { open, readFile } from "node:fs/promises";
-
-// src/live.ts
-import { z } from "zod";
+// src/interactions.ts
+import { z as z2 } from "zod";
+import { basicCatalog } from "@a2ui/web_core/v1_0";
 
 // src/protocol.ts
 var LIMITS = {
@@ -24,7 +21,93 @@ var UiError = class extends Error {
   }
 };
 
+// src/inputs.ts
+var inputTypes = /* @__PURE__ */ new Set(["TextField", "CheckBox", "ChoicePicker", "Slider", "DateTimeInput", "SearchablePicker"]);
+function inputPaths(components) {
+  const paths = /* @__PURE__ */ new Map();
+  for (const component of components) {
+    if (!inputTypes.has(component.component)) continue;
+    const value = component.value;
+    if (!value || typeof value !== "object" || !("@path" in value)) continue;
+    const path = value["@path"];
+    const previous = paths.get(path);
+    if (previous && (previous.component !== "TextField" || component.component !== "TextField")) throw new UiError(400, "Typed input bindings must not share paths");
+    paths.set(path, component);
+  }
+  return paths;
+}
+function datePart(value) {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+  if (!match) return false;
+  const [year, month, day] = match.slice(1).map(Number);
+  const leap = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
+  const days = [31, leap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  return year >= 1 && month >= 1 && month <= 12 && day >= 1 && day <= days[month - 1];
+}
+function dateValue(component, value, empty) {
+  if (typeof value !== "string") throw new UiError(400, "Date/time input must be a string");
+  if (empty && value === "") return "";
+  const date = component.enableDate;
+  const time = component.enableTime;
+  const parts = date && time ? value.split("T") : [value];
+  const valid = date && time ? parts.length === 2 && datePart(parts[0]) && timePart(parts[1]) : date ? datePart(value) : timePart(value);
+  if (!valid) throw new UiError(400, "Invalid local calendar date/time");
+  return time && (date ? parts[1] : value).length === 8 ? value.slice(0, -3) : value;
+}
+function timePart(value) {
+  return /^(?:[01]\d|2[0-3]):[0-5]\d(?::00)?$/.test(value);
+}
+function validateInput(component, value) {
+  switch (component.component) {
+    case "TextField":
+      if (typeof value !== "string") throw new UiError(400, "TextField context must be a string");
+      break;
+    case "CheckBox":
+      if (typeof value !== "boolean") throw new UiError(400, "CheckBox value must be a boolean");
+      break;
+    case "ChoicePicker":
+    case "SearchablePicker": {
+      const options = component.options;
+      const allowed = new Set(options.map((option) => option.value));
+      if (allowed.size !== options.length) throw new UiError(400, "Duplicate choice option IDs");
+      if (!Array.isArray(value) || value.some((item) => typeof item !== "string" || !allowed.has(item)) || new Set(value).size !== value.length || component.variant !== "multipleSelection" && value.length > 1) throw new UiError(400, "Invalid choice selection");
+      break;
+    }
+    case "Slider": {
+      const min = component.min ?? 0;
+      const max = component.max;
+      if (typeof min !== "number" || typeof max !== "number" || !Number.isFinite(min) || !Number.isFinite(max) || min >= max || !Number.isFinite(max - min)) throw new UiError(400, "Invalid static slider range");
+      if (typeof value !== "number" || !Number.isFinite(value) || value < min || value > max) throw new UiError(400, "Slider value outside the declared range");
+      if (component.steps !== void 0) {
+        const steps = component.steps;
+        if (typeof steps !== "number" || !Number.isSafeInteger(steps) || steps < 1) throw new UiError(400, "Invalid slider divisions");
+        const index = (value - min) / (max - min) * steps;
+        if (Math.abs(index - Math.round(index)) > 1e-8) throw new UiError(400, "Slider value is off the declared grid");
+      }
+      break;
+    }
+    case "DateTimeInput": {
+      if (typeof component.enableDate !== "boolean" || typeof component.enableTime !== "boolean" || !component.enableDate && !component.enableTime) throw new UiError(400, "Date/time flags must be explicit and enable at least one input");
+      const current = dateValue(component, value, true);
+      const min = component.min === void 0 ? void 0 : dateValue(component, component.min, false);
+      const max = component.max === void 0 ? void 0 : dateValue(component, component.max, false);
+      if (min !== void 0 && max !== void 0 && min > max || current !== "" && (min !== void 0 && current < min || max !== void 0 && current > max)) throw new UiError(400, "Date/time value outside the declared range");
+      break;
+    }
+  }
+}
+function validateInputs(components, resolve) {
+  const entries = [...components];
+  inputPaths(entries);
+  for (const component of entries) {
+    if (!inputTypes.has(component.component)) continue;
+    const value = component.value;
+    validateInput(component, value && typeof value === "object" && "@path" in value ? resolve(value["@path"]) : value);
+  }
+}
+
 // src/live.ts
+import { z } from "zod";
 var logStates = ["idle", "running", "completed", "error", "paused", "interrupted"];
 var logViewApi = { name: "LogView", schema: z.object({ stream: z.literal("tools").default("tools"), text: z.string().default(""), omitted: z.boolean().default(false), state: z.enum(logStates).default("idle") }).strict() };
 var seriesSchema = z.array(z.object({ name: z.string().min(1).max(128), points: z.array(z.object({ label: z.string().max(128), value: z.number().finite() }).strict()).max(200) }).strict()).max(4);
@@ -77,18 +160,91 @@ function validateLive(message, initial = false) {
   }
 }
 
+// src/interactions.ts
+var choice = basicCatalog.components.get("ChoicePicker").schema;
+var searchablePickerApi = { name: "SearchablePicker", schema: z2.object({ label: z2.string().min(1).max(128), options: z2.array(z2.object({ label: z2.string().min(1).max(128), value: z2.string().min(1).max(128) }).strict()).max(200), value: choice.shape.value, variant: z2.enum(["mutuallyExclusive", "multipleSelection"]).default("mutuallyExclusive") }).strict() };
+var ruleSchema = z2.object({ fieldId: z2.string().min(1).max(128), message: z2.string().min(1).max(256), required: z2.boolean().optional(), minLength: z2.number().int().min(0).max(4096).optional(), maxLength: z2.number().int().min(0).max(4096).optional() }).strict();
+var formValidationApi = { name: "FormValidation", schema: z2.object({ title: z2.string().min(1).max(128).default("Check these fields"), buttons: z2.array(z2.string().min(1).max(128)).min(1).max(16), rules: z2.array(ruleSchema).min(1).max(16) }).strict() };
+var timelineEntry = z2.object({ id: z2.string().regex(/^[A-Za-z0-9_-]{1,32}$/), name: z2.string().min(1).max(64), state: z2.enum(["running", "completed", "error", "interrupted"]), startedAt: z2.number().int().min(0).max(Number.MAX_SAFE_INTEGER), elapsedMs: z2.number().int().min(0).max(Number.MAX_SAFE_INTEGER) }).strict();
+var activityTimelineApi = { name: "ActivityTimeline", schema: z2.object({ stream: z2.literal("tools").default("tools"), entries: z2.array(timelineEntry).max(32).default([]), state: z2.enum(logStates).default("idle"), omitted: z2.boolean().default(false) }).strict() };
+var interactionApis = [searchablePickerApi, formValidationApi, activityTimelineApi];
+function bindingPath(value) {
+  return value && typeof value === "object" && !Array.isArray(value) && "@path" in value && typeof value["@path"] === "string" ? value["@path"] : void 0;
+}
+function declaration(component) {
+  return component?.action?.event?.context ?? {};
+}
+function validateInteractions(message, initial = false) {
+  const components = message.createSurface.components;
+  let validations = 0, timelines = 0;
+  for (const c of components) {
+    if (c.component === "SearchablePicker") {
+      const { id: _, component: __, ...props } = c;
+      const parsed = searchablePickerApi.schema.parse(props);
+      if (!bindingPath(parsed.value)) throw new UiError(400, "SearchablePicker requires an initialized absolute value binding");
+      Object.assign(c, parsed);
+    }
+    if (c.component === "ActivityTimeline") {
+      if (c.id.length > 512) throw new UiError(413, "Timeline component ID exceeds512 UTF-16 units");
+      if (++timelines > 1) throw new UiError(400, "Only one ActivityTimeline per surface");
+      const { id: _, component: __, ...props } = c;
+      const data = activityTimelineApi.schema.parse(props);
+      if (new Set(data.entries.map((row) => row.id)).size !== data.entries.length) throw new UiError(400, "Duplicate timeline row IDs");
+      if (initial && (data.entries.length || data.state !== "idle" || data.omitted)) throw new UiError(400, "ActivityTimeline initial values are server-controlled");
+      if (data.state !== "running" && data.entries.some((row) => row.state === "running") || data.state === "idle" && data.entries.length) throw new UiError(400, "Inconsistent timeline state");
+      Object.assign(c, data);
+      if (new TextEncoder().encode(JSON.stringify(c)).byteLength > 32768) throw new UiError(413, "Timeline complete component exceeds32KiB");
+    }
+    if (c.component === "FormValidation") {
+      if (++validations > 1) throw new UiError(400, "Only one FormValidation per surface");
+      const { id: _, component: __, ...props } = c;
+      const data = formValidationApi.schema.parse(props);
+      if (new Set(data.buttons).size !== data.buttons.length) throw new UiError(400, "FormValidation buttons must be distinct");
+      const fields = /* @__PURE__ */ new Set();
+      const paths = /* @__PURE__ */ new Set();
+      for (const rule of data.rules) {
+        const field = components.find((n) => n.id === rule.fieldId);
+        const path = bindingPath(field?.value);
+        if (!field || !["TextField", "CheckBox", "ChoicePicker", "SearchablePicker", "Slider", "DateTimeInput"].includes(field.component) || !path) throw new UiError(400, "Validation field must be a reachable bound input");
+        if (fields.has(rule.fieldId) || paths.has(path)) throw new UiError(400, "Validation rules must not share fields or paths");
+        fields.add(rule.fieldId);
+        paths.add(path);
+        if (rule.required !== true && !(rule.minLength !== void 0 && rule.minLength > 0) && rule.maxLength === void 0) throw new UiError(400, "Validation rule needs a meaningful constraint");
+        if (rule.minLength !== void 0 || rule.maxLength !== void 0) {
+          if (!["TextField", "ChoicePicker", "SearchablePicker"].includes(field.component)) throw new UiError(400, "Length rules require text or choices");
+          if ((rule.minLength ?? 0) > (rule.maxLength ?? 4096)) throw new UiError(400, "Reversed validation lengths");
+        }
+      }
+      for (const id of data.buttons) {
+        const button = components.find((n) => n.id === id);
+        if (button?.component !== "Button") throw new UiError(400, "Validation guard must name a reachable Button");
+        const values = Object.values(declaration(button));
+        for (const path of paths) if (!values.some((value) => bindingPath(value) === path)) throw new UiError(400, "Guarded Button must bind every ruled input path");
+      }
+      Object.assign(c, data);
+    }
+  }
+}
+
+// src/command-palette.ts
+var COMMAND_PALETTE_CAPABILITY = "command-palette";
+
+// src/assistant-cli.ts
+import { constants } from "node:fs";
+import { open, readFile } from "node:fs/promises";
+
 // src/workbench.ts
-import { z as z2 } from "zod";
-import { basicCatalog } from "@a2ui/web_core/v1_0";
-var identity = z2.string().regex(/^[A-Za-z0-9_-]{1,64}$/);
-var dataTableApi = { name: "DataTable", schema: z2.object({ caption: z2.string().min(1).max(256), columns: z2.array(z2.object({ id: identity, label: z2.string().min(1).max(128) }).strict()).min(1).max(12), rows: z2.array(z2.object({ id: identity, cells: z2.array(z2.union([z2.string().max(256), z2.number().finite(), z2.boolean(), z2.null()])).max(12) }).strict()).max(200), state: z2.enum(["ready", "loading", "error"]).default("ready"), message: z2.string().max(512).default("") }).strict() };
-var codeBlockApi = { name: "CodeBlock", schema: z2.object({ code: z2.string(), language: z2.string().max(32).default("text"), copyable: z2.boolean().default(true) }).strict() };
-var markdownApi = { name: "MarkdownView", schema: z2.object({ text: z2.string() }).strict() };
-var detailsApi = { name: "Details", schema: z2.object({ title: z2.string().min(1).max(256), child: basicCatalog.components.get("Card").schema.shape.child, open: z2.boolean().default(false) }).strict() };
-var statusBadgeApi = { name: "StatusBadge", schema: z2.object({ label: z2.string().min(1).max(256), status: z2.enum(["info", "success", "warning", "error", "running"]), provenance: z2.literal("reported").default("reported") }).strict() };
-var taskProgressApi = { name: "TaskProgress", schema: z2.object({ stream: z2.literal("tools").default("tools"), state: z2.enum(logStates).default("idle"), started: z2.number().int().min(0).max(1024).default(0), settled: z2.number().int().min(0).max(1024).default(0), failed: z2.number().int().min(0).max(1024).default(0), omitted: z2.boolean().default(false) }).strict() };
-var artifactUrl = z2.string().regex(/^\/api\/artifacts\/[a-f0-9]{32}$/);
-var artifactPreviewApi = { name: "ArtifactPreview", schema: z2.object({ src: artifactUrl, kind: z2.enum(["image", "video", "audio"]), label: z2.string().min(1).max(256) }).strict() };
+import { z as z3 } from "zod";
+import { basicCatalog as basicCatalog2 } from "@a2ui/web_core/v1_0";
+var identity = z3.string().regex(/^[A-Za-z0-9_-]{1,64}$/);
+var dataTableApi = { name: "DataTable", schema: z3.object({ caption: z3.string().min(1).max(256), columns: z3.array(z3.object({ id: identity, label: z3.string().min(1).max(128) }).strict()).min(1).max(12), rows: z3.array(z3.object({ id: identity, cells: z3.array(z3.union([z3.string().max(256), z3.number().finite(), z3.boolean(), z3.null()])).max(12) }).strict()).max(200), state: z3.enum(["ready", "loading", "error"]).default("ready"), message: z3.string().max(512).default("") }).strict() };
+var codeBlockApi = { name: "CodeBlock", schema: z3.object({ code: z3.string(), language: z3.string().max(32).default("text"), copyable: z3.boolean().default(true) }).strict() };
+var markdownApi = { name: "MarkdownView", schema: z3.object({ text: z3.string() }).strict() };
+var detailsApi = { name: "Details", schema: z3.object({ title: z3.string().min(1).max(256), child: basicCatalog2.components.get("Card").schema.shape.child, open: z3.boolean().default(false) }).strict() };
+var statusBadgeApi = { name: "StatusBadge", schema: z3.object({ label: z3.string().min(1).max(256), status: z3.enum(["info", "success", "warning", "error", "running"]), provenance: z3.literal("reported").default("reported") }).strict() };
+var taskProgressApi = { name: "TaskProgress", schema: z3.object({ stream: z3.literal("tools").default("tools"), state: z3.enum(logStates).default("idle"), started: z3.number().int().min(0).max(1024).default(0), settled: z3.number().int().min(0).max(1024).default(0), failed: z3.number().int().min(0).max(1024).default(0), omitted: z3.boolean().default(false) }).strict() };
+var artifactUrl = z3.string().regex(/^\/api\/artifacts\/[a-f0-9]{32}$/);
+var artifactPreviewApi = { name: "ArtifactPreview", schema: z3.object({ src: artifactUrl, kind: z3.enum(["image", "video", "audio"]), label: z3.string().min(1).max(256) }).strict() };
 var workbenchApis = [dataTableApi, codeBlockApi, markdownApi, detailsApi, statusBadgeApi, taskProgressApi, artifactPreviewApi];
 function validateWorkbench(message, initial = false) {
   let progressCount = 0, modalCount = 0;
@@ -134,96 +290,12 @@ function validateWorkbench(message, initial = false) {
 // src/compiler.ts
 import { A2uiGenerator, CatalogConfig, ExpressFormatFactory, RendererState } from "@a2ui/agent";
 
-// src/inputs.ts
-var inputTypes = /* @__PURE__ */ new Set(["TextField", "CheckBox", "ChoicePicker", "Slider", "DateTimeInput"]);
-function inputPaths(components) {
-  const paths = /* @__PURE__ */ new Map();
-  for (const component of components) {
-    if (!inputTypes.has(component.component)) continue;
-    const value = component.value;
-    if (!value || typeof value !== "object" || !("@path" in value)) continue;
-    const path = value["@path"];
-    const previous = paths.get(path);
-    if (previous && (previous.component !== "TextField" || component.component !== "TextField")) throw new UiError(400, "Typed input bindings must not share paths");
-    paths.set(path, component);
-  }
-  return paths;
-}
-function datePart(value) {
-  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
-  if (!match) return false;
-  const [year, month, day] = match.slice(1).map(Number);
-  const leap = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
-  const days = [31, leap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-  return year >= 1 && month >= 1 && month <= 12 && day >= 1 && day <= days[month - 1];
-}
-function dateValue(component, value, empty) {
-  if (typeof value !== "string") throw new UiError(400, "Date/time input must be a string");
-  if (empty && value === "") return "";
-  const date = component.enableDate;
-  const time = component.enableTime;
-  const parts = date && time ? value.split("T") : [value];
-  const valid = date && time ? parts.length === 2 && datePart(parts[0]) && timePart(parts[1]) : date ? datePart(value) : timePart(value);
-  if (!valid) throw new UiError(400, "Invalid local calendar date/time");
-  return time && (date ? parts[1] : value).length === 8 ? value.slice(0, -3) : value;
-}
-function timePart(value) {
-  return /^(?:[01]\d|2[0-3]):[0-5]\d(?::00)?$/.test(value);
-}
-function validateInput(component, value) {
-  switch (component.component) {
-    case "TextField":
-      if (typeof value !== "string") throw new UiError(400, "TextField context must be a string");
-      break;
-    case "CheckBox":
-      if (typeof value !== "boolean") throw new UiError(400, "CheckBox value must be a boolean");
-      break;
-    case "ChoicePicker": {
-      const options = component.options;
-      const allowed = new Set(options.map((option) => option.value));
-      if (allowed.size !== options.length) throw new UiError(400, "Duplicate choice option IDs");
-      if (!Array.isArray(value) || value.some((item) => typeof item !== "string" || !allowed.has(item)) || new Set(value).size !== value.length || component.variant !== "multipleSelection" && value.length > 1) throw new UiError(400, "Invalid choice selection");
-      break;
-    }
-    case "Slider": {
-      const min = component.min ?? 0;
-      const max = component.max;
-      if (typeof min !== "number" || typeof max !== "number" || !Number.isFinite(min) || !Number.isFinite(max) || min >= max || !Number.isFinite(max - min)) throw new UiError(400, "Invalid static slider range");
-      if (typeof value !== "number" || !Number.isFinite(value) || value < min || value > max) throw new UiError(400, "Slider value outside the declared range");
-      if (component.steps !== void 0) {
-        const steps = component.steps;
-        if (typeof steps !== "number" || !Number.isSafeInteger(steps) || steps < 1) throw new UiError(400, "Invalid slider divisions");
-        const index = (value - min) / (max - min) * steps;
-        if (Math.abs(index - Math.round(index)) > 1e-8) throw new UiError(400, "Slider value is off the declared grid");
-      }
-      break;
-    }
-    case "DateTimeInput": {
-      if (typeof component.enableDate !== "boolean" || typeof component.enableTime !== "boolean" || !component.enableDate && !component.enableTime) throw new UiError(400, "Date/time flags must be explicit and enable at least one input");
-      const current = dateValue(component, value, true);
-      const min = component.min === void 0 ? void 0 : dateValue(component, component.min, false);
-      const max = component.max === void 0 ? void 0 : dateValue(component, component.max, false);
-      if (min !== void 0 && max !== void 0 && min > max || current !== "" && (min !== void 0 && current < min || max !== void 0 && current > max)) throw new UiError(400, "Date/time value outside the declared range");
-      break;
-    }
-  }
-}
-function validateInputs(components, resolve) {
-  const entries = [...components];
-  inputPaths(entries);
-  for (const component of entries) {
-    if (!inputTypes.has(component.component)) continue;
-    const value = component.value;
-    validateInput(component, value && typeof value === "object" && "@path" in value ? resolve(value["@path"]) : value);
-  }
-}
-
 // src/coding.ts
-import { z as z3 } from "zod";
-var identity2 = z3.string().regex(/^[A-Za-z0-9_-]{1,64}$/);
-var text = z3.string().min(1).max(512);
-var codeDiffApi = { name: "CodeDiff", schema: z3.object({ proposalId: identity2, filename: text, baseRevision: text, before: z3.string(), after: z3.string() }).strict() };
-var testResultsApi = { name: "TestResults", schema: z3.object({ resultId: identity2, command: text, evidence: text, cases: z3.array(z3.object({ id: identity2, name: text, status: z3.enum(["pass", "fail", "skip", "error"]), details: z3.string().max(4096).optional() }).strict()).max(128), summary: z3.object({ pass: z3.number().int().min(0).max(128), fail: z3.number().int().min(0).max(128), skip: z3.number().int().min(0).max(128), error: z3.number().int().min(0).max(128) }).strict() }).strict() };
+import { z as z4 } from "zod";
+var identity2 = z4.string().regex(/^[A-Za-z0-9_-]{1,64}$/);
+var text = z4.string().min(1).max(512);
+var codeDiffApi = { name: "CodeDiff", schema: z4.object({ proposalId: identity2, filename: text, baseRevision: text, before: z4.string(), after: z4.string() }).strict() };
+var testResultsApi = { name: "TestResults", schema: z4.object({ resultId: identity2, command: text, evidence: text, cases: z4.array(z4.object({ id: identity2, name: text, status: z4.enum(["pass", "fail", "skip", "error"]), details: z4.string().max(4096).optional() }).strict()).max(128), summary: z4.object({ pass: z4.number().int().min(0).max(128), fail: z4.number().int().min(0).max(128), skip: z4.number().int().min(0).max(128), error: z4.number().int().min(0).max(128) }).strict() }).strict() };
 var codingApis = [codeDiffApi, testResultsApi];
 function lines(value) {
   if (new TextEncoder().encode(value).byteLength > 16384) throw new UiError(413, "CodeDiff source exceeds16KiB per side");
@@ -274,9 +346,9 @@ function validateCoding(message) {
 }
 
 // src/catalog.ts
-import { basicCatalog as basicCatalog2 } from "@a2ui/web_core/v1_0";
-var official = basicCatalog2.derive({
-  catalogId: basicCatalog2.id,
+import { basicCatalog as basicCatalog3 } from "@a2ui/web_core/v1_0";
+var official = basicCatalog3.derive({
+  catalogId: basicCatalog3.id,
   components: ["Text", "Column", "Row", "Card", "Button", "TextField", "CheckBox", "ChoicePicker", "Slider", "DateTimeInput", "Tabs", "Divider"],
   functions: [],
   instructions: "Use only the twelve declared components. Text is literal escaped plain text. Use event actions only. No functions, checks, templates, URLs, media or executable expressions. Bind event context only to absolute value paths of reachable inputs. Initialize TextField with strings, CheckBox booleans, Slider bounded finite numbers, ChoicePicker string arrays. Use explicit enableDate/enableTime flags and local YYYY-MM-DD / HH:mm / YYYY-MM-DDTHH:mm date/time strings, optional :00 seconds. Declare static ranges/options."
@@ -286,10 +358,11 @@ var legacyCatalog = base.derive({ catalogId: official.id, functions: [], instruc
 var codingCatalog = legacyCatalog.derive({ catalogId: "https://jackallink.github.io/pi-a2ui/catalogs/coding-v1.json", functions: [], components: [...legacyCatalog.components.values(), ...codingApis], instructions: legacyCatalog.instructions?.replace("Use only the twelve declared components.", "Use only the declared components/signatures.") + " CodeDiff and TestResults are static read-only records. Each surface has at most one of each; every Button must include current literal proposalId/resultId. IDs are immutable within a session. Test results are supplied tool evidence, not independently certified by the browser." });
 var restrictedCatalog = codingCatalog.derive({ catalogId: "https://jackallink.github.io/pi-a2ui/catalogs/live-v1.json", functions: [], components: [...codingCatalog.components.values(), ...liveApis], instructions: codingCatalog.instructions + ' LogView(stream="tools") is server-controlled native tool output; omit its text/state/omitted initial values. Never place it inside a Button. Chart supports only static line/bar aligned finite series. Use a2ui_update_chart to update an existing Chart without replacing inputs. No model call per output chunk.' });
 var workbenchCatalog = restrictedCatalog.derive({ catalogId: "https://jackallink.github.io/pi-a2ui/catalogs/workbench-v1.json", functions: [], components: [...restrictedCatalog.components.values(), ...workbenchApis, ...["List", "Modal", "Icon", "Image", "Video", "AudioPlayer"].map((name) => {
-  const { element: _, tagName: __, ...api } = basicCatalog2.components.get(name);
+  const { element: _, tagName: __, ...api } = basicCatalog3.components.get(name);
   return api;
 })], instructions: restrictedCatalog.instructions?.replace("No functions, checks, templates, URLs, media or executable expressions.", "No functions, checks, templates or executable expressions. URLs only in registered artifact media props.") + ' List has static children. DataTable contains bounded primitive cells and unique row/column IDs. Table sorting and filtering are browser-local. CodeBlock preserves literal code with a local copy button; never nest it or DataTable in Button. MarkdownView explicitly renders a safe limited subset; no links/images/HTML. Text stays literal. Details(title,child,open?) is a local disclosure; Accordion is multiple Details. Never place local interactive widgets inside Button. StatusBadge is reported/unverified. TaskProgress(stream="tools") is native-server controlled; omit counters/state/omitted initial values, never fabricate a planned percentage. Modal(trigger,content) has a local Text/Icon-only trigger; at most one per surface. Image/Video/AudioPlayer.url (Video.posterUrl too) and ArtifactPreview.src must be the exact opaque src returned by a2ui_register_artifact. No external/file/data/blob URLs or SVG. Native media controls are local; no autoplay/microphone. Video supports WebM/MP4, AudioPlayer WAV; browser codec failures are visible. Artifacts expire on reset/pause; label is not verified metadata. Icon names are static local check/close/error/info/warning/folder/help/refresh/play/pause/search/settings.' });
-var catalogs = [legacyCatalog, codingCatalog, restrictedCatalog, workbenchCatalog];
+var interactionsCatalog = workbenchCatalog.derive({ catalogId: "https://jackallink.github.io/pi-a2ui/catalogs/interactions-v1.json", functions: [], components: [...workbenchCatalog.components.values(), ...interactionApis], instructions: workbenchCatalog.instructions + ' SearchablePicker(label,options,value,variant?) has static label/options and an initialized absolute string-array value binding. Single mutuallyExclusive or multipleSelection; query/filter/removal is browser-local and never submits arbitrary text. At most200 distinct option values; never nest in a Button. FormValidation(title?,buttons,rules) names reachable input field IDs and guarded Button IDs. Every guard must bind every ruled path; only required/minLength/maxLength constraints, no functions/checks. Initial business-invalid drafts are allowed; only guarded submits require valid values. Never nest validation in a Button. ActivityTimeline(stream="tools") is native-only observed order/timing; omit entries/state/omitted initial values, at most1 per surface, no Button ancestor.32row window, omissions explicit, no invented execution/duration. Use a separate Details to fold long evidence.' });
+var catalogs = [legacyCatalog, codingCatalog, restrictedCatalog, workbenchCatalog, interactionsCatalog];
 
 // src/compiler.ts
 function record(value) {
@@ -331,7 +404,7 @@ function noExpressions(value) {
   }
 }
 function processor(surfaceId) {
-  return new A2uiGenerator([new CatalogConfig(workbenchCatalog)], void 0, new ExpressFormatFactory({ surfaceId })).createProcessor({ "1.0": { supportedCatalogIds: [workbenchCatalog.id] } });
+  return new A2uiGenerator([new CatalogConfig(interactionsCatalog)], void 0, new ExpressFormatFactory({ surfaceId })).createProcessor({ "1.0": { supportedCatalogIds: [interactionsCatalog.id] } });
 }
 function validateSurface(input) {
   try {
@@ -340,7 +413,7 @@ function validateSurface(input) {
       if (reachable.has(id)) throw new UiError(400, "Components must form a tree without repeated children");
       const component = components.get(id);
       if (!component) throw new UiError(400, "Missing root or child");
-      if (insideButton && ["LogView", "DataTable", "CodeBlock", "Details", "TaskProgress", "Modal", "Image", "ArtifactPreview", "Video", "AudioPlayer"].includes(component.component)) throw new UiError(400, component.component + " must not be nested in a Button");
+      if (insideButton && ["LogView", "DataTable", "CodeBlock", "Details", "TaskProgress", "Modal", "Image", "ArtifactPreview", "Video", "AudioPlayer", "SearchablePicker", "FormValidation", "ActivityTimeline"].includes(component.component)) throw new UiError(400, component.component + " must not be nested in a Button");
       reachable.add(id);
       const children = component.component === "Modal" ? [component.trigger, component.content] : component.component === "Tabs" && Array.isArray(component.tabs) ? component.tabs.map((tab) => tab.child) : Array.isArray(component.children) ? component.children : typeof component.child === "string" ? [component.child] : [];
       for (const child of children) {
@@ -409,6 +482,7 @@ function validateSurface(input) {
     validateCoding(message);
     validateLive(message);
     validateWorkbench(message);
+    validateInteractions(message);
     return message;
   } catch (error) {
     if (error instanceof UiError) throw error;
@@ -470,7 +544,7 @@ function compile(surfaceId, source) {
   if (Buffer.byteLength(source, "utf8") > LIMITS.sourceBytes) throw new UiError(413, "Source byte limit exceeded");
   preflightSource(source);
   try {
-    const state = new RendererState([workbenchCatalog]);
+    const state = new RendererState([interactionsCatalog]);
     const parts = processor(surfaceId).parseResponse(source, { wrapped: false, state });
     let creates = 0;
     for (const part of parts) {
@@ -485,9 +559,10 @@ function compile(surfaceId, source) {
     if (creates !== 1 || state.surfaceIds.length !== 1 || state.surfaceIds[0] !== surfaceId) throw new UiError(400, "Exactly one complete surface is required");
     state.checkTopology([surfaceId]);
     const surface = state.getSurface(surfaceId);
-    const message = { version: "1.0", createSurface: { surfaceId, catalogId: workbenchCatalog.id, components: [...surface.componentsModel.getAll().values()].map((component) => component.componentTree), dataModel: surface.dataModel.get("/") } };
+    const message = { version: "1.0", createSurface: { surfaceId, catalogId: interactionsCatalog.id, components: [...surface.componentsModel.getAll().values()].map((component) => component.componentTree), dataModel: surface.dataModel.get("/") } };
     validateLive(message, true);
     validateWorkbench(message, true);
+    validateInteractions(message, true);
     return validateSurface(message);
   } catch (error) {
     if (error instanceof UiError) throw error;
@@ -496,7 +571,7 @@ function compile(surfaceId, source) {
 }
 
 // src/assistant-cli.ts
-var help = "Usage: node SKILL/scripts/a2ui.mjs catalog | examples | example NAME | check --surface-id ID FILE_OR_-\nRead-only preflight; rendering still requires a2ui_render. Requires Node24.x.\n";
+var help = "Usage: node SKILL/scripts/a2ui.mjs catalog | patterns | pattern NAME | examples | example NAME | check --surface-id ID FILE_OR_-\nRead-only preflight; rendering still requires a2ui_render. Requires Node24.x.\n";
 async function sourceFile(path) {
   const chunks = [];
   let size = 0;
@@ -542,13 +617,30 @@ async function runCli(args) {
     return 0;
   }
   const [command, ...rest] = args;
-  if (!["catalog", "examples", "example", "check"].includes(command) || ["catalog", "examples"].includes(command) && rest.length || command === "example" && rest.length !== 1 || command === "check" && (rest.length !== 3 || rest[0] !== "--surface-id")) return usage();
+  if (!["catalog", "patterns", "pattern", "examples", "example", "check"].includes(command) || ["catalog", "patterns", "examples"].includes(command) && rest.length || ["example", "pattern"].includes(command) && rest.length !== 1 || command === "check" && (rest.length !== 3 || rest[0] !== "--surface-id")) return usage();
   try {
     const probe = compile("preflight", 'root = Text(text="preflight")');
     const catalog = catalogs.find((c) => c.id === probe.createSurface.catalogId);
     if (command === "catalog") {
       const metadata = JSON.parse(await readFile(new URL("../package.json", import.meta.url), "utf8"));
       process.stdout.write(JSON.stringify({ packageVersion: metadata.version, nodeMajor: 24, catalogId: catalog.id, components: [...catalog.components.keys()].sort(), scope: "This helper package, not an arbitrary running Pi instance" }) + "\n");
+      return 0;
+    }
+    if (command === "patterns" || command === "pattern") {
+      const examples = JSON.parse(await readFile(new URL("../skills/pi-a2ui/examples/manifest.json", import.meta.url), "utf8"));
+      const metadata = JSON.parse(await readFile(new URL("../package.json", import.meta.url), "utf8"));
+      const identity3 = { packageVersion: metadata.version, catalogId: catalog.id, scope: "This helper package, not an arbitrary running Pi instance", shellCapabilities: [COMMAND_PALETTE_CAPABILITY] };
+      const patterns = examples.filter((example) => example.pattern).map((example) => {
+        if (!example.reference) throw new Error("Pattern reference missing");
+        return { name: example.pattern, template: example.name, reference: example.reference, requires: example.requires, templateAvailable: example.requires.every((name) => catalog.components.has(name)), requiresShellCapabilities: example.pattern === "command-actions" ? [COMMAND_PALETTE_CAPABILITY] : [] };
+      });
+      if (command === "patterns") {
+        process.stdout.write(JSON.stringify({ ...identity3, patterns }) + "\n");
+        return 0;
+      }
+      const selected = patterns.find((pattern) => pattern.name === rest[0]);
+      if (!selected) throw new Error("Unknown pattern; use patterns to list allowed names");
+      process.stdout.write(JSON.stringify({ ...identity3, pattern: selected }) + "\n");
       return 0;
     }
     if (command === "examples" || command === "example") {

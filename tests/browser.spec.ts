@@ -291,4 +291,207 @@ test('W7 real WAV and VP8WebM play through native controls and pause on pagehide
 test('W7 decoder failure and expired media have visible fallback while forms remain usable',async({page,canvas})=>{
  const {mkdtemp,writeFile,rm}=await import('node:fs/promises');const {tmpdir}=await import('node:os');const {join}=await import('node:path');const root=await mkdtemp(join(tmpdir(),'pi-a2ui-codec-'));try{await writeFile(join(root,'bad.wav'),'RIFF0000WAVE');const meta=await canvas.session.registerArtifact('bad.wav','audio',root);canvas.session.render('other',`root = AudioPlayer(url="${meta.src}",description="Bad audio")`);await open(page,canvas);await expect(page.getByText('Unavailable: media could not be played',{exact:true})).toBeVisible();await page.locator('input[type=text]').fill('Still usable');const video=await canvas.session.registerArtifact('tests/fixtures/blue.webm','video',process.cwd());canvas.session.render('other',`root = Video(url="${video.src}")`);canvas.session.reset(canvas.session.snapshot());await expect(page.getByText('Unavailable: media could not be played',{exact:true})).toBeVisible();await page.locator('input[type=text]').fill('Restored form');await expect(page.locator('input[type=text]')).toHaveValue('Restored form');}finally{await rm(root,{recursive:true,force:true});}
 });
-test('W7 paused canvas makes top-layer modal media controls inert',async({page,canvas})=>{const audio=await canvas.session.registerArtifact('tests/fixtures/tone.wav','audio',process.cwd());canvas.session.render('form',`root = Modal(trigger=Text("Open media"),content=AudioPlayer(url="${audio.src}",description="Modal audio"))`);await page.goto(canvas.origin);await page.getByRole('button',{name:'Open media',exact:true}).click();await expect.poll(()=>page.locator('audio').evaluate(e=>(e as HTMLMediaElement).readyState)).toBeGreaterThan(0);canvas.session.setEnabled(false);await expect(page.locator('#status')).toHaveText('Canvas paused');const audioBox=await page.locator('audio').boundingBox();await page.mouse.click(audioBox!.x+25,audioBox!.y+audioBox!.height-27);await page.waitForTimeout(150);expect(await page.locator('audio').evaluate(e=>(e as HTMLMediaElement).paused)).toBe(true);expect(await page.locator('dialog').evaluate(e=>(e as HTMLElement).inert)).toBe(true);canvas.session.setEnabled(true);await expect.poll(()=>page.locator('dialog').evaluate(e=>(e as HTMLElement).inert)).toBe(false);});
+test('W7 paused canvas makes top-layer modal media controls inert',async({page,canvas})=>{const audio=await canvas.session.registerArtifact('tests/fixtures/tone.wav','audio',process.cwd());canvas.session.render('form',`root = Modal(trigger=Text("Open media"),content=AudioPlayer(url="${audio.src}",description="Modal audio"))`);await page.goto(canvas.origin);await page.getByRole('button',{name:'Open media',exact:true}).click();await expect.poll(()=>page.locator('audio').evaluate(e=>(e as HTMLMediaElement).readyState)).toBeGreaterThan(0);canvas.session.setEnabled(false);await expect(page.locator('#status')).toHaveText('Canvas paused');const audioBox=await page.locator('audio').boundingBox();await page.mouse.click(audioBox!.x+25,audioBox!.y+audioBox!.height-27);await page.waitForTimeout(150);expect(await page.locator('audio').evaluate(e=>(e as HTMLMediaElement).paused)).toBe(true);expect(await page.locator('pi-a2ui-modal dialog').evaluate(e=>(e as HTMLElement).inert)).toBe(true);canvas.session.setEnabled(true);await expect.poll(()=>page.locator('pi-a2ui-modal dialog').evaluate(e=>(e as HTMLElement).inert)).toBe(false);});
+
+
+test("R01 hierarchy disclosure stays local and leaf intent is declared",async({page,canvas})=>{
+ const {readFile}=await import('node:fs/promises');
+ canvas.session.reset();canvas.session.render('navigation',await readFile('skills/pi-a2ui/examples/tree-navigation.express','utf8'));
+ const actions:string[]=[];page.on('request',r=>{if(r.url().endsWith('/api/actions'))actions.push(r.url());});
+ await page.goto(canvas.origin);
+ await expect(page.getByRole('button',{name:'Workspace',exact:true})).toBeVisible();
+ await expect(page.getByRole('button',{name:'compiler.ts',exact:true})).toBeHidden();
+ await page.locator('summary').filter({hasText:/^workspace$/}).press('Enter');
+ await page.locator('summary').filter({hasText:/^src$/}).press('Enter');
+ await expect(page.getByRole('button',{name:'compiler.ts',exact:true})).toBeVisible();
+ expect(actions).toHaveLength(0);expect(canvas.sent).toHaveLength(0);
+ await page.getByRole('button',{name:'compiler.ts',exact:true}).click();
+ await expect(page.locator('#notice')).toHaveText('Sent to Pi');
+ expect(actions).toHaveLength(1);expect(canvas.sent).toHaveLength(1);expect(canvas.sent[0]).toContain('"nodeId":"compiler"');
+});
+
+
+test("R02 keyboard search and hidden selections stay local across data patches",async({page,canvas})=>{
+ const source=`$/chosen = ["main"]
+ picker = SearchablePicker(label="Branch",variant="multipleSelection",options=[{label:"Main",value:"main"},{label:"Feature",value:"feat"}],value=$/chosen)
+ submit = Button(child=Text(text="Choose branch"),action=Event("choose",{chosen:$/chosen}))
+ chart = Chart(kind="line",series=[])
+ root = Column(children=[picker,submit,chart])`;
+ canvas.session.reset();canvas.session.render('pick',source);
+ const requests:string[]=[];const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>{if(r.url().endsWith('/api/actions'))requests.push(r.url());});
+ await page.goto(canvas.origin);const query=page.getByRole('searchbox',{name:'Search Branch'});
+ await query.fill('Fea');await expect(page.getByRole('button',{name:'Main · main',exact:true})).toHaveCount(0);
+ await expect(page.getByRole('button',{name:'Remove Main (main)',exact:true})).toBeVisible();
+ canvas.session.updateChart('pick',1,'chart',[{name:'Run',points:[{label:'now',value:1}]}]);
+ await expect(query).toHaveValue('Fea');await query.press('ArrowDown');
+ await expect(page.getByRole('button',{name:'Feature · feat',exact:true})).toBeFocused();await page.keyboard.press('Enter');
+ await expect(page.getByRole('button',{name:'Remove Feature (feat)',exact:true})).toBeVisible();
+ await page.keyboard.press('Tab');await expect(page.getByRole('button',{name:'Choose branch',exact:true})).toBeFocused();
+ await page.keyboard.press('Shift+Tab');await expect(query).toBeFocused();
+ await page.keyboard.press('Escape');await expect(query).toHaveValue('');
+ await query.press('ArrowUp');await page.keyboard.press('Home');
+ await expect(page.getByRole('button',{name:'Remove Main (main)',exact:true})).toBeFocused();await page.keyboard.press('Enter');
+ await query.fill('absent');await expect(page.getByText('No matches',{exact:true})).toBeVisible();
+ expect(requests).toHaveLength(0);expect(canvas.sent).toHaveLength(0);
+ await page.getByRole('button',{name:'Choose branch',exact:true}).click();await expect(page.locator('#notice')).toHaveText('Sent to Pi');
+ expect(requests).toHaveLength(1);expect(canvas.sent[0]).toContain('"chosen":["feat"]');expect(errors).toEqual([]);
+ canvas.session.render('pick','$/chosen = []\nroot = SearchablePicker(label="Branch",options=[],value=$/chosen)');
+ await expect(page.getByText('No options',{exact:true})).toBeVisible();
+});
+
+
+test("R03 compact summary keeps units source and reported status visible",async({page,canvas})=>{
+ const {readFile}=await import('node:fs/promises');canvas.session.reset();canvas.session.render('summary',await readFile('skills/pi-a2ui/examples/summary-metrics.express','utf8'));
+ await page.goto(canvas.origin);
+ await expect(page.getByText('Build duration: 12 s',{exact:true})).toBeVisible();
+ await expect(page.getByText('Source: example build output — replace with actual evidence',{exact:true})).toBeVisible();
+ await expect(page.getByText('Reported by Pi · not independently verified',{exact:true})).toBeVisible();
+ expect(canvas.sent).toHaveLength(0);
+});
+
+
+test("R04 invalid submit shows inline errors without POST then corrected values submit once",async({page,canvas})=>{
+ const {readFile}=await import('node:fs/promises');const validationSource=await readFile('skills/pi-a2ui/examples/validated-form.express','utf8');
+ canvas.session.reset();canvas.session.render('form',validationSource);
+ const requests:string[]=[];page.on('request',r=>{if(r.url().endsWith('/api/actions'))requests.push(r.url());});
+ await page.goto(canvas.origin);const input=page.getByRole('textbox');
+ await page.getByRole('button',{name:'Save form',exact:true}).click();
+ await expect(page.locator('pi-a2ui-form-validation')).toContainText('Enter 2 to 5 characters');
+ await expect(input).toHaveAttribute('aria-invalid','true');await expect(input).toBeFocused();
+ expect(requests).toHaveLength(0);expect(canvas.sent).toHaveLength(0);
+ await input.fill('A');await page.getByRole('button',{name:'Save form',exact:true}).click();await expect(input).toBeFocused();
+ await input.fill('😀😀😀');await page.getByRole('checkbox').check();
+ await expect(page.locator('.a2ui-field-error')).toHaveCount(0);await expect(input).not.toHaveAttribute('aria-invalid','true');
+ expect(requests).toHaveLength(0);await page.getByRole('button',{name:'Save form',exact:true}).click();
+ await expect(page.locator('#notice')).toHaveText('Sent to Pi');expect(requests).toHaveLength(1);expect(canvas.sent[0]).toContain('"name":"😀😀😀","ok":true');
+});
+
+test("R04 hidden errors use active Modal notice without echoing bound values or late focus",async({page,canvas})=>{
+ canvas.session.reset();canvas.session.render('older','root = Modal(trigger=Text(text="Other dialog"),content=Text(text="Older dialog"))');canvas.session.render('form',`$/secret = "private-fixture-42"
+ field = TextField(label=$/secret,value=$/secret)
+ submit = Button(child=Text(text="Validate inside"),action=Event("save",{value:$/secret}))
+ validation = FormValidation(buttons=["submit"],rules=[{fieldId:"field",message:"Enter at least20 characters",minLength:20}])
+ root = Column(children=[field,Details(title="Hidden errors",child=validation),Modal(trigger=Text(text="Open validation"),content=submit)])`);
+ const requests:string[]=[];page.on('request',r=>{if(r.url().endsWith('/api/actions'))requests.push(r.url());});
+ await page.goto(canvas.origin);await page.getByRole('button',{name:'Other dialog',exact:true}).click();await page.locator('[data-surface-id="form"] dialog').evaluate((node:HTMLDialogElement)=>node.showModal());const dialog=page.locator('[data-surface-id="form"] dialog');
+ await dialog.getByRole('button',{name:'Validate inside',exact:true}).click();const local=dialog.locator('.a2ui-validation-notice');
+ await expect(local).toHaveText('field: Enter at least20 characters');await expect(local).toBeFocused();await expect(local).not.toContainText('private-fixture-42');
+ await page.keyboard.press('Tab');await expect(dialog.getByRole('button',{name:'Close details'})).toBeFocused();
+ expect(requests).toHaveLength(0);await dialog.getByRole('button',{name:'Close details'}).click();await expect(page.locator('.a2ui-validation-notice')).toHaveCount(0);await page.locator('[data-surface-id="older"] dialog').evaluate((node:HTMLDialogElement)=>node.close());
+ await page.getByRole('button',{name:'Open validation',exact:true}).click();
+ await page.evaluate(()=>{const active=document.querySelector<HTMLDialogElement>('[data-surface-id="form"] dialog');active?.querySelector<HTMLButtonElement>('button:not(.modal-close)')?.click();active?.close();});
+ await expect(page.locator('.a2ui-validation-notice')).toHaveCount(0);
+ canvas.session.reset();canvas.session.render('form','root = Text(text="Replacement")');
+ await expect(page.getByText('Replacement',{exact:true})).toBeVisible();await expect(page.locator('.a2ui-field-error')).toHaveCount(0);expect(requests).toHaveLength(0);
+});
+
+
+test("R04 enhanced picker updates validation after its local binding setter",async({page,canvas})=>{
+ canvas.session.reset();canvas.session.render('form',`$/chosen=[]
+picker=SearchablePicker(label="Required choice",options=[{label:"Alpha",value:"a"}],value=$/chosen)
+submit=Button(child=Text(text="Save choice"),action=Event("save",{chosen:$/chosen}))
+root=Column(children=[picker,FormValidation(buttons=["submit"],rules=[{fieldId:"picker",message:"Choose one",required:true}]),submit])`);
+ await page.goto(canvas.origin);await page.getByRole('button',{name:'Save choice',exact:true}).click();await expect(page.locator('.a2ui-field-error')).toHaveCount(1);
+ await page.getByRole('button',{name:'Alpha · a',exact:true}).click();await expect(page.locator('.a2ui-field-error')).toHaveCount(0);expect(canvas.sent).toHaveLength(0);
+ await page.getByRole('button',{name:'Save choice',exact:true}).click();await expect(page.locator('#notice')).toHaveText('Sent to Pi');expect(canvas.sent).toHaveLength(1);expect(canvas.sent[0]).toContain('"chosen":["a"]');
+});
+
+
+test("R04 existing ChoicePicker chips revalidate after their SDK click setter",async({page,canvas})=>{
+ canvas.session.reset();canvas.session.render('form',`$/chosen=[]
+picker=ChoicePicker(label="Legacy chips",displayStyle="chips",variant="multipleSelection",options=[{label:"Alpha",value:"a"}],value=$/chosen)
+submit=Button(child=Text(text="Save chips"),action=Event("save",{chosen:$/chosen}))
+root=Column(children=[picker,FormValidation(buttons=["submit"],rules=[{fieldId:"picker",message:"Choose one chip",required:true}]),submit])`);
+ await page.goto(canvas.origin);await page.getByRole('button',{name:'Save chips',exact:true}).click();await expect(page.locator('.a2ui-field-error')).toHaveCount(1);
+ const alpha=page.getByRole('button',{name:'Alpha',exact:true});await alpha.press('Space');await expect(alpha).toHaveAttribute('aria-pressed','true');await expect(page.locator('.a2ui-field-error')).toHaveCount(0);
+ await alpha.press('Enter');await expect(page.locator('.a2ui-field-error')).toHaveCount(1);expect(canvas.sent).toHaveLength(0);
+ await alpha.click();await expect(page.locator('.a2ui-field-error')).toHaveCount(0);await page.getByRole('button',{name:'Save chips',exact:true}).click();await expect(page.locator('#notice')).toHaveText('Sent to Pi');expect(canvas.sent).toHaveLength(1);expect(canvas.sent[0]).toContain('"chosen":["a"]');
+});
+
+
+test("R05 feedback state patterns stay local until a declared recovery intent",async({page,canvas})=>{
+ const {readFile}=await import('node:fs/promises');canvas.session.reset();canvas.session.render('feedback',await readFile('skills/pi-a2ui/examples/feedback-states.express','utf8'));await page.goto(canvas.origin);
+ for(const text of ['Loading — placeholder only','No results','Not run','Reported error'])await expect(page.getByText(text,{exact:true})).toBeVisible();
+ expect(canvas.sent).toHaveLength(0);await page.getByRole('button',{name:'Request retry',exact:true}).click();await expect(page.locator('#notice')).toHaveText('Sent to Pi');expect(canvas.sent).toHaveLength(1);expect(canvas.sent[0]).toContain('"event":"request_retry"');expect(canvas.sent[0]).toContain('"state":"reported_error"');
+});
+
+
+test("R06 native timeline data patches and reconnect preserve form and disclosure",async({page,canvas})=>{
+ const {readFile}=await import('node:fs/promises');const {LiveTools}=await import('../src/live-tools.ts');canvas.session.reset();canvas.session.render('activity',await readFile('skills/pi-a2ui/examples/activity-timeline.express','utf8'));const live=new LiveTools(canvas.session);
+ try{await page.goto(canvas.origin);const input=page.getByRole('textbox');await input.fill('Timeline draft');await input.evaluate(e=>(window as any).timelineDraft=e);
+ const widget=page.locator('pi-a2ui-activity-timeline');await expect(widget).toContainText('No tracked tool events');live.beginRun();live.start('one','read');await expect(widget).toContainText('read · running');await expect(widget).toContainText('last observed');
+ live.end('one',{content:[]},false);live.start('two','bash');live.end('two',{content:[]},true);live.finishRun();await expect(widget).toContainText('read · completed');await expect(widget).toContainText('bash · error');
+ await expect(input).toHaveValue('Timeline draft');await expect(page.locator('details')).toHaveAttribute('open','');expect(await input.evaluate(e=>e===(window as any).timelineDraft)).toBe(true);
+ await page.evaluate(()=>{window.dispatchEvent(new PageTransitionEvent('pagehide'));window.dispatchEvent(new PageTransitionEvent('pageshow',{persisted:true}));});await expect(page.locator('#connection')).toHaveText('Connected to Pi');await expect(widget).toContainText('bash · error');await expect(input).toHaveValue('Timeline draft');
+ canvas.session.setEnabled(false);await expect(widget).toContainText('timeline · paused');canvas.session.setEnabled(true);await expect(widget).toContainText('No tracked tool events');await expect(input).toHaveValue('Timeline draft');expect(canvas.sent).toHaveLength(0);
+ }finally{live.close();}
+});
+
+
+test("R07 source location returns immutable intent with no file or external request",async({page,canvas})=>{
+ const {readFile}=await import('node:fs/promises');canvas.session.reset();canvas.session.render('evidence',await readFile('skills/pi-a2ui/examples/evidence-location.express','utf8'));const outside:string[]=[];page.on('request',r=>{if(!r.url().startsWith(canvas.origin))outside.push(r.url());});
+ await page.goto(canvas.origin);await expect(page.getByText('Evidence ID: compiler-entry',{exact:true})).toBeVisible();await expect(page.getByText('Sample source location: src/compiler.ts:1',{exact:true})).toBeVisible();expect(await page.locator('a[href]').count()).toBe(0);
+ await page.getByRole('button',{name:'Inspect compiler.ts:1',exact:true}).click();await expect(page.locator('#notice')).toHaveText('Sent to Pi');expect(canvas.sent).toHaveLength(1);expect(canvas.sent[0]).toContain('"file":"src/compiler.ts","line":1');expect(outside).toEqual([]);
+});
+
+
+test("R08 palette chooses a current declared action using the latest form draft",async({page,canvas})=>{
+ await open(page,canvas);const input=page.getByRole('textbox');await input.fill('Before palette');
+ await expect(page.getByRole('button',{name:'Find actions',exact:true})).toBeVisible();await page.getByRole('button',{name:'Find actions',exact:true}).click();const palette=page.getByRole('dialog',{name:'Find actions'});await expect(palette).toBeVisible();
+ await page.evaluate(()=>{const input=document.querySelector<HTMLInputElement>('input[type=text]')!;input.value='Latest draft';input.dispatchEvent(new Event('input',{bubbles:true}));});
+ await palette.getByRole('searchbox',{name:'Search actions'}).fill('Submit');await palette.getByRole('searchbox',{name:'Search actions'}).press('Enter');
+ await expect(palette).not.toBeVisible();await expect(page.locator('#notice')).toHaveText('Sent to Pi');expect(canvas.sent).toHaveLength(1);expect(canvas.sent[0]).toContain('"name":"Latest draft"');
+});
+
+test("R08 palette excludes local hidden actions and invalidates stale paused or pending targets",async({page,canvas})=>{
+ await delayActions(page);canvas.session.render('local','hidden=Button(child=Text(text="Hidden action"),action=Event("hidden"))\nroot=Column([CodeBlock(code="local"),Details(title="Hidden",child=hidden)])');await open(page,canvas);
+ await page.keyboard.press('Control+k');const palette=page.getByRole('dialog',{name:'Find actions'});await expect(palette).toBeVisible();await expect(palette.getByRole('button',{name:'Hidden action',exact:true})).toHaveCount(0);await expect(palette.getByRole('button',{name:/Copy/})).toHaveCount(0);
+ await page.keyboard.press('Escape');await expect(palette).not.toBeVisible();expect(canvas.sent).toHaveLength(0);
+ await page.getByRole('button',{name:'Find actions',exact:true}).click();canvas.session.render('form',form('Replaced palette source'));await expect(palette).not.toBeVisible();expect(canvas.sent).toHaveLength(0);
+ await page.getByRole('button',{name:'Find actions',exact:true}).click();canvas.session.reset();canvas.session.render('form',form('New palette epoch'));await expect(palette).not.toBeVisible();expect(canvas.sent).toHaveLength(0);
+ canvas.session.setEnabled(false);await expect(page.getByRole('button',{name:'Find actions',exact:true})).toBeDisabled();canvas.session.setEnabled(true);await expect(page.getByRole('button',{name:'Find actions',exact:true})).toBeEnabled();
+ await page.getByRole('button',{name:'Find actions',exact:true}).click();await palette.getByRole('searchbox',{name:'Search actions'}).press('Enter');await expect.poll(()=>heldCount(page)).toBe(1);await expect(page.getByRole('button',{name:'Find actions',exact:true})).toBeDisabled();await page.keyboard.press('Enter');expect(await heldCount(page)).toBe(1);await finishAction(page,0);
+});
+
+
+test("R08 unopened palette never steals input focus during reconnect",async({page,canvas})=>{
+ await open(page,canvas);const input=page.getByRole('textbox');await input.fill('Focus stays');
+ await page.evaluate(()=>{window.dispatchEvent(new PageTransitionEvent('pagehide'));window.dispatchEvent(new PageTransitionEvent('pageshow',{persisted:true}));});
+ await expect(page.locator('#connection')).toHaveText('Connected to Pi');await expect(input).toBeFocused();await expect(input).toHaveValue('Focus stays');
+});
+
+
+test("R08 keyboard focus duplicate labels empty query and another Modal stay local",async({page,canvas})=>{
+ canvas.session.render('other','root=Column([Button(child=Text(text="Submit"),action=Event("other")),Modal(trigger=Text(text="Show details"),content=Text(text="Local modal"))])');await open(page,canvas);const input=page.getByRole('textbox');await input.fill('Keyboard draft');await page.keyboard.press('Control+k');
+ const palette=page.getByRole('dialog',{name:'Find actions'});await expect(palette.getByRole('button',{name:/^Submit ·/})).toHaveCount(2);const query=palette.getByRole('searchbox',{name:'Search actions'});await query.press('ArrowDown');await expect(palette.getByRole('button',{name:/^Submit · form ·/})).toBeFocused();await page.keyboard.press('End');await expect(palette.getByRole('button',{name:/^Submit · other ·/})).toBeFocused();await page.keyboard.press('Home');await page.keyboard.press('Tab');await expect(palette.getByRole('button',{name:'Close actions',exact:true})).toBeFocused();await page.keyboard.press('Escape');await expect(input).toBeFocused();
+ await page.getByRole('button',{name:'Show details',exact:true}).click();await page.keyboard.press('Control+k');await expect(palette).not.toBeVisible();await page.getByRole('button',{name:'Close details',exact:true}).click();
+ await page.getByRole('button',{name:'Find actions',exact:true}).click();await query.fill('not-an-action');await expect(palette.getByText('No matching actions',{exact:true})).toBeVisible();await query.press('Enter');expect(canvas.sent).toHaveLength(0);await page.keyboard.press('Escape');
+});
+
+
+test("R08 choosing rechecks source visibility after the list was opened",async({page,canvas})=>{
+ await open(page,canvas);await page.getByRole('button',{name:'Find actions',exact:true}).click();const palette=page.getByRole('dialog',{name:'Find actions'});
+ await page.evaluate(()=>{document.querySelector<HTMLElement>('[data-surface-id="form"] button')!.hidden=true;});
+ await palette.getByRole('searchbox',{name:'Search actions'}).press('Enter');await expect(palette).not.toBeVisible();await expect(page.locator('#notice')).toContainText('no longer available');expect(canvas.sent).toHaveLength(0);
+});
+
+test("R04 closed Details input focuses visible error summary without opening disclosure",async({page,canvas})=>{
+ canvas.session.reset();canvas.session.render('form',`$/value=""
+field=TextField(label="Hidden field",value=$/value)
+save=Button(child=Text(text="Save hidden"),action=Event("save",{value:$/value}))
+root=Column([Details(title="Hidden input",child=field),FormValidation(buttons=["save"],rules=[{fieldId:"field",message:"Enter value",required:true}]),save])`);await page.goto(canvas.origin);await page.getByRole('button',{name:'Save hidden',exact:true}).click();
+ await expect(page.locator('pi-a2ui-form-validation section')).toBeFocused();await expect(page.locator('details')).not.toHaveAttribute('open');expect(canvas.sent).toHaveLength(0);
+});
+
+
+test("R08 shortcut works from picker without consuming an IME confirmation",async({page,canvas})=>{
+ canvas.session.render('picker','$/chosen=[]\nroot=SearchablePicker(label="Branch",options=[{label:"Feature",value:"feature"}],value=$/chosen)');await open(page,canvas);const query=page.getByRole('searchbox',{name:'Search Branch'});await query.fill('F');await query.press('Control+k');const palette=page.getByRole('dialog',{name:'Find actions'});await expect(palette).toBeVisible();await page.keyboard.press('Escape');await expect(query).toBeFocused();await expect(query).toHaveValue('F');expect(canvas.sent).toHaveLength(0);
+});
+
+test("R08 real Chromium composition Enter confirms text rather than executing an action",async({page,canvas})=>{
+ await open(page,canvas);await page.getByRole('button',{name:'Find actions',exact:true}).click();const palette=page.getByRole('dialog',{name:'Find actions'});const query=palette.getByRole('searchbox',{name:'Search actions'});const cdp=await page.context().newCDPSession(page);
+ await cdp.send('Input.imeSetComposition',{text:'Submit',selectionStart:6,selectionEnd:6});await page.keyboard.press('Escape');await expect(palette).toBeVisible();expect(canvas.sent).toHaveLength(0);
+ await cdp.send('Input.imeSetComposition',{text:'Submit',selectionStart:6,selectionEnd:6});await page.keyboard.press('ArrowDown');await expect(query).toBeFocused();await page.keyboard.press('Enter');await expect(palette).toBeVisible();expect(canvas.sent).toHaveLength(0);
+ await cdp.send('Input.insertText',{text:'Submit'});await query.evaluate(node=>node.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter',keyCode:229,bubbles:true})));await expect(palette).toBeVisible();expect(canvas.sent).toHaveLength(0);
+ await query.press('Enter');await expect(palette).not.toBeVisible();await expect(page.locator('#notice')).toHaveText('Sent to Pi');expect(canvas.sent).toHaveLength(1);await cdp.detach();
+});

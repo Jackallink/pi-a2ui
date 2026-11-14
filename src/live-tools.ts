@@ -1,3 +1,4 @@
+import type {TimelineEntry} from './interactions.ts';
 import {UiSession} from './session.ts';
 import {trimLog,type LogState} from './live.ts';
 import type {Operation} from './protocol.ts';
@@ -19,22 +20,26 @@ function snapshot(result:unknown,previous?:Window,final=false){
  return {window:stale?previous!:{tail,length,totalBytes},delta,changed,omitted:truncation?.truncated===true||bounded.omitted||rawTail.length<length||length-(previous?.length??0)>65536||Array.isArray(content)&&content.length>256};
 }
 export class LiveTools{
+ private timelineEntries:TimelineEntry[]=[];private timelineActive=new Map<string,TimelineEntry>();private timelineOmitted=false;
  private seen=new Set<string>();private started=0;private settled=0;private failedCount=0;private progressState:LogState='idle';private progressOmitted=false;
  private active=new Map<string,Window>();private accepting=false;private closed=false;private text='';private omitted=false;private state:LogState='idle';private failed=false;
  private timer?:ReturnType<typeof setTimeout>;private lastAt=-Infinity;private operation:Operation;
  constructor(private session:UiSession){this.operation=session.beginOperation();}
- beginRun(){if(this.closed)return;this.active.clear();this.seen.clear();this.started=0;this.settled=0;this.failedCount=0;this.progressOmitted=false;this.progressState='running';this.accepting=true;this.failed=false;this.operation=this.session.beginOperation();this.schedule();}
+ beginRun(){if(this.closed)return;this.active.clear();this.timelineActive.clear();this.timelineEntries=[];this.timelineOmitted=false;this.seen.clear();this.started=0;this.settled=0;this.failedCount=0;this.progressOmitted=false;this.progressState='running';this.accepting=true;this.failed=false;this.operation=this.session.beginOperation();this.schedule();}
  start(id:string,name:string){
   if(this.closed||!this.accepting||name.startsWith('a2ui_')||id.length>128||this.seen.has(id))return;
-  if(this.seen.size>=1024){this.progressOmitted=true;this.omitted=true;this.schedule();return;}this.seen.add(id);
-  if(this.active.size>=32){this.progressOmitted=true;this.omitted=true;this.append('[active tool limit; output omitted]\n');return;}
-  this.active.set(id,{tail:'',length:0});this.started++;this.state='running';this.append('['+name.slice(0,64)+']\n');
+  if(this.seen.size>=1024){this.progressOmitted=true;this.timelineOmitted=true;this.omitted=true;this.schedule();return;}this.seen.add(id);
+  if(this.active.size>=32){this.progressOmitted=true;this.timelineOmitted=true;this.omitted=true;this.append('[active tool limit; output omitted]\n');return;}
+  this.active.set(id,{tail:'',length:0});this.started++;
+  const row:TimelineEntry={id:'tool-'+this.started,name:name.slice(0,64)||'unknown',state:'running',startedAt:Math.max(0,Date.now()),elapsedMs:0};this.timelineEntries.push(row);this.timelineActive.set(id,row);if(this.timelineEntries.length>32){this.timelineEntries.shift();this.timelineOmitted=true;}
+  this.state='running';this.append('['+name.slice(0,64)+']\n');
  }
  update(id:string,result:unknown,final=false){if(this.closed||!this.accepting||!this.active.has(id))return;const next=snapshot(result,this.active.get(id),final);this.active.set(id,next.window);this.omitted ||= next.omitted;if(next.changed)this.append('\n[output snapshot replaced]\n');if(next.delta)this.append(next.delta);}
- end(id:string,result:unknown,isError:boolean){if(this.closed||!this.accepting||!this.active.has(id))return;this.update(id,result,true);this.active.delete(id);this.settled++;if(isError)this.failedCount++;this.failed ||= isError;this.state=this.active.size?'running':this.failed?'error':'completed';this.schedule();}
- finishRun(outcome?:'error'|'interrupted'){if(this.closed)return;this.accepting=false;this.progressState=outcome??(this.active.size?'interrupted':this.failed?'error':'completed');if(outcome)this.state=outcome;else if(this.active.size)this.state='interrupted';this.active.clear();this.schedule();}
+ end(id:string,result:unknown,isError:boolean){if(this.closed||!this.accepting||!this.active.has(id))return;this.update(id,result,true);this.observeTimeline();const row=this.timelineActive.get(id);if(row)row.state=isError?'error':'completed';this.timelineActive.delete(id);this.active.delete(id);this.settled++;if(isError)this.failedCount++;this.failed ||= isError;this.state=this.active.size?'running':this.failed?'error':'completed';this.schedule();}
+ finishRun(outcome?:'error'|'interrupted'){if(this.closed)return;this.accepting=false;this.observeTimeline();for(const row of this.timelineActive.values())row.state='interrupted';this.timelineActive.clear();this.progressState=outcome??(this.active.size?'interrupted':this.failed?'error':'completed');if(outcome)this.state=outcome;else if(this.active.size)this.state='interrupted';this.active.clear();this.schedule();}
  refresh(){this.schedule();}
+ private observeTimeline(){const now=Date.now();for(const row of this.timelineActive.values())row.elapsedMs=Math.max(0,Math.min(Number.MAX_SAFE_INTEGER,now-row.startedAt));}
  private append(value:string){const next=trimLog(this.text+value);this.text=next.text;this.omitted ||= next.omitted;this.schedule();}
- private schedule(){if(this.closed||this.timer)return;this.timer=setTimeout(()=>{this.timer=undefined;this.lastAt=Date.now();try{this.session.updateLog(this.text,this.state,this.omitted,this.operation,{stream:'tools',state:this.progressState,started:this.started,settled:this.settled,failed:this.failedCount,omitted:this.progressOmitted});}catch{/* Disabled, replaced or closed ownership cannot publish. */}},Math.max(0,this.lastAt+100-Date.now()));this.timer.unref?.();}
- close(){this.closed=true;this.accepting=false;this.active.clear();this.seen.clear();clearTimeout(this.timer);this.timer=undefined;}
+ private schedule(){if(this.closed||this.timer)return;this.timer=setTimeout(()=>{this.timer=undefined;this.lastAt=Date.now();this.observeTimeline();try{this.session.updateLog(this.text,this.state,this.omitted,this.operation,{stream:'tools',state:this.progressState,started:this.started,settled:this.settled,failed:this.failedCount,omitted:this.progressOmitted},{stream:'tools',entries:this.timelineEntries,state:this.progressState,omitted:this.timelineOmitted});}catch{/* Disabled, replaced or closed ownership cannot publish. */}},Math.max(0,this.lastAt+100-Date.now()));this.timer.unref?.();}
+ close(){this.closed=true;this.accepting=false;this.active.clear();this.timelineActive.clear();this.timelineEntries=[];this.seen.clear();clearTimeout(this.timer);this.timer=undefined;}
 }

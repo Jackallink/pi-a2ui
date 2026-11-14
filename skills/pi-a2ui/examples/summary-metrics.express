@@ -1,0 +1,12 @@
+# Supplied example values, not a native measurement or verified build.
+root = Column(children=[
+  Card(child=Column(children=[
+    Text(text="Build summary — example"),
+    Row(children=[Text(text="Environment: Node 24.x"),Text(text="Branch: main (example)")]),
+    Text(text="Source: example build output — replace with actual evidence")
+  ])),
+  Card(child=Column(children=[
+    Text(text="Build duration: 12 s"),
+    StatusBadge(label="Example reported result",status="success")
+  ]))
+])

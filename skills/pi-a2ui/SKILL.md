@@ -9,6 +9,18 @@ metadata:
 
 Use Pi's `a2ui_render` tool to publish. The helper only prepares/checks source; it does not display UI. Paths below are relative to this skill directory. Use the absolute skill path Pi supplies when running scripts; quote paths containing spaces.
 
+## Find a supported pattern first
+
+For the eight v0.1.5 interaction groups use the local read-only helper (absolute skill path supplied by Pi):
+
+```sh
+node "<absolute-skill-path>/scripts/a2ui.mjs" patterns
+node "<absolute-skill-path>/scripts/a2ui.mjs" pattern validated-form
+node "<absolute-skill-path>/scripts/a2ui.mjs" example validated-form | node "<absolute-skill-path>/scripts/a2ui.mjs" check --surface-id form -
+```
+
+`pattern` returns routing metadata, **not DSL**. `example` emits raw source; `check` emits exact a2ui_render JSON arguments. Adapt only actual supported props, recheck, then call the tool. `templateAvailable` concerns this package's component requirements; `requiresShellCapabilities` and `shellCapabilities` describe local shell support, not another active Pi/browser instance. Old helper without patterns: use catalog/examples and active-tool signatures; do not guess missing APIs. Only `a2ui_render` publishes, so preflight never opens a browser or calls a model.
+
 ## Start with a working form
 
 Prefer named arguments so optional parameter positions cannot shift. `source` is one raw Express string, with actual newlines; omit Markdown fences, `<a2ui>`, JSX, HTML and JSON surface messages.
@@ -30,7 +42,11 @@ Call `a2ui_render` with `surfaceId: "user-form"` and that entire source as `sour
 
 | Task | Read / template |
 | --- | --- |
+| Small hierarchy / breadcrumbs / searchable choices | [Navigation and selection](references/navigation-and-selection.md); `tree-navigation` (composition), `searchable-picker` (requires SearchablePicker API) |
+| Summaries / field validation / loading-empty-error feedback | [Summaries and feedback](references/summaries-and-feedback.md); `summary-metrics` (composition), `validated-form` (requires FormValidation), `feedback-states` (composition) |
+| Keyboard action search / next-step action bar | [Keyboard actions](references/keyboard-actions.md); `command-actions` (composition; palette requires actual header control) |
 | Text, layout, forms and buttons (baseline16 types) | [Core components](references/core-components.md); `user-form`, `typed-form`, `layout` |
+| Native timeline / source evidence intent | [Timeline and evidence](references/timeline-and-evidence.md); `activity-timeline` (requires ActivityTimeline), `evidence-location` (composition) |
 | Diff, test records, native logs or charts | [Coding/live components](references/coding-and-live.md); `review`, `live` |
 | Table, code/Markdown, details, progress, dialog/icon (v0.1.4 capability required) | [Workbench components](references/workbench-components.md); `list-table`, `reading`, `details`, `status`, `modal` |
 | Image, artifacts, video or audio (v0.1.4 capability required) | [Artifacts/media](references/artifacts.md); `artifacts` |

@@ -1,0 +1,9 @@
+# Native event data only: omit entries/state/durations/omitted.
+$/note = ""
+root = Column(children=[
+  TextField(label="Unsent note",value=$/note),
+  TaskProgress(stream="tools"),
+  Details(title="Native tool activity",child=ActivityTimeline(stream="tools"),open=true),
+  LogView(stream="tools"),
+  Button(child=Text(text="Continue"),action=Event("continue",{note:$/note}))
+])

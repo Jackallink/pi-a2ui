@@ -26,7 +26,7 @@ Release path:0.1.0 →0.1.1 (all three steps) →0.1.3 (version alignment only).
 | W6 | C11, C12 | ArtifactPreview / Image：本地视觉产物预览 |
 | W7 | C13, C14 | Video / AudioPlayer：媒体产物回看 |
 
-[canonical spec007](docs/specs/007-v0.1.4-usability.md) · [交付顺序/依赖](docs/plans/007-v0.1.4-components.md) · [走查](docs/walkthrough/v0.1.4/walkthrough.md)。W1/W2/W3优先阅读，W4/W5强化状态/详情，W6/W7完成受审产物与媒体；媒体D1–D4设计门禁未关闭不得开始资源实现。R01–R08全部归入v0.1.5（spec008/issues19–26），当前不实施。
+[canonical spec007](docs/specs/007-v0.1.4-usability.md) · [交付顺序/依赖](docs/plans/007-v0.1.4-components.md) · [走查](docs/walkthrough/v0.1.4/walkthrough.md)。W1/W2/W3优先阅读，W4/W5强化状态/详情，W6/W7完成受审产物与媒体；媒体D1–D4设计门禁未关闭不得开始资源实现。R01–R08全部归入v0.1.5（spec008/issues19–26），不属于v0.1.4范围；当前候选入口见下方v0.1.5。
 
 ## Shared requirements
 
@@ -54,4 +54,4 @@ Issues [#1](https://github.com/Jackallink/pi-a2ui/issues/1), [#2](https://github
 
 ## v0.1.5：八组已纳入能力
 
-用户已将R01–R08全部归入v0.1.5：[spec008](docs/specs/008-v0.1.5-interactions.md)、[milestone5](https://github.com/Jackallink/pi-a2ui/milestone/5)、[总任务#17](https://github.com/Jackallink/pi-a2ui/issues/17)。原候选状态被替代；先完成0.1.4，不自动启动0.1.5实施。
+用户已将R01–R08全部归入v0.1.5：[spec008](docs/specs/008-v0.1.5-interactions.md)、[milestone5](https://github.com/Jackallink/pi-a2ui/milestone/5)、[总任务#17](https://github.com/Jackallink/pi-a2ui/issues/17)。0.1.4已发布；0.1.5继续按spec008的八组及配套skill/CLI #32推进。活跃进度看issue，验证看Check036及后续，不把规划/单组GO写成整版发布。

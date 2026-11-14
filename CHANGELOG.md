@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.5 - 2026-11-14
+
+- Add all eight daily interaction groups: bounded hierarchy/breadcrumb, searchable selection, source-labelled summaries, guarded field feedback, loading/empty/not-run/error patterns, native ActivityTimeline, evidence location intents and keyboard action search.
+- Add SearchablePicker and FormValidation with typed membership/guard coverage and shared client/server constraints. Preserve existing ChoicePicker(filterable=true) for basic search; no executable checks or added tool permissions.
+- Add native-only ActivityTimeline with32-row per-run window, truthful outcomes/observed elapsed, omissions and restore/pause ownership; reserve byte/JSON-node/depth capacity before admitting layouts. Live data-only patches are not a separate durable audit history.
+- Add local Find actions/Ctrl-Cmd-K palette invoking actual current declared Buttons with latest drafts, IME composition/visibility/stale/pending guards and focus return; no direct command execution or phantom catalog types.
+- Expand packaged skill to four focused interaction references,19 executable templates and eight read-only patterns/pattern descriptors. Share actual compiler and report helper-local template/shell identity; no TS build tools or extra model provider at runtime.
+- Keep Node24.x only, all old catalogs/immutable released tags and Git/local distribution; no npm publication. This source prepares a release candidate; publication/consumer/model evidence is recorded separately.
+
 ## 0.1.4 - 2026-11-14
 
 - Add static List and bounded sortable/filterable DataTable, literal CodeBlock with local CopyAction, safe MarkdownView and native Details/Accordion composition.

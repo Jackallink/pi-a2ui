@@ -1,0 +1,17 @@
+{
+  "case": "new",
+  "node": "v24.18.1",
+  "normalPackageRegistration": true,
+  "normalSkillDiscovery": true,
+  "noExplicitExtensionOrSkillFlags": true,
+  "originalSessionUnchanged": true,
+  "restoredCompatibleSurface": true,
+  "unsupportedNewCatalogSkipped": false,
+  "agentRuns": 0,
+  "externalFetchDenied": true,
+  "browserErrors": 0,
+  "fragmentCleared": true,
+  "passed": true,
+  "listenerReleased": true,
+  "processExited": true
+}

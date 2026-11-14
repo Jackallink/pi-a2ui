@@ -16,4 +16,4 @@ The published0.1.3 baseline does not contain these types. Check the active tool 
 
 Complete templates: [list-table](../examples/list-table.express), [reading](../examples/reading.express), [details](../examples/details.express), [status](../examples/status.express), [modal](../examples/modal.express). Their availability is capability-gated by the helper.
 
-No TreeView, SearchablePicker, MetricCard, generic validation, ActivityTimeline, EvidenceLink or CommandPalette type is implied here. Those are v0.1.5 planning scope, not current catalog types. Prefer existing Card/Row/Text/Button compositions for summaries and continue/modify/abandon choices.
+No TreeView, SearchablePicker, MetricCard, generic validation, ActivityTimeline, EvidenceLink or CommandPalette type is implied here. The v0.1.5 navigation/feedback/evidence/action patterns and three enhanced APIs are documented separately through the skill route table. They are not additional workbench-v1 types; check the actual active catalog. Prefer existing Card/Row/Text/Button compositions for summaries and continue/modify/abandon choices.

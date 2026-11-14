@@ -1,0 +1,6 @@
+# ActionBar composition; Find actions / Ctrl-Cmd-K belongs to the canvas shell.
+root = Column(children=[Text(text="Choose the next step"),Row(children=[
+  Button(child=Text(text="Continue"),action=Event("next_step",{choice:"continue"})),
+  Button(child=Text(text="Modify"),action=Event("next_step",{choice:"modify"})),
+  Button(child=Text(text="Cancel"),action=Event("next_step",{choice:"cancel"}))
+])])
