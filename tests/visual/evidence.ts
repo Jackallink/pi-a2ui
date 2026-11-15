@@ -80,8 +80,8 @@ export function validateBaseline(value:unknown,root=process.cwd()):Baseline{
  return baseline;
 }
 export function compareBaseline(baseline:Baseline,states:StateEvidence[],identity:Identity){
- const comparable=baseline.environmentHash===states[0].environmentHash&&baseline.captureIdentity.fixtureSetHash===identity.fixtureSetHash&&baseline.captureIdentity.assetHash===identity.assetHash&&baseline.captureIdentity.oracleSetHash===identity.oracleSetHash;
- return{status:comparable?'comparable-advisory':states[0].environment.platform==='darwin'?'not-comparable':'not-defined-for-environment',pixelGate:false,images:states.map(state=>({id:state.id,changed:comparable?state.pngHash!==baseline.images.find(image=>image.id===state.id)!.sha256:null}))};
+ const comparable=baseline.environmentHash===states[0].environmentHash&&baseline.captureIdentity.fixtureSetHash===identity.fixtureSetHash&&baseline.profile===identity.profile;
+ return{sourceChanged:baseline.captureIdentity.source!==identity.source,assetsChanged:baseline.captureIdentity.assetHash!==identity.assetHash,oraclesChanged:baseline.captureIdentity.oracleSetHash!==identity.oracleSetHash,status:comparable?'comparable-advisory':states[0].environment.platform==='darwin'?'not-comparable':'not-defined-for-environment',pixelGate:false,images:states.map(state=>({id:state.id,changed:comparable?state.pngHash!==baseline.images.find(image=>image.id===state.id)!.sha256:null}))};
 }
 export async function capture(page:Page,browser:Browser,id:StateId,revision:number,epoch:string,layout:LayoutObservation):Promise<StateEvidence>{
  await mkdir(RUN_DIR,{recursive:true,mode:0o700});const env=await environment(page,browser);const image=RUN_DIR+'/'+id+'.png';

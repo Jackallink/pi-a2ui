@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "profile": "v0.1.8-layout-v1",
+  "inspected": true,
+  "captureIdentity": {
+    "profile": "v0.1.8-layout-v1",
+    "source": "8c1d35d422f382c5e924ac91ea26cf9a464824f9",
+    "dirty": false,
+    "lockHash": "049f61fa6659ee16d25686309a14b8de5dabec5acfa57304142b1211411f9e2c",
+    "fixtureSetHash": "bc4fc011b731db6a0f6d16500ea304e31323262d7848220ef125714a3c7275a2",
+    "assetHash": "c70bc36bc574c0a61727cfac5ed3d0f8221143c554e1ae8503658735646c570f",
+    "oracleSetHash": "024bb17a82b389cc36c94a0882b8b40705c35098f8f1ea7cff74486a84bff523"
+  },
+  "environment": {
+    "node": "v24.18.1",
+    "nodeMajor": 24,
+    "platform": "darwin",
+    "arch": "arm64",
+    "osRelease": "24.6.0",
+    "browser": "158.0.8127.18",
+    "playwright": "1.65.0",
+    "revision": "1254",
+    "viewport": {
+      "width": 1280,
+      "height": 900
+    },
+    "dpr": 1,
+    "theme": "light",
+    "locale": "en-US",
+    "timezone": "UTC",
+    "reducedMotion": true,
+    "fontStack": "-apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+    "fonts": [
+      {
+        "selector": "h1",
+        "fonts": [
+          {
+            "familyName": ".SF NS",
+            "postScriptName": ".SFNS-Regular_wdth_opsz300000_GRAD_wght1F40000",
+            "isCustomFont": false,
+            "glyphCount": 20
+          }
+        ]
+      },
+      {
+        "selector": ".brand",
+        "fonts": [
+          {
+            "familyName": ".SF NS",
+            "postScriptName": ".SFNS-Bold",
+            "isCustomFont": false,
+            "glyphCount": 9
+          }
+        ]
+      },
+      {
+        "selector": "button",
+        "fonts": [
+          {
+            "familyName": "Arial",
+            "postScriptName": "ArialMT",
+            "isCustomFont": false,
+            "glyphCount": 12
+          }
+        ]
+      }
+    ]
+  },
+  "environmentHash": "f545c88d1cb6644432c703536e6e2a169cc64e4e46e14e4a45efb24b07cfd005",
+  "images": [
+    {
+      "id": "search",
+      "path": "tests/visual/baselines/darwin-arm64/chromium-1254/search.png",
+      "sha256": "cd77a5640570390eac9b3dd9b83605228058eb78640d2b86410549adf9b13239"
+    },
+    {
+      "id": "audit",
+      "path": "tests/visual/baselines/darwin-arm64/chromium-1254/audit.png",
+      "sha256": "18cd56454e304fa3f272d690f0a2524e2a6695b93b411791b6fe35b745a3b323"
+    },
+    {
+      "id": "return",
+      "path": "tests/visual/baselines/darwin-arm64/chromium-1254/return.png",
+      "sha256": "a345ea497a50743ef96d548f740db9c96038b95f26c83bee98c1ad54038d76d2"
+    }
+  ]
+}

@@ -1,4 +1,6 @@
 import{test}from'node:test';
+import{execFile}from'node:child_process';
+import{promisify}from'node:util';
 import assert from'node:assert/strict';
 import{readFileSync}from'node:fs';
 import{copyFile,mkdir,mkdtemp,rm,symlink,writeFile}from'node:fs/promises';
@@ -37,7 +39,12 @@ test('BM3 image differences stay advisory and unmatched Linux/fonts stay explici
  // In-memory policy controls, never written/countable as actual browser frames.
  const states=baseline.images.map((image,index)=>({id:image.id,revision:index+1,epoch:'control',layout:{viewport:{width:1280,height:900},subjects:{}},image:image.path,pngHash:image.sha256,environment:baseline.environment,environmentHash:baseline.environmentHash}))as StateEvidence[];
  const comparison=compareBaseline(baseline,states,baseline.captureIdentity);assert.equal(comparison.status,'comparable-advisory');assert.equal(comparison.pixelGate,false);assert.ok(comparison.images.every(image=>image.changed===false));
+ const variables={...baseline.captureIdentity,source:'0'.repeat(40),assetHash:'0'.repeat(64),oracleSetHash:'1'.repeat(64)};const version=compareBaseline(baseline,states,variables);assert.equal(version.status,'comparable-advisory');assert.equal(version.assetsChanged,true);assert.equal(version.oraclesChanged,true);
  const changed=structuredClone(states);changed[0].pngHash='0'.repeat(64);const advisory=compareBaseline(baseline,changed,baseline.captureIdentity);assert.equal(advisory.status,'comparable-advisory');assert.equal(advisory.images[0].changed,true);assert.equal(advisory.pixelGate,false);
  const linux=structuredClone(states);for(const state of linux){state.environment.platform='linux';state.environmentHash=environmentHash(state.environment);}assert.equal(compareBaseline(baseline,linux,baseline.captureIdentity).status,'not-defined-for-environment');
  const fonts=structuredClone(states);for(const state of fonts){state.environment.fonts[0].fonts[0].postScriptName='different-font';state.environmentHash=environmentHash(state.environment);}assert.equal(compareBaseline(baseline,fonts,baseline.captureIdentity).status,'not-comparable');
+});
+
+test('BM3 full regression runner refuses capture-only even when acquisition controls would pass',async()=>{
+ await assert.rejects(promisify(execFile)(process.execPath,['tests/golden/run-browser.mjs'],{env:{...process.env,BM3_CAPTURE_ONLY:'1'},timeout:3000}),error=>String((error as{stderr?:string}).stderr).includes('capture-only is not acceptance'));
 });

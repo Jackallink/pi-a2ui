@@ -1,0 +1,13 @@
+# BM3 layout regression
+
+Use Node24.x and lock-installed dependencies/browser. Run `npm test` for the existing suite plus baseline integrity/policy canaries, `npm run check` for types, and `node tests/golden/run-browser.mjs` for existing browser regressions, BM2's7browser cases/canaries and BM3's4real browser tests. The complete regression runner rejects capture-only mode and has a5minute owned process deadline.
+
+BM3 gates3actual Search→Audit→Return states with realPOST202/accepted local-controller callbacks, explicit unrelated element rectangles, visible/in-viewport/unobscured native controls, working local filter/sort, and legitimate nested/table/modal controls. A real injected button-over-input fault and actual missing target prove the detector itself works. This is an application-controller simulation, not Pi/model execution. Do not infer all-component/mobile/accessibility coverage.
+
+The3committed Mac images are inspected advisory references. Manifest/image integrity is mandatory; pixel similarity is not a gate. Matching environment/fixture/profile image differences are visible advisory changes across product source/assets/oracles, which are recorded experimental variables. Linux/other fonts without a matching inspected environment are explicitly noncomparable while geometry/actions still gate. There is no automatic baseline update.
+
+For a separately approved initial/replacement baseline acquisition only, run `BM3_CAPTURE_ONLY=1 node node_modules/playwright/cli.js test tests/visual/browser.spec.ts --workers=1` with the exact locked browser. It may pass acquisition controls while reporting **accepted=false**, writing a private proposal with inspected=false under a new `.local/bm3-layout/run-.../`. Do not use that as normal acceptance. Inspect all3images, obtain independent visual approval for their exact source/hash/profile, and manually copy the approved bytes/manifest. Retain the original proposal and failed receipts. No script writes approved baseline files.
+
+Normal runs produce source/profile/fixture/renderer/oracle/font identity, raw named geometry, currentPNG hashes, actions and comparison classification in the owned run folder. The CI job retains only these synthetic captures/reports for7days using the reviewed official immutable Node24 action; no token navigation, auth headers, user/model data or browser chrome is captured. Tests/baselines/reports/CI stay outside the installed package.
+
+Canonical contract: Spec017; Check088–090 retain design, real detector RED/GREEN and exact visual admission. Rollback this visual test/baseline/runner/artifact slice without changing018runtime or BM2's skill fixes. BM4 model evaluation remains a separate budgeted manual profile.
