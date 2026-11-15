@@ -1,0 +1,16 @@
+{
+  "scope": "mechanical SDK simulation only; not BM4/model-quality evidence",
+  "node": "v24.18.1",
+  "pi": "1.5.0",
+  "actualModelCalls": 0,
+  "realNetworkAttempts": 0,
+  "syntheticRequests": 1,
+  "queueBeforeAbort": [
+    "OFFLINE_FIXTURE_QUEUE"
+  ],
+  "queueAfterAbort": [
+    "OFFLINE_FIXTURE_QUEUE"
+  ],
+  "actualPiQueueObserved": true,
+  "postRenderContinuationAvoided": true
+}
