@@ -1,0 +1,24 @@
+{
+  "node": "v24.18.1",
+  "designCharacterizationOnly": true,
+  "bm2CasesExecuted": 0,
+  "observations": [
+    {
+      "id": "unreachable",
+      "accepted": false,
+      "status": 400,
+      "reason": "Invalid Express source: Component 'unused' is not reachable from 'root' (Orphaned component 'unused' is not reachable from root)"
+    },
+    {
+      "id": "local-media",
+      "accepted": true,
+      "components": 1
+    },
+    {
+      "id": "flat-named-depth17",
+      "accepted": false,
+      "status": 413,
+      "reason": "Tree depth exceeded"
+    }
+  ]
+}

@@ -124,3 +124,7 @@ BM4 分别报告 planned/started/transport-completed/compile-valid/intent-correc
 ## 回退与检查
 
 回退具体切片 commit，同时恢复 npm test/browser/CI 接线及 registry/doc anchors，再移除无引用的测试/fixture；不能只删文件留下 broken imports/workflow。不动已发布 tag、用户配置、生产权限。真实测试数量与执行结果只写 Check，不作为此计划的实时状态。
+
+## Authorized BM2 design succession — 2026-11-15
+
+BM1 integrated/released018 and49closed (Check081),43OPEN. User now authorizes **BM2design+independentreview only**. [Spec016](../specs/016-bm2-golden-scenarios.md)/[Plan016](016-bm2-golden-scenarios.md) define64planned/0implemented/0executed layeredcases; originalBM1-only implementation boundary above is historical. No BM2fixture/code/CI/model/merge/release from this designGO. Current#36contract is released018's128visible/exactsubset-summary documentationroute, notnewaggregateAPI. BM3/BM4remainfuture. Originalprimaryplan009/drafts unchanged.
