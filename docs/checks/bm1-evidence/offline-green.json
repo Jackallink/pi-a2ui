@@ -1,0 +1,35 @@
+{
+  "node": "v24.18.1",
+  "profile": "v0.1.7-dx-v1",
+  "registeredFamilies": 2,
+  "wholeProjectDiagnosticCoverage": "unknown",
+  "redSource": "0338b40d9d45cfdefdd6c8a0f4f7c56895d1b535",
+  "initialMarkerGreenTests": 4,
+  "targetedTests": 29,
+  "targetedPassed": 29,
+  "fullTests": 259,
+  "fullPassed": 259,
+  "typecheck": true,
+  "build": true,
+  "modelCalls": 0,
+  "browserRerun": false,
+  "runtimeAndDependenciesUnchanged": true,
+  "logs": {
+    "binding-red.log": "c25ab9822deb59bfb0dbba1cb02f19e41437e1f63cadb5e46d1f3b06e3edcdf4",
+    "binding-green.log": "c3154156c99862cc9811bc9cf67badf19572cd6bff758b484645ba40f383aab5",
+    "canaries-node.log": "59fe77c123f3afd235689098f523424dce3fb8b7f950cf9851a7b43acd470035",
+    "full-node.log": "e4baa9527100b6d1ff39b2cd10315d7039ed37302fdf3b55a632a84d80051680",
+    "tsc.log": "d9d22fa45a2931fead1e02c1c13b1a8c11ad43ab1100baea0ec27ce343afd6fb",
+    "build.log": "a49f5d6596bea22d691b994321113eeaf4aab26f0b124bd5a060b885483c81c2"
+  },
+  "inputHashes": {
+    "tests/benchmark-diagnostics.test.ts": "11bf3a770a9eee143084578ffa91e37ae62783fa11bcac494a33fa6e1ef1cfc2",
+    "tests/benchmark/diagnostics/coding-record-context-negative.express": "0432e0ebfedf1b9448882bd83681db275617e2438c228662fe54a45aaf833ccb",
+    "tests/benchmark/diagnostics/coding-record-context-positive.express": "c8c2014e586e9ba22b867cf3c0c0c4d533be011074c4e6eeb24180306bdd0734",
+    "tests/benchmark/diagnostics/reserved-event-key-negative.express": "7f00fc6d30e7e8743d32cf15dff615d1e9dec42ca19d2d82148d9ffe56576691",
+    "tests/benchmark/diagnostics/reserved-event-key-positive.express": "043dd24b09c73e2f396b769237dcb3204fc23c25685b5d745143d8a09bb34948",
+    "tests/benchmark/diagnostics.json": "02cb85540d676b9b92d78b681019973a9965069b8a0d97d12abb922c79deef71",
+    "tests/benchmark/diagnostics.ts": "bc94c8d4d3aca1591a8e9b1e9bc744e0f820a88ab9f3223b7e4eb92339b9104a",
+    "skills/pi-a2ui/references/syntax-and-errors.md": "c8f522d888425369f0cce8c8d3baa8c7affbc6ccedff40f36a50b15032938b79"
+  }
+}
