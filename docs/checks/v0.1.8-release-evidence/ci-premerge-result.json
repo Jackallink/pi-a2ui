@@ -1,0 +1,32 @@
+{
+  "passed": true,
+  "pr": 50,
+  "runId": 43687873449,
+  "runURL": "https://github.com/Jackallink/pi-a2ui/actions/runs/43687873449",
+  "event": "pull_request",
+  "runAttempt": 1,
+  "conclusion": "success",
+  "prHead": "18f9c457060284ae53b0e3bbde3891fcbe09df09",
+  "checkedOutSyntheticMerge": "3846e6227ee6ad1bcc7b86157cefa5947c9a966f",
+  "eventSHA": "3846e6227ee6ad1bcc7b86157cefa5947c9a966f",
+  "mergeParents": [
+    "46f04c6d63819c2cb72c6febd748322ffd7c3f5b",
+    "18f9c457060284ae53b0e3bbde3891fcbe09df09"
+  ],
+  "mergeTreeEqualsPrHead": true,
+  "actualNode": "v24.22.2",
+  "jobId": 132732057969,
+  "jobURL": "https://github.com/Jackallink/pi-a2ui/actions/runs/43687873449/job/132732057969",
+  "counts": {
+    "tests": 265,
+    "pass": 265,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0
+  },
+  "npmCi": true,
+  "typecheck": true,
+  "workflowSHA256": "e9bf7df8825437ecfa15f4540237e830a77b5b2b5ac14191652013faccaf6e4e",
+  "modelEvidence": "No model commands or provider credentials in the scoped workflow; BM1 is compiler-only",
+  "logsSHA256": "ca70296d5255e2f8fbba5e1b31b09362e59f4aa085b62d835c7d1ea62286fe4e"
+}
