@@ -1,0 +1,26 @@
+✖ BM3 actual body primary survives a simultaneous cleanup fault in real Playwright lifecycle (1124.64375ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1316.573041
+
+✖ failing tests:
+
+test at tests/visual.test.ts:1:4626
+✖ BM3 actual body primary survives a simultaneous cleanup fault in real Playwright lifecycle (1124.64375ms)
+  AssertionError [ERR_ASSERTION]: retained primary must include actual body error
+      at TestContext.<anonymous> ($WORKTREE/tests/visual.test.ts:59:9)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1332:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:385:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

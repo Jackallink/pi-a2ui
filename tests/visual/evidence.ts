@@ -8,6 +8,7 @@ import{release}from'node:os';
 import{z}from'zod';
 import type{Browser,Page}from'@playwright/test';
 import{canonical,sha256}from'../golden/registry.ts';
+import{forwardedPayload}from'../golden/oracles.ts';
 import type{LayoutObservation}from'./layout.ts';
 const exec=promisify(execFile);
 export const PROFILE='v0.1.8-layout-v1';
@@ -48,8 +49,9 @@ export function environmentHash(environment:Environment):string{
  const fonts=pixel.fonts.map(item=>({selector:item.selector,fonts:item.fonts.map(({glyphCount,...font})=>font)}));
  return sha256(canonical({...pixel,fonts}));
 }
+export const waitFontsReady=(page:Page)=>bounded(page.evaluate(()=>document.fonts.ready.then(()=>{})),'fonts.ready');
 export async function environment(page:Page,browser:Browser):Promise<Environment>{
- await bounded(page.evaluate(()=>document.fonts.ready.then(()=>{})),'fonts.ready');
+ await waitFontsReady(page);
  const cdp=await page.context().newCDPSession(page);const fonts:Environment['fonts']=[];
  try{
   await bounded(cdp.send('DOM.enable'),'DOM.enable');await bounded(cdp.send('CSS.enable'),'CSS.enable');
@@ -87,18 +89,32 @@ export async function capture(page:Page,browser:Browser,id:StateId,revision:numb
  await mkdir(RUN_DIR,{recursive:true,mode:0o700});const env=await environment(page,browser);const image=RUN_DIR+'/'+id+'.png';
  const bytes=await page.screenshot({path:image,animations:'disabled',caret:'hide',fullPage:false,timeout:5000});return{id,revision,epoch,layout,image,pngHash:sha256(bytes),environment:env,environmentHash:environmentHash(env)};
 }
-export async function writeEvidence(states:StateEvidence[],checks:Record<string,boolean>,cleanupFailures:unknown[],actions:unknown[]):Promise<void>{
- await mkdir(RUN_DIR,{recursive:true,mode:0o700});const identity=await currentIdentity();let baseline:unknown,baselineError:string|undefined;
+export async function writeEvidence(states:StateEvidence[],checks:Record<string,boolean>,cleanupFailures:unknown[],actions:unknown[],testFailures:unknown[]=[]):Promise<void>{
+ await mkdir(RUN_DIR,{recursive:true,mode:0o700});const identity=await currentIdentity();let baseline:unknown,baselineError:string|undefined,actionError:string|undefined;
+ try{verifyActionReceipts(actions,states[0]?.epoch);}catch(error){actionError=String(error);}
  assert.deepEqual(Object.keys(checks).sort(),['flow','faultCanary','modalControl','missingSubject'].sort(),'exact visual checks');
- const complete=states.length===3&&states.every((state,index)=>state.id===STATE_IDS[index]&&state.revision===index+1&&state.epoch===states[0].epoch&&state.environmentHash===states[0].environmentHash)&&Object.values(checks).every(Boolean)&&Object.keys(checks).length===4&&!cleanupFailures.length;
+ const complete=states.length===3&&states.every((state,index)=>state.id===STATE_IDS[index]&&state.revision===index+1&&state.epoch===states[0].epoch&&state.environmentHash===states[0].environmentHash)&&Object.values(checks).every(Boolean)&&Object.keys(checks).length===4&&!cleanupFailures.length&&!testFailures.length&&!actionError;
  if(!CAPTURE_ONLY)try{const declared=validateBaseline(JSON.parse(ordinaryBytes('tests/visual/baseline-manifest.json').toString('utf8')));baseline=compareBaseline(declared,states,identity);}catch(error){baselineError=String(error);baseline={status:'invalid-declared-baseline',pixelGate:false,error:baselineError};}
- const report={identity,mode:CAPTURE_ONLY?'capture-only':'normal',accepted:complete&&!identity.dirty&&!CAPTURE_ONLY&&!baselineError,states,checks,cleanupFailures,actions,baseline:CAPTURE_ONLY?{status:'pending-inspection',pixelGate:false}:baseline};
+ const report={identity,mode:CAPTURE_ONLY?'capture-only':'normal',accepted:complete&&!identity.dirty&&!CAPTURE_ONLY&&!baselineError,states,checks,testFailures,cleanupFailures,actions,actionError,baseline:CAPTURE_ONLY?{status:'pending-inspection',pixelGate:false}:baseline};
  await writeFile(RUN_DIR+'/report.json',JSON.stringify(report,null,2)+'\n',{mode:0o600});
  if(CAPTURE_ONLY&&complete&&!identity.dirty){const proposal={schemaVersion:1,profile:PROFILE,inspected:false,captureIdentity:identity,environment:states[0].environment,environmentHash:states[0].environmentHash,images:states.map(state=>({id:state.id,path:`tests/visual/baselines/darwin-arm64/chromium-1254/${state.id}.png`,sha256:state.pngHash}))};await writeFile(RUN_DIR+'/baseline-proposal.json',JSON.stringify(proposal,null,2)+'\n',{mode:0o600});}
  console.log('BM3 evidence '+JSON.stringify({source:identity.source,mode:report.mode,accepted:report.accepted,states:states.length,checks,baseline:report.baseline,run:RUN_DIR}));
  assert.ok(complete,'BM3 all states/controls/canaries/cleanup must complete');if(!CAPTURE_ONLY)assert.equal(report.accepted,true,'BM3 normal acceptance requires clean source and declared valid baseline');
 }
-// Constructed extraction of the prior fixture behavior for the primary-retention RED consumer.
-export function primaryFailure(info:{title:string;status:unknown;errors:readonly{message?:string;value?:unknown}[]},setup:unknown){
- return{test:info.title,status:info.status,setup:setup?String(setup):undefined,errors:[]as string[]};
+// Playwright's use() does not reject for a failed body; read the actual recorded test errors.
+export function primaryFailure(info:{title:string;status?:unknown;errors:readonly{message?:string;value?:unknown}[]},setup:unknown){
+ const safe=(value:unknown)=>String(value).replace(/\x1b\[[0-9;]*[A-Za-z]/g,'').replace(/#token=[^\s"'<>]+/g,'#token=[REDACTED]').replace(/("token"\s*:\s*")[^"]+/g,'$1[REDACTED]').replace(/(authorization:\s*)[^\r\n]+/ig,'$1[REDACTED]').split('\n').slice(0,4).join('\n').slice(0,2048);
+ return{test:info.title,status:info.status,setup:setup?safe(setup):undefined,errors:info.errors.map(error=>safe(error.message??error.value??'Unknown recorded test error'))};
+}
+export function verifyActionReceipts(receipts:unknown[],epoch:string):void{
+ assert.equal(receipts.length,2,'two actual action receipts');assert.ok(typeof epoch==='string'&&epoch.length>0);
+ const ids:string[]=[];
+ for(const[index,raw]of receipts.entries()){
+  const record=raw as{request:{epoch:string;revision:number;eventId:string;message:{version:string;action:{name:string;surfaceId:string;sourceComponentId:string;timestamp:string;context:unknown}}};status:number;accepted:Record<string,unknown>;rawAccepted:string};
+  const event=index===0?'search':'back',context=index===0?{query:'example'}:{};
+  assert.equal(record.status,202,'actual status is202');assert.deepEqual(record.accepted,{epoch,revision:index+1,surfaceId:'workbench',event,sourceComponentId:event,context},'actual accepted callback tuple/context');assert.deepEqual(forwardedPayload(record.rawAccepted),record.accepted,'retained raw dispatch agrees');
+  assert.equal(record.request.epoch,epoch);assert.equal(record.request.revision,index+1);assert.match(record.request.eventId,/^[A-Za-z0-9_-]{1,128}$/);ids.push(record.request.eventId);assert.equal(record.request.message.version,'1.0');assert.ok(Number.isFinite(Date.parse(record.request.message.action.timestamp)));
+  assert.deepEqual(record.request.message.action,{name:event,surfaceId:'workbench',sourceComponentId:event,timestamp:record.request.message.action.timestamp,context});
+ }
+ assert.notEqual(ids[0],ids[1],'two distinct intentional click IDs');
 }
