@@ -1,6 +1,6 @@
 # BM1 — diagnostic documentation and executable recovery
 
-Lifecycle: walkthrough-approved. Profile: strict. 2026-11-15. Canonical BM1 contract; [plan009](../plans/009-benchmark.md) owns steps/roadmap. User agreed to the two-family BM1 slice, independent design/code review then offline CI/PR verification, tentatively0.1.8. No merge/publication/global upgrade or BM2–BM4 implementation is inferred. Node24.x only, **zero model calls**.
+Lifecycle: tdd-approved. Profile: strict. 2026-11-15. Canonical BM1 contract; [plan009](../plans/009-benchmark.md) owns steps/roadmap. User agreed to the two-family BM1 slice, independent design/code review then offline CI/PR verification, tentatively0.1.8. No merge/publication/global upgrade or BM2–BM4 implementation is inferred. Node24.x only, **zero model calls**.
 
 ## Source and historical drift
 
