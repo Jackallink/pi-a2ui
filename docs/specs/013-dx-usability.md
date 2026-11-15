@@ -1,6 +1,8 @@
 # DX usability — issues34/35/38
 
-Lifecycle: review-ready. Strict. 2026-11-14. Design at e43da13 passed independent walkthrough/TDD-intent review (Check063); per-slice checks carry execution evidence. User authorized implementation in34→35→38 order after per-slice design/TDD and independent review. Isolated branch codex/dx-34-35-38 starts at PR44 fixed570b67a; PR44 itself and the primary benchmark drafts remain unchanged. This is a post016 source candidate, not a016 scope expansion or release authorization. Node24 only; no model evaluation needed for these deterministic changes.
+Completed via authorized v0.1.7 integration/release and postpublication independentGO; [Check075](../checks/075-v0.1.7-tracker-closure.md) records source-proven PR45/46 disposition and child/parent/milestone closure. Original implementation admission below remains source-bound history; no broader contract is added.
+
+Lifecycle: complete. Strict. 2026-11-14. Design at e43da13 passed independent walkthrough/TDD-intent review (Check063); per-slice checks carry execution evidence. User authorized implementation in34→35→38 order after per-slice design/TDD and independent review. Isolated branch codex/dx-34-35-38 starts at PR44 fixed570b67a; PR44 itself and the primary benchmark drafts remain unchanged. This is a post016 source candidate, not a016 scope expansion or release authorization. Node24 only; no model evaluation needed for these deterministic changes.
 
 ## Scope and observable goal
 

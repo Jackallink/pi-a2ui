@@ -1,0 +1,95 @@
+{
+  "passed": true,
+  "issues": [
+    {
+      "number": 34,
+      "title": "[DX] \u7f16\u8bd1/\u6821\u9a8c\u62a5\u9519\u7f3a\u6839\u56e0\u4e0e\u7ec4\u4ef6\u5b9a\u4f4d\uff1a\u952e\u540d\u9ed1\u540d\u5355\u8bef\u62a5\u4e3a\u53ef\u6267\u884c\u8868\u8fbe\u5f0f",
+      "state": "closed",
+      "state_reason": "completed",
+      "closed_at": "2026-11-15T05:05:44Z",
+      "html_url": "https://github.com/Jackallink/pi-a2ui/issues/34"
+    },
+    {
+      "number": 35,
+      "title": "[DX] render \u7ed3\u679c\u56de\u663e\u7ec4\u4ef6/\u753b\u5e03\u9884\u7b97\u7528\u91cf\uff1b\u8d85\u9650\u62a5\u9519\u5e26\u5f53\u524d\u8ba1\u6570",
+      "state": "closed",
+      "state_reason": "completed",
+      "closed_at": "2026-11-15T05:05:49Z",
+      "html_url": "https://github.com/Jackallink/pi-a2ui/issues/35"
+    },
+    {
+      "number": 36,
+      "title": "[DX] TestResults.summary \u6bcf\u9879\u4e0a\u9650 128 \u8fc7\u7d27\uff0c\u771f\u5b9e\u6d4b\u8bd5\u8ba1\u6570\u65e0\u6cd5\u5982\u5b9e\u6c47\u603b",
+      "state": "closed",
+      "state_reason": "completed",
+      "closed_at": "2026-11-15T05:05:54Z",
+      "html_url": "https://github.com/Jackallink/pi-a2ui/issues/36"
+    },
+    {
+      "number": 37,
+      "title": "[DX] \u4e8b\u4ef6 dispatch payload \u589e\u52a0 surface revision/epoch\uff0c\u8bc6\u522b\u66ff\u6362\u540e\u9001\u8fbe\u7684\u8fc7\u671f\u70b9\u51fb",
+      "state": "closed",
+      "state_reason": "completed",
+      "closed_at": "2026-11-15T05:05:59Z",
+      "html_url": "https://github.com/Jackallink/pi-a2ui/issues/37"
+    },
+    {
+      "number": 38,
+      "title": "[skill] review.express \u4e0e syntax-and-errors.md \u8865\u5f55\u4e24\u6761\u5b9e\u6218\u5751\uff08\u7f16\u7801\u8bb0\u5f55\u4e0a\u4e0b\u6587\u7ea6\u675f\u3001\u952e\u540d\u9ed1\u540d\u5355\uff09",
+      "state": "closed",
+      "state_reason": "completed",
+      "closed_at": "2026-11-15T05:06:04Z",
+      "html_url": "https://github.com/Jackallink/pi-a2ui/issues/38"
+    },
+    {
+      "number": 47,
+      "title": "[v0.1.7] \u771f\u5b9e\u4f7f\u7528DX\u6536\u53e3\uff1a\u8bca\u65ad\u3001\u9884\u7b97\u3001\u4e8b\u4ef6\u8eab\u4efd\u4e0eskill",
+      "state": "closed",
+      "state_reason": "completed",
+      "closed_at": "2026-11-15T05:06:15Z",
+      "html_url": "https://github.com/Jackallink/pi-a2ui/issues/47"
+    }
+  ],
+  "milestone": {
+    "number": 7,
+    "title": "v0.1.7",
+    "state": "closed",
+    "open_issues": 0,
+    "closed_issues": 6,
+    "closed_at": "2026-11-15T05:06:18Z",
+    "html_url": "https://github.com/Jackallink/pi-a2ui/milestone/7"
+  },
+  "pullRequests": [
+    {
+      "number": 45,
+      "state": "closed",
+      "merged": false,
+      "head": "61640a24e7fe0b1cc564258964e3cffba464ec5f",
+      "mergedAt": null,
+      "closedAt": "2026-11-15T05:05:34Z",
+      "url": "https://github.com/Jackallink/pi-a2ui/pull/45",
+      "disposition": "source-contained-in-48; closed-as-superseded"
+    },
+    {
+      "number": 46,
+      "state": "closed",
+      "merged": false,
+      "head": "b653cf2e400d20412f33198ecf038e3bc91a0244",
+      "mergedAt": null,
+      "closedAt": "2026-11-15T05:05:39Z",
+      "url": "https://github.com/Jackallink/pi-a2ui/pull/46",
+      "disposition": "source-contained-in-48; closed-as-superseded"
+    },
+    {
+      "number": 48,
+      "state": "closed",
+      "merged": true,
+      "head": "0af1f61b2f111ed52ed80d5ae1d3136d78edaf38",
+      "mergedAt": "2026-11-15T04:53:14Z",
+      "closedAt": "2026-11-15T04:53:14Z",
+      "url": "https://github.com/Jackallink/pi-a2ui/pull/48",
+      "disposition": "merged-integration"
+    }
+  ],
+  "benchmark43State": "open"
+}

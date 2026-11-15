@@ -1,6 +1,8 @@
 # Remaining DX — bounded result reports and event provenance
 
-Lifecycle: review-ready. Strict. 2026-11-15. Independent design/TDD-intent GO at7715f2c,0P0/P1/P2; Check066 carries execution evidence. Continues user-authorized issue workflow; branch codex/dx-36-37 starts at61640a2 (PR45), with PR44/45 and globalv0.1.5 unchanged. This is post016 source work, no release/version/installation authorization. Node24 only; no model evaluation.
+Completed via authorized v0.1.7 integration/release and postpublication independentGO; [Check075](../checks/075-v0.1.7-tracker-closure.md) records source-proven PR45/46 disposition and child/parent/milestone closure. Original implementation admission below remains source-bound history; no broader contract is added.
+
+Lifecycle: complete. Strict. 2026-11-15. Independent design/TDD-intent GO at7715f2c,0P0/P1/P2; Check066 carries execution evidence. Continues user-authorized issue workflow; branch codex/dx-36-37 starts at61640a2 (PR45), with PR44/45 and globalv0.1.5 unchanged. This is post016 source work, no release/version/installation authorization. Node24 only; no model evaluation.
 
 ## Goal, scope and choice
 
