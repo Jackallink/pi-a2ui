@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {lstatSync,realpathSync,statSync} from 'node:fs';
 import {resolve,relative,sep} from 'node:path';
-import profile from './profile.json' with {type:'json'};
+import profile from './profile-v2.json' with {type:'json'};
 export const MODEL=Object.freeze(profile.model);
 export const CAPS=Object.freeze(profile.caps);
 export const PROFILE=profile.profile;

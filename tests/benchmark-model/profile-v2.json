@@ -1,0 +1,26 @@
+{
+  "profile": "v0.1.9-glm-first-v2",
+  "model": {
+    "provider": "volcengine-ark",
+    "id": "glm-5.3-flash",
+    "baseUrl": "https://ark.cn-beijing.volces.com/api/plan/v3"
+  },
+  "caps": {
+    "requests": 5,
+    "tools": 8,
+    "maxTokens": 3072,
+    "requestMs": 45000,
+    "caseMs": 90000,
+    "cleanupMs": 10000,
+    "batchMs": 1200000
+  },
+  "archiveSHA256": "6a2dd059571c5f1fb56c16cbfbd650d2cb79979694a9eea7845ddb92af70c5eb",
+  "nodeMajor": 24,
+  "pi": "1.5.0",
+  "cases": 12,
+  "retry": false,
+  "ciInference": false,
+  "handoffPolicy": "compiled-surface-identity",
+  "packageVersion": "0.1.9",
+  "previousProfile": "v0.1.8-glm-first-v1"
+}

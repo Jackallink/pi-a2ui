@@ -1,0 +1,27 @@
+
+Running 1 test using 1 worker
+
+(node:81905) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 tests/benchmark-model/browser.spec.ts:38:1 › BM4 v2 terminal LF handoff reaches actual render and typed Pi queue (2.4s)
+
+
+  1) tests/benchmark-model/browser.spec.ts:38:1 › BM4 v2 terminal LF handoff reaches actual render and typed Pi queue 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: "success"
+    Received: "toolpolicy"
+
+      40 |  const calls=report.transcript.filter((t:any)=>t.kind==='assistant').flatMap((t:any)=>t.content).filter((c:any)=>c.type==='toolCall'&&c.name==='a2ui_render');expect(calls).toHaveLength(1);const originalSource=calls[0].arguments.source;expect(originalSource+'\n').toBe(report.source);
+      41 |  const {compile}=await import('../../src/compiler.ts');expect(compile('bm4',originalSource)).toEqual(compile('bm4',report.source));
+    > 42 |  expect(report.stage).toBe('success');expect(report.rendered).toBe(true);expect(report.intentPass).toBe(true);expect(report.interactionPass).toBe(true);expect(report.statuses).toEqual([202]);expect(report.requests).toBe(3);expect(report.actualModelRequests).toBe(0);
+         |                       ^
+      43 | });
+      44 |
+        at /Users/jakeliu/.codex/worktrees/pi-a2ui-bm4/pi-a2ui/tests/benchmark-model/browser.spec.ts:42:23
+
+    Error Context: test-results/tests-benchmark-model-brow-74293-l-render-and-typed-Pi-queue/error-context.md
+
+  1 failed
+    tests/benchmark-model/browser.spec.ts:38:1 › BM4 v2 terminal LF handoff reaches actual render and typed Pi queue 
