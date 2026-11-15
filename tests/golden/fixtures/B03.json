@@ -2,7 +2,6 @@
   "source": "$/v = [\"a\"]\npicker = SearchablePicker(label=\"Branch\",options=[{label:\"A\",value:\"a\"},{label:\"B\",value:\"b\"}],value=$/v)\nsubmit = Button(Text(\"Choose\"),action=Event(\"submit\",{branch:$/v}))\nroot = Column(children=[picker,submit])",
   "steps": "browser/picker/typed-selection",
   "expected": {
-    "selection": "B",
     "httpStatus": 202,
     "posts": 1,
     "dispatches": 1,
@@ -11,5 +10,8 @@
         "b"
       ]
     }
+  },
+  "input": {
+    "selection": "B"
   }
 }

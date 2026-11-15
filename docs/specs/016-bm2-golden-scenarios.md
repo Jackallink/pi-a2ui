@@ -165,12 +165,12 @@ Assert npm pack excludes tests/golden/CI/reports; existing runtime/skill/CLI byt
 
 |AC|Given / When / Then and future test intent|
 |---|---|
-|AC-001|Given approvedmatrix/registry,when load/coverage checks,then exactly68/46+12+6/42+22 andstaticuniquecontracts; schema/path/dedupcanaries reject invalidsets|
+|AC-001|Given approvedmatrix/registry,when load/coverage checks,then exactly68/46+15+7/45+23 andstaticuniquecontracts; schema/path/dedupcanaries reject invalidsets|
 |AC-002|Given completecompilercontrols,when actualcompile+CLI/independentoracles,then32validintent+14rightreasonnegatives; compilevalidwrongdata failssemantic|
 |AC-003|Given ownedstate/assetfixtures,when15realpaths execute,then exact64/65,4/5,atomicity,revision/sequence,artifactrevocation andaccepted-vs-stale invariants|
 |AC-004|Given authenticatedrealcanvas,when7nativeactions execute,then actualvisible/typedPOST/callback/local-only/focusobservables; no model/mock-response substitute|
 |AC-005|Given samechecker andfaultcopies,when canaries run,then targetstagefail/validcontrols pass; setup/not-run/cleanup remain failures, notnegativepasses|
-|AC-006|Given compatibleNode/browserreceipts,when approvedCI/delivery executes,then source-bound64completeandpackexclusion/no-runtime-drift; otherwisepartialexplicitlyreported|
+|AC-006|Given compatibleNode/browserreceipts,when approvedCI/delivery executes,then source-bound68completeandpackexclusion/no-runtime-drift; otherwisepartialexplicitlyreported|
 
 Walkthrough [Round1](../walkthrough/benchmark-bm2/01-round1-user-stories.md), [Round2](../walkthrough/benchmark-bm2/02-round2-technical-trace.md), [Round3](../walkthrough/benchmark-bm2/03-round3-integration-check.md). Current exit requires v2 independent design/TDD GO before evaluator code; merge/publication remain separate gates. Risks: compiler-only falseconfidence, padding/duplicatecases, dynamicidentity overconstraint, asyncflakiness or leak. Countermeasures above are explicit contracts, not test results. Rollback futureimplementation as one test/fixture/CI slice without touching018tag/assets/globalconfig; retain originalfailedreceipts/designhistory. No unresolved productbehavior choice is delegated to a guessed oracle.
 
@@ -196,3 +196,6 @@ B05nowfreezes the fullactualstablelocal sort contract (#51): ascendingnull<boole
 AC-007/#51: correctskillreference states type/rank/string/ties/local-only semantics, sourcecharacterization andrealB05protect observablecontract. No runtimebug/behaviorRED claimed; existingruntime alreadycorrect. AC-008/#52: eventreference distinguishes same-IDtransportretry,collision,new-IDrepeatintent andconsumereffectidempotency. SourceacceptAction alreadychecksacceptedMap beforedispatch; theissue'sline219alonecannotestablishnodupguard. Browsergeneratescrypto.randomUUIDperclick;forwardedepoch/revision/context omiteventIdandarenotuniqueeventkey. Do notaddsemantic suppression/deliverySeq orclaim exactlyonce. Consumers use safeapplicationoperationidentity/state checks whereappropriate, preserving intentionalrepeatclick semantics; ambiguousnon-idempotent effects requireintentverification.
 
 FullTDD admission will include completefixture/control drafts andcurrentreason/locatorintent before codeexpansion. BM2newharnesscontractRED remains distinct from correctexistingruntime characterizations. All source/pack/permissions unchanged except deliberate two skillreference clarifications for51/52. Rollbacktest/CI/doc slice together, retain018tag/assets/originaldrafts/failedreceipts. #51/#52 remainopen until reviewedintegrateddelivery, notmerelylocaldocs;43remainsopen untilallBMdelivery.
+
+
+Concrete v2 TDD fixtures separate executable `input`/`source` from handwritten expected outcomes. S01–S06 contain complete literal render/replacement/attempt source sequences; adapters must not build inputs from expected counts. B05 includes a visible second Row column containing unique labels; assert those labels in literal expected sort order, since internal row IDs and equal displayed values alone are not observable identity. Do not read expected values to construct steps.

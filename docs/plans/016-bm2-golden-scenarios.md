@@ -47,7 +47,7 @@ assert.equal(result.failedStage,'semantic');
 
 ## Task C — session/HTTP GREEN
 
-- [ ] Write12caseintenttests againstactualUiSession APIs first; implementstatic adapters/data, no newstatevalidator/private methodcalls. Ownedtemp0700root+knownPNG,ephemeralservers; allfinallyclosed, retainfailedreceipts.
+- [ ] Write15caseintenttests againstactualUiSession APIs first; implementstatic adapters/data, no newstatevalidator/private methodcalls. Ownedtemp0700root+knownPNG,ephemeralservers; allfinallyclosed, retainfailedreceipts.
 - [ ] Show64/65,4/5,failedreplacementatomicity,chartrevfixed/sequenceaftercontrolledflush,authenticated200→reset→404,ownedtraversalrejection,acceptedreentranttuplevsstale409. No actualPi queue/modelACK claim.
 - [ ] Independentnegative/identity/resourcecanaries before claiming stateproof; samecase-contract signatures andsharedfixtures, butnot duplicate scenarios. Required narrow/full/type/cleanup checks andfreshreview.
 
