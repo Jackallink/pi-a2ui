@@ -11,6 +11,7 @@ import {chromium,expect,type Browser,type BrowserServer,type Page} from '@playwr
 import a2ui from '../../extension.ts';
 import {interactionsCatalog} from '../../src/catalog.ts';
 import {MODEL,CAPS,RequestBudget,BudgetViolation,configAdmission,literalCredentials,ordinaryPath,helperCommand,redact} from './guards.ts';
+import {compareHandoff,requireHandoff} from './handoff.ts';
 import {intent,interact,type Scenario} from './oracles.ts';
 import {SOURCES,PNG,bindingVariant} from './fixtures.ts';
 import {killTrackedDetachedChildren} from '../../node_modules/@earendil-works/pi-coding-agent/dist/utils/shell.js';
@@ -101,9 +102,9 @@ export async function episode(row:Scenario,{offline,run,simulation}:{offline:boo
      else if(event.toolName==='write'||event.toolName==='edit'){assert.equal(checkAttempted,false,'draft frozen after first preflight');assert.equal(resolve(project,input.path),draft,'write/edit owned draft only');if(event.toolName==='write')assert.ok(Buffer.byteLength(input.content)<=32768);}
      else if(event.toolName==='bash'){const admitted=helperCommand(input.command,helper,draft,project,names);input.command=admitted.command;input.timeout=10;if(admitted.check){assert.equal(checkAttempted,false,'only first preflight');ordinaryPath(draft,[project],project);checkAttempted=true;result.candidateChecked=true;}}
      else if(event.toolName==='a2ui_register_artifact'){assert.equal(input.path,'sample.png');assert.equal(input.kind,'image');assert.equal(artifactSrc,undefined,'register once');}
-     else{assert.equal(event.toolName,'a2ui_render','allowed tool only');assert.ok(checked,'successful actual CLI required');assert.deepEqual(input,checked,'unchanged successfulcheck toolarguments');assert.equal(result.renderAttempted,undefined,'one render attempt');result.renderAttempted=true;}
+     else{assert.equal(event.toolName,'a2ui_render','allowed tool only');assert.ok(checked,'successful actual CLI required');assert.equal(result.renderAttempted,undefined,'one render attempt');result.renderAttempted=true;result.checkedSource=checked.source;result.attemptedSource=input.source;result.handoff=compareHandoff(checked,input);if(['checked-compile','compiler-error'].includes(result.handoff.reason)){result.harnessFailure=true;result.fatal=true;}requireHandoff(result.handoff);}
      result.tools.push({name:event.toolName,input:structuredClone(input)});
-    }catch(error){pending=false;stopRun('toolpolicy',error);return{block:true,terminate:true,reason:'BM4 guarded profile rejected tool; case stopped'};}
+    }catch(error){pending=false;stopRun(result.harnessFailure?'harness':'toolpolicy',error);return{block:true,terminate:true,reason:'BM4 guarded profile rejected tool; case stopped'};}
    });
    pi.on('tool_result',async event=>{
     pending=false;result.transcript.push({kind:'tool',tool:event.toolName,isError:event.isError,content:event.content});

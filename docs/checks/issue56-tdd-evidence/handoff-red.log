@@ -1,0 +1,50 @@
+✔ v2 handoff retains an existing exact-source positive control (25.438292ms)
+✖ v2 actual M02 terminal LF handoff is compiler-equal and stays eligible (14.975208ms)
+✖ v2 actual M08 terminal LF handoff is compiler-equal and stays eligible (6.463958ms)
+✖ v2 actual M09 terminal LF handoff is compiler-equal and stays eligible (6.093833ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 1
+ℹ fail 3
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1391.820625
+
+✖ failing tests:
+
+test at tests/benchmark-handoff.test.ts:1:646
+✖ v2 actual M02 terminal LF handoff is compiler-equal and stays eligible (14.975208ms)
+  Error: BM4 handoff rejected: changed-surface
+      at requireHandoff (/Users/jakeliu/.codex/worktrees/pi-a2ui-bm4/pi-a2ui/tests/benchmark-model/handoff.ts:8:43)
+      at TestContext.<anonymous> (/Users/jakeliu/.codex/worktrees/pi-a2ui-bm4/pi-a2ui/tests/benchmark-handoff.test.ts:15:108)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1325:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:911:18)
+      at Test.postRun (node:internal/test_runner/test:1465:19)
+      at Test.run (node:internal/test_runner/test:1390:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:385:3)
+
+test at tests/benchmark-handoff.test.ts:1:646
+✖ v2 actual M08 terminal LF handoff is compiler-equal and stays eligible (6.463958ms)
+  Error: BM4 handoff rejected: changed-surface
+      at requireHandoff (/Users/jakeliu/.codex/worktrees/pi-a2ui-bm4/pi-a2ui/tests/benchmark-model/handoff.ts:8:43)
+      at TestContext.<anonymous> (/Users/jakeliu/.codex/worktrees/pi-a2ui-bm4/pi-a2ui/tests/benchmark-handoff.test.ts:15:108)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1325:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:911:18)
+      at Test.postRun (node:internal/test_runner/test:1465:19)
+      at Test.run (node:internal/test_runner/test:1390:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:911:7)
+
+test at tests/benchmark-handoff.test.ts:1:646
+✖ v2 actual M09 terminal LF handoff is compiler-equal and stays eligible (6.093833ms)
+  Error: BM4 handoff rejected: changed-surface
+      at requireHandoff (/Users/jakeliu/.codex/worktrees/pi-a2ui-bm4/pi-a2ui/tests/benchmark-model/handoff.ts:8:43)
+      at TestContext.<anonymous> (/Users/jakeliu/.codex/worktrees/pi-a2ui-bm4/pi-a2ui/tests/benchmark-handoff.test.ts:15:108)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1325:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:911:18)
+      at Test.postRun (node:internal/test_runner/test:1465:19)
+      at Test.run (node:internal/test_runner/test:1390:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:911:7)
