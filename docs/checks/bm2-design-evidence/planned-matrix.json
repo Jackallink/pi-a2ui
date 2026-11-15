@@ -1,0 +1,399 @@
+{
+  "designOnly": true,
+  "planned": 64,
+  "implemented": 0,
+  "executed": 0,
+  "layers": {
+    "compiler": 46,
+    "session": 12,
+    "browser": 6
+  },
+  "positive": 42,
+  "negative": 22,
+  "cases": [
+    {
+      "id": "C01",
+      "contractKey": "compiler/ActivityTimeline/initial-static",
+      "layer": "compiler",
+      "polarity": "positive"
+    },
+    {
+      "id": "C02",
+      "contractKey": "compiler/ArtifactPreview/local-shape",
+      "layer": "compiler",
+      "polarity": "positive"
+    },
+    {
+      "id": "C03",
+      "contractKey": "compiler/AudioPlayer/local-shape",
+      "layer": "compiler",
+      "polarity": "positive"
+    },
+    {
+      "id": "C04",
+      "contractKey": "compiler/Button/file-intent",
+      "layer": "compiler",
+      "polarity": "positive"
+    },
+    {
+      "id": "C05",
+      "contractKey": "compiler/Card/static-child",
+      "layer": "compiler",
+      "polarity": "positive"
+    },
+    {
+      "id": "C06",
+      "contractKey": "compiler/Chart/finite-negative-value",
+      "layer": "compiler",
+      "polarity": "positive"
+    },
+    {
+      "id": "C07",
+      "contractKey": "compiler/CheckBox/bound-boolean",
+      "layer": "compiler",
+      "polarity": "positive"
+    },
+    {
+      "id": "C08",
+      "contractKey": "compiler/ChoicePicker/bound-array",
+      "layer": "compiler",
+      "polarity": "positive"
+    },
+    {
+      "id": "C09",
+      "contractKey": "compiler/CodeBlock/literal-lines",
+      "layer": "compiler",
+      "polarity": "positive"
+    },
+    {
+      "id": "C10",
+      "contractKey": "compiler/CodeDiff/illustrative-record",
+      "layer": "compiler",
+      "polarity": "positive"
+    },
+    {
+      "id": "C11",
+      "contractKey": "compiler/Column/local64",
+      "layer": "compiler",
+      "polarity": "positive"
+    },
+    {
+      "id": "C12",
+      "contractKey": "compiler/DataTable/typed-cells",
+      "layer": "compiler",
+      "polarity": "positive"
+    },
+    {
+      "id": "C13",
+      "contractKey": "compiler/DateTimeInput/leap-day",
+      "layer": "compiler",
+      "polarity": "positive"
+    },
+    {
+      "id": "C14",
+      "contractKey": "compiler/Details/static-closed",
+      "layer": "compiler",
+      "polarity": "positive"
+    },
+    {
+      "id": "C15",
+      "contractKey": "compiler/Divider/static",
+      "layer": "compiler",
+      "polarity": "positive"
+    },
+    {
+      "id": "C16",
+      "contractKey": "compiler/FormValidation/valid-definition",
+      "layer": "compiler",
+      "polarity": "positive"
+    },
+    {
+      "id": "C17",
+      "contractKey": "compiler/Icon/finite-name",
+      "layer": "compiler",
+      "polarity": "positive"
+    },
+    {
+      "id": "C18",
+      "contractKey": "compiler/Image/local-shape",
+      "layer": "compiler",
+      "polarity": "positive"
+    },
+    {
+      "id": "C19",
+      "contractKey": "compiler/List/static-order",
+      "layer": "compiler",
+      "polarity": "positive"
+    },
+    {
+      "id": "C20",
+      "contractKey": "compiler/LogView/initial-server-output",
+      "layer": "compiler",
+      "polarity": "positive"
+    },
+    {
+      "id": "C21",
+      "contractKey": "compiler/MarkdownView/literal-source",
+      "layer": "compiler",
+      "polarity": "positive"
+    },
+    {
+      "id": "C22",
+      "contractKey": "compiler/Modal/distinct-slots",
+      "layer": "compiler",
+      "polarity": "positive"
+    },
+    {
+      "id": "C23",
+      "contractKey": "compiler/Row/static-order",
+      "layer": "compiler",
+      "polarity": "positive"
+    },
+    {
+      "id": "C24",
+      "contractKey": "compiler/SearchablePicker/member-array",
+      "layer": "compiler",
+      "polarity": "positive"
+    },
+    {
+      "id": "C25",
+      "contractKey": "compiler/Slider/valid-grid",
+      "layer": "compiler",
+      "polarity": "positive"
+    },
+    {
+      "id": "C26",
+      "contractKey": "compiler/StatusBadge/reported-provenance",
+      "layer": "compiler",
+      "polarity": "positive"
+    },
+    {
+      "id": "C27",
+      "contractKey": "compiler/Tabs/distinct-children",
+      "layer": "compiler",
+      "polarity": "positive"
+    },
+    {
+      "id": "C28",
+      "contractKey": "compiler/TaskProgress/server-owned",
+      "layer": "compiler",
+      "polarity": "positive"
+    },
+    {
+      "id": "C29",
+      "contractKey": "compiler/TestResults/skip-summary",
+      "layer": "compiler",
+      "polarity": "positive"
+    },
+    {
+      "id": "C30",
+      "contractKey": "compiler/Text/literal-markup",
+      "layer": "compiler",
+      "polarity": "positive"
+    },
+    {
+      "id": "C31",
+      "contractKey": "compiler/TextField/bound-string",
+      "layer": "compiler",
+      "polarity": "positive"
+    },
+    {
+      "id": "C32",
+      "contractKey": "compiler/Video/local-shape",
+      "layer": "compiler",
+      "polarity": "positive"
+    },
+    {
+      "id": "C33",
+      "contractKey": "compiler/Event/reserved-path",
+      "layer": "compiler",
+      "polarity": "negative"
+    },
+    {
+      "id": "C34",
+      "contractKey": "compiler/parser/unclosed-bracket",
+      "layer": "compiler",
+      "polarity": "negative"
+    },
+    {
+      "id": "C35",
+      "contractKey": "compiler/catalog/unknown-type",
+      "layer": "compiler",
+      "polarity": "negative"
+    },
+    {
+      "id": "C36",
+      "contractKey": "compiler/schema/unknown-property",
+      "layer": "compiler",
+      "polarity": "negative"
+    },
+    {
+      "id": "C37",
+      "contractKey": "compiler/tree/missing-child",
+      "layer": "compiler",
+      "polarity": "negative"
+    },
+    {
+      "id": "C38",
+      "contractKey": "compiler/tree/repeated-child",
+      "layer": "compiler",
+      "polarity": "negative"
+    },
+    {
+      "id": "C39",
+      "contractKey": "compiler/tree/unreachable",
+      "layer": "compiler",
+      "polarity": "negative"
+    },
+    {
+      "id": "C40",
+      "contractKey": "compiler/tree/depth17",
+      "layer": "compiler",
+      "polarity": "negative"
+    },
+    {
+      "id": "C41",
+      "contractKey": "compiler/capacity/local65",
+      "layer": "compiler",
+      "polarity": "negative"
+    },
+    {
+      "id": "C42",
+      "contractKey": "compiler/CheckBox/wrong-initial-type",
+      "layer": "compiler",
+      "polarity": "negative"
+    },
+    {
+      "id": "C43",
+      "contractKey": "compiler/FormValidation/unreachable-target",
+      "layer": "compiler",
+      "polarity": "negative"
+    },
+    {
+      "id": "C44",
+      "contractKey": "compiler/TestResults/summary166",
+      "layer": "compiler",
+      "polarity": "negative"
+    },
+    {
+      "id": "C45",
+      "contractKey": "compiler/TestResults/summary-mismatch",
+      "layer": "compiler",
+      "polarity": "negative"
+    },
+    {
+      "id": "C46",
+      "contractKey": "compiler/coding/unrelated-button-ids",
+      "layer": "compiler",
+      "polarity": "negative"
+    },
+    {
+      "id": "S01",
+      "contractKey": "session/capacity/surfaces4",
+      "layer": "session",
+      "polarity": "positive"
+    },
+    {
+      "id": "S02",
+      "contractKey": "session/capacity/surfaces5",
+      "layer": "session",
+      "polarity": "negative"
+    },
+    {
+      "id": "S03",
+      "contractKey": "session/capacity/aggregate64",
+      "layer": "session",
+      "polarity": "positive"
+    },
+    {
+      "id": "S04",
+      "contractKey": "session/capacity/aggregate65",
+      "layer": "session",
+      "polarity": "negative"
+    },
+    {
+      "id": "S05",
+      "contractKey": "session/capacity/replacement-reclaims",
+      "layer": "session",
+      "polarity": "positive"
+    },
+    {
+      "id": "S06",
+      "contractKey": "session/atomicity/invalid-replacement",
+      "layer": "session",
+      "polarity": "negative"
+    },
+    {
+      "id": "S07",
+      "contractKey": "session/data/valid-chart-sequence",
+      "layer": "session",
+      "polarity": "positive"
+    },
+    {
+      "id": "S08",
+      "contractKey": "session/data/stale-chart",
+      "layer": "session",
+      "polarity": "negative"
+    },
+    {
+      "id": "S09",
+      "contractKey": "session/artifact/authenticated-revocation",
+      "layer": "session",
+      "polarity": "positive"
+    },
+    {
+      "id": "S10",
+      "contractKey": "session/artifact/relative-escape",
+      "layer": "session",
+      "polarity": "negative"
+    },
+    {
+      "id": "S11",
+      "contractKey": "session/event/accepted-reentrancy",
+      "layer": "session",
+      "polarity": "positive"
+    },
+    {
+      "id": "S12",
+      "contractKey": "session/event/stale-submit",
+      "layer": "session",
+      "polarity": "negative"
+    },
+    {
+      "id": "B01",
+      "contractKey": "browser/guard/valid-typed-submit",
+      "layer": "browser",
+      "polarity": "positive"
+    },
+    {
+      "id": "B02",
+      "contractKey": "browser/guard/invalid-no-post",
+      "layer": "browser",
+      "polarity": "negative"
+    },
+    {
+      "id": "B03",
+      "contractKey": "browser/picker/typed-selection",
+      "layer": "browser",
+      "polarity": "positive"
+    },
+    {
+      "id": "B04",
+      "contractKey": "browser/palette/hidden-target",
+      "layer": "browser",
+      "polarity": "negative"
+    },
+    {
+      "id": "B05",
+      "contractKey": "browser/table/local-sort",
+      "layer": "browser",
+      "polarity": "positive"
+    },
+    {
+      "id": "B06",
+      "contractKey": "browser/modal/local-focus",
+      "layer": "browser",
+      "polarity": "positive"
+    }
+  ]
+}

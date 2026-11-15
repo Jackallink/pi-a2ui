@@ -1,0 +1,27 @@
+{
+  "steps": "session/capacity/surfaces4",
+  "expected": {
+    "surfaceCount": 4,
+    "components": 4
+  },
+  "input": {
+    "renders": [
+      {
+        "surfaceId": "s0",
+        "source": "root = Text(\"only\")"
+      },
+      {
+        "surfaceId": "s1",
+        "source": "root = Text(\"only\")"
+      },
+      {
+        "surfaceId": "s2",
+        "source": "root = Text(\"only\")"
+      },
+      {
+        "surfaceId": "s3",
+        "source": "root = Text(\"only\")"
+      }
+    ]
+  }
+}

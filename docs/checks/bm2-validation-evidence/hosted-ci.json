@@ -1,0 +1,48 @@
+{
+  "runId": 43703269192,
+  "url": "https://github.com/Jackallink/pi-a2ui/actions/runs/43703269192",
+  "event": "pull_request",
+  "nameObserved": "Offline benchmarks",
+  "head": "6debce46a765a5700942000267dc7947219e0755",
+  "checkoutMerge": "ca1d6438f1997282e516323e596de7619878de02",
+  "parents": [
+    "63ec895a607d4fe32cc9cedce1344754078ce93c",
+    "6debce46a765a5700942000267dc7947219e0755"
+  ],
+  "conclusion": "success",
+  "jobs": [
+    {
+      "id": 132778808509,
+      "name": "node24",
+      "conclusion": "success"
+    },
+    {
+      "id": 132778808750,
+      "name": "chromium",
+      "conclusion": "success"
+    },
+    {
+      "id": 132779152619,
+      "name": "golden-union",
+      "conclusion": "success"
+    }
+  ],
+  "node": "v24.22.2",
+  "nodeTests": 347,
+  "browserTests": 54,
+  "goldenCases": 68,
+  "positive": 45,
+  "negative": 23,
+  "identity": {
+    "profile": "v0.1.8-golden-v2",
+    "source": "ca1d6438f1997282e516323e596de7619878de02",
+    "dirty": false,
+    "lockHash": "049f61fa6659ee16d25686309a14b8de5dabec5acfa57304142b1211411f9e2c",
+    "datasetHash": "6666061e48ae7bc2d133fd7f2a5c36c8e4649dd97edef34dc12a419dcdeb7adc",
+    "oracleSetHash": "d922286a75c00c32202b307e509ad480998d4cb0f9d787931ed52e30b9f14fc7",
+    "catalogHash": "61e4f817e2d692479eb034b44cb71f9ff8748b03d9ee4b663ec86c910c6ef51b",
+    "assetHash": "04fb8480b4b5ab849423fe1dcbb738244d31a3bd165e1b411d65ead32e32eaf2",
+    "nodeMajor": 24
+  },
+  "rawLogSHA256": "ea21f99bcca6c6b06be47a0aa64d3cd3f6ccb5b4dc81b0cf47cd3b64efc78dd1"
+}

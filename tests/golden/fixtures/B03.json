@@ -1,0 +1,17 @@
+{
+  "source": "$/v = [\"a\"]\npicker = SearchablePicker(label=\"Branch\",options=[{label:\"A\",value:\"a\"},{label:\"B\",value:\"b\"}],value=$/v)\nsubmit = Button(Text(\"Choose\"),action=Event(\"submit\",{branch:$/v}))\nroot = Column(children=[picker,submit])",
+  "steps": "browser/picker/typed-selection",
+  "expected": {
+    "httpStatus": 202,
+    "posts": 1,
+    "dispatches": 1,
+    "context": {
+      "branch": [
+        "b"
+      ]
+    }
+  },
+  "input": {
+    "selection": "B \u00b7 b"
+  }
+}

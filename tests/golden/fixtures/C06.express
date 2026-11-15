@@ -1,0 +1,1 @@
+root = Chart(kind="line",series=[{name:"A",points:[{label:"one",value:-2}]}])

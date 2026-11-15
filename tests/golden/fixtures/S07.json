@@ -1,0 +1,30 @@
+{
+  "source": "root = Chart(kind=\"line\",series=[{name:\"A\",points:[{label:\"one\",value:-2}]}])",
+  "steps": "session/data/valid-chart-sequence",
+  "series": [
+    {
+      "name": "A",
+      "points": [
+        {
+          "label": "two",
+          "value": 3
+        }
+      ]
+    }
+  ],
+  "expected": {
+    "revision": 1,
+    "dataSequence": 1,
+    "series": [
+      {
+        "name": "A",
+        "points": [
+          {
+            "label": "two",
+            "value": 3
+          }
+        ]
+      }
+    ]
+  }
+}

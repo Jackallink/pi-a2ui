@@ -1,0 +1,11 @@
+node24	Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1	2026-11-15T10:16:40.4685837Z node: v24.22.2
+node24	Record runtime and checkout identity	2026-11-15T10:16:40.7457979Z event_sha=ca1d6438f1997282e516323e596de7619878de02
+node24	Run npm test	2026-11-15T10:17:44.3467429Z ℹ tests 347
+node24	Run npm test	2026-11-15T10:17:44.3467931Z ℹ pass 347
+node24	Run npm test	2026-11-15T10:17:44.3468178Z ℹ fail 0
+node24	Run npm test	2026-11-15T10:17:44.3468417Z ℹ cancelled 0
+node24	Run npm test	2026-11-15T10:17:44.3468789Z ℹ skipped 0
+chromium	Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1	2026-11-15T10:16:33.4730028Z node: v24.22.2
+chromium	Run node tests/golden/run-browser.mjs	2026-11-15T10:17:16.1627416Z   54 passed (18.4s)
+golden-union	Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1	2026-11-15T10:17:58.3645213Z node: v24.22.2
+golden-union	Require exact compatible 61 plus 7 case receipts	2026-11-15T10:18:06.5068276Z {"source":"ca1d6438f1997282e516323e596de7619878de02","cases":68,"positive":45,"negative":23,"node":"v24.22.2","browser":"158.0.8127.18"}

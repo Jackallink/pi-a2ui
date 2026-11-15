@@ -1,0 +1,19 @@
+{
+  "steps": "session/capacity/aggregate64",
+  "expected": {
+    "surfaceCount": 2,
+    "components": 64
+  },
+  "input": {
+    "renders": [
+      {
+        "surfaceId": "first",
+        "source": "root = Column(children=[Text(\"item0\"),Text(\"item1\"),Text(\"item2\"),Text(\"item3\"),Text(\"item4\"),Text(\"item5\"),Text(\"item6\"),Text(\"item7\"),Text(\"item8\"),Text(\"item9\"),Text(\"item10\"),Text(\"item11\"),Text(\"item12\"),Text(\"item13\"),Text(\"item14\"),Text(\"item15\"),Text(\"item16\"),Text(\"item17\"),Text(\"item18\"),Text(\"item19\"),Text(\"item20\"),Text(\"item21\"),Text(\"item22\"),Text(\"item23\"),Text(\"item24\"),Text(\"item25\"),Text(\"item26\"),Text(\"item27\"),Text(\"item28\"),Text(\"item29\"),Text(\"item30\"),Text(\"item31\"),Text(\"item32\"),Text(\"item33\"),Text(\"item34\"),Text(\"item35\")])"
+      },
+      {
+        "surfaceId": "second",
+        "source": "root = Column(children=[Text(\"item0\"),Text(\"item1\"),Text(\"item2\"),Text(\"item3\"),Text(\"item4\"),Text(\"item5\"),Text(\"item6\"),Text(\"item7\"),Text(\"item8\"),Text(\"item9\"),Text(\"item10\"),Text(\"item11\"),Text(\"item12\"),Text(\"item13\"),Text(\"item14\"),Text(\"item15\"),Text(\"item16\"),Text(\"item17\"),Text(\"item18\"),Text(\"item19\"),Text(\"item20\"),Text(\"item21\"),Text(\"item22\"),Text(\"item23\"),Text(\"item24\"),Text(\"item25\")])"
+      }
+    ]
+  }
+}

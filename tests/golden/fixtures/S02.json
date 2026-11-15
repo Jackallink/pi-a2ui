@@ -1,0 +1,31 @@
+{
+  "steps": "session/capacity/surfaces5",
+  "expected": {
+    "status": 413,
+    "atomic": true
+  },
+  "input": {
+    "renders": [
+      {
+        "surfaceId": "s0",
+        "source": "root = Text(\"only\")"
+      },
+      {
+        "surfaceId": "s1",
+        "source": "root = Text(\"only\")"
+      },
+      {
+        "surfaceId": "s2",
+        "source": "root = Text(\"only\")"
+      },
+      {
+        "surfaceId": "s3",
+        "source": "root = Text(\"only\")"
+      }
+    ],
+    "attempt": {
+      "surfaceId": "fifth",
+      "source": "root = Text(\"only\")"
+    }
+  }
+}

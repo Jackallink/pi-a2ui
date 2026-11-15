@@ -1,0 +1,19 @@
+{
+  "steps": "session/atomicity/invalid-replacement",
+  "expected": {
+    "status": 400,
+    "atomic": true
+  },
+  "input": {
+    "renders": [
+      {
+        "surfaceId": "first",
+        "source": "root = Text(\"only\")"
+      }
+    ],
+    "attempt": {
+      "surfaceId": "first",
+      "source": "root = Card(child=missing)"
+    }
+  }
+}

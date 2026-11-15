@@ -1,4 +1,4 @@
-name: BM1 offline
+name: Offline benchmarks
 on:
   pull_request:
   workflow_dispatch:
@@ -8,6 +8,8 @@ jobs:
   node24:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
+    outputs:
+      report: ${{ steps.golden.outputs.report }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
@@ -23,3 +25,39 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run check
+      - id: golden
+        run: node --import tsx tests/golden/report-cli.ts export node >> "$GITHUB_OUTPUT"
+  chromium:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    outputs:
+      report: ${{ steps.golden.outputs.report }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version: '24'
+      - run: npm ci
+      - run: node node_modules/playwright/cli.js install --with-deps chromium-headless-shell
+      - run: node tests/golden/run-browser.mjs
+      - id: golden
+        run: node --import tsx tests/golden/report-cli.ts export browser >> "$GITHUB_OUTPUT"
+  golden-union:
+    needs: [node24, chromium]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version: '24'
+      - run: npm ci
+      - name: Require exact compatible 61 plus 7 case receipts
+        env:
+          GOLDEN_NODE: ${{ needs.node24.outputs.report }}
+          GOLDEN_BROWSER: ${{ needs.chromium.outputs.report }}
+        run: node --import tsx tests/golden/report-cli.ts combine-env

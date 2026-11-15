@@ -1,0 +1,2 @@
+root = Text("A")
+unused = Text("B")

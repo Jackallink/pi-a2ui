@@ -1,0 +1,1 @@
+root = DataTable(caption="Scores",columns=[{id:"score",label:"Score"}],rows=[{id:"a",cells:[2]},{id:"b",cells:[1]}])

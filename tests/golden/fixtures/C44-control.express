@@ -1,0 +1,1 @@
+root = TestResults(resultId="result-golden",command="example only",evidence="Illustrative fixture, not an executed test",cases=[{id:"sample",name:"Not run",status:"skip"}],summary={pass:0,fail:0,skip:1,error:0})

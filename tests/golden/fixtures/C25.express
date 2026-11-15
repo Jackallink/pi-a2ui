@@ -1,0 +1,1 @@
+root = Slider(label="Range",min=0,max=10,steps=10,value=4)

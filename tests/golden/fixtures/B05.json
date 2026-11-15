@@ -1,0 +1,42 @@
+{
+  "source": "root = DataTable(caption=\"Scores\",columns=[{id:\"score\",label:\"Score\"},{id:\"label\",label:\"Row\"}],rows=[{\"id\": \"null\", \"cells\": [null, \"null\"]}, {\"id\": \"false\", \"cells\": [false, \"false\"]}, {\"id\": \"true\", \"cells\": [true, \"true\"]}, {\"id\": \"n158\", \"cells\": [158, \"n158\"]}, {\"id\": \"n212\", \"cells\": [212, \"n212\"]}, {\"id\": \"n640\", \"cells\": [640, \"n640\"]}, {\"id\": \"n77\", \"cells\": [77, \"n77\"]}, {\"id\": \"s158\", \"cells\": [\"158\", \"s158\"]}, {\"id\": \"s212\", \"cells\": [\"212\", \"s212\"]}, {\"id\": \"s640\", \"cells\": [\"640\", \"s640\"]}, {\"id\": \"s77\", \"cells\": [\"77\", \"s77\"]}, {\"id\": \"emoji\", \"cells\": [\"😀\", \"emoji\"]}, {\"id\": \"bmp\", \"cells\": [\"\", \"bmp\"]}, {\"id\": \"tieA\", \"cells\": [158, \"tieA\"]}, {\"id\": \"tieB\", \"cells\": [158, \"tieB\"]}])",
+  "steps": "browser/table/local-sort",
+  "ascending": [
+    "null",
+    "false",
+    "true",
+    "n77",
+    "n158",
+    "tieA",
+    "tieB",
+    "n212",
+    "n640",
+    "s158",
+    "s212",
+    "s640",
+    "s77",
+    "emoji",
+    "bmp"
+  ],
+  "descending": [
+    "bmp",
+    "emoji",
+    "s77",
+    "s640",
+    "s212",
+    "s158",
+    "n640",
+    "n212",
+    "n158",
+    "tieA",
+    "tieB",
+    "n77",
+    "true",
+    "false",
+    "null"
+  ],
+  "expected": {
+    "posts": 0,
+    "dispatches": 0
+  }
+}

@@ -1,0 +1,1 @@
+root = ArtifactPreview(src="/api/artifacts/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",kind="image",label="Illustrative")

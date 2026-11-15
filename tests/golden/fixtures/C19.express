@@ -1,0 +1,1 @@
+root = List(children=[Text("A"),Text("B")])
