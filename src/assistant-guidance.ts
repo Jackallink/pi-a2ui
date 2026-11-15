@@ -1,3 +1,4 @@
+import {UiError,type UiDiagnostic} from './protocol.js';
 import type{Catalog,ComponentApi}from'@a2ui/web_core/v1_0';
 import{APPROVED_ICON_NAMES}from'./workbench.js';
 import{authoringParameters,expressCause}from'./authoring-policy.js';
@@ -44,14 +45,20 @@ export function componentGuidance(catalog:Catalog<ComponentApi>,name:string,exam
 }
 export function cliDiagnostic(error:unknown,code:DiagnosticCode,catalog?:Catalog<ComponentApi>,examples:AuthoringExample[]=[]){
  const message=error instanceof Error?error.message:String(error);let hint=code==='LOOKUP'?'Use catalog, component NAME, examples or patterns to select an actual supported item.':code==='INPUT'?'Read one regular UTF8 Express file without BOM, within32KiB, or pipe it to check using -.':code==='USAGE'?'Use --help for command names and exact arguments.':code==='RUNTIME'?'Select Node24.x with nvm use 24, then run the installed helper.':'Use an unmodified matching example, adapt named arguments, then check the complete source again. No automatic repair or retry.';
- const result:{error:string;code:DiagnosticCode;hint:string;reference:string;component?:string;allowedProperties?:string[];examples?:string[]}={error:message,code,hint,reference:code==='COMPILE'?'references/syntax-and-errors.md':'references/helper.md'};
+ const result:{error:string;code:DiagnosticCode;hint:string;reference:string;component?:string;allowedProperties?:string[];examples?:string[];diagnostic?:Readonly<UiDiagnostic>}={error:message,code,hint,reference:code==='COMPILE'?'references/syntax-and-errors.md':'references/helper.md'};
  const cause=expressCause(error);
  if(code==='COMPILE'&&cause&&catalog){
   result.component=cause.compName;
   if(catalog.components.has(cause.compName)){const guidance=componentGuidance(catalog,cause.compName,examples);result.allowedProperties=guidance.parameters.map(p=>p.name);result.examples=guidance.examples;result.hint='Use component '+cause.compName+' for named parameters/project notes, or example '+(guidance.examples[0]??'user-form')+'; then check the corrected complete source.';}
   else result.hint='That name is not a component in this helper catalog. Use catalog for actual names or patterns/examples for compositions; do not invent a constructor.';
  }
- if(code==='COMPILE'&&message==='Executable expressions and checks are unavailable')result.hint='Executable checks/functions are unavailable. Use FormValidation for declared required/minLength/maxLength rules, then check the source.';
+ if(error instanceof UiError&&error.diagnostic){
+  result.diagnostic=error.diagnostic;
+  const key=error.diagnostic.forbiddenKey;
+  if(key==='path')result.hint='The literal event-data key path is reserved in this authoring profile. Use a non-reserved key such as file, then check again; artifact tool path parameters are separate.';
+  else if(key==='checks')result.hint='Executable checks are unavailable. Use FormValidation for declared required/minLength/maxLength rules, then check the source.';
+  else if(key!==undefined)result.hint='Remove the reserved authoring key '+JSON.stringify(key)+'. Use declared Event data and valid absolute input bindings; functions/RPC remain unavailable.';
+ }
  return result;
 }
 export const AUTHORING_RESTRICTIONS=Object.freeze(['Named arguments only in this authoring reference; no positional constructor signature is implied.','No executable checks, functions or dynamic templates; interactive widgets cannot be inside Button.','Helper-local metadata does not certify a different running Pi, live capacity or reported execution; actual check/tool validation remains authoritative.']);

@@ -1,0 +1,27 @@
+# Check065 — DX38 guidance and final source candidate
+
+2026-11-14. Spec013 AC007/008 plus D1/D2 regressions. Branch codex/dx-34-35-38; base PR44 fixed570b67a. D1 fixed6355ffa and D2 fixed3955dad independently GO (Checks063/064). This is post016 source work: inherited package version0.1.6 is a base identity, not admission to that release. No version/tag/release/global install or issue closure.
+
+## Reference repair evidence
+
+Issue38's actual whole-surface coding constraint and reserved-key confusion were reproduced through real compiler calls, not model reasoning. Four new executable reference tests cover unrelated Button rejection and literal-ID repair, path→file repair, complete two-Button review sample, and exact visible-case counts at128/129/hidden166 boundaries. Original reference gap run2/4 has two missing documentation examples; that is a reference-gap receipt, **not runtime behavioral RED**. The two existing behavior/boundary cases already pass. After adding documentation samples, all4 and18combined skill/helper/discovery tests pass. D1/D2 actual missing-behavior RED receipts remain separate.
+
+review.express adds only the whole-surface comment; illustrative skipped record semantics and provenance remain. Error guide keeps both legacy error strings grep-able, adds current typed diagnostic/unknown-scope limits, workspace cwd,64/4 usage and replacement-versus-slot guidance. No public per-surface archive/delete exists; no promised reload reclamation. Summary counts still equal displayed rows<=128;36 semantics and37 event delivery are unchanged. Main skill links focused subdocuments; no new template/type/route, script permission or CLI command. Tests consume executable examples and actual compiler semantics, not snapshots of prose wording. No claim that model reliability/cost improved; that requires the separate BM4 evaluation.
+
+## Verification and package identity
+
+- Node **v24.18.1**, wrapper-selected for every node/npm/helper process. Finalfull **221/221**, focused18/18, tsc/build pass; walkthrough validator and diff whitespace pass. Raw final-node.log,final-tsc.log,final-build.log,d3-green.log under ignored private .local/dx-evidence.
+- Chromium **45/45** on D2 runtime/client; final D3 changes are documentation/tests only, and build introduced no further runtime/dist changes. Raw d2-browser.log.
+- Production-only consumer outside repo/system-temp: npm pack --ignore-scripts after build; fresh install --omit=dev --ignore-scripts --legacy-peer-deps. **74 packed files** matched checkout bytes, remained unchanged after helper queries; no TypeScript/tsx/esbuild/Pi host package available from this consumer. Actual prebuilt helper: **32component queries,19examples+exact check outputs,8patterns,2doc samples**, reserved-path typed locator/hint and65/64 local overflow, CRLF/Unicode source bytes all pass. Consumer helper ran from a different cwd. Not a global or user-project install.
+- Archive SHA256 **69e84f185c82c5655884ed7138cf6f7c00f94723c079dd6f27d786832792eada**. Production receipt SHA256 **0c8833eec5094513652e29e63adc88498d64754cffbaf783fe3cf8a899a32925** (file hashes included); discovery receipt **36a824c9f4f37dad0ed231973d1ba35fe23bbeddc9904ddc5d76b76bc2a7e9d0**. Private verify-production.mjs/verify-discovery.mjs,production-pack.json,production-consumer.json,production-discovery.json and install logs retained. These are test archives, not a published version.
+- Real Pi1.5.0 **development SDK skill loader** applied only to packaged pi.skills path, private cwd/agentDir, defaults disabled: exactly pi-a2ui,0diagnostics. This proves packaged discovery, not a newly booted production Pi/model session; production helper intentionally lacks the optional Pi host peer.
+
+## Evidence limits and risk
+
+No model or credential/config operations; only deterministic offline/loopback consumer checks. Baseline install and fresh consumer both report **4 high upstream dependency audit findings**; package.json/package-lock unchanged from570b67a and README already records pinned Zod/A2UI GHSA-mrhx-c7xc-m3w5 risk. No patch/audit-clean or public-production waiver claimed. A separate optional npm audit on the intentionally lockfile-free tar consumer returned ENOLOCK; it is setup failure, not behavior RED, and does not erase the install warning. No force fix or dependency expansion.
+
+Primary checkout/benchmark untracked drafts retained; PR44 remainsOPEN at570b67a; installed package remains cleanv0.1.5. No36/37/BM1 code, benchmark CI or merge/publication. No spec drift; original validator order/policy/limits intact. Rollback slice commits and rebuild dist. Issue integration/closure and release remain separate.
+
+## Final independent source gate
+
+Fixed **64b95b30938c8a86e251c79a18bfb27675fe7889** received independent **source-delivery GO,0P0/P1/P2**. [Final report](dx-usability-evidence/final-code-review-r1.md),SHA256 **67434c7d4cc419805b2df0c4596cc9cea2655ee9824bb3017721286db468fb34**. Reviewer independently ran44related tests/tsc, checked all74archive/consumer/source/receipt bytes, executed both packaged documentation samples and typed path recovery, and confirmed D3 leaves prior-reviewed runtime/dist unchanged. Root's221/45 and broader32/19/8counts remain root receipts, not claimed reviewer reruns. Only this report/check record is added afterward; production payload stays fixed. Spec remains review-ready pending separately authorized integration; this is no merge/release/audit-clean/real-upgrade/model-effectiveness GO.

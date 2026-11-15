@@ -1,6 +1,6 @@
 import {z} from 'zod';
 import type {ComponentApi} from '@a2ui/web_core/v1_0';
-import {UiError,type SurfaceMessage} from './protocol.ts';
+import { componentError, UiError,type SurfaceMessage} from './protocol.ts';
 export const logStates=['idle','running','completed','error','paused','interrupted'] as const;
 export type LogState=typeof logStates[number];
 export const logViewApi={name:'LogView',schema:z.object({stream:z.literal('tools').default('tools'),text:z.string().default(''),omitted:z.boolean().default(false),state:z.enum(logStates).default('idle')}).strict()} satisfies ComponentApi;
@@ -26,6 +26,7 @@ export function validateSeries(input:unknown):ChartSeries{
 export function validateLive(message:SurfaceMessage,initial=false):void{
  let logs=0;
  for(const component of message.createSurface.components){
+    try {
   if(component.component==='Chart')validateSeries(component.series);
   if(component.component==='LogView'){
    if(++logs>1)throw new UiError(400,'Only one LogView per surface');
@@ -34,5 +35,7 @@ export function validateLive(message:SurfaceMessage,initial=false):void{
    if(trimLog(data.text).text!==data.text)throw new UiError(413,'Saved LogView exceeds its text/line budget');
    Object.assign(component,data);
   }
- }
+
+    } catch(error) { throw componentError(error,component, message.createSurface.surfaceId); }
+  }
 }

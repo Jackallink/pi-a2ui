@@ -1,6 +1,6 @@
 import {z} from 'zod';
 import type {ComponentApi} from '@a2ui/web_core/v1_0';
-import {UiError,type Component,type SurfaceMessage} from './protocol.ts';
+import { componentError, UiError,type Component,type SurfaceMessage} from './protocol.ts';
 const identity=z.string().regex(/^[A-Za-z0-9_-]{1,64}$/);
 const text=z.string().min(1).max(512);
 export const codeDiffApi = {name:'CodeDiff',schema:z.object({proposalId:identity,filename:text,baseRevision:text,before:z.string(),after:z.string()}).strict()} satisfies ComponentApi;
@@ -35,6 +35,7 @@ export function codingIdentities(message:SurfaceMessage):Array<[string,Record<st
 export function validateCoding(message:SurfaceMessage):void{
   let proposal:string|undefined,result:string|undefined;
   for(const component of message.createSurface.components){
+    try {
     if(component.component==='CodeDiff'){
       if(proposal!==undefined)throw new UiError(400,'Only one CodeDiff per surface');
       proposal=component.proposalId as string;diffLines(component.before as string,component.after as string);
@@ -48,10 +49,20 @@ export function validateCoding(message:SurfaceMessage):void{
       const summary=component.summary as typeof counts;
       if(Object.keys(counts).some(key=>counts[key as keyof typeof counts]!==summary[key as keyof typeof counts]))throw new UiError(400,'Test summary does not match case records');
     }
+
+    } catch(error) { throw componentError(error,component, message.createSurface.surfaceId); }
   }
   for(const component of message.createSurface.components){
+    try {
     if(component.component!=='Button')continue;
     const context=(component.action as {event?:{context?:Record<string,unknown>}})?.event?.context;
-    if((proposal!==undefined||result!==undefined) && (context?.proposalId!==proposal || context?.resultId!==result))throw new UiError(400,'Coding actions must reference current literal record IDs');
+    if(proposal!==undefined||result!==undefined){
+      const mismatched=[];
+      if(context?.proposalId!==proposal)mismatched.push('proposalId');
+      if(context?.resultId!==result)mismatched.push('resultId');
+      if(mismatched.length)throw new UiError(400,'Coding actions must reference current literal record IDs (missing/mismatched: '+mismatched.join(', ')+')',{diagnostic:{propertyPath:'/action/event/context'}});
+    }
+
+    } catch(error) { throw componentError(error,component, message.createSurface.surfaceId); }
   }
 }
