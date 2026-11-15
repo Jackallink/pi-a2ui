@@ -29,6 +29,8 @@ Exit0 success,1 input/compiler/capability failure,2 usage/runtime-major error. F
 
 Current compile failures may also include typed `diagnostic` fields for actual surface/component/property, forbidden key or workspace root. Read the [error reference](syntax-and-errors.md) for concrete repairs and live64-component/4-surface budget management. Unknown/global parse errors do not invent component IDs. Successful `check` still emits exactly `{surfaceId,source}`; live usage is only returned by the actual render tool.
 
+Prefer passing the returned object directly instead of reconstructing or retouching the DSL. Apply requested changes before the final preflight; keep the requested Event context keys and value types intact. The helper preserves file characters, including terminal LF/CRLF, and does not emit a receiptId/source-reference argument. Formatting differences alone are not evidence of a compiler defect; use the actual tool/CLI diagnostic to identify the failed boundary.
+
 Preflight checks one source tree. It does **not** certify current session capacity/record-ID reuse/epoch/revision, browser availability, native progress, file registration, resource URL availability or actual test execution. The live tool remains authoritative and may reject an otherwise valid source. If package identities differ, fix selection/loading before guessing another syntax.
 
 ## v0.1.5 pattern discovery

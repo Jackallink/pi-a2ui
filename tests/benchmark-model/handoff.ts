@@ -9,14 +9,20 @@ export interface HandoffObservation {
  reason:HandoffReason;
 }
 const sha=(value:string)=>createHash('sha256').update(value).digest('hex');
+function ownString(input:unknown,key:string):string|undefined {
+ if(input===null||typeof input!=='object')return;
+ const descriptor=Object.getOwnPropertyDescriptor(input,key);
+ return descriptor&&'value' in descriptor&&typeof descriptor.value==='string'?descriptor.value:undefined;
+}
 function sourceRecord(input:unknown):input is {surfaceId:string;source:string}{
- return record(input)&&Object.keys(input).length===2&&Object.hasOwn(input,'surfaceId')&&Object.hasOwn(input,'source')&&typeof input.surfaceId==='string'&&typeof input.source==='string';
+ return record(input)&&Object.keys(input).length===2&&Object.hasOwn(input,'surfaceId')&&Object.hasOwn(input,'source')&&ownString(input,'surfaceId')!==undefined&&ownString(input,'source')!==undefined;
 }
 // The optional compiler exists for failure-classification canaries; the worker uses the actual default.
 export function compareHandoff(checked:unknown,attempted:unknown,compiler:(surfaceId:string,source:string)=>SurfaceMessage=compile):HandoffObservation {
  const observed:HandoffObservation={byteIdentical:null,checkedCompileValid:null,attemptedCompileValid:null,compiledSurfaceEqual:null,checkedSourceSHA256:null,attemptedSourceSHA256:null,checkedCompiledSHA256:null,attemptedCompiledSHA256:null,reason:'arguments'};
+ const checkedSource=ownString(checked,'source'),attemptedSource=ownString(attempted,'source');
+ if(checkedSource!==undefined)observed.checkedSourceSHA256=sha(checkedSource);if(attemptedSource!==undefined)observed.attemptedSourceSHA256=sha(attemptedSource);if(checkedSource!==undefined&&attemptedSource!==undefined)observed.byteIdentical=checkedSource===attemptedSource;
  if(!sourceRecord(checked)||!sourceRecord(attempted))return observed;
- observed.checkedSourceSHA256=sha(checked.source);observed.attemptedSourceSHA256=sha(attempted.source);observed.byteIdentical=checked.source===attempted.source;
  if(checked.surfaceId!==attempted.surfaceId)return observed;
  let checkedCanonical:string;
  try{const surface=compiler(checked.surfaceId,checked.source);checkedCanonical=canonical(surface);observed.checkedCompileValid=true;observed.checkedCompiledSHA256=sha(checkedCanonical);}

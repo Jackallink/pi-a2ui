@@ -1,0 +1,60 @@
+✖ v2 public dry-run identifies the new handoff policy without credential/model access (87.355292ms)
+✖ v2 summary separates byte fidelity, attempted legality and full compiled identity (3.217542ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 0
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 291.264625
+
+✖ failing tests:
+
+test at tests/benchmark-profile-v2.test.ts:1:173
+✖ v2 public dry-run identifies the new handoff policy without credential/model access (87.355292ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'v0.1.8-glm-first-v1'
+  - 'v0.1.9-glm-first-v2'
+          ^
+  
+      at TestContext.<anonymous> (/Users/jakeliu/.codex/worktrees/pi-a2ui-bm4/pi-a2ui/tests/benchmark-profile-v2.test.ts:8:88)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1332:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:385:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'v0.1.8-glm-first-v1',
+    expected: 'v0.1.9-glm-first-v2',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/benchmark-profile-v2.test.ts:1:658
+✖ v2 summary separates byte fidelity, attempted legality and full compiled identity (3.217542ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+  + undefined
+  - {
+  -   attemptedCompileValid: 1,
+  -   byteIdentical: 0,
+  -   candidateCompileRejected: 0,
+  -   compiledSurfaceEqual: 1,
+  -   compilerUnknown: 0,
+  -   observed: 1
+  - }
+  
+      at TestContext.<anonymous> (/Users/jakeliu/.codex/worktrees/pi-a2ui-bm4/pi-a2ui/tests/benchmark-profile-v2.test.ts:12:52)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1332:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:911:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: { observed: 1, byteIdentical: 0, attemptedCompileValid: 1, compiledSurfaceEqual: 1, candidateCompileRejected: 0, compilerUnknown: 0 },
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }

@@ -1,0 +1,32 @@
+✖ v2 rejected arguments still retain available original source hashes (2.452083ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 407.559708
+
+✖ failing tests:
+
+test at tests/benchmark-handoff.test.ts:1:7261
+✖ v2 rejected arguments still retain available original source hashes (2.452083ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + null
+  - 'c3b4c7633494a4b2de4fa8c92cd7672b575a8bf163c5ba0bf856e913aa22e079'
+  
+      at TestContext.<anonymous> (/Users/jakeliu/.codex/worktrees/pi-a2ui-bm4/pi-a2ui/tests/benchmark-handoff.test.ts:34:237)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1325:25)
+      at Test.start (node:internal/test_runner/test:1191:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:385:17) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: null,
+    expected: 'c3b4c7633494a4b2de4fa8c92cd7672b575a8bf163c5ba0bf856e913aa22e079',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

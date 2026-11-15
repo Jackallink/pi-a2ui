@@ -4,7 +4,7 @@ A local interactive canvas for the Pi coding agent. Pi keeps the conversation an
 
 Requires **Node 24.x** and Pi >=1.5.0. A2UI protocol 1.0, pinned Agent SDK 0.1.0 and Web Core/Lit 0.15.0.
 
-Version **0.1.8** adds the first development-side benchmark slice (BM1): two registered diagnostics are bound to executable repair examples, independent semantic checks and a read-only Node24 CI gate. Runtime behavior remains that of0.1.7:32component types,19templates,8pattern routes and existing Pi tool ownership/permissions. Native live updates/local controls need no extra inference; declared Button actions can start the next model turn. Project model acceptance uses only Ark Agent Plan `glm-5.3-flash`.
+Version **0.1.9** completes the development-side BM1–BM4 benchmark suite and the sort/event skill contracts. The v2 evaluator records source-byte fidelity separately and admits unchanged complete compiled surfaces across harmless formatting differences. The original GLM v1 result remains frozen; v2 real-model evaluation has not run. Validation runs locally on Node24 while GitHub Actions is disabled. Runtime behavior remains that of0.1.7:32component types,19templates,8pattern routes and existing Pi tool ownership/permissions. Native live updates/local controls need no extra inference; declared Button actions can start the next model turn. Project model acceptance uses only Ark Agent Plan `glm-5.3-flash`.
 
 See the [v0.1.8 guide](docs/releases/v0.1.8.md) and [BM1 spec](docs/specs/012-benchmark-diagnostics.md). The [v0.1.7 guide](docs/releases/v0.1.7.md) covers rollback. BM1 covers exactly two diagnostic families, not all errors or model quality. Benchmark43 remains open for BM2–BM4.
 
