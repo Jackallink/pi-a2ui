@@ -14,7 +14,7 @@
     "cleanupMs": 10000,
     "batchMs": 1200000
   },
-  "archiveSHA256": "e3403959ab64f2fe2c12e579940a1d97bc00068a05e081a0c9437ea77220f806",
+  "archiveSHA256": "6a2dd059571c5f1fb56c16cbfbd650d2cb79979694a9eea7845ddb92af70c5eb",
   "nodeMajor": 24,
   "pi": "1.5.0",
   "cases": 12,
