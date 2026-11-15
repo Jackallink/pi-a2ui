@@ -12,3 +12,6 @@
 |IT-008/P-001,P-002,P-003|Action/font/screenshot/teardown timeout|failedstagewithprimary+cleanup,onlyownedresourcesclosed;AC-006|
 
 Consistency: zero model/auth access;existingrenderer/CSS/SDK unchanged;Node24 only,lockedChromium;case30s/action5s/cleanup5s/runner5min/job10min;packageexcludestests/baselines/reports/CI. No screenshot gate is weakened after failure because pixels areadvisoryfromdesign. Plansstatic,trackerprogress/Checksresults;rollbackvisualslice,preserve018/BM2/failedreceipts. Independentdesign/TDDGO beforedetectorcode;deliveryseparate.
+
+
+IT-009/P-001,P-002:Audit filter src/example.ts→onlyexamplefile;clear→example/other;FileandStatus eachasc→desc via2nativeclicks+aria-sort andvisiblefirst-columnliteralorders;restoreFileasc beforecapture. Native local operations leavePOST/callbackcount1untilBack,then2;AC-001/002/004. Initiallysortedrows alonearenotproofsortworks.
