@@ -1,0 +1,82 @@
+{
+  "issues": [
+    {
+      "closedAt": "2026-11-15T02:12:15Z",
+      "number": 40,
+      "state": "CLOSED",
+      "url": "https://github.com/Jackallink/pi-a2ui/issues/40"
+    },
+    {
+      "closedAt": "2026-11-15T02:12:18Z",
+      "number": 41,
+      "state": "CLOSED",
+      "url": "https://github.com/Jackallink/pi-a2ui/issues/41"
+    },
+    {
+      "closedAt": "2026-11-15T02:12:22Z",
+      "number": 42,
+      "state": "CLOSED",
+      "url": "https://github.com/Jackallink/pi-a2ui/issues/42"
+    },
+    {
+      "closedAt": "2026-11-15T02:12:27Z",
+      "number": 39,
+      "state": "CLOSED",
+      "url": "https://github.com/Jackallink/pi-a2ui/issues/39"
+    }
+  ],
+  "milestone": {
+    "closed_issues": 4,
+    "html_url": "https://github.com/Jackallink/pi-a2ui/milestone/6",
+    "number": 6,
+    "open_issues": 0,
+    "state": "closed",
+    "title": "v0.1.6"
+  },
+  "deferredPRs": [
+    {
+      "headRefOid": "61640a24e7fe0b1cc564258964e3cffba464ec5f",
+      "number": 45,
+      "state": "OPEN",
+      "url": "https://github.com/Jackallink/pi-a2ui/pull/45"
+    },
+    {
+      "headRefOid": "b653cf2e400d20412f33198ecf038e3bc91a0244",
+      "number": 46,
+      "state": "OPEN",
+      "url": "https://github.com/Jackallink/pi-a2ui/pull/46"
+    }
+  ],
+  "deferredIssues": [
+    {
+      "number": 34,
+      "state": "OPEN",
+      "url": "https://github.com/Jackallink/pi-a2ui/issues/34"
+    },
+    {
+      "number": 35,
+      "state": "OPEN",
+      "url": "https://github.com/Jackallink/pi-a2ui/issues/35"
+    },
+    {
+      "number": 36,
+      "state": "OPEN",
+      "url": "https://github.com/Jackallink/pi-a2ui/issues/36"
+    },
+    {
+      "number": 37,
+      "state": "OPEN",
+      "url": "https://github.com/Jackallink/pi-a2ui/issues/37"
+    },
+    {
+      "number": 38,
+      "state": "OPEN",
+      "url": "https://github.com/Jackallink/pi-a2ui/issues/38"
+    },
+    {
+      "number": 43,
+      "state": "OPEN",
+      "url": "https://github.com/Jackallink/pi-a2ui/issues/43"
+    }
+  ]
+}
