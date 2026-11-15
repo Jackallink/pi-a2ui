@@ -1,0 +1,30 @@
+✖ RSC history restores a valid official custom snapshot after the valid tool receipt control (36.365917ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 428.890917
+
+✖ failing tests:
+
+test at tests/run-card-history.test.ts:1:157
+✖ RSC history restores a valid official custom snapshot after the valid tool receipt control (36.365917ms)
+  AssertionError [ERR_ASSERTION]: valid custom snapshot must restore
+  
+  0 !== 1
+  
+      at TestContext.<anonymous> (/Users/jakeliu/.codex/worktrees/pi-a2ui-bm4/pi-a2ui/tests/run-card-history.test.ts:16:9)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1325:25)
+      at Test.start (node:internal/test_runner/test:1191:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:385:17) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

@@ -30,3 +30,9 @@ root = TestResults(
 ```
 
 This compiles through the normal helper and render tool; it does not certify that the reported166 tests ran. Follow-up Buttons on the same surface still need the current literal `resultId`. Use a new ID when records/evidence change; a failed render does not reserve that ID.
+
+## Automatic run summary (0.1.9)
+
+For automatic native-run status, the user first opens `/a2ui` and keeps the canvas connected. After an eligible settled run, the extension creates a preset Run summary from actual native tool events; no extra skill command, model-render call, source authoring or CLI script is needed. It tracks non-`a2ui_` tools, skips tool-free/A2UI-only/paused/disconnected runs, and needs one free surface plus6components within the global4/64 and byte limits. It never evicts a model face. All existing surface IDs remain legal: if the model already owns `run-summary`, automation skips it; a successful model replacement of an automatic card takes ownership and stops future automatic replacement of that revision.
+
+The badge describes agent termination (completed/error/interrupted), not task correctness. A recovered tool error can show Run completed with1failed in TaskProgress; preserve that distinction when explaining results. ActivityTimeline/TaskProgress are bounded current-run streams, not a certified or immutable history. Summary generation/persistence are best-effort. Official Pi custom entries save the native post-flush snapshot outside LLM context; selected-branch reload validates it through the existing snapshot contract and restores only explicit matching ownership metadata. This creates no user message or automatic follow-up model turn. Ordinary form/chart/artifact authoring continues through the existing tools and templates.

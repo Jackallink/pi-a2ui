@@ -1,0 +1,35 @@
+
+Running 1 test using 1 worker
+
+(node:144) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 tests/browser.spec.ts:27:1 › RSC actual connected extension renders and persists native settled summary without new actions (4.3s)
+
+
+  1) tests/browser.spec.ts:27:1 › RSC actual connected extension renders and persists native settled summary without new actions 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('region', { name: 'Canvas run-summary', exact: true }).getByText('Run summary', { exact: true })
+    Expected: visible
+    Timeout: 3000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('region', { name: 'Canvas run-summary', exact: true }).getByText('Run summary', { exact: true }) with timeout 3000ms
+      - waiting for getByRole('region', { name: 'Canvas run-summary', exact: true }).getByText('Run summary', { exact: true })
+
+
+      46 |   handlers.get('agent_settled')({aborted:false});
+      47 |   const card=page.getByRole('region',{name:'Canvas run-summary',exact:true});
+    > 48 |   await expect(card.getByText('Run summary',{exact:true})).toBeVisible({timeout:3000});
+         |                                                            ^
+      49 |   await expect(card.getByText('Run completed',{exact:true})).toBeVisible();
+      50 |   await expect(card.getByText(/1 failed/)).toBeVisible();
+      51 |   await expect(card.getByText('bash',{exact:true})).toBeVisible();
+        at /Users/jakeliu/.codex/worktrees/pi-a2ui-bm4/pi-a2ui/tests/browser.spec.ts:48:60
+
+    Error Context: test-results/tests-browser-RSC-actual-c-9c0aa-summary-without-new-actions/error-context.md
+
+  1 failed
+    tests/browser.spec.ts:27:1 › RSC actual connected extension renders and persists native settled summary without new actions 

@@ -2,10 +2,12 @@
 
 ## 0.1.9
 
+- Add #57 automatic native-run summaries for an enabled, already-connected canvas: observed termination badge, actual tool counters and bounded timeline, without opening a browser or making a model request. Preserve all public surface IDs; only replace the extension's matching owned revision, and skip collisions or full budgets. Synchronous native flush plus official non-LLM custom history restores validated branch snapshots and ownership; render/chart tool details carry optional ownership metadata. Recovered tool errors remain separate from normal agent termination.
+
 - Complete BM2's68 explicit compiler/session/browser golden scenarios and clarify DataTable UTF-16 code-unit sorting plus existing eventId dedup/business idempotency contracts (#43/#51/#52).
 - Add BM3 Search→Audit→Return geometry/native-action regression, real CSS fault canaries and inspected advisory screenshot baselines.
 - Add the manual BM4 pipeline through actual Pi/skill/helper/browser/queue with zero-inference default, explicit GLM-only budgets and honest unknown/interrupted request accounting. Preserve the original v1 result7/12; it is not a universal UI/model quality score.
-- Address #56 with a separately versioned v2 compiled-surface handoff check: preserve raw attempted source and byte fidelity, allow only complete compiler-identical contracts, and reject changed action/context/binding/data/IDs/artifact references. Production render/CLI schemas and runtime permissions are unchanged. New v2 verification uses synthetic transport only; no new real-model score.
+- Address #56 with a separately versioned v2 compiled-surface handoff check: preserve raw attempted source and byte fidelity, allow only complete compiler-identical contracts, and reject changed action/context/binding/data/IDs/artifact references. Render inputs/CLI output schemas and runtime permissions are unchanged; #57 adds optional history ownership metadata in tool details. New v2 verification uses synthetic transport only; no new real-model score.
 - Use Node24 local CI under the user's Actions-quota constraint; retain independent review, full tests and source/package/consumer gates. Distribution remains Git/local, not npm publication.
 
 ## 0.1.8 - 2026-11-15

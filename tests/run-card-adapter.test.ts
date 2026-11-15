@@ -6,13 +6,13 @@ import {LiveTools} from '../src/live-tools.ts';
 import {UiSession} from '../src/session.ts';
 import {UiError,type Snapshot} from '../src/protocol.ts';
 
-async function adapter({create=true,connect=true,failAppend=false}={}){
+async function adapter({create=true,connect=true,failAppend=false,openCommand=false}={}){
  const tools=new Map<string,any>(),commands=new Map<string,any>(),handlers=new Map<string,any>();
  const manager=SessionManager.inMemory(process.cwd());let opened='',openCalls=0,messages=0,appendFailure=failAppend;
  const host={registerTool(t:any){tools.set(t.name,t);},registerCommand(n:string,c:any){commands.set(n,c);},on(n:string,h:any){handlers.set(n,h);},sendUserMessage(){messages++;},appendEntry(type:string,data:unknown){if(appendFailure)throw new Error('injected persistence failure');manager.appendCustomEntry(type,data);},getActiveTools:()=>['a2ui_render'],setActiveTools(){},exec:async(_p:string,args:string[])=>{opened=args.at(-1)!;openCalls++;return{code:0,stdout:'',stderr:''};}};
  install(host as any);const ctx={cwd:process.cwd(),sessionManager:manager,ui:{notify(){}}};await handlers.get('session_start')({},ctx);
  let latest:Snapshot|undefined,pump:Promise<void>|undefined;const abort=new AbortController();
- if(create){await tools.get('a2ui_render').execute('model',{surfaceId:'model',source:'root = Text("Keep model")'},undefined,undefined,ctx);
+ if(create){if(openCommand)await commands.get('a2ui').handler('',ctx);else await tools.get('a2ui_render').execute('model',{surfaceId:'model',source:'root = Text("Keep model")'},undefined,undefined,ctx);
   if(connect){const url=new URL(opened),origin=url.origin;const response=await fetch(origin+'/api/connect',{method:'POST',headers:{origin,'content-type':'application/json'},body:JSON.stringify({token:new URLSearchParams(url.hash.slice(1)).get('token')})});assert.equal(response.status,200);
    const stream=await fetch(origin+'/api/events',{headers:{origin,cookie:response.headers.get('set-cookie')!.split(';')[0]},signal:abort.signal});assert.equal(stream.status,200);
    const reader=stream.body!.getReader();let ready!:()=>void;const first=new Promise<void>(resolve=>ready=resolve);
@@ -24,6 +24,16 @@ async function adapter({create=true,connect=true,failAppend=false}={}){
  const settle=async()=>{for(let i=0;i<100;i++){await new Promise(resolve=>setTimeout(resolve,2));if(latest?.surfaces.some(s=>s.surfaceId==='run-summary'))return latest;}return latest;};
  return{tools,commands,handlers,manager,ctx,run,entries,settle,get latest(){return latest;},get openCalls(){return openCalls;},get messages(){return messages;},allowAppend(){appendFailure=false;},async close(){abort.abort();await pump;await handlers.get('session_shutdown')({});}};
 }
+
+test('RSC user-opened empty canvas receives a summary without any model render tool call',async()=>{
+ const h=await adapter({openCommand:true});try{
+  assert.equal(h.latest!.surfaces.length,0,'actual /a2ui creates a connected empty canvas');
+  h.run();assert.equal(h.entries().length,1);const saved=(h.entries()[0] as any).data.a2uiSnapshot;
+  assert.equal(saved.surfaces.length,1);assert.equal(saved.surfaces[0].surfaceId,'run-summary');assert.equal(saved.surfaces[0].message.createSurface.components.length,6);
+  assert.equal(saved.surfaces[0].message.createSurface.components.find((c:any)=>c.component==='TaskProgress').started,1);
+  assert.equal(h.openCalls,1,'automatic summary did not open a second browser');assert.equal(h.messages,0);assert.equal(h.manager.buildSessionContext().messages.length,0);
+ }finally{await h.close();}
+});
 
 test('RSC adapter never creates a listener or summary for no-server/no-browser/prose/A2UI-only/paused paths',async()=>{
  for(const setup of [{create:false,connect:false},{create:true,connect:false},{create:true,connect:true}]){

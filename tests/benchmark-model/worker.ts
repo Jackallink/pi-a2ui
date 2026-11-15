@@ -39,7 +39,7 @@ export async function episode(row:Scenario,{offline,run,simulation}:{offline:boo
  let timer:ReturnType<typeof setTimeout>|undefined;
  try{
   for(const path of [agentDir,project,pack])await mkdir(path,{recursive:true,mode:0o700});
-  const payload=JSON.parse(await readFile(join(root,'tests/benchmark-model/payload.json'),'utf8')) as string[];assert.equal(payload.length,75);const payloadHashes:Record<string,string>={};
+  const payload=JSON.parse(await readFile(join(root,'tests/benchmark-model/payload.json'),'utf8')) as string[];assert.equal(payload.length,76);const payloadHashes:Record<string,string>={};
   for(const path of payload){assert.ok(!path.includes('..')&&!path.startsWith('/'));const from=join(root,path);assert.equal((await lstat(from)).isSymbolicLink(),false);await mkdir(dirname(join(pack,path)),{recursive:true});await cp(from,join(pack,path));payloadHashes[path]=hash(await readFile(join(pack,path)));}
   result.payloadHash=hash(JSON.stringify(payloadHashes));await symlink(join(root,'node_modules'),join(pack,'node_modules'),'dir');await writeFile(join(project,'sample.png'),PNG);const draft=join(project,'draft.express');
   const helper=join(pack,'skills/pi-a2ui/scripts/a2ui.mjs'),skill=join(pack,'skills/pi-a2ui/SKILL.md');
