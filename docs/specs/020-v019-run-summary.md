@@ -1,6 +1,6 @@
 # v0.1.9 — automatic settled-run summary (#57)
 
-Lifecycle: review-ready. Profile: strict. CanonicalSpec020. User2026-11-16 adds57 to unpublished0.1.9 afteracceptedc5089d8934f0db1ec6cb04febf4d8d3e819ead81. Supersedes only019release composition/readiness, notcompletedBM/spec019contracts or frozenv1results. Rootimplements; independentreviews only. Node24.x/localCI/disabledActions418909498,0newrealmodelbudget. Preserveold6a2archive/readiness/history anduserworktrees. Existingcf8bcbd branch is implementationreference, notadmittedcode; unrelated15e7109 proactive-modelprompt is OUT.
+Lifecycle: complete. Profile: strict. CanonicalSpec020. User2026-11-16 adds57 to unpublished0.1.9 afteracceptedc5089d8934f0db1ec6cb04febf4d8d3e819ead81. Supersedes only019release composition/readiness, notcompletedBM/spec019contracts or frozenv1results. Rootimplements; independentreviews only. Node24.x/localCI/disabledActions418909498,0newrealmodelbudget. Preserveold6a2archive/readiness/history anduserworktrees. Existingcf8bcbd branch is implementationreference, notadmittedcode; unrelated15e7109 proactive-modelprompt is OUT.
 
 ## Goal / non-goals
 
@@ -44,3 +44,5 @@ Zero-modelrealbrowserextensionhooktests authenticateviarealserver,exerciseerror/
 Risk: ownershipmistakenforuserface, stalerunpublication, lostrestoredtimeline, optionalreceiptmetadataandcapacityconsumption. Addresswithmatchingrevision, explicitmodelrevoke, synchronoushandler, nativeflush+officialsnapshotreceipt, existingatomicrenderer andstrictrestore. Existingfour-surface/64node/nativebytebudgets stillapply;summaryuses6nodesandonefreeslot,neverevicts. Existingnativecurrent-runstreamingisnotfrozen;documentsmustnotclaimotherwise. Appendfailureisbest-effortdeliveryandnotdurabilitysuccess. Oldhighdependencybaselineunchangedanddisclosed. Rollbackmodule/hooks/outputmetadata/customrestoreextension+docs/payloadpin,oldrecordsremainignoreableandoldcandidatepreserved. No newpermissionboundaryorprotocolversion.
 
 Walkthroughs: docs/walkthrough/issue57-run-summary/01-round1-user-stories.md,02-round2-technical-trace.md,03-round3-integration-check.md. Results/reviewsunderChecks107+,rawowned.local/v019-issue57-evidence/. Trackerownsprogress;plansdefinecontracts/dependenciesonly.
+
+Deliverymetadata2026-11-16: actualintegratedmain5903b64fead029a6f2556d90530f1549d6fa29f6acceptedunderNode24localCI/normalconsumersandindependentGO0P0/P1/P2; [Check110](../checks/110-issue57-expanded-main.md). Earlierdesign/admissionwordingisretainedhistory;newcandidate76files/SHA34e522...supersedesprior019readiness,notfrozenGLMv1. Featureacceptancecomplete;publication/tag/globalupgrade/newmodelbudgetremainseparategates.
