@@ -2,7 +2,7 @@
 
 ## 0.1.7 - 2026-11-15
 
-- Prepare the integrated DX candidate from reviewed PR45/46; publication remains separately gated. No new components, runtime dependencies or permissions.
+- Integrate the reviewed DX work from PR45/46. No new components, runtime dependencies or permissions.
 - Report actual reserved authoring keys and known component/property/workspace locations, preserve error status/cause and unknown-scope evidence, and use typed keys for accurate CLI repair hints.
 - Expose committed render component/surface usage and attempted/current aggregate overflow counts. Keep64components/4surfaces and atomic replacement/resource/identity rules unchanged.
 - Forward server-accepted epoch/revision with existing browser context so delayed interactions retain provenance; no automatic stale queue cancellation or delivery-currentness guarantee.

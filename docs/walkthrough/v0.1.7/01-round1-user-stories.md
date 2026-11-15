@@ -14,3 +14,7 @@ Given model admission at reviewed package, When single allowed GLM story runs, T
 Given final review GO, When candidate delivered, Then AC-006 review-ready PR only,34–38/43and parent remain open until their separate integration/release gates.
 
 OUT new runtime semantics, benchmark, merge/publication/user upgrade. Empty/invalid/cancel/disable/duplicate/bridge failure and existingSDK/source/JSON bounds remain regression paths.
+
+## Authorized release succession
+
+The candidate boundaries above are historical. UserGO2026-11-15 explicitly authorizes merge/publication/closure. US-004/P-004: operator needs immutable017 Git/archive installation with package skill discovery and an independently verified real interaction before tracker closure. Given exact93fe94c runtime/skill/driver, When release docs alone change and RG001–005 pass, Then publish the reviewed merge/tag/two assets, verify downloaded and normalGit consumers plus one allowedGLM case, close34–38/47/milestone7, and source-verify45/46 disposition. Keep43OPEN, userglobal015/configs and old tags/assets unchanged. A failed gate stops its dependent release/closure stage.
