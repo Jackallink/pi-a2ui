@@ -60,7 +60,7 @@ assert.equal(result.failedStage,'semantic');
 ## Task E — CI / delivery (separate future admission)
 
 - [ ] Reviewcompletecode/specdrift/testmatrix andworkflowdiff independently beforeauthorizedpush. ExtendexistingreadonlyNode24workflow withlockedChromiumjob andexplicittimeouts/install/checkcommands; keeppermissionsminimal, no newactionversionwithoutprimarysourceverification.
-- [ ] RealNodejob61caseIDs +browserjob7 onexactsame source/profile/lock/fixture/oracles; unionexact64, setup/notrun/duplicate/cleanup failuresnotGREEN. Localtests do notprovehostedCI.
+- [ ] RealNodejob61caseIDs +browserjob7 onexactsame source/profile/lock/fixture/oracles; unionexact68, setup/notrun/duplicate/cleanup failuresnotGREEN. Localtests do notprovehostedCI.
 - [ ] UpdateChecks/source-boundreceipts andissue43progress; onlyauthorizedintegration/releaseafterindependentGO canmarkBM2delivered. BM3/BM4/parent43closure remainseparate. Rollbacktest/fixture/CI references together, preserve018releaseandfailedreceipts.
 
 ## Reviewed identity and lifetime refinements
