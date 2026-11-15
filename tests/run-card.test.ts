@@ -41,6 +41,9 @@ test('RSC own replacement reclaims its six nodes while full unowned slots stay i
  s.render('run-summary',runCardSource('error'));assert.deepEqual(s.snapshot().surfaces[0],model);assert.equal(card(s).revision,2);
  assert.equal(shouldRenderRunCard(s.snapshot(),{...options,ownedRevision:1}),false);s.close();
  const full=new UiSession(()=>{});for(let i=0;i<4;i++)full.render('model'+i,'root = Text("x")');const before=full.snapshot();assert.equal(shouldRenderRunCard(before,options),false);assert.deepEqual(full.snapshot(),before);full.close();
+ const ownedFull=new UiSession(()=>{});for(let i=0;i<3;i++)ownedFull.render('model'+i,'root = Text("Keep")');ownedFull.render('run-summary',runCardSource('completed'));
+ const models=ownedFull.snapshot().surfaces.slice(0,3);assert.equal(shouldRenderRunCard(ownedFull.snapshot(),{...options,ownedRevision:1}),true);
+ ownedFull.render('run-summary',runCardSource('interrupted'));assert.equal(ownedFull.snapshot().surfaces.length,4);assert.equal(card(ownedFull).revision,2);assert.deepEqual(ownedFull.snapshot().surfaces.slice(0,3),models);ownedFull.close();
 });
 
 test('RSC existing native byte headroom remains authoritative despite available component slots',()=>{

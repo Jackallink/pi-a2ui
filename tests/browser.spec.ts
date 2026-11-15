@@ -27,6 +27,12 @@ test.use({ launchOptions: { executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXEC
 test('RSC actual connected extension renders and persists native settled summary without new actions',async({page})=>{
  const {default:install}=await import('../extension.ts');
  const {SessionManager}=await import('@earendil-works/pi-coding-agent');
+ const {mkdir}=await import('node:fs/promises');
+ const {execFileSync}=await import('node:child_process');
+ const {join}=await import('node:path');
+ const captureSource=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
+ const captures=join('.local/run-summary-captures',captureSource+'-'+Date.now());await mkdir(captures,{recursive:true,mode:0o700});
+ console.log('RSC evidence '+JSON.stringify({source:captureSource,captures}));
  const manager=SessionManager.inMemory(process.cwd());
  const tools=new Map<string,any>(),handlers=new Map<string,any>();
  let opened='',openCalls=0,messages=0,posts=0;
@@ -58,11 +64,11 @@ test('RSC actual connected extension renders and persists native settled summary
   const summaryEntries=()=>manager.getBranch().filter(entry=>entry.type==='custom'&&entry.customType==='pi-a2ui.run-summary.v1');
   const summaryRevision=(details:any)=>details.a2uiSnapshot.surfaces.find((s:any)=>s.surfaceId==='run-summary').revision;
   const probe=()=>tools.get('a2ui_update_chart').execute('chart',{surfaceId:'model',revision:1,componentId:'chart',series:[]});
-  await card.scrollIntoViewIfNeeded();await expect(card).toBeInViewport();await card.screenshot({path:'.local/v019-issue57-evidence/browser-completed.png'});
+  await card.scrollIntoViewIfNeeded();await expect(card).toBeInViewport();await card.screenshot({path:join(captures,'completed.png')});
   handlers.get('agent_settled')({aborted:true});cycle('stop',false,'');cycle('stop',false,'a2ui_render');
   expect(summaryEntries()).toHaveLength(1);expect(summaryRevision((await probe()).details)).toBe(1);
-  cycle('error');await expect(card.getByText(/^error · Run failed/)).toBeVisible();await expect(card.getByText('read',{exact:true})).toBeVisible();await expect(card.getByRole('region',{name:'Native tool progress'})).toContainText('1 started · 1 settled · 0 failed');await card.scrollIntoViewIfNeeded();await expect(card).toBeInViewport();await card.screenshot({path:'.local/v019-issue57-evidence/browser-error.png'});
-  cycle('stop',true);await expect(card.getByText(/^warning · Run interrupted/)).toBeVisible();await expect(card.getByText('Tracked tools · interrupted',{exact:true})).toBeVisible();await expect(card.getByText('read',{exact:true})).toBeVisible();await card.scrollIntoViewIfNeeded();await expect(card).toBeInViewport();await card.screenshot({path:'.local/v019-issue57-evidence/browser-interrupted.png'});
+  cycle('error');await expect(card.getByText(/^error · Run failed/)).toBeVisible();await expect(card.getByText('read',{exact:true})).toBeVisible();await expect(card.getByRole('region',{name:'Native tool progress'})).toContainText('1 started · 1 settled · 0 failed');await card.scrollIntoViewIfNeeded();await expect(card).toBeInViewport();await card.screenshot({path:join(captures,'error.png')});
+  cycle('stop',true);await expect(card.getByText(/^warning · Run interrupted/)).toBeVisible();await expect(card.getByText('Tracked tools · interrupted',{exact:true})).toBeVisible();await expect(card.getByText('read',{exact:true})).toBeVisible();await card.scrollIntoViewIfNeeded();await expect(card).toBeInViewport();await card.screenshot({path:join(captures,'interrupted.png')});
   expect(summaryEntries()).toHaveLength(3);
   await handlers.get('session_tree')({},ctx);cycle();expect(summaryRevision((await probe()).details)).toBe(4);
   const update=await probe();expect(update.details.a2uiRunSummaryRevision).toBe(4);
