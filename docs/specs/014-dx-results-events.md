@@ -4,7 +4,7 @@ Lifecycle: review-ready. Strict. 2026-11-15. Independent design/TDD-intent GO at
 
 ## Goal, scope and choice
 
-R1/#36 adopts the issue's explicitly allowed documentation route: explain existing128-row/visible-summary bounds and demonstrate complete-suite totals as reported evidence text alongside a truthful bounded TestResults sample. Raising one summary max would still violate validateCoding's equality rule. No totals field, new numeric semantics or changed schema. A new typed aggregate-report contract can be separately requested; not inferred here.
+R1/#36 adopts the issue's explicitly allowed documentation route: explain existing128-row/visible-summary bounds in the component reference and review template comment, and demonstrate complete-suite totals as reported evidence text alongside a truthful bounded TestResults sample. Raising one summary max would still violate validateCoding's equality rule. No totals field, new numeric semantics or changed schema. A new typed aggregate-report contract can be separately requested; not inferred here.
 
 R2/#37 adds epoch:string and revision:number to the existing JSON forwarded after a browser action is accepted. Their meaning is **server-validated acceptance identity**, not identity current at eventual model delivery. This supplies missing provenance without adding queue cancellation/delivery guarantees. OUT: automatic stale-event dropping, Pi followUp queue changes, new eventId/timestamp output, changing prefix/old fields/context/HTTP response/input schema or policy, resource limits/SDK/dependencies, benchmark/BM1, merge/publication/issue closure.
 

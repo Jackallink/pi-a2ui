@@ -4,7 +4,7 @@ Root implements inline with executing-plans; independent reviewers review only. 
 
 ## R1 / issue36 documentation alternative
 
-Files: references/coding-and-live.md, syntax-and-errors.md; tests/dx-results-events.test.ts.
+Files: references/coding-and-live.md, syntax-and-errors.md, examples/review.express comment; tests/dx-results-events.test.ts.
 
 - [ ] Verify real summary166 schema rejection and independent equality rule; capture existing valid behavior without modifying limits.
 - [ ] Before documentation, add compiler tests for full-run reported totals in evidence with truthful2-row summary, max/equality retention. Reference extraction missing sample is a documentation gap, not runtime RED.
