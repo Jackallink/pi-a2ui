@@ -1,0 +1,9 @@
+# BM3 real hosted CI and artifact
+
+Source-bound first PR54 run [43710050581](https://github.com/Jackallink/pi-a2ui/actions/runs/43710050581): head8f557455d02525ef53c8e4d2badf30ab7f05e4e9, actual checkout83fac933e0e87cc6eaafb2828d753617a6c52947 with parentsfef18935165efdc2d6b152bebf75e2f830a06341/8f557455d02525ef53c8e4d2badf30ab7f05e4e9. This stacked PR targets BM2 branch, not main. All three jobs succeed on Node24.22.2:362Node tests,58Chromium tests and BM2strict68-case union. No model calls.
+
+Downloaded artifact14159928133 has exactly3synthetic PNGs and the [normal report](bm3-hosted-evidence/report.json), SHA256f7b623b28b19a49bc2f9371169edce067af8bdc42a333b8e7739c7549090d583 equals API digest. All image hashes match the report; no traversal/absolute paths; seven-day retention expires2026-11-22T11:41:33Z. Audit image inspected as nonblank readable synthetic output, not approval of a Linux reference baseline. Linux intentionally reports not-defined-for-environment for advisory pixels; current geometry/native actions still gate. Report accepted=true, clean actual checkout,3states/4checks,2actual202responses and accepted old revision1/2 tuples, no body/cleanup failures. Summary and job identities: [summary](bm3-hosted-evidence/summary.json).
+
+This Check pins the first real run; later evidence-only commits must receive their own current-head CI readback without relabeling this receipt. No merge, release, issue closure, global install, runtime/CSS/dependency or baseline change. BM4 remains unexecuted pending independent design/cost review.
+
+Independent hosted/artifact review GO0P0/P1/P2 at fixed8f: [review](bm3-hosted-evidence/review-r1.md), SHA256898f96dfb5f74c2cededc7772868c1a6b6c41bcb0b557f3c798031e2a4a1c6cf. Review re-downloaded live artifact/log/API and checked source tree, case union, image/report hashes and real acceptance receipts.
