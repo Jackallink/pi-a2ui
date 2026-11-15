@@ -1,0 +1,7 @@
+# Issue57 / expanded0.1.9 design admission
+
+Useradds57to019; earlier6a2/readiness/Check106remainhistorical, notcurrentreleaseauthorization. Sourcec56402d348073599e908bcdfc39d326b87f72c65Spec020/Plan020/threewalkthroughs: structuralvalidatorpass; independentdesign/TDD-intentGO0P0/P1/P2, [report](issue57-evidence/design-review-r1.md), SHA256a1ca2282e0c9f9511a20bd96752d9776d13949ac3283088413e11bf3131c02bc. Lifecyclewalkthrough-approved→tdd-approvedbeforeimplementation.
+
+Actualbaselinec508Node24.18.1extension/live33tests pass, raw.local/v019-issue57-evidence/baseline.log. Reviewercharacterizedexistingcompiler/nativebudget:3presets each6nodes;58+6=64passes,59+6=65actual413andunchangedsnapshot. This is existingprimitivecharacterization, notnewfeatureGREEN. Newconsumer/browserREDstillrequired.
+
+Approvedscope: synchronousalreadyservedrender→adoptownerrevision→flushactualnativepost-state→officialnon-LLMappendEntry;matchingreceiptmetadataforrestoreandnormaltoolresults;neverbreakpublicmodelIDoroverwriteunownedcollision. Badgeagentterminationseparatefromtoolfailedcounter. New76-filecandidate/fullNode24localCI/ownedconsumer/actualmain/independentcode-packagegatesfollow. Frozenv1profile/7of12report/Checks remainuntouched; no Actions/model/auth/globalconfig/publication/tagactions.
