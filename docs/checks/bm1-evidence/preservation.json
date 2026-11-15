@@ -1,0 +1,11 @@
+{
+  "originalDraftFiles": 8,
+  "originalDraftsUnchanged": true,
+  "primaryHead": "3b8947d7fbaf9729418ff9a85487e6f22786aa1c",
+  "globalVersion": "0.1.5",
+  "globalHead": "0fc7b65895f7eff9ac1f4197658025d858b1b967",
+  "globalClean": true,
+  "modelRequests": 0,
+  "bm1HarnessUsesOnlyFixedRegistryFixturesReference": true,
+  "modelAccessEvidence": "BM1 source/workflow scope and invoked commands; no syscall trace claim"
+}

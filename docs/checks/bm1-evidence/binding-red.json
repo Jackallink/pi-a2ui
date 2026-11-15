@@ -1,0 +1,25 @@
+{
+  "node": "v24.18.1",
+  "exitCode": 1,
+  "tests": 4,
+  "passed": 2,
+  "failed": 2,
+  "targetFailures": {
+    "reserved-event-key": "doc-contract: missing outside-fence diagnostic marker",
+    "coding-record-context": "doc-contract: missing outside-fence diagnostic marker"
+  },
+  "positiveAndNegativeFixturePairsPassed": true,
+  "setupFailure": false,
+  "baseDocumentationUnchanged": true,
+  "logSHA256": "c25ab9822deb59bfb0dbba1cb02f19e41437e1f63cadb5e46d1f3b06e3edcdf4",
+  "inputHashes": {
+    "tests/benchmark-diagnostics.test.ts": "4a582ce0d49abc616884116a33b83a9d600994d900e989dd649ec716b6353aa9",
+    "tests/benchmark/diagnostics/coding-record-context-negative.express": "0432e0ebfedf1b9448882bd83681db275617e2438c228662fe54a45aaf833ccb",
+    "tests/benchmark/diagnostics/coding-record-context-positive.express": "c8c2014e586e9ba22b867cf3c0c0c4d533be011074c4e6eeb24180306bdd0734",
+    "tests/benchmark/diagnostics/reserved-event-key-negative.express": "7f00fc6d30e7e8743d32cf15dff615d1e9dec42ca19d2d82148d9ffe56576691",
+    "tests/benchmark/diagnostics/reserved-event-key-positive.express": "043dd24b09c73e2f396b769237dcb3204fc23c25685b5d745143d8a09bb34948",
+    "tests/benchmark/diagnostics.json": "02cb85540d676b9b92d78b681019973a9965069b8a0d97d12abb922c79deef71",
+    "tests/benchmark/diagnostics.ts": "bc94c8d4d3aca1591a8e9b1e9bc744e0f820a88ab9f3223b7e4eb92339b9104a",
+    "skills/pi-a2ui/references/syntax-and-errors.md": "449ebec0a5cd73a8ee105914fb4030f30034d265beb9a5d59f6855d69fafa4fb"
+  }
+}

@@ -1,0 +1,16 @@
+[
+  {
+    "repository": "actions/checkout",
+    "tag": "v7.0.1",
+    "sha": "3d3c42e5aac5ba805825da76410c181273ba90b1",
+    "runtime": "node24",
+    "source": "https://github.com/actions/checkout/blob/3d3c42e5aac5ba805825da76410c181273ba90b1/action.yml"
+  },
+  {
+    "repository": "actions/setup-node",
+    "tag": "v7.1.0",
+    "sha": "949feb2413d6458794dcd2491c4babbbce0c15c1",
+    "runtime": "node24",
+    "source": "https://github.com/actions/setup-node/blob/949feb2413d6458794dcd2491c4babbbce0c15c1/action.yml"
+  }
+]

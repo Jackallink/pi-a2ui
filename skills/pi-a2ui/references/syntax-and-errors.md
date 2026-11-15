@@ -37,6 +37,8 @@ Current helper errors may include `diagnostic.surfaceId`, `componentId`, `compon
 
 ## Repair a literal filename
 
+<!-- benchmark-diagnostic:reserved-event-key -->
+
 `Event("inspect_file", {path:"src/example.ts"})` uses a reserved authoring key. The repaired complete source below submits the same literal filename as `file`. A literal filename is not an input binding and does not need FormValidation.
 
 ```text
@@ -45,6 +47,8 @@ root = Column(children=[inspect])
 ```
 
 ## Extend a review surface
+
+<!-- benchmark-diagnostic:coding-record-context -->
 
 Both Buttons need both IDs, even though the second action only asks a question. If only one record type is present, supply its corresponding ID; do not invent an absent record's ID. The records here are illustrative skipped fixtures, not proof of execution. For real work replace the records, evidence and every referencing ID together.
 

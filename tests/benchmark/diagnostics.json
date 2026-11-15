@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "profile": "v0.1.7-dx-v1",
+  "families": [
+    {
+      "id": "reserved-event-key",
+      "positiveFixture": "tests/benchmark/diagnostics/reserved-event-key-positive.express",
+      "negativeFixture": "tests/benchmark/diagnostics/reserved-event-key-negative.express",
+      "expected": {
+        "status": 400,
+        "reasonIncludes": "Forbidden map key \"path\"",
+        "diagnostic": {"surfaceId":"diagnostic","componentId":"inspect","componentType":"Button","propertyPath":"/action/event/context/path","forbiddenKey":"path"}
+      },
+      "doc": {
+        "path": "skills/pi-a2ui/references/syntax-and-errors.md",
+        "heading": "Repair a literal filename",
+        "anchor": "repair-a-literal-filename",
+        "marker": "<!-- benchmark-diagnostic:reserved-event-key -->"
+      },
+      "positiveOracle": "literal-file-context"
+    },
+    {
+      "id": "coding-record-context",
+      "positiveFixture": "tests/benchmark/diagnostics/coding-record-context-positive.express",
+      "negativeFixture": "tests/benchmark/diagnostics/coding-record-context-negative.express",
+      "expected": {
+        "status": 400,
+        "reasonIncludes": "Coding actions must reference current literal record IDs (missing/mismatched: proposalId, resultId)",
+        "diagnostic": {"surfaceId":"diagnostic","componentId":"inspect","componentType":"Button","propertyPath":"/action/event/context"}
+      },
+      "doc": {
+        "path": "skills/pi-a2ui/references/syntax-and-errors.md",
+        "heading": "Extend a review surface",
+        "anchor": "extend-a-review-surface",
+        "marker": "<!-- benchmark-diagnostic:coding-record-context -->"
+      },
+      "positiveOracle": "all-declared-button-record-ids"
+    }
+  ]
+}

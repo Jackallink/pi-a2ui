@@ -1,0 +1,21 @@
+{
+  "node": "v24.18.1",
+  "correctiveRedSource": "9a542c0d43f95d4363ec68c932621f3a261a9d1b",
+  "targetedTests": 35,
+  "targetedPassed": 35,
+  "fullTests": 265,
+  "fullPassed": 265,
+  "typecheck": true,
+  "fix": "Require one outside-fence same-title heading across all ATX levels, then require H2",
+  "modelCalls": 0,
+  "inputHashes": {
+    "tests/benchmark/diagnostics.ts": "309ac54269b9ec4c4f11c496131ca405ad2edc3d515e09870dce24f153525e8a",
+    "tests/benchmark-diagnostics.test.ts": "33309c6d4039ba06a85dfe9f4e41c362f3b39afe7b891143fa20a9b969b55c1a"
+  },
+  "logs": {
+    "heading-red.log": "6bf5987b1191bf2bd64c2df7d85678390a35699aafd604b2e510d9fe140f8273",
+    "heading-green-node.log": "d76443e44f186c55228f2b36f774cdd80aa65e11f5f8493526e7112a786f6df4",
+    "heading-green-tsc.log": "d9d22fa45a2931fead1e02c1c13b1a8c11ad43ab1100baea0ec27ce343afd6fb",
+    "heading-green-full.log": "ca3db62076439e7842e998d359d567124a4c5f205aa41f786b088df06ca5481d"
+  }
+}

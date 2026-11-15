@@ -1,0 +1,20 @@
+{
+  "node": "v24.18.1",
+  "productPackageVersion": "0.1.7",
+  "runtimeDependencies": {
+    "@a2ui/agent": "0.1.0",
+    "@a2ui/lit": "0.15.0",
+    "@a2ui/web_core": "0.15.0",
+    "lit": "3.3.3",
+    "zod": "3.25.76"
+  },
+  "hostPi": "1.5.0",
+  "sourceHashes": {
+    "package.json": "55083453e3f5cdddef413aef65fd651b0c53f711917e1cfe20ab66be15fe5a3f",
+    "package-lock.json": "e121db2249fe27a2a794f3a3b515b1974ff5d8b9b6c6b0652eeed5e3b1f1e2e4",
+    "src/catalog.ts": "1d2a00569425f512de1f762be50797a4ace5eb47f26ae9a9f236dc62649562d8",
+    "src/compiler.ts": "c6b6dd6c61443a09801599dd130e4fc813d0115ad7a57632c609a6f23efd1ec2",
+    "src/coding.ts": "d1970d43d7ef42085aabda7f2c2e3b1c286aa324682a9ac12d475d1fd1179c2a",
+    "src/protocol.ts": "3977b7acb21906822dcd797342db8e4a50b9a2009eb47ceb24d7d249276af957"
+  }
+}

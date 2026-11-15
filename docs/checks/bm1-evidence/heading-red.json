@@ -1,0 +1,14 @@
+{
+  "node": "v24.18.1",
+  "reviewedSource": "3dfe2886256869b3e758b0adfe8872b8353e0383",
+  "exitCode": 1,
+  "tests": 4,
+  "passed": 0,
+  "failed": 4,
+  "reason": "Missing expected exception: actual checker accepts same-title outside-fence H1/H3 in both families",
+  "setupFailure": false,
+  "helperUnchanged": true,
+  "helperSHA256": "bc94c8d4d3aca1591a8e9b1e9bc744e0f820a88ab9f3223b7e4eb92339b9104a",
+  "testSHA256": "33309c6d4039ba06a85dfe9f4e41c362f3b39afe7b891143fa20a9b969b55c1a",
+  "logSHA256": "6bf5987b1191bf2bd64c2df7d85678390a35699aafd604b2e510d9fe140f8273"
+}
