@@ -1,0 +1,37 @@
+{
+  "source": "5903b64fead029a6f2556d90530f1549d6fa29f6",
+  "raw": ".local/bm3-layout/run-1794761831760-47905",
+  "changes": [
+    {
+      "id": "search",
+      "differentPixels": 37,
+      "bbox": [
+        240,
+        325,
+        1040,
+        595
+      ]
+    },
+    {
+      "id": "audit",
+      "differentPixels": 7,
+      "bbox": [
+        240,
+        325,
+        242,
+        338
+      ]
+    },
+    {
+      "id": "return",
+      "differentPixels": 7,
+      "bbox": [
+        240,
+        325,
+        242,
+        338
+      ]
+    }
+  ],
+  "baselineUpdated": false
+}
