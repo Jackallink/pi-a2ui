@@ -1,0 +1,25 @@
+✖ BM4 cost canary: second real transport invocation must not escape one-request fixture budget (11.435875ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 288.997333
+
+✖ failing tests:
+
+test at tests/benchmark-model.test.ts:1:243
+✖ BM4 cost canary: second real transport invocation must not escape one-request fixture budget (11.435875ms)
+  AssertionError [ERR_ASSERTION]: Missing expected rejection.
+      at async TestContext.<anonymous> (/Users/jakeliu/.codex/worktrees/pi-a2ui-bm4/pi-a2ui/tests/benchmark-model.test.ts:8:2)
+      at async Test.run (node:internal/test_runner/test:1332:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:385:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /request budget/,
+    operator: 'rejects',
+    diff: 'simple'
+  }
