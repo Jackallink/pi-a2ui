@@ -13,3 +13,5 @@ UserrunsPlaywrightBscenario → Handlerrealcanvasfixture/authviaapi/connect → 
 
 ## P-004 — scoped truthful results
 Userrunsselectedlayers/CI → Handlerstrictcoverage/resultcombiner andfutureNode/Chromiumjobs → stateplanned64/attempted/passed/failed/notrun byid → APItestcommands/GitHubreadonlyworkflow, samerevision/profile/lock/fixtures/oracles → backendsame3adapters andcleanupguards → responseexplicitpartial58/6vscomplete64identity proof → UI job/Checksummary. Unknownsource/cancel/setup/cleanupblockscompletion, no auto-baseline orsilent retry. Currentdesigncreatesnofixtures/code/CIjobs; implementation/TDD/release latergates.
+
+P-004 identity refinement: alljobs share whole-dataset/oracle-set fingerprints; individualcaseinputhashes compareonlywithownmanifestentry. P-001/P-002 execute synchronousproductwork in boundedownedNodechildren with realparentclock; P-003 has explicitPlaywright deadlines. P-004 records timeout/cancel/cleanup separately, no asynchronousdeadline canbe satisfiedbyfakeclock orsilentlylostchild. Spec016defines exactbudgets/exitorder; no implementationnow.

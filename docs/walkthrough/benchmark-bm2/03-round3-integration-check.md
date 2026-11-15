@@ -23,3 +23,5 @@
 |Unknown/cancelled/timedoutCI|Incomplete/failedgate|Noauto-update/retry/publish|
 
 Consistency:actualproductmethods,noauth/permission/runtimechanges,newownedroots/ports only,finallycloseevennegativefailures. SnapshotrelationaloraclesavoidUUID/URLbytegoldens;closedforms/typedcontexts preserved. Nextgate is independentdesignGO;rootownsreviewcorrections. FutureconcreteTDDfixture/matcherreview andexplicitimplementationGO remainrequired. CurrentuserauthorizednoBM2code/CI/model/merge/release. BM3/BM4and43closureexcluded. Rollbackfuturetest/CIreferences together;018tags/assets/global017/primarydrafts preserved.
+
+IT-009/P-004/AC-005,AC-006: differentcasehashesmustnotbeerroneouslyrequiredidentical; alteredwhole-dataset/oraclefingerprints acrossjobs mustblockunion. IT-010/P-001,P-002,P-003/AC-005: unresponsivechild/HTTP/dataflush/browserassertion/teardownexceedsexplicitbudget→failedstage/abort/ownedcleanup,notnegativepass; localfakeclockcannotdisableparentwatchdog. Primaryfailure retainedalongsidecleanupfailure.
