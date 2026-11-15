@@ -76,7 +76,7 @@ node "/absolute/path/to/pi-a2ui/skills/pi-a2ui/scripts/a2ui.mjs" example user-fo
 node "/absolute/path/to/pi-a2ui/skills/pi-a2ui/scripts/a2ui.mjs" check --surface-id user-form /absolute/path/to/form.express
 ```
 
-`check` prints exactly `{surfaceId, source}` for the tool on success; it publishes nothing. `catalog` reports this helper's package, not an arbitrary running Pi instance. The active tool contract wins if a different package is loaded. Baseline0.1.3 has16 types; 0.1.4 has29; 0.1.5/0.1.6 have32. Do not use a reference's optional component unless the active catalog supports it. Old pinned tags do not acquire a new skill after `/reload`.
+`check` prints exactly `{surfaceId, source}` for the tool on success; it publishes nothing. `catalog` reports this helper's package, not an arbitrary running Pi instance. The active tool contract wins if a different package is loaded. Baseline0.1.3 has16 types; 0.1.4 has29; 0.1.5/0.1.6/0.1.7 have32. Do not use a reference's optional component unless the active catalog supports it. Old pinned tags do not acquire a new skill after `/reload`.
 
 ## Keep the interaction intact
 

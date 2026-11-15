@@ -8,6 +8,8 @@ Version **0.1.6** adds component parameter queries, project-aware error guidance
 
 See the [v0.1.6 guide](docs/releases/v0.1.6.md) for installation, compatibility and acceptance boundaries. The [v0.1.5 guide](docs/releases/v0.1.5.md) remains available for rollback.
 
+This branch prepares **0.1.7**, integrating reviewed diagnostics, live budget feedback, accepted event identity and focused skill repairs from issues34–38. It is a candidate, not a published tag; installation/removal commands stay pinned to published0.1.6. See [the0.1.7 integration spec](docs/specs/015-v0.1.7-dx-integration.md). Benchmark43 is a separate future slice.
+
 Project source is MIT licensed. The bundled browser libraries retain their own licenses; complete third-party license/notice texts are included in `THIRD_PARTY_LICENSES.txt` in the distribution.
 
 ## Install
@@ -131,21 +133,21 @@ Developer acceptance requires an **explicit package path and exact expected vers
 
 ```sh
 nvm use 24
-node scripts/live-acceptance.mjs --package /absolute/path/to/installed/pi-a2ui --expected-version 0.1.6
+node scripts/live-acceptance.mjs --package /absolute/path/to/installed/pi-a2ui --expected-version 0.1.7
 # Optional parent for new private run directories:
-node scripts/live-acceptance.mjs --package /absolute/path/to/installed/pi-a2ui --expected-version 0.1.6 --evidence-dir /absolute/private/evidence
+node scripts/live-acceptance.mjs --package /absolute/path/to/installed/pi-a2ui --expected-version 0.1.7 --evidence-dir /absolute/private/evidence
 ```
 
-The0.1.6 value selects this release; use the exact installed version when checking another package. No implicit `.local/installed/package` or environment-based scenario/restore override remains. Help and invalid arguments do not start Pi/browser/model work. Startup observes registration/discovery/status, not browser rendering or model compliance.
+The0.1.7 value targets this locally prepared candidate; published0.1.6 installations must use0.1.6 instead. Always select the exact installed version. No implicit `.local/installed/package` or environment-based scenario/restore override remains. Help and invalid arguments do not start Pi/browser/model work. Startup observes registration/discovery/status, not browser rendering or model compliance.
 
 Real model acceptance is separately **opt-in** and uses only existing Agent Plan `volcengine-ark/glm-5.3-flash`, verified against `https://ark.cn-beijing.volces.com/api/plan/v3` before the prompt. Credentials stay in Pi and are never copied. Select an installed Chromium executable; no download is attempted:
 
 ```sh
 nvm use 24
 export PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH="/absolute/path/to/installed/chromium"
-node scripts/live-acceptance.mjs --package /absolute/path/to/installed/pi-a2ui --expected-version 0.1.6 --mode skill --allow-model
+node scripts/live-acceptance.mjs --package /absolute/path/to/installed/pi-a2ui --expected-version 0.1.7 --mode skill --allow-model
 # Supplied-DSL component acceptance, distinct from skill-forward proof:
-node scripts/live-acceptance.mjs --package /absolute/path/to/installed/pi-a2ui --expected-version 0.1.6 --mode component --scenario basic --allow-model
+node scripts/live-acceptance.mjs --package /absolute/path/to/installed/pi-a2ui --expected-version 0.1.7 --mode component --scenario basic --allow-model
 ```
 
 Skill mode uses an explicit package+skill profile to avoid a duplicate globally installed package. It proves model-authored template/check/render, invalid submission0POST/no new model run, valid submission1POST and typed acknowledgement; it does not establish normal package discovery (the default startup tier does). Component mode retains `basic`, `forms`, `coding`, `live` and `workbench` scenarios with supplied DSL. Every mode uses a new private cwd and reports source/package identity, observed stages and cleanup. A failed setup/transport/metadata stage remains a failed run; partial observations are retained, not presented as full acceptance. No auto retry or model fallback. Raw session/opener/config files in receipts are private; share only reviewed sanitized summaries.
