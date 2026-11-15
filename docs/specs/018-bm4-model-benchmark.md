@@ -1,6 +1,6 @@
 # BM4 — first-attempt GLM authoring baseline
 
-Lifecycle: tdd-approved. Strict. Canonical Spec018, parent43. Predecessors BM2 PR53 / BM3 PR54 remain unmerged. Manual measurement, never a CI/release gate. Only user-approved model `volcengine-ark/glm-5.3-flash` on exact `https://ark.cn-beijing.volces.com/api/plan/v3`; user budget12distinct scenarios, one attempt each, no automatic retry. No new publication/global package/config change.
+Lifecycle: in-progress. Strict. Canonical Spec018, parent43. Predecessors BM2 PR53 / BM3 PR54 remain unmerged. Manual measurement, never a CI/release gate. Only user-approved model `volcengine-ark/glm-5.3-flash` on exact `https://ark.cn-beijing.volces.com/api/plan/v3`; user budget12distinct scenarios, one attempt each, no automatic retry. No new publication/global package/config change.
 
 ## Goal and scope
 
@@ -25,7 +25,7 @@ Each scenario surface `bm4`, fresh in-memory Pi session and fresh owned workspac
 |M09|Chart signed finite series Requests:Mon-2,Tue3; Refresh chart Button eventrefresh `{series:"Requests"}`|actualChartpresence,Refresh→202/queue|
 |M10|CodeDiff example.ts before`old` after`new`; TestResults2illustrativerecords unit/pass,lint/fail; CodeDiff proposalId p-bm4, TestResults resultId r-bm4; Inspect result Button eventinspect_test `{id:"lint",proposalId:"p-bm4",resultId:"r-bm4"}`|visiblebothrecords/diff,Button→202/queue;not realtests|
 |M11|TaskProgress and ActivityTimeline streamtools, only actual native tool observations, no initialcounters/entries/inventedstate|visibleactualnativecomponents; existingserverliveupdates; no claimedfixedtotals,0POST;not livetelemetry|
-|M12|Register supplied ordinary local PNG `sample.png` via actualartifacttool; ArtifactPreview labelSample image|actualimgcomplete/naturalwidth>0/verifiedopaqueURL;0POST|
+|M12|Register supplied ordinary local PNG `sample.png` via actualartifacttool; ArtifactPreview labelSample image plus Image descriptionsame usingexactsrc|actualimgcomplete/naturalwidth>0/verifiedopaqueURL;0POST|
 
 Freeze exact prompts+oracles together before live. Independent oracles inspect actual compiled tree/data references and native DOM; allow arbitraryvalidcomponentIDs/bindingpaths/layout and additional harmlessText. Requested Eventname/contextkeys/types/labels/data fixed. All Event-bearing Button records need legal componentIDs under existingcompiler; compiler/CLI is sole structural legality oracle. Wrong-type,wrong-context,wrongnumericorder,wrongPNG canaries must fail intent/interaction independently of syntax. No expected-source byte equality. Negative tests/canaries excluded from12model denominator.
 
@@ -35,7 +35,7 @@ Actual pinnedPiSDK1.5.0, ModelRuntime/createAgentSession, actual package inline 
 
 Tool guards are an explicit experimental variable: actualSDK read only ordinary nonsymlink text files under shipped package or ownedproject; size<=128KiB. Write/edit only owned draft.express before first preflight. SamplePNG immutable. Actualbash accepts exact helper catalog/patterns/pattern/component/examples/example/check commands with strict simple-token lexer, knownnames/exactownedsourcepath, no operators/newlines/$/backticks/redirects/heredocs/env assignments/extraargs. Rewrite validated tokens to trusted quoted absolute Node24/helper path. Modelprompt explains use write/edit for draft, helper-onlybash; templates and refs remain actualpackage. No fakepreflight, no rewriting modelDSL. `check --surface-id bm4 <owned draft>` exactlyonce. Firsta2ui_render must match actual successfulcheck `{surfaceId,source}` byte-for-byte. Guard errors reported as profile/toolpolicy, not DSL errors.
 
-Default script dry-run: lists12prompts/fingerprints/caps,0providerrequests, never reads user auth/config or imports configuration-reading Pi runtime. Explicit `--execute` is sole live opt-in, no prompts/hidden retry/resume. Per-case onefirstcandidate/preflight and onerender attempt; preparatoryqueries/edits allowed beforecheck. Afterfirstpreflight failure/renderattempt stop and record. Noautomaticsecondsource/repair. Alltools sequential; reject batchparalleltools/profile violations.
+Default script dry-run: lists12prompts/fingerprints/caps,0providerrequests, never reads user auth/config or imports configuration-reading Pi runtime. Explicit `--execute` is sole live opt-in, no prompts/hidden retry/resume. Per-case onefirstcandidate/preflight and onerender attempt; preparatoryqueries/edits allowed beforecheck. Afterfirstpreflight failure/renderattempt stop and record. Noautomaticsecondsource/repair. Alltools execute sequentially (actual agent.toolExecution), reject overlapping execution/nestedcalls/profile violations; preparatory calls in one assistant batch may execute sequentially within8executions. Requestbodyparallel_tool_calls=false. Attempts rejected before execution are reported separately.
 
 ## Transport and cost admission
 
@@ -63,3 +63,7 @@ Report outcome categories: setup/toolpolicy/provider/no-render/preflight/compile
 |006 source-bound real baseline|independentdesign/costGO→TDDRED/GREEN→independentcodeGO/offlinechecks→one12scenario GLM run withoutretries;reportsource/request/skill/oracle/modelidentities;noCIinference|
 
 Threewalkthroughs+Plan018 required. Design/TDD independentGO before implementation. Then independent code/cost/pathguard review and offline fullpipeline before the user-authorized single12case run. Final report may reveal product/model failures; do not fixandrerun bydefault. No merge/release/issue43closure. Rollback test/script/docs only; preserve rawfailedreceipts/userstate. Drift must be recorded before realcalls.
+
+Pre-implementation source drift clarification:018 ArtifactPreview shows verified metadata only, not an image element (src/artifact-elements.ts). M12 explicitly requests the separate existing Image with the same registered src so the originally intended image-load check has a real native subject. No runtime/newcomponent/case/budget change. Independent code admission must review this correction before live.
+
+Harness refinements before live: current manualprofile macOS/Linux only; clear owned-worker shell startup hooks, sequentialtool execution and structuredstring redaction. Aggregatecleanup10s; actual BrowserServer publickill, parent detachedPID/profile ledger plus knownworkspace cleanup afterhardstop. Normal fallback rejects acceptance; actualhungworker canary proves browser/server/workspace cleanup. Providerusage comes from actualSSE usage presence; SDKdefaultzero does not imply knownusage/billing. These change harness only and require independentcodeadmission.
