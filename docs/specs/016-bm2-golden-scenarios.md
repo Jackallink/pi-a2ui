@@ -199,3 +199,10 @@ FullTDD admission will include completefixture/control drafts andcurrentreason/l
 
 
 Concrete v2 TDD fixtures separate executable `input`/`source` from handwritten expected outcomes. S01–S06 contain complete literal render/replacement/attempt source sequences; adapters must not build inputs from expected counts. B05 includes a visible second Row column containing unique labels; assert those labels in literal expected sort order, since internal row IDs and equal displayed values alone are not observable identity. Do not read expected values to construct steps.
+
+
+## Review-driven implementation refinements
+
+Structural compiler intents assert direct child/slot types and values, not just flattened Text order: notably Modal Text Open trigger and Text Body content. Capacity oracles independently count raw snapshot arrays rather than reuse production snapshotUsage. S04 checks the known attempted65/current37 and2/1surface facts; S07 compares real pre/post snapshots and data batch, allowing only declared series/dataSequence changes while preserving epoch/revision.
+
+Session IPC passes exact frozen fixture bytes and requires the child hash of its actual parsed input before passing; missing/wrong attestation or bytes differing from the current manifest is setup failure. Browser cleanup separately attempts page (2s), server (2s), then synchronous session close within the5s teardown budget, preserving primary and cleanup observations; a rejected or hung page close cannot skip server/session cleanup or leave a passing dataset row. CLI failure recording is separate from idempotent termination: output/stdin/process/deadline/cancel faults all preserve their original failure and arm owned TERM→2sKILL/close. Add actual child/hash, real server/page-close failure+hang, and TERM-resistant CLI canaries outside68. These refine already-declared invariants and add no product API/runtime behavior.

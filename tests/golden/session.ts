@@ -6,20 +6,22 @@ import { join } from 'node:path';
 import { UiSession } from '../../src/session.ts';
 import { UiError, type DataBatch, type Snapshot } from '../../src/protocol.ts';
 import { startServer, type CanvasServer } from '../../src/server.ts';
-import { assertForwarded, assertUsage } from './oracles.ts';
-import { caseResult, fixtureBytes, loadCases, GoldenFailure, type CaseResult, type GoldenCase } from './registry.ts';
-import { runOwnedWorker, type SessionObservation } from './worker.ts';
+import { assertForwarded, assertUsage, assertCapacityReason, assertChartTransition, assertChartBatch } from './oracles.ts';
+import { caseResult, fixtureBytes, loadCases, sha256, GoldenFailure, type CaseResult, type GoldenCase } from './registry.ts';
+import { runOwnedWorker, type SessionObservation, type WorkerObservation } from './worker.ts';
 
-const rejectsStatus=(run:()=>unknown,status:number)=>assert.throws(run,error=>error instanceof UiError&&error.status===status);
+function rejectsStatus(run:()=>unknown,status:number):UiError {let caught:UiError|undefined;assert.throws(run,error=>{if(error instanceof UiError&&error.status===status){caught=error;return true;}return false;});return caught!;}
 function envelope(session:UiSession,eventId:string,name='Ada') {
   const snapshot=session.snapshot();
   return {epoch:snapshot.epoch,revision:snapshot.surfaces[0].revision,eventId,message:{version:'1.0',action:{name:'submit',surfaceId:'golden',sourceComponentId:'submit',timestamp:'2026-11-15T00:00:00Z',context:{name,accept:true}}}};
 }
 // Only called by the owned fixed worker; never evaluates steps or imports from fixture data.
-export async function runSessionCase(id:string,ownedRoot:string,signal:AbortSignal):Promise<SessionObservation> {
+export async function runSessionCase(id:string,ownedRoot:string,signal:AbortSignal,fixtureSource:string):Promise<SessionObservation> {
   const row=loadCases().find(row=>row.id===id&&row.layer==='session');
   if(!row)return {kind:'session-error',stage:'setup',detail:'Unknown fixed session case'};
-  const fixture=JSON.parse(fixtureBytes(row.fixture).toString('utf8'));
+  const actualInputHash=sha256(fixtureSource);
+  if(actualInputHash!==sha256(fixtureBytes(row.fixture)))return {kind:'session-error',stage:'setup',detail:'Worker actual fixture bytes differ from manifest',actualInputHash};
+  const fixture=JSON.parse(fixtureSource);
   const expected=fixture.expected, input=fixture.input;
   const sent:string[]=[];
   const session=new UiSession(text=>{sent.push(text);if(id==='S11')session.render('golden','root = Text("Replacement")');});
@@ -47,7 +49,7 @@ export async function runSessionCase(id:string,ownedRoot:string,signal:AbortSign
         observation={usage:assertUsage(before,{components:expected.components,surfaces:expected.surfaceCount}),snapshot:before};break;
       case 'S02':case 'S04':case 'S06':
         if(expected.componentsBefore)assertUsage(before,{components:expected.componentsBefore,surfaces:1});
-        rejectsStatus(()=>session.render(input.attempt.surfaceId,input.attempt.source),expected.status);
+        {const error=rejectsStatus(()=>session.render(input.attempt.surfaceId,input.attempt.source),expected.status);if(id==='S04')assertCapacityReason(error.reason,expected);}
         assert.deepEqual(session.snapshot(),before,'failed admission is atomic');observation={before,after:session.snapshot(),status:expected.status};break;
       case 'S05':
         session.render(input.replacement.surfaceId,input.replacement.source);
@@ -59,25 +61,29 @@ export async function runSessionCase(id:string,ownedRoot:string,signal:AbortSign
         if(id==='S07') {
           const committed=session.updateChart('golden',1,'root',fixture.series);
           assert.equal(committed.surfaces[0].revision,expected.revision);
+          assertChartTransition(before,committed,expected.series,0);
           assert.equal(batches.length,0,'data emission is deferred');
           mock.timers.tick(200);
           assert.equal(batches.length,1);
+          assertChartBatch(before,batches[0],expected.series,expected.dataSequence);
           assert.equal(batches[0].surfaces[0].sequence,expected.dataSequence);
           assert.deepEqual(batches[0].surfaces[0].components.find(c=>c.id==='root')?.series,expected.series);
           assert.equal(session.snapshot().surfaces[0].revision,1);
+          assertChartTransition(before,session.snapshot(),expected.series,expected.dataSequence);
         }else {
           // Separate valid control proves the requested update itself is legal.
           const control=new UiSession(()=>{});try {control.render('golden',fixture.source);control.updateChart('golden',1,'root',fixture.series);}finally{control.close();}
           rejectsStatus(()=>session.updateChart('golden',input.submittedRevision,'root',fixture.series),expected.status);
           assert.deepEqual(session.snapshot(),before);mock.timers.tick(200);assert.equal(batches.length,expected.dataFrames);
         }
-        observation={snapshot:session.snapshot(),batches};break;
+        observation={before,snapshot:session.snapshot(),batches};break;
       }
       case 'S09':case 'S10':{
         const workspace=join(ownedRoot,'workspace');await mkdir(workspace);
         await copyFile('tests/golden/fixtures/pixel.png',join(workspace,'pixel.png'));
         await copyFile('tests/golden/fixtures/pixel.png',join(ownedRoot,'outside.png'));
-        const meta=await session.registerArtifact('pixel.png','image',workspace,{signal});
+        if(id==='S09'){assert.equal(input.filename,'pixel.png');assert.equal(input.kind,'image');}
+        const meta=await session.registerArtifact(id==='S09'?input.filename:'pixel.png',id==='S09'?input.kind:'image',workspace,{signal});
         try{server=await startServer(session);}catch(error){throw new GoldenFailure('setup',`HTTP server: ${String(error)}`);}
         const token=new URLSearchParams(new URL(server.openUrl).hash.slice(1)).get('token');
         const connected=await request(server.origin+'/api/connect',{method:'POST',headers:{origin:server.origin,'content-type':'application/json'},body:JSON.stringify({token})});
@@ -96,14 +102,17 @@ export async function runSessionCase(id:string,ownedRoot:string,signal:AbortSign
         observation={before,forwarded:sent[0],context:expected.context};break;
       }
       case 'S12':{
-        const action=envelope(session,'stale');session.render('golden','root = Text("Replacement")');
+        const action=envelope(session,'stale');action.revision=input.submittedRevision;session.render('golden','root = Text("Replacement")');
         assert.equal(session.snapshot().surfaces[0].revision,expected.currentRevision);
         rejectsStatus(()=>session.acceptAction(action),expected.status);assert.equal(sent.length,expected.dispatches);observation={status:expected.status,dispatches:sent.length};break;
       }
       case 'S13': {
         const action=envelope(session,input.eventIds[0]);
         const first=session.acceptAction(action);
-        const retry={message:{action:{context:{accept:true,name:'Ada'},timestamp:action.message.action.timestamp,sourceComponentId:'submit',surfaceId:'golden',name:'submit'},version:'1.0'},eventId:action.eventId,revision:action.revision,epoch:action.epoch};
+        const base={...structuredClone(action),eventId:input.eventIds[1]};
+        const reverse=(value:unknown):unknown=>Array.isArray(value)?value.map(reverse):value&&typeof value==='object'?Object.fromEntries(Object.entries(value).reverse().map(([key,item])=>[key,reverse(item)])):value;
+        const retry=input.reorderKeys?reverse(base):base;
+        if(input.reorderKeys)assert.notEqual(JSON.stringify(retry),JSON.stringify(base),'retry really changes object key order');
         const second=session.acceptAction(retry);assert.deepEqual([first.duplicate,second.duplicate],expected.duplicate);assert.equal(sent.length,expected.dispatches);observation={duplicates:[first.duplicate,second.duplicate],dispatches:sent.length};break;
       }
       case 'S14':
@@ -114,8 +123,8 @@ export async function runSessionCase(id:string,ownedRoot:string,signal:AbortSign
       }
       default:throw new Error('No fixed session executor');
     }
-    result={kind:'session-ok',observation};
-  } catch(error) {result={kind:'session-error',stage:error instanceof GoldenFailure&&error.stage==='setup'?'setup':stage,detail:String(error)};}
+    result={kind:'session-ok',observation,actualInputHash};
+  } catch(error) {result={kind:'session-error',stage:error instanceof GoldenFailure&&error.stage==='setup'?'setup':stage,detail:String(error),actualInputHash};}
   finally {
     if(clock)mock.timers.reset();
     for(const request of pending)request.abort();
@@ -136,13 +145,19 @@ export async function evaluateSession(row:GoldenCase):Promise<CaseResult> {
   const ownedRoot=await mkdtemp(join(tmpdir(),'pi-a2ui-golden-'));await chmod(ownedRoot,0o700);
   let result:CaseResult;
   try {
-    const observed=await runOwnedWorker({kind:'session',caseId:row.id,ownedRoot});
-    result=observed.kind==='session-ok'?caseResult(row,source,{pass:true,failedStage:null,observation:observed.observation})
-      :caseResult(row,source,{pass:false,failedStage:observed.kind==='session-error'?observed.stage:'setup',detail:JSON.stringify(observed)});
+    const observed=await runOwnedWorker({kind:'session',caseId:row.id,ownedRoot,fixture:source.toString('utf8')});
+    result=sessionResult(row,source,observed);
   }catch(error){result=caseResult(row,source,{pass:false,failedStage:'setup',detail:String(error)});}
   let timer:ReturnType<typeof setTimeout>|undefined;
   try{await Promise.race([rm(ownedRoot,{recursive:true,force:true}),new Promise<never>((_,reject)=>{timer=setTimeout(()=>reject(new Error('Owned fixture cleanup deadline5s')),5000);})]);}
   catch(error){result=caseResult(row,source,{pass:false,failedStage:'cleanup',detail:JSON.stringify({primary:result,cleanup:String(error)})});}
   finally{clearTimeout(timer);}
   return result;
+}
+export function sessionResult(row:GoldenCase,source:Buffer,observed:WorkerObservation):CaseResult {
+  if(observed.kind==='session-ok'){
+    if(observed.actualInputHash!==sha256(source))return caseResult(row,source,{pass:false,failedStage:'setup',detail:JSON.stringify({error:'Missing/wrong child actual-input attestation',observed:observed.actualInputHash,expected:sha256(source)})});
+    return {...caseResult(row,source,{pass:true,failedStage:null,observation:observed.observation}),actualInputHash:observed.actualInputHash};
+  }
+  return caseResult(row,source,{pass:false,failedStage:observed.kind==='session-error'?observed.stage:'setup',detail:JSON.stringify(observed)});
 }

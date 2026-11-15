@@ -5,7 +5,7 @@
   "hashes": {
     "tests/golden/fixtures/B01.json": "87b9e87e3a668f21f25ee4ebead237e97f7c9cb9285841ac0f6633eb7f6eae5f",
     "tests/golden/fixtures/B02.json": "122eba46aaf6196a419c9acd07dae16cf48e04a50bdc183750d816a59b308445",
-    "tests/golden/fixtures/B03.json": "7d8aca6aa658d6dcb275b95f48e4f300612ea853175f57f787392f764006a7a1",
+    "tests/golden/fixtures/B03.json": "0ffa48c60c95ac6a9be308785adeec9ba18fe60778fad60de29d9482f3403f95",
     "tests/golden/fixtures/B04.json": "233fc377c4932ed3ff983b6135cce01de6a42426a051a650c65fb27f2c8302fb",
     "tests/golden/fixtures/B05.json": "48cbb2267b77f6229d151fa88769d5667f229a94351211d31738b5b958655eb5",
     "tests/golden/fixtures/B06.json": "8e15707ca30c19720a246452274f0efaf556058596f781c20e7ff0e0d76e3b52",
@@ -73,7 +73,7 @@
     "tests/golden/fixtures/S01.json": "0c56046bda001ddbb1e6344d659275732a0e0854709d6c84d4810b938d23dcdc",
     "tests/golden/fixtures/S02.json": "609d244cd2fb74abc3a90092c740e51dcba3adc9da27a78a0340be976e177977",
     "tests/golden/fixtures/S03.json": "4906d7969f6147b7616a50ff540e5b9c013607386bce30b3573b72db43418d7b",
-    "tests/golden/fixtures/S04.json": "f6ccb21dd4267c0468d9e30b18e695c2acc83a29e268788076817eb4676221a3",
+    "tests/golden/fixtures/S04.json": "1f8152f107e307c392d99bb54a7a1b9777e53e3b9314fe14da6553ad9fc75c9b",
     "tests/golden/fixtures/S05.json": "165c4b4bb2f48d3889ef504f54e9508a98a6903046f248f92d152cf3eee7d267",
     "tests/golden/fixtures/S06.json": "39d838df0f53a046664000da9b2a44f5cb1b5b4e44bec1593d206d478395a0b3",
     "tests/golden/fixtures/S07.json": "3aa0d123b5721a042b38ab21d301b360bed13eb7501f45c2c551a3639ae95924",

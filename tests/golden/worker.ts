@@ -7,8 +7,8 @@ export type CompileObservation =
   | { kind: 'setup-error' | 'timeout'; detail: string };
 
 // The watchdog runs in this parent; synchronous SDK compilation runs only in its owned child.
-export type WorkerRequest = {kind:'compile';source:string} | {kind:'session';caseId:string;ownedRoot:string};
-export type SessionObservation = {kind:'session-ok';observation:unknown} | {kind:'session-error';stage:'setup'|'session'|'cleanup';detail:string};
+export type WorkerRequest = {kind:'compile';source:string} | {kind:'session';caseId:string;ownedRoot:string;fixture:string};
+export type SessionObservation = {kind:'session-ok';actualInputHash:string;observation:unknown} | {kind:'session-error';stage:'setup'|'session'|'cleanup';detail:string;actualInputHash?:string};
 export type WorkerObservation = CompileObservation | SessionObservation;
 export async function runOwnedWorker(request:WorkerRequest,signal?:AbortSignal):Promise<WorkerObservation> {
   return new Promise(resolve => {
@@ -38,7 +38,7 @@ export async function runOwnedWorker(request:WorkerRequest,signal?:AbortSignal):
       const item=value as WorkerObservation;
       const valid=item.kind==='accepted'?Array.isArray(item.message?.createSurface?.components)
         :item.kind==='ui-error'?Number.isInteger(item.status)&&typeof item.reason==='string'
-        :item.kind==='session-ok'?'observation'in item
+        :item.kind==='session-ok'?'observation'in item&&/^[a-f0-9]{64}$/.test(item.actualInputHash)
         :item.kind==='session-error'?['setup','session','cleanup'].includes(item.stage)&&typeof item.detail==='string'
         :item.kind==='setup-error'&&typeof item.detail==='string';
       if(!valid){invalid=true;child.kill('SIGTERM');return;}result=item;

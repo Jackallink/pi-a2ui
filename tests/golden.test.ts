@@ -2,11 +2,13 @@ import { test, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { evaluateCompiler } from './golden/compiler.ts';
-import { compileInOwnedWorker } from './golden/worker.ts';
-import { evaluateSession } from './golden/session.ts';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
+import { compileInOwnedWorker, runOwnedWorker } from './golden/worker.ts';
+import { evaluateSession, sessionResult } from './golden/session.ts';
 import { loadCases, validateRegistry, fixtureBytes, type CaseResult } from './golden/registry.ts';
 import { writeReport, validateReport, combineReports, identity } from './golden/reports.ts';
-import { assertUsage, assertForwarded, assertActionReceipt, forwardedPayload } from './golden/oracles.ts';
+import { assertUsage, assertForwarded, assertActionReceipt, forwardedPayload, assertCapacityReason, assertChartTransition } from './golden/oracles.ts';
 import type { Snapshot } from '../src/protocol.ts';
 import { mkdtemp, mkdir, writeFile, symlink, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
@@ -106,4 +108,43 @@ test('BM2 receipt canaries reject partial/duplicate/setup/cleanup/wrong-input an
  assert.deepEqual(combineReports(report,synthetic,false),{cases:68,positive:45,negative:23});
  for(const key of ['source','datasetHash','oracleSetHash'] as const){const copy=structuredClone(synthetic);copy.identity=structuredClone(copy.identity);copy.identity[key]='0'.repeat(key==='source'?40:64);assert.throws(()=>combineReports(report,copy,false),/incompatible/);}
  assert.throws(()=>combineReports({...report,identity:{...report.identity,dirty:true}},synthetic),/dirty source/);
+});
+test('BM2 slot intent canary: legal wrong Modal slot cannot pass C22',async()=>{
+ const row=rows.find(row=>row.id==='C22')!;
+ const source='root = Modal(trigger=Icon(name="help"),content=Column(children=[Text("Open"),Text("Body")]))';
+ assert.equal((await compileInOwnedWorker(source)).kind,'accepted');
+ const result=await evaluateCompiler(row,source);assert.equal(result.failedStage,'semantic');
+});
+
+test('BM2 worker input canary attests actual child bytes and refuses a changed fixture',async()=>{
+ const root=await mkdtemp(join(tmpdir(),'pi-a2ui-golden-input-'));
+ const declared=fixtureBytes('tests/golden/fixtures/S01.json').toString('utf8');const changed=declared.replace('only','changed');assert.notEqual(changed,declared);
+ try{const observed=await runOwnedWorker({kind:'session',caseId:'S01',ownedRoot:root,fixture:changed});
+  assert.equal(observed.kind,'session-error');if(observed.kind==='session-error'){assert.equal(observed.stage,'setup');assert.match(observed.detail,/actual fixture bytes differ/);const{sha256}=await import('./golden/registry.ts');assert.equal(observed.actualInputHash,sha256(changed));assert.notEqual(observed.actualInputHash,sha256(declared));}
+ }finally{await rm(root,{recursive:true,force:true});}
+});
+test('BM2 capacity reason canary rejects right status with wrong attempted/current facts',()=>{
+ const expected={attemptedComponents:65,attemptedSurfaces:2,currentComponents:37,currentSurfaces:1};
+ assertCapacityReason('Surface or total component limit exceeded: attempted components 65/64, surfaces 2/4; current components 37/64, surfaces 1/4',expected);
+ assert.throws(()=>assertCapacityReason('attempted components 64/64, surfaces 2/4; current components 37/64, surfaces 1/4',expected),/attempted\/current capacity facts/);
+});
+test('BM2 chart canary rejects extra epoch/state mutation despite correct series and sequence',async()=>{
+ const result=await evaluateSession(rows.find(row=>row.id==='S07')!);assert.equal(result.pass,true);
+ const observation=result.observation as {before:Snapshot;snapshot:Snapshot;batches:unknown[]};const after=observation.snapshot,before=observation.before;
+ const series=[{name:'A',points:[{label:'two',value:3}]}];assertChartTransition(before,after,series,1);
+ const wrong=structuredClone(after);wrong.epoch='changed';assert.throws(()=>assertChartTransition(before,wrong,series,1),/only declared chart/);
+});
+test('BM2 CLI fault canary: output failure still escalates and reaps TERM-resistant owned child',async()=>{
+ const {stdout}=await promisify(execFile)(process.execPath,['--import','tsx','tests/golden/cli-canary.ts'],{timeout:10000,maxBuffer:65536});assert.match(stdout,/CLI output fault canary passed/);
+});
+
+test('BM2 child attestation canaries reject missing/wrong hash after a real valid worker control',async()=>{
+ const row=rows.find(row=>row.id==='S01')!;const source=fixtureBytes(row.fixture);const root=await mkdtemp(join(tmpdir(),'pi-a2ui-golden-attest-'));
+ try{const observed=await runOwnedWorker({kind:'session',caseId:row.id,ownedRoot:root,fixture:source.toString('utf8')});
+  assert.equal(observed.kind,'session-ok');assert.equal(sessionResult(row,source,observed).pass,true);
+  if(observed.kind==='session-ok')for(const actualInputHash of [undefined,'0'.repeat(64)]){
+   const changed={...observed,actualInputHash} as typeof observed;
+   const rejected=sessionResult(row,source,changed);assert.equal(rejected.pass,false);assert.equal(rejected.failedStage,'setup');assert.match(rejected.detail!,/child actual-input attestation/);
+  }
+ }finally{await rm(root,{recursive:true,force:true});}
 });

@@ -8,14 +8,17 @@ async function cliCheck(source:string,signal:AbortSignal):Promise<{code:number|n
   return new Promise((resolve,reject)=>{
     const child=spawn(process.execPath,['skills/pi-a2ui/scripts/a2ui.mjs','check','--surface-id','golden','-'],{stdio:['pipe','pipe','pipe']});
     let stdout='',stderr='',failure:Error|undefined;
+    let terminating=false;
     let force:ReturnType<typeof setTimeout>|undefined;
-    const cancel=()=>{if(failure)return;failure=new Error('Actual CLI deadline/case cancellation');child.kill('SIGTERM');force=setTimeout(()=>child.kill('SIGKILL'),2000);};
-    const deadline=setTimeout(cancel,10000);signal.addEventListener('abort',cancel,{once:true});
-    const append=(current:string,chunk:Buffer)=>{if(Buffer.byteLength(current)+chunk.length>1024*1024){failure=new Error('CLI output budget');child.kill('SIGTERM');}return(current+String(chunk)).slice(0,1024*1024);};
+    const cancel=(reason=new Error('Actual CLI deadline/case cancellation'))=>{failure??=reason;if(terminating)return;terminating=true;child.kill('SIGTERM');force=setTimeout(()=>child.kill('SIGKILL'),2000);};
+    const aborted=()=>cancel();
+    const deadline=setTimeout(cancel,10000);signal.addEventListener('abort',aborted,{once:true});
+    child.stdout.setEncoding('utf8');child.stderr.setEncoding('utf8');
+    const append=(current:string,chunk:string)=>{if(terminating)return current;if(Buffer.byteLength(current)+Buffer.byteLength(chunk)>1024*1024){cancel(new Error('CLI output budget'));return current;}return current+chunk;};
     child.stdout.on('data',chunk=>{stdout=append(stdout,chunk);});child.stderr.on('data',chunk=>{stderr=append(stderr,chunk);});
-    child.once('error',error=>{failure=error;});
-    child.once('close',code=>{clearTimeout(deadline);clearTimeout(force);signal.removeEventListener('abort',cancel);if(failure)reject(failure);else resolve({code,stdout,stderr});});
-    child.stdin.on('error',error=>{failure=error;});child.stdin.end(source);if(signal.aborted)cancel();
+    child.once('error',error=>cancel(error));
+    child.once('close',code=>{clearTimeout(deadline);clearTimeout(force);signal.removeEventListener('abort',aborted);if(failure)reject(failure);else resolve({code,stdout,stderr});});
+    child.stdin.on('error',error=>cancel(error));child.stdin.end(source);if(signal.aborted)cancel();
   });
 }
 export async function evaluateCompiler(row:GoldenCase,sourceOverride?:string):Promise<CaseResult> {

@@ -3,7 +3,11 @@
   "expected": {
     "status": 413,
     "componentsBefore": 37,
-    "atomic": true
+    "atomic": true,
+    "attemptedComponents": 65,
+    "attemptedSurfaces": 2,
+    "currentComponents": 37,
+    "currentSurfaces": 1
   },
   "input": {
     "renders": [
