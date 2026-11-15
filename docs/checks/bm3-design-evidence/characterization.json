@@ -1,0 +1,275 @@
+{
+  "purpose": "read-only existing-renderer characterization; no new detector or benchmark claims",
+  "sourceRole": "unchanged018 renderer/runtime, design-only characterization; no baseline acceptance",
+  "node": "v24.18.1",
+  "browser": "158.0.8127.18",
+  "states": [
+    {
+      "name": "search",
+      "revision": 1,
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "text": "Find actions",
+          "x": 952.125,
+          "y": 320.75,
+          "width": 87.875,
+          "height": 21
+        },
+        {
+          "tag": "INPUT",
+          "text": "",
+          "x": 273,
+          "y": 445.34375,
+          "width": 734,
+          "height": 42
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Search",
+          "x": 285,
+          "y": 516.9375,
+          "width": 82.625,
+          "height": 41
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Close actions",
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        {
+          "tag": "INPUT",
+          "text": "",
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      ],
+      "actualFonts": [
+        {
+          "selector": "h1",
+          "fonts": [
+            {
+              "familyName": ".SF NS",
+              "postScriptName": ".SFNS-Regular_wdth_opsz300000_GRAD_wght1F40000",
+              "isCustomFont": false,
+              "glyphCount": 20
+            }
+          ]
+        },
+        {
+          "selector": ".brand",
+          "fonts": [
+            {
+              "familyName": ".SF NS",
+              "postScriptName": ".SFNS-Bold",
+              "isCustomFont": false,
+              "glyphCount": 9
+            }
+          ]
+        },
+        {
+          "selector": "button",
+          "fonts": [
+            {
+              "familyName": "Arial",
+              "postScriptName": "ArialMT",
+              "isCustomFont": false,
+              "glyphCount": 12
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "audit",
+      "revision": 2,
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "text": "Find actions",
+          "x": 952.125,
+          "y": 320.75,
+          "width": 87.875,
+          "height": 21
+        },
+        {
+          "tag": "PI-A2UI-DATA-TABLE",
+          "text": "Filter Reported findingsReported findingsFileStatussrc/examp",
+          "x": 273,
+          "y": 426.34375,
+          "width": 734,
+          "height": 147
+        },
+        {
+          "tag": "INPUT",
+          "text": "",
+          "x": 442.40625,
+          "y": 426.34375,
+          "width": 153,
+          "height": 21
+        },
+        {
+          "tag": "BUTTON",
+          "text": "File",
+          "x": 281,
+          "y": 473.34375,
+          "width": 37.484375,
+          "height": 21
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Status",
+          "x": 616,
+          "y": 473.34375,
+          "width": 53.796875,
+          "height": 21
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Back to search",
+          "x": 285,
+          "y": 602.9375,
+          "width": 128.546875,
+          "height": 41
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Close actions",
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        {
+          "tag": "INPUT",
+          "text": "",
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      ],
+      "actualFonts": [
+        {
+          "selector": "h1",
+          "fonts": [
+            {
+              "familyName": ".SF NS",
+              "postScriptName": ".SFNS-Regular_wdth_opsz300000_GRAD_wght1F40000",
+              "isCustomFont": false,
+              "glyphCount": 20
+            }
+          ]
+        },
+        {
+          "selector": ".brand",
+          "fonts": [
+            {
+              "familyName": ".SF NS",
+              "postScriptName": ".SFNS-Bold",
+              "isCustomFont": false,
+              "glyphCount": 9
+            }
+          ]
+        },
+        {
+          "selector": "button",
+          "fonts": [
+            {
+              "familyName": "Arial",
+              "postScriptName": "ArialMT",
+              "isCustomFont": false,
+              "glyphCount": 12
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "return",
+      "revision": 3,
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "text": "Find actions",
+          "x": 952.125,
+          "y": 320.75,
+          "width": 87.875,
+          "height": 21
+        },
+        {
+          "tag": "INPUT",
+          "text": "",
+          "x": 273,
+          "y": 445.34375,
+          "width": 734,
+          "height": 42
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Search",
+          "x": 285,
+          "y": 516.9375,
+          "width": 82.625,
+          "height": 41
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Close actions",
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        {
+          "tag": "INPUT",
+          "text": "",
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      ],
+      "actualFonts": [
+        {
+          "selector": "h1",
+          "fonts": [
+            {
+              "familyName": ".SF NS",
+              "postScriptName": ".SFNS-Regular_wdth_opsz300000_GRAD_wght1F40000",
+              "isCustomFont": false,
+              "glyphCount": 20
+            }
+          ]
+        },
+        {
+          "selector": ".brand",
+          "fonts": [
+            {
+              "familyName": ".SF NS",
+              "postScriptName": ".SFNS-Bold",
+              "isCustomFont": false,
+              "glyphCount": 9
+            }
+          ]
+        },
+        {
+          "selector": "button",
+          "fonts": [
+            {
+              "familyName": "Arial",
+              "postScriptName": "ArialMT",
+              "isCustomFont": false,
+              "glyphCount": 12
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

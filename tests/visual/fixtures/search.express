@@ -1,0 +1,4 @@
+$/query = ""
+query = TextField(label="Query",value=$/query)
+search = Button(child=Text(text="Search"),action=Event("search",{query:$/query}))
+root = Card(child=Column(children=[Text(text="Search workspace"),query,search]))
