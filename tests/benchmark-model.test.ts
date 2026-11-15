@@ -70,3 +70,8 @@ test('BM4 pre-SDK !command admission has actual zero child-spawn/fetch even with
  const config=structuredClone(modelConfig);config.providers[MODEL.provider].apiKey='!node -e "throw new Error(\'MUST_NOT_EXECUTE\')"';assert.throws(()=>selectedConfig(config,{},{}),/command config/);assert.equal(spawns,0);assert.equal(fetches,0);
  }finally{for(const name of methods)(childProcess as any)[name]=originals[name];syncBuiltinESMExports();globalThis.fetch=originalFetch;}
 });
+for(const [name,id,source]of [
+ ['legal pointer escape','M02',SOURCES.M02.replace('$/name = ""','$/form = {"name/value":""}').replaceAll('$/name','{"@path":"/form/name~1value"}')],
+ ['legal bound label and text','M02','$/label = "Name"\n$/button = "Save form"\n'+SOURCES.M02.replace('label="Name"','label=$/label').replace('Text("Save form")','Text(text=$/button)')],
+ ['nested Button label layout','M01',SOURCES.M01.replace('Button(Text("Inspect file")','Button(Column([Text("Inspect file")])')],
+]as const)test('BM4 '+name+' is semantic positive',()=>{const message=compile('bm4',source);intent(scenarios.find(r=>r.id===id)!,{version:1,epoch:'fixture',enabled:true,surfaces:[{surfaceId:'bm4',revision:1,message}]});});
