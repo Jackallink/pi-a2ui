@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "issue49": {
+    "number": 49,
+    "state": "closed",
+    "state_reason": "completed",
+    "closed_at": "2026-11-15T07:20:06Z",
+    "html_url": "https://github.com/Jackallink/pi-a2ui/issues/49"
+  },
+  "issue43State": "open",
+  "bm1ParentAcceptanceChecked": true,
+  "pr50Merged": true,
+  "mergeCommit": "24b8288ec6f717836f94743720238c82cb0a56c9"
+}
