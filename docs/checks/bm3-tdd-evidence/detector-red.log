@@ -1,0 +1,25 @@
+
+Running 1 test using 1 worker
+
+(node:40765) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 tests/visual/browser.spec.ts:28:1 › BM3 actual CSS overlap must be detected after independent real fault preconditions (821ms)
+
+
+  1) tests/visual/browser.spec.ts:28:1 › BM3 actual CSS overlap must be detected after independent real fault preconditions 
+
+    AssertionError: detector must report actual overlap
+
+      38 |   assert.equal(observed.subjects.query.hit,false,'actual Query center is covered');
+      39 |   await assert.rejects(query.click({trial:true,timeout:500}),/intercepts pointer events/);
+    > 40 |   const faults=layoutFaults(observed,[['query','search']]);assert.ok(faults.includes('overlap:query/search'),'detector must report actual overlap');assert.ok(faults.includes('occluded:query'));
+         |                                                                   ^
+      41 |  }finally{await button.evaluate((node,original)=>{if(original===null)node.removeAttribute('style');else node.setAttribute('style',original);},original);}
+      42 |  assert.deepEqual(layoutFaults(await searchObservation(query,button),[['query','search']]),[]);await query.click({trial:true});expect(canvas.sent).toEqual([]);
+      43 | });
+        at $WORKTREE/tests/visual/browser.spec.ts:40:67
+
+    Error Context: test-results/tests-visual-browser-BM3-a-f1ee6-nt-real-fault-preconditions/error-context.md
+
+  1 failed
+    tests/visual/browser.spec.ts:28:1 › BM3 actual CSS overlap must be detected after independent real fault preconditions 
