@@ -1,0 +1,9 @@
+{
+  "acceptedTupleVerified": true,
+  "acceptedEpochSha256": "c54e8519c5509c918dda91182f4b69e03122383d96ab8c70f118e16e66c7be45",
+  "surfaceId": "skill-acceptance",
+  "acceptedRevision": 1,
+  "node": "v24.18.1",
+  "rpcSHA256": "77901634f691c1354b98fd4a59d29f29bc80222b10807e60b3e278c1142241a7",
+  "observerSHA256": "e0b3d5f6bf85937001ca4f84cdfff41c64c8006fb36f85e32385b856e6d9ebf9"
+}
