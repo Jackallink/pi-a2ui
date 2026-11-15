@@ -1,0 +1,10 @@
+{
+  "docs/plans/009-benchmark.md": "8b710f3d2e18c4b2449fc4bbb51f6bdb6f36bb9cd70cd23f3a6cc7ca18f70c94",
+  "docs/specs/012-benchmark-diagnostics.md": "92b03b0321d4589af9bd44a0c8f0b001adaf7c73a0de4ad302ece8f5b78d0230",
+  "docs/checks/062-benchmark-design.md": "11e4df40cc0c4faace1b3bfcf791d9226dc4279d86e41ec7ff5b59d5b69e00d1",
+  "docs/checks/benchmark-design-evidence/design-review-r1.md": "5e2a0e50409d35d6420bb27194e2906b34a384e7f91fca52665c5964e108b81f",
+  "docs/checks/benchmark-design-evidence/design-review-r2.md": "dbc6bd10125921a72e7fe302f6e7ea8b6007e397149ba662f1d44419b2f2171a",
+  "docs/walkthrough/benchmark-bm1/01-round1-user-stories.md": "84962a5a284d784718a57cc2811ff8ebca02de0770ace1584ae208ec3c5992dc",
+  "docs/walkthrough/benchmark-bm1/02-round2-technical-trace.md": "327f844cc6674776110ffa6555daa82a7686d6fdcbe960d8aa40250a86c03131",
+  "docs/walkthrough/benchmark-bm1/03-round3-integration-check.md": "520135eccb336b2d3a08079963a8f1869d9c823cc1e95e29df17015749cd4f57"
+}
