@@ -1,6 +1,6 @@
 # v0.1.9 — automatic settled-run summary (#57)
 
-Lifecycle: tdd-approved. Profile: strict. CanonicalSpec020. User2026-11-16 adds57 to unpublished0.1.9 afteracceptedc5089d8934f0db1ec6cb04febf4d8d3e819ead81. Supersedes only019release composition/readiness, notcompletedBM/spec019contracts or frozenv1results. Rootimplements; independentreviews only. Node24.x/localCI/disabledActions418909498,0newrealmodelbudget. Preserveold6a2archive/readiness/history anduserworktrees. Existingcf8bcbd branch is implementationreference, notadmittedcode; unrelated15e7109 proactive-modelprompt is OUT.
+Lifecycle: in-progress. Profile: strict. CanonicalSpec020. User2026-11-16 adds57 to unpublished0.1.9 afteracceptedc5089d8934f0db1ec6cb04febf4d8d3e819ead81. Supersedes only019release composition/readiness, notcompletedBM/spec019contracts or frozenv1results. Rootimplements; independentreviews only. Node24.x/localCI/disabledActions418909498,0newrealmodelbudget. Preserveold6a2archive/readiness/history anduserworktrees. Existingcf8bcbd branch is implementationreference, notadmittedcode; unrelated15e7109 proactive-modelprompt is OUT.
 
 ## Goal / non-goals
 

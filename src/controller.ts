@@ -1,6 +1,7 @@
 import { UiSession } from "./session.ts";
 import { UiError, type Snapshot } from "./protocol.ts";
 import { startServer, type CanvasServer } from "./server.ts";
+import {ownedRunCardRevision,readRunCardEntry} from './run-card.ts';
 
 export class CanvasController {
   private pending?: Promise<CanvasServer>;
@@ -35,14 +36,14 @@ export class CanvasController {
 }
 
 export function restoreBranch(session: UiSession, entries: readonly unknown[],root?:string) {
-  // Only successful tool results on the current branch have restoration authority.
+  // Only successful tool snapshots and our validated native-card receipts on this branch restore UI.
   for (let index = entries.length - 1; index >= 0; index--) {
     const entry = entries[index] as {type?: string; message?: {role?: string;toolName?: string;isError?: boolean;details?: {a2uiSnapshot?: unknown}}};
-    if (!entry || entry.type !== "message" || entry.message?.role !== "toolResult"
-      || !["a2ui_render","a2ui_update_chart"].includes(entry.message.toolName??"") || entry.message.isError !== false) continue;
-    const saved = entry.message.details?.a2uiSnapshot;
-    if (saved === undefined) continue;
-    try { session.reset(saved,root); return; }
+    const details=readRunCardEntry(entry)??(entry?.type==='message'&&entry.message?.role==='toolResult'
+      &&["a2ui_render","a2ui_update_chart"].includes(entry.message.toolName??'')&&entry.message.isError===false?entry.message.details:undefined);
+    const saved=details?.a2uiSnapshot;
+    if(saved===undefined)continue;
+    try { session.reset(saved,root); return ownedRunCardRevision(session.snapshot(),(details as {a2uiRunSummaryRevision?:unknown}).a2uiRunSummaryRevision); }
     catch { /* Incompatible history does not execute or replace the current canvas. */ }
   }
   session.reset(undefined,root);

@@ -1,7 +1,7 @@
 import type {TimelineEntry} from './interactions.ts';
 import {UiSession} from './session.ts';
 import {trimLog,type LogState} from './live.ts';
-import type {Operation} from './protocol.ts';
+import type {Operation,Snapshot} from './protocol.ts';
 interface Window {tail:string;length:number;totalBytes?:number}
 // Tool results are cumulative snapshots. Keep bounded tails, never full history.
 function snapshot(result:unknown,previous?:Window,final=false){
@@ -38,8 +38,15 @@ export class LiveTools{
  end(id:string,result:unknown,isError:boolean){if(this.closed||!this.accepting||!this.active.has(id))return;this.update(id,result,true);this.observeTimeline();const row=this.timelineActive.get(id);if(row)row.state=isError?'error':'completed';this.timelineActive.delete(id);this.active.delete(id);this.settled++;if(isError)this.failedCount++;this.failed ||= isError;this.state=this.active.size?'running':this.failed?'error':'completed';this.schedule();}
  finishRun(outcome?:'error'|'interrupted'){if(this.closed)return;this.accepting=false;this.observeTimeline();for(const row of this.timelineActive.values())row.state='interrupted';this.timelineActive.clear();this.progressState=outcome??(this.active.size?'interrupted':this.failed?'error':'completed');if(outcome)this.state=outcome;else if(this.active.size)this.state='interrupted';this.active.clear();this.schedule();}
  refresh(){this.schedule();}
+ get toolCount(){return this.started;}
+ flush():Snapshot{
+  clearTimeout(this.timer);this.timer=undefined;
+  if(this.closed)return this.session.snapshot();
+  this.lastAt=Date.now();this.observeTimeline();
+  return this.session.updateLog(this.text,this.state,this.omitted,this.operation,{stream:'tools',state:this.progressState,started:this.started,settled:this.settled,failed:this.failedCount,omitted:this.progressOmitted},{stream:'tools',entries:this.timelineEntries,state:this.progressState,omitted:this.timelineOmitted});
+ }
  private observeTimeline(){const now=Date.now();for(const row of this.timelineActive.values())row.elapsedMs=Math.max(0,Math.min(Number.MAX_SAFE_INTEGER,now-row.startedAt));}
  private append(value:string){const next=trimLog(this.text+value);this.text=next.text;this.omitted ||= next.omitted;this.schedule();}
- private schedule(){if(this.closed||this.timer)return;this.timer=setTimeout(()=>{this.timer=undefined;this.lastAt=Date.now();this.observeTimeline();try{this.session.updateLog(this.text,this.state,this.omitted,this.operation,{stream:'tools',state:this.progressState,started:this.started,settled:this.settled,failed:this.failedCount,omitted:this.progressOmitted},{stream:'tools',entries:this.timelineEntries,state:this.progressState,omitted:this.timelineOmitted});}catch{/* Disabled, replaced or closed ownership cannot publish. */}},Math.max(0,this.lastAt+100-Date.now()));this.timer.unref?.();}
+ private schedule(){if(this.closed||this.timer)return;this.timer=setTimeout(()=>{try{this.flush();}catch{/* Disabled, replaced or closed ownership cannot publish. */}},Math.max(0,this.lastAt+100-Date.now()));this.timer.unref?.();}
  close(){this.closed=true;this.accepting=false;this.active.clear();this.timelineActive.clear();this.timelineEntries=[];this.seen.clear();clearTimeout(this.timer);this.timer=undefined;}
 }
