@@ -28,7 +28,7 @@ Profile intentionally constrains tools to actual read/bash/write/edit/render/reg
 
 Reports/images reside under owned `.local/bm4/`; negative/synthetic control runs are separate `.local/bm4-offline/`. Preserve firstfailures; no rerun-to-improve score. Report planned/started/notrun, providerattempts, preflight/compile/render/intent, applicableHTTP/Piqueue,staticN/A and harness failures separately. Cases can fail while being valid measurements; setup/cleanup failure blocks harness acceptance. No billing cost is inferred from zero SDK cost fields. Parent hardstop cleans registeredownedbrowser and knownworkspace only; SIGKILL of the parent itself is outside recovery guarantees. Screenshot evidence is synthetic/model-generated taskdata, never browserchrome/tokenURL/userfiles. No pixel-quality score.
 
-BM2/3 predecessorPRs, merge/release/globalinstall/issue43closure remain separate. Rollback only incrementalbenchmarkfiles; retain failedreceipts. The evaluator does not change production runtime/CSS/dependencies; the0.1.9release updates normal package/version/documentation metadata.
+BM2/3 predecessorPRs, merge/release/globalinstall/issue43closure remain separate. Rollback only incrementalbenchmarkfiles; retain failedreceipts. The evaluator does not change production runtime/CSS/dependencies; the0.1.9release updates normal package/version/documentation metadata. The expanded0.1.9 candidate separately adds Spec020 automatic run summaries and their production module; its current manifest is76files and v2 archive pin is resealed. This does not alter the frozen v1 measurement or create a v2 model score.
 
 ## v2 checked-source handoff (issue56)
 

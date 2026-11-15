@@ -1,0 +1,16 @@
+# Issue57 — Round2 — 2026-11-16 — root + independent reviewer
+
+## P-001 — settled summary
+Userfinishesnative-toolrun→Handlerextension.agent_end/agent_settled→StateendedRunconsumed/outcome+ownedrevision→APIexistingservedUiSession.render(run-summary,presetDSL),LiveTools.flush(),pi.appendEntry(customType,data)→Backendactualcompiler/capacity/nativeupdate/publishandofficialnon-LLMcustomhistory→Responseboundedcommittedsnapshot→UIexistingSSE/nativeStatusBadge/TaskProgress/ActivityTimeline. Noawait/newserver/opener/POST/provider;failurescaughtnonfatal.
+
+## P-002 — quiet and budget paths
+Usercloses/pauses/hasprose/fullcanvas→Handlerpureeligibility+existingrendererlimits→Statetrackedfacesunchanged→APInoneifineligible,otherwiseatomicexistingrender→Backend413/nativeheadroomfailurecaught→Responseunchangedsnapshot/nohistoryreceipt→UInoautomaticreplacement/eviction/retry. Existingnativecurrent-runupdatesremainordinarybehavior.
+
+## P-003 — model ownership
+User/modelrendersanyIDincludingrun-summary→Handlerexistinga2ui_render→StateonSUCCESSsameIDrevokesextensionownership;otherIDsretainmatchingrevision→APIexistingrenderinputunchanged→Backendexistingcompile/budgets→Responseexistingdetails+optionalmatchingownershipmetadata→UIuserface;nextautogateskipsunownedcollision. Failedrendersleavebothface/ownershipunchanged.
+
+## P-004 — restore
+Userreloads/selectsbranch→Handlerextension.restore/restoreBranch→Stateoldliveclosed/newsessionepoch→APIcurrentbranchentrieslatestvalidtool/customsnapshot→Backendexistingresetvalidation/capacity/artifactrevocation;knownexactcustomschemaonly→Responseownershipmatchingselectedsnapshotrevisionorundefined→UIvalidatedrestoredcard;nonewmessage/model. Newermodeltakeovermetadataabsentneverreclaimed;badcustomignorednotexecuted.
+
+## P-005 — updated release
+Useradds57to019→Handlercanonical020/independentreview/localNode24→Stateoldcandidatehistorical/new76filecandidate→APIprepack/pinnedv2/currentoffline/normalGit-localstartup→Backendfullnode/types/lockedbrowser/68union/source-artifactchecks→Responseexactnewreadinessreceipt→UIissue57closesonlyafteractualintegrationacceptance;tag/publicationseparate. Frozenv1notrescored.

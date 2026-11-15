@@ -1,0 +1,14 @@
+✔ RSC user-opened empty canvas receives a summary without any model render tool call (72.12475ms)
+✔ RSC adapter never creates a listener or summary for no-server/no-browser/prose/A2UI-only/paused paths (16.415417ms)
+✔ RSC adapter append failure preserves the committed owned card and next run replaces it (18.949041ms)
+✔ RSC adapter flush failure never appends fabricated data or loses its already-created ownership (15.415ms)
+✔ RSC adapter render failure preserves user surfaces and does not append a receipt (11.68625ms)
+✔ RSC adapter full slots and component overflow leave all model faces unchanged (58.741084ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1156.553792

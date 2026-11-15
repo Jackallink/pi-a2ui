@@ -24,6 +24,67 @@ const test = base.extend<{ canvas: Canvas }>({
 });
 test.use({ launchOptions: { executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH } });
 
+test('RSC actual connected extension renders and persists native settled summary without new actions',async({page})=>{
+ const {default:install}=await import('../extension.ts');
+ const {SessionManager}=await import('@earendil-works/pi-coding-agent');
+ const {mkdir}=await import('node:fs/promises');
+ const {execFileSync}=await import('node:child_process');
+ const {join}=await import('node:path');
+ const captureSource=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
+ const captures=join('.local/run-summary-captures',captureSource+'-'+Date.now());await mkdir(captures,{recursive:true,mode:0o700});
+ console.log('RSC evidence '+JSON.stringify({source:captureSource,captures}));
+ const manager=SessionManager.inMemory(process.cwd());
+ const tools=new Map<string,any>(),handlers=new Map<string,any>();
+ let opened='',openCalls=0,messages=0,posts=0;
+ const host={registerTool(t:any){tools.set(t.name,t);},registerCommand(){},on(n:string,h:any){handlers.set(n,h);},sendUserMessage(){messages++;},appendEntry(type:string,data:unknown){manager.appendCustomEntry(type,data);},getActiveTools:()=>['a2ui_render'],setActiveTools(){},exec:async(_program:string,args:string[])=>{opened=args.at(-1)!;openCalls++;return{code:0,stdout:'',stderr:''};}};
+ install(host as any);const ctx={cwd:process.cwd(),sessionManager:manager,ui:{notify(){}}};
+ await handlers.get('session_start')({},ctx);
+ try{
+  await tools.get('a2ui_render').execute('model',{surfaceId:'model',source:'$/name = ""\nchart = Chart(kind="line",series=[])\nroot = Column([Text("Model surface"),TextField("Draft",$/name),chart])'},undefined,undefined,ctx);
+  const url=new URL(opened),origin=url.origin,token=new URLSearchParams(url.hash.slice(1)).get('token');
+  expect((await page.request.post(origin+'/api/connect',{headers:{origin},data:{token}})).status()).toBe(200);
+  page.on('request',request=>{if(request.url()===origin+'/api/actions'&&request.method()==='POST')posts++;});
+  await page.goto(origin);await expect(page.getByText('Model surface',{exact:true})).toBeVisible();
+  const model=page.getByRole('region',{name:'Canvas model',exact:true});await model.getByRole('textbox').fill('Unsubmitted draft');
+  const beforeOpen=openCalls;
+  handlers.get('agent_start')({});handlers.get('tool_execution_start')({toolCallId:'observed',toolName:'bash'});
+  handlers.get('tool_execution_end')({toolCallId:'observed',result:{content:[]},isError:true});
+  handlers.get('agent_end')({messages:[{role:'assistant',stopReason:'stop'}]});
+  handlers.get('agent_settled')({aborted:false});
+  const card=page.getByRole('region',{name:'Canvas run-summary',exact:true});
+  await expect(card.getByText('Run summary',{exact:true})).toBeVisible({timeout:3000});
+  await expect(card.getByText(/^success · Run completed/)).toBeVisible();
+  await expect(card.getByText(/1 failed/)).toBeVisible();
+  await expect(card.getByText('bash',{exact:true})).toBeVisible();
+  const receipts=manager.getBranch().filter(entry=>entry.type==='custom'&&entry.customType==='pi-a2ui.run-summary.v1');
+  expect(receipts).toHaveLength(1);
+  expect(manager.buildSessionContext().messages).toEqual([]);
+  await expect(model.getByRole('textbox')).toHaveValue('Unsubmitted draft');
+  const cycle=(stopReason='stop',aborted=false,toolName='read')=>{handlers.get('agent_start')({});if(toolName){handlers.get('tool_execution_start')({toolCallId:'next',toolName});handlers.get('tool_execution_end')({toolCallId:'next',result:{content:[]},isError:false});}handlers.get('agent_end')({messages:[{role:'assistant',stopReason}]});handlers.get('agent_settled')({aborted});};
+  const summaryEntries=()=>manager.getBranch().filter(entry=>entry.type==='custom'&&entry.customType==='pi-a2ui.run-summary.v1');
+  const summaryRevision=(details:any)=>details.a2uiSnapshot.surfaces.find((s:any)=>s.surfaceId==='run-summary').revision;
+  const probe=()=>tools.get('a2ui_update_chart').execute('chart',{surfaceId:'model',revision:1,componentId:'chart',series:[]});
+  await card.scrollIntoViewIfNeeded();await expect(card).toBeInViewport();await card.screenshot({path:join(captures,'completed.png')});
+  handlers.get('agent_settled')({aborted:true});cycle('stop',false,'');cycle('stop',false,'a2ui_render');
+  expect(summaryEntries()).toHaveLength(1);expect(summaryRevision((await probe()).details)).toBe(1);
+  cycle('error');await expect(card.getByText(/^error · Run failed/)).toBeVisible();await expect(card.getByText('read',{exact:true})).toBeVisible();await expect(card.getByRole('region',{name:'Native tool progress'})).toContainText('1 started · 1 settled · 0 failed');await card.scrollIntoViewIfNeeded();await expect(card).toBeInViewport();await card.screenshot({path:join(captures,'error.png')});
+  cycle('stop',true);await expect(card.getByText(/^warning · Run interrupted/)).toBeVisible();await expect(card.getByText('Tracked tools · interrupted',{exact:true})).toBeVisible();await expect(card.getByText('read',{exact:true})).toBeVisible();await card.scrollIntoViewIfNeeded();await expect(card).toBeInViewport();await card.screenshot({path:join(captures,'interrupted.png')});
+  expect(summaryEntries()).toHaveLength(3);
+  await handlers.get('session_tree')({},ctx);cycle();expect(summaryRevision((await probe()).details)).toBe(4);
+  const update=await probe();expect(update.details.a2uiRunSummaryRevision).toBe(4);
+  manager.appendMessage({role:'toolResult',toolCallId:'chart',toolName:'a2ui_update_chart',content:[],details:update.details,isError:false,timestamp:Date.now()} as any);
+  await handlers.get('session_tree')({},ctx);cycle();expect(summaryRevision((await probe()).details)).toBe(5);
+  await expect(tools.get('a2ui_render').execute('bad',{surfaceId:'run-summary',source:'root = UnknownComponent()'},undefined,undefined,ctx)).rejects.toThrow();
+  cycle();expect(summaryRevision((await probe()).details),'failed takeover must retain ownership').toBe(6);
+  const other=await tools.get('a2ui_render').execute('other',{surfaceId:'other',source:'root = Text("Another model face")'},undefined,undefined,ctx);expect(other.details.a2uiRunSummaryRevision).toBe(6);
+  const takeover=await tools.get('a2ui_render').execute('takeover',{surfaceId:'run-summary',source:'root = Text("User takeover")'},undefined,undefined,ctx);expect(takeover.details.a2uiRunSummaryRevision).toBeUndefined();
+  manager.appendMessage({role:'toolResult',toolCallId:'takeover',toolName:'a2ui_render',content:[],details:takeover.details,isError:false,timestamp:Date.now()} as any);
+  const count=summaryEntries().length;cycle();await expect(card.getByText('User takeover',{exact:true})).toBeVisible();expect(summaryEntries()).toHaveLength(count);
+  await handlers.get('session_tree')({},ctx);cycle();await expect(card.getByText('User takeover',{exact:true})).toBeVisible();expect(summaryEntries()).toHaveLength(count);
+  expect(openCalls).toBe(beforeOpen);expect(messages).toBe(0);expect(posts).toBe(0);
+ }finally{await page.close();await handlers.get('session_shutdown')({});}
+});
+
 async function open(page: Page, canvas: Canvas) {
   await page.goto(canvas.origin);
   await expect(page.getByRole("textbox")).toBeVisible();

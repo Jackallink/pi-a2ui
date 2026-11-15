@@ -65,6 +65,7 @@
   "src/live-tools.ts",
   "src/live.ts",
   "src/protocol.ts",
+  "src/run-card.ts",
   "src/selection-element.ts",
   "src/server.ts",
   "src/session.ts",

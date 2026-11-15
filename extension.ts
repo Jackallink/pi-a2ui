@@ -5,6 +5,7 @@ import { promptSnippet } from "./src/compiler.ts";
 import { CanvasController, restoreBranch } from "./src/controller.ts";
 import { UiSession } from "./src/session.ts";
 import { LIMITS, UiError, snapshotUsage } from "./src/protocol.ts";
+import {RUN_CARD_ENTRY,RUN_CARD_SURFACE_ID,ownedRunCardRevision,runCardMetadata,runCardSource,shouldRenderRunCard,type RunOutcome} from './src/run-card.ts';
 
 export default function a2ui(pi: ExtensionAPI) {
   const makeController = () => new CanvasController(new UiSession(text => {
@@ -13,6 +14,8 @@ export default function a2ui(pi: ExtensionAPI) {
   let controller = makeController();
   let live=new LiveTools(controller.session);
   let endedRun:LiveTools|undefined;
+  let endedRunOutcome:RunOutcome='completed';
+  let ownedRunSummaryRevision:number|undefined;
   let autoOpenAttempted = false;
   let episodeSequence = 0;
   const openInBrowser = async (url:string) => {
@@ -25,7 +28,7 @@ export default function a2ui(pi: ExtensionAPI) {
     episodeSequence++;
     live.close();endedRun=undefined;autoOpenAttempted=false;
     if (controller.session.closed) controller = makeController();
-    restoreBranch(controller.session, ctx.sessionManager.getBranch(),ctx.cwd);
+    ownedRunSummaryRevision=restoreBranch(controller.session, ctx.sessionManager.getBranch(),ctx.cwd);
     live=new LiveTools(controller.session);
   };
   pi.on("session_start", restore);
@@ -37,9 +40,22 @@ export default function a2ui(pi: ExtensionAPI) {
   pi.on("tool_execution_end",event=>live.end(event.toolCallId,event.result,event.isError));
   pi.on("agent_end",event=>{
     const last=[...event.messages].reverse().find(message=>message.role==='assistant') as {stopReason?:string}|undefined;
+    endedRunOutcome=last?.stopReason==='error'?'error':last?.stopReason==='aborted'?'interrupted':'completed';
     endedRun=live;live.finishRun(last?.stopReason==='error'?'error':last?.stopReason==='aborted'?'interrupted':undefined);
   });
-  pi.on("agent_settled",event=>{if(event.aborted)endedRun?.finishRun('interrupted');endedRun=undefined;});
+  pi.on("agent_settled",event=>{
+    const finished=endedRun;endedRun=undefined;
+    if(!finished||finished!==live)return;
+    if(event.aborted)finished.finishRun('interrupted');
+    try{
+      if(controller.session.closed||!shouldRenderRunCard(controller.session.snapshot(),{browserClients:controller.server?.clients??0,toolCount:finished.toolCount,ownedRevision:ownedRunSummaryRevision}))return;
+      // The server already exists. Keep render, native data and history synchronous: no late-run publication.
+      const rendered=controller.session.render(RUN_CARD_SURFACE_ID,runCardSource(event.aborted?'interrupted':endedRunOutcome));
+      ownedRunSummaryRevision=rendered.surfaces.find(surface=>surface.surfaceId===RUN_CARD_SURFACE_ID)!.revision;
+      const snapshot=finished.flush();
+      pi.appendEntry(RUN_CARD_ENTRY,{a2uiSnapshot:snapshot,a2uiRunSummaryRevision:ownedRunSummaryRevision});
+    }catch{/* A best-effort observed summary must never interrupt the agent or roll back committed UI. */}
+  });
 
   pi.registerTool({
     name:"a2ui_render",
@@ -55,6 +71,8 @@ export default function a2ui(pi: ExtensionAPI) {
     async execute(_toolCallId, params, signal, _onUpdate, ctx) {
       if (!controller.session.enabled) throw new UiError(503,"A2UI is disabled; use /a2ui-toggle to enable");
       const snapshot = await controller.render(params.surfaceId, params.source, signal);
+      if(params.surfaceId===RUN_CARD_SURFACE_ID)ownedRunSummaryRevision=undefined;
+      else ownedRunSummaryRevision=ownedRunCardRevision(snapshot,ownedRunSummaryRevision);
       live.refresh();
       const surface = snapshot.surfaces.find(item => item.surfaceId === params.surfaceId)!;
       const usage = {...snapshotUsage(snapshot),surface:{surfaceId:surface.surfaceId,components:surface.message.createSurface.components.length}};
@@ -72,7 +90,7 @@ export default function a2ui(pi: ExtensionAPI) {
       }
       return {
         content:[{type:"text",text:`Rendered ${params.surfaceId} (revision ${surface.revision}); components ${usage.components.used}/${usage.components.limit}, surfaces ${usage.surfaces.used}/${usage.surfaces.limit}; this surface ${usage.surface.components}.${note||" Use /a2ui to open the local canvas."} Continue your response; form actions arrive as later user messages.`}],
-        details:{a2uiSnapshot:snapshot,a2uiUsage:usage},
+        details:{a2uiSnapshot:snapshot,a2uiUsage:usage,...runCardMetadata(snapshot,ownedRunSummaryRevision)},
       };
     },
   });
@@ -80,7 +98,7 @@ export default function a2ui(pi: ExtensionAPI) {
     name:"a2ui_update_chart",label:"Update A2UI chart",
     description:"Update only series of an existing Chart without replacing layout or unsent inputs. Use the current structural revision from a2ui_render and the component ID (name the Chart variable in Express). Same aligned finite series contract as Chart. Does not run a command.",
     parameters:Type.Object({surfaceId:Type.String({pattern:"^[A-Za-z0-9_-]{1,64}$"}),revision:Type.Integer({minimum:1,maximum:Number.MAX_SAFE_INTEGER}),componentId:Type.String({minLength:1,maxLength:512}),series:Type.Array(Type.Object({name:Type.String({minLength:1,maxLength:128}),points:Type.Array(Type.Object({label:Type.String({maxLength:128}),value:Type.Number()},{additionalProperties:false}),{maxItems:200})},{additionalProperties:false}),{maxItems:4})},{additionalProperties:false}),
-    async execute(_id,params,signal){if(!controller.session.enabled)throw new UiError(503,"A2UI is disabled");if(signal?.aborted)throw new UiError(409,"Chart update cancelled");const active=controller,operation=active.session.beginOperation();await active.ensureServer();const snapshot=active.session.updateChart(params.surfaceId,params.revision,params.componentId,params.series,{operation,signal});return {content:[{type:"text",text:"Chart data updated; structural revision and user drafts retained."}],details:{a2uiSnapshot:snapshot}};},
+    async execute(_id,params,signal){if(!controller.session.enabled)throw new UiError(503,"A2UI is disabled");if(signal?.aborted)throw new UiError(409,"Chart update cancelled");const active=controller,operation=active.session.beginOperation();await active.ensureServer();const snapshot=active.session.updateChart(params.surfaceId,params.revision,params.componentId,params.series,{operation,signal});return {content:[{type:"text",text:"Chart data updated; structural revision and user drafts retained."}],details:{a2uiSnapshot:snapshot,...runCardMetadata(snapshot,ownedRunSummaryRevision)}};},
   });
   pi.registerTool({name:"a2ui_register_artifact",label:"Register A2UI artifact",description:"Register an existing ordinary file inside the current workspace as a bounded immutable session artifact. Relative path only; no symlinks, external URLs or executable content. kind image supports PNG/JPEG/WebP, video WebM/MP4, audio WAV. Returns opaque src and verified metadata, never file contents. Use this src in ArtifactPreview or supported media components; reset/pause/session switch revokes it. Does not execute a command.",parameters:Type.Object({path:Type.String({minLength:1,maxLength:4096}),kind:Type.Union([Type.Literal('image'),Type.Literal('video'),Type.Literal('audio')])},{additionalProperties:false}),async execute(_id,params,signal,_update,ctx){const active=controller,operation=active.session.beginOperation();const meta=await active.session.registerArtifact(params.path,params.kind,ctx.cwd,{operation,signal});return{content:[{type:'text',text:JSON.stringify(meta)}],details:{}};}});
   pi.registerCommand("a2ui", {
