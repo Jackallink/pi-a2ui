@@ -1,0 +1,3 @@
+# Story walkthrough
+
+As a Pi user choosing whether to trust UI generation, I need first-attempt legal/intent/interaction outcomes from the actual skill route, without hidden retries or extra models. Spec018 fixes12natural-language inputs, expectedtypeddata and observableacceptance before inference. A static readable view is N/A for dispatch; an invalid form must not submit; legalwrongkeys failintent. Neither illustrative testresults nor queueduserinput prove actualtestexecution/applicationcompletion. AC001–006 map to dryrun,guard,semantic/native,cleanup and source-bound live reports. No additional product feature or release.

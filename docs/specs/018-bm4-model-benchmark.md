@@ -1,0 +1,65 @@
+# BM4 — first-attempt GLM authoring baseline
+
+Lifecycle: draft. Strict. Canonical Spec018, parent43. Predecessors BM2 PR53 / BM3 PR54 remain unmerged. Manual measurement, never a CI/release gate. Only user-approved model `volcengine-ark/glm-5.3-flash` on exact `https://ark.cn-beijing.volces.com/api/plan/v3`; user budget12distinct scenarios, one attempt each, no automatic retry. No new publication/global package/config change.
+
+## Goal and scope
+
+Measure first-attempt ability to use the actual packed skill/helper and actual Pi018extension to author legal, requested UI and (where applicable) receive a real browser action in Pi's queue. Distinguish compilation from intent, browser execution, HTTP202 and actual Pi queued data. A legal but wrong form is not a success. A queue receipt is not subsequent model execution. Preserve failures instead of repairing/re-running their score.
+
+OUT: model comparisons, retry/repair, inferred billing guarantees, pixel quality judging, application side effects, release gate, source/runtime fixes based on results, default unrestricted Pi behavior. Source/runtime/assets/SDK remain frozen018. Files excluded from npm payload; only predecessor2skill-doc changes are packed. Owned isolated Pi sessions/config/store/cwd/browser; never user browser/process/global registration. All local/hosted JS Node24.
+
+## Fixed 12 natural-language tasks
+
+Each scenario surface `bm4`, fresh in-memory Pi session and fresh owned workspace. Model sees natural-language request and source data, no expected DSL or oracle. Static/local interactions have explicit N/A for dispatch.
+
+|ID|Request and independent observable intent|Interaction|
+|---|---|---|
+|M01|Text exactly `src/app.ts:42`; Inspect file Button submits event inspect, context `{file:"src/app.ts",line:42}`|native click,202,Pi queue exacttypedcontext|
+|M02|Name string initially empty; Accept boolean initially false; Save form submits save keys name/accept, declarative required name min2/max5 and accepttrue|invalid submit noPOST, fill Ada/check,202,queue `{name:"Ada",accept:true}`|
+|M03|Notify checkboxfalse; Priority slider2 range1..5; Mode single choice fast/safe string-array initially["safe"]; Date2026-11-15 date-only; Save settings eventsettings keys notify/priority/mode/date|settrue,4,["fast"],2026-11-16→202+typedqueue|
+|M04|DataTable Scores columns Row/Score, data A=10,B=2,C=2; local stable numeric sort and filter|Score ascB/C/A then descA/B/C; filter B→B;0POST|
+|M05|CodeBlock language typescript literal `const answer = 42;`|visible exactcode,0POST|
+|M06|MarkdownView `# Notes\n\n**Ready** to review.` supported markdown|actual heading Notes,strongReady,0POST|
+|M07|Details More info containing `Build 42`; local Modal triggerOpen details containing `Review carefully`|disclosureopen/nativeModalclose/focusreturn,0POST|
+|M08|SearchablePicker Target, declared alpha/beta stringchoices, initial["alpha"]; Choose target eventchoose keytarget|search/selectBeta→nativeChoose→202/queue["beta"]|
+|M09|Chart signed finite series Requests:Mon-2,Tue3; Refresh chart Button eventrefresh `{series:"Requests"}`|actualChartpresence,Refresh→202/queue|
+|M10|CodeDiff example.ts before`old` after`new`; TestResults2illustrativerecords unit/pass,lint/fail; CodeDiff proposalId p-bm4, TestResults resultId r-bm4; Inspect result Button eventinspect_test `{id:"lint",proposalId:"p-bm4",resultId:"r-bm4"}`|visiblebothrecords/diff,Button→202/queue;not realtests|
+|M11|TaskProgress and ActivityTimeline streamtools, only actual native tool observations, no initialcounters/entries/inventedstate|visibleactualnativecomponents; existingserverliveupdates; no claimedfixedtotals,0POST;not livetelemetry|
+|M12|Register supplied ordinary local PNG `sample.png` via actualartifacttool; ArtifactPreview labelSample image|actualimgcomplete/naturalwidth>0/verifiedopaqueURL;0POST|
+
+Freeze exact prompts+oracles together before live. Independent oracles inspect actual compiled tree/data references and native DOM; allow arbitraryvalidcomponentIDs/bindingpaths/layout and additional harmlessText. Requested Eventname/contextkeys/types/labels/data fixed. All Event-bearing Button records need legal componentIDs under existingcompiler; compiler/CLI is sole structural legality oracle. Wrong-type,wrong-context,wrongnumericorder,wrongPNG canaries must fail intent/interaction independently of syntax. No expected-source byte equality. Negative tests/canaries excluded from12model denominator.
+
+## Authoring profile and source identity
+
+Actual pinnedPiSDK1.5.0, ModelRuntime/createAgentSession, actual package inline extension factory, actual SKILL.md loaded by DefaultResourceLoader. No default extensions/skills/context/themes/MCP/compaction/cachewarming. Actualactive tools exact `read,bash,write,edit,a2ui_render,a2ui_register_artifact`; update_chart outside currenttasks. Shipped75-file archive content in owned isolated package, proddeps reachable through owned node_modules symlink to locked repositorydeps (readguard must not allow symlink traversal to arbitrary deps). Import extension from reviewed checkout for Typebox hostresolution; verify every75archived payload byte matches checkout beforelive. Record sourceSHA/dirty, archiveSHA/payloadSHA,SDKversion/lockSHA,skill/helper/catalog/scenario/oracle/profile/renderasset hashes. Reject dirty source. No user files or golden/oracle sources readable by model.
+
+Tool guards are an explicit experimental variable: actualSDK read only ordinary nonsymlink text files under shipped package or ownedproject; size<=128KiB. Write/edit only owned draft.express before first preflight. SamplePNG immutable. Actualbash accepts exact helper catalog/patterns/pattern/component/examples/example/check commands with strict simple-token lexer, knownnames/exactownedsourcepath, no operators/newlines/$/backticks/redirects/heredocs/env assignments/extraargs. Rewrite validated tokens to trusted quoted absolute Node24/helper path. Modelprompt explains use write/edit for draft, helper-onlybash; templates and refs remain actualpackage. No fakepreflight, no rewriting modelDSL. `check --surface-id bm4 <owned draft>` exactlyonce. Firsta2ui_render must match actual successfulcheck `{surfaceId,source}` byte-for-byte. Guard errors reported as profile/toolpolicy, not DSL errors.
+
+Default script dry-run: lists12prompts/fingerprints/caps,0providerrequests, never reads user auth/config or imports configuration-reading Pi runtime. Explicit `--execute` is sole live opt-in, no prompts/hidden retry/resume. Per-case onefirstcandidate/preflight and onerender attempt; preparatoryqueries/edits allowed beforecheck. Afterfirstpreflight failure/renderattempt stop and record. Noautomaticsecondsource/repair. Alltools sequential; reject batchparalleltools/profile violations.
+
+## Transport and cost admission
+
+Eachcase max5totalproviderHTTPrequests including the final response that generates render, not5+1,8toolcalls,3072outputtokens/request,45srequest,90scase,10scleanup;12cases serial/max20minbatch (at most60HTTPattempts/184320outputtoken option cap; not billing guarantee). These are maximum attempts/options, not currency/invoice or guaranteedbillabletoken bounds. Realfetch wrapper checks exactmodeltuple/URL `.../chat/completions`, force redirects:error,maxRetries0,thinkingoff; block allothernetwork except ownedloopbackbrowser. Runtimecatalognetworkoff via PI_OFFLINE1 + ModelRuntime allowModelNetworkfalse/refreshfalse; no fallback. Auth readonly resolution in memory, no copies/keys/headers serialized. Before any SDK config resolver, a benchmark-owned narrow JSON adapter scans selected provider/model/auth strings and rejects command values (trim-start !), non-api_key credentials and invalid header types/CRLF. Only literal or $VAR/${VAR} resolution in memory; no shell. Do not pass real models/auth paths or untrusted config to ModelRuntime. Create owned minimal model identity without keys, use a narrow literal-return CredentialStore adapter for the in-memory selected resolved key (not AuthStorage, whose read can interpolate again); do not persist real keys/headers. Override allowed resolved headers only in guarded fetch (SDK config contains no realheaders). If actual config requires commands, fail admission without invoking them or changing user settings. Add synthetic !command sentinel proof of0childspawn/0fetch/0writes and resolvedkey/header containing $/! byte-preservation regressions through actualSDK fetch. Settingsretry/compaction/cachewarmingoff. Count request before dispatch; enforce caps before every providerrequest. Transport401/403/429 or unknown endpoint/model/auth mismatch stops batch with remainingnotrun; network/timeout marks scenariofailure and no retry. No new paidmodel/continuation after first render. Report planned/started/providerattempts/usage-known-vsunknown separately; missingusage never treatedzero. Requestoptions bounds notbillingclaim.
+
+## Actual UI/Pi queue mechanics
+
+Actualextension creates realUiSession/server. Replace only its hostdesktop `pi.exec(open|xdg-open|rundll32)` opener with an ownedheadlessPlaywrightconnect using private bootstrap URL in memory; observe realserverboundloopback, browserconnect then plainorigin page. No URL/token serialized. No fakeHTTP/dispatch.
+
+Real async tool_result hook holds firstsuccessfulrender while agentbusy. Inspect actualreturned a2uiSnapshot with existingcompiler contracts and independentintent, then nativebrowserinteraction. Capture actualPOST/response202 and actualsession.getFollowUpMessages exacttyped JSON+acceptedepoch/revision/source/event; no model processes thisqueue inbaseline. Request session.abort() synchronously insidehook, await outsidehook toavoiddeadlock, prevent finalmodelcontinuation via fetchguard. Static/local cases prove0POST and0queue. Offline actualSDK mechanics probe alreadyproves hold→realqueue→abort without continuation, but is not modelquality evidence. Explicitsession_shutdown closesactualserver; dispose alone insufficient.
+
+Everycase ends ownedbrowser/context/page/server via extension shutdown/sessionabort/dispose and ownedworkspace cleanup; preserve source/transcript/receipts sanitized under owned .local output. Cleanup failure keeps original error, rejects harness acceptance and stopsbatch. Parent subprocess harddeadline/TERM→2sKILL fallback; no claim async timers preempt synchronouscode. Currentinferencecostcaps cannot control alreadyissuedproviderbilling.
+
+## Reports, gates and AC mapping
+
+Report outcome categories: setup/toolpolicy/provider/no-render/preflight/compile/intent/browser/action-queue/cleanup; none conflated. Denominators planned12,started,providercompleted,candidateschecked,compilesuccess,rendersuccess,intentpass,interactionapplicable/queuepass,staticN/A. Failures are valid measurements; harness accepted means provenance/bounds/allstartedcaseaccounting, not12successfulUI. Endearlynotrun counts explicit, no reruns. Sanitized modeltext/toolargs/results retained synthetic taskdataonly, noheaders/bootstrapURLs/credentialcontent; reportredaction canaries for key/Authorization/tokenURL. Before/after realsettings/auth/models/modelsstore SHA checks only, no copies/prints. Realkeys resolved onlyinmemory onexecute. No globalwrites.
+
+|AC|Required tests before live|
+|---|---|
+|001 zero-cost default|spawnactualentry dryrun with trapfetch/auth-canary; invalidargsfailclosed,12fixeduniqueIDs/dataset/profilehash,0network/configread|
+|002 actual tool/skill flow|offline syntheticSSE through actualSDK/extension/helper/browser, actualskillloaded, exacttools, check unchangedrender and realqueue; syntheticmarked separately|
+|003 first-attempt/cost/model guard|RED unboundedsecondrequestaccepted thenfixedreject; tests endpoint/model/redirect/providerretry/case/tool/output/postrender limits,firstfailedcheckstops,duplicatecheck/renderreject,401/429batchstop|
+|004 semantic/browser oracle|12positiveindependentfixtures +wrongfieldtype/context/data/numericorder/slot/artifact controls;actualcompilersolelegality;actualnativeflow202+Pi queue andlocal0POST|
+|005 isolation/cleanup/secrecy|pathescape/symlink/unsafecommand/repooracle/directauthreadreject;actualchildhanghardstop;primary+cleanuppreserved;confighashunchanged;redactionnegativecanaries|
+|006 source-bound real baseline|independentdesign/costGO→TDDRED/GREEN→independentcodeGO/offlinechecks→one12scenario GLM run withoutretries;reportsource/request/skill/oracle/modelidentities;noCIinference|
+
+Threewalkthroughs+Plan018 required. Design/TDD independentGO before implementation. Then independent code/cost/pathguard review and offline fullpipeline before the user-authorized single12case run. Final report may reveal product/model failures; do not fixandrerun bydefault. No merge/release/issue43closure. Rollback test/script/docs only; preserve rawfailedreceipts/userstate. Drift must be recorded before realcalls.
