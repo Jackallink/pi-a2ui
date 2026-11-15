@@ -249,7 +249,7 @@
           "values": {
             "src": "/api/artifacts/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
             "kind": "image",
-            "label": "Preview"
+            "label": "Illustrative"
           }
         }
       }
@@ -282,7 +282,8 @@
           "id": "root",
           "component": "AudioPlayer",
           "values": {
-            "url": "/api/artifacts/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            "url": "/api/artifacts/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "description": "Audio"
           }
         }
       }
@@ -324,7 +325,10 @@
               }
             }
           }
-        }
+        },
+        "texts": [
+          "Go"
+        ]
       }
     },
     {
@@ -435,7 +439,8 @@
           "values": {
             "value": {
               "@path": "/v"
-            }
+            },
+            "label": "Accept"
           }
         },
         "dataModel": {
@@ -474,7 +479,18 @@
             "variant": "multipleSelection",
             "value": {
               "@path": "/v"
-            }
+            },
+            "label": "Pick",
+            "options": [
+              {
+                "label": "A",
+                "value": "a"
+              },
+              {
+                "label": "B",
+                "value": "b"
+              }
+            ]
           }
         },
         "dataModel": {
@@ -584,7 +600,72 @@
           "component": "Column",
           "values": {}
         },
-        "componentCount": 64
+        "componentCount": 64,
+        "texts": [
+          "0",
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9",
+          "10",
+          "11",
+          "12",
+          "13",
+          "14",
+          "15",
+          "16",
+          "17",
+          "18",
+          "19",
+          "20",
+          "21",
+          "22",
+          "23",
+          "24",
+          "25",
+          "26",
+          "27",
+          "28",
+          "29",
+          "30",
+          "31",
+          "32",
+          "33",
+          "34",
+          "35",
+          "36",
+          "37",
+          "38",
+          "39",
+          "40",
+          "41",
+          "42",
+          "43",
+          "44",
+          "45",
+          "46",
+          "47",
+          "48",
+          "49",
+          "50",
+          "51",
+          "52",
+          "53",
+          "54",
+          "55",
+          "56",
+          "57",
+          "58",
+          "59",
+          "60",
+          "61",
+          "62"
+        ]
       }
     },
     {
@@ -627,6 +708,13 @@
                 "cells": [
                   1
                 ]
+              }
+            ],
+            "caption": "Scores",
+            "columns": [
+              {
+                "id": "score",
+                "label": "Score"
               }
             ]
           }
@@ -841,7 +929,8 @@
           "id": "root",
           "component": "Image",
           "values": {
-            "url": "/api/artifacts/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            "url": "/api/artifacts/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "description": "Image"
           }
         }
       }
@@ -944,7 +1033,7 @@
           "id": "root",
           "component": "MarkdownView",
           "values": {
-            "text": "# Heading\n\n**Bold**"
+            "text": "**ok**"
           }
         }
       }
@@ -1049,7 +1138,18 @@
           "values": {
             "value": {
               "@path": "/v"
-            }
+            },
+            "label": "Branch",
+            "options": [
+              {
+                "label": "A",
+                "value": "a"
+              },
+              {
+                "label": "B",
+                "value": "b"
+              }
+            ]
           }
         },
         "dataModel": {
@@ -1090,7 +1190,8 @@
             "min": 0,
             "max": 10,
             "steps": 10,
-            "value": 4
+            "value": 4,
+            "label": "Range"
           }
         }
       }
@@ -1315,7 +1416,8 @@
           "values": {
             "value": {
               "@path": "/v"
-            }
+            },
+            "label": "Name"
           }
         },
         "dataModel": {

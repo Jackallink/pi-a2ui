@@ -11,8 +11,8 @@
     "tests/golden/fixtures/B06.json": "8e15707ca30c19720a246452274f0efaf556058596f781c20e7ff0e0d76e3b52",
     "tests/golden/fixtures/B07.json": "a0d066af9564bdeae871daec35f326e9bfe49628efa229c6d83d2919d7c74f3d",
     "tests/golden/fixtures/C01.express": "5be2b6326489948de762e56bc0fad0ca0d39e4c5c85db7f5d8a72407811ced8a",
-    "tests/golden/fixtures/C02.express": "5a236b88f68a04198d71b6d763a3b00ecc51af60800830fd4b508df4687cc085",
-    "tests/golden/fixtures/C03.express": "06f82c6643f423e567517e49d98a8a68cee56b6f09ebdaf7ee4d86b83cb52f7c",
+    "tests/golden/fixtures/C02.express": "6ccdb494efcc422b32c56f49f42d155da9a4d06718c1864f4d3c0a0cf45824c3",
+    "tests/golden/fixtures/C03.express": "03ef4e6d587fbde388932ff14d9c8eb1a1917688e2bb0b9122c1094f0d2f8458",
     "tests/golden/fixtures/C04.express": "7184e4ba3093ea2c837e585127a789f18e2f27d9649df85f4d97336fc3f84499",
     "tests/golden/fixtures/C05.express": "9a853da00950d93a65002164c8801b207135093d2116d0cd559b2ad6cd7b092f",
     "tests/golden/fixtures/C06.express": "88868f9edbda949f478c4b1f4b46fddf0850203587f9700d683fbb8fe8d46abf",
@@ -27,10 +27,10 @@
     "tests/golden/fixtures/C15.express": "0b0a37fc515d925fa234314adc7ee1fd9fc191086107de49c13ad2ae01041997",
     "tests/golden/fixtures/C16.express": "1ad7647145f02d679c1413f36cd413bfed50645850bf73424b4d69239f58a2ac",
     "tests/golden/fixtures/C17.express": "96169d1dbc2fbcd076d3ee63b07e6b8b7ebfd2c83c6f9df2184ffccc27e3a787",
-    "tests/golden/fixtures/C18.express": "54b3f6fa557d7033081678384642003e5733834e83909d465a7bcbf83b44b4bd",
+    "tests/golden/fixtures/C18.express": "7f9b44e2c12cc931fead541156f889232e0095298ea39b35da6e269ccb9c105e",
     "tests/golden/fixtures/C19.express": "b9f17db2f70446a26ec21f13c74a715545dc4fb910bef134e47ce12d828fc93c",
     "tests/golden/fixtures/C20.express": "01258d3a70c9f7c685a91db2b274910cd70116dedc901fc5f2f0421d7fca2e3b",
-    "tests/golden/fixtures/C21.express": "b664e524b2606cbdc11247bad0ca97d319113d08d6344eaf464298f0ade23b01",
+    "tests/golden/fixtures/C21.express": "cb0ebfba03146570b29f3faa22f76f7dc135ee97193d93b8d1a9666433da2df3",
     "tests/golden/fixtures/C22.express": "36073886db12e1bddd627461c8baeb7b19fac5fcd7c50035790c37fef4d58627",
     "tests/golden/fixtures/C23.express": "71d6d63037abc267a835fe67c0042e140a6a42ed0b2161cf808b8a9bf91c839f",
     "tests/golden/fixtures/C24.express": "d1b96535b64501e33a891ed40ef6bdb723f56cb1ab5392f0bd0b0e283fa04e2b",
@@ -86,5 +86,6 @@
     "tests/golden/fixtures/S14.json": "8297d2ba2978b1e4bc6c9f0276dcd7e5bd6973c75dbbfdc51bf3dc625e4bb55b",
     "tests/golden/fixtures/S15.json": "3aaa87105a7ddb67a74f00f9f8e23f2e0f30784066de6686026f1768dedaf7e8",
     "tests/golden/fixtures/pixel.png": "15dc8a5334710403842e8d1074dfe2d74d56cb8c03d30f5e239fac9413d1f92c"
-  }
+  },
+  "registryHash": "56de3a679117519d62cd6c37367f872149643241a7d7b82e6afaaefd15b9bbec"
 }

@@ -51,7 +51,7 @@ Compiler positives C01–C32 cover the **actual** catalog, no invented TreeView/
 |C13|compiler/DateTimeInput/leap-day|DateTimeInput|2024-02-29,date enabled/time disabled; valid leap-day string|
 |C14|compiler/Details/static-closed|Details|title More,Text Body child,explicitopen=false|
 |C15|compiler/Divider/static|Divider|static horizontal divider; no event/data binding|
-|C16|compiler/FormValidation/valid-definition|FormValidation|named field/name binding,submit Button; required,minLength2,maxLength5; empty initial string is legal before submission|
+|C16|compiler/FormValidation/valid-definition|FormValidation|named field binding/v,submit Button; required,minLength2,maxLength5; empty initial string is legal before submission|
 |C17|compiler/Icon/finite-name|Icon|settings from current finite local vocabulary|
 |C18|compiler/Image/local-shape|Image|syntactic local media URL,description Image, no fetch claim|
 |C19|compiler/List/static-order|List|static Text A/B children in order, no dynamic template|

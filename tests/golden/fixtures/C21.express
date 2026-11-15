@@ -1,1 +1,1 @@
-root = MarkdownView(text="# Heading\n\n**Bold**")
+root = MarkdownView(text="**ok**")
