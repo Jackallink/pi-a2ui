@@ -1,0 +1,13 @@
+{
+  "version-red.log": "5ebdfbbd0dfe06a699e64d18cce4c74185227f95b52d88f893dc80b64840cc07",
+  "targeted-green.log": "0a294c936828fde637698a938e433cdfe99f4dcb43f6f87c180c07c76e3699cf",
+  "full-node.log": "414af22b74591dca778a0e19ccf1c6acbd151a34e02887a586e5426af5b6149f",
+  "tsc.log": "d9d22fa45a2931fead1e02c1c13b1a8c11ad43ab1100baea0ec27ce343afd6fb",
+  "build.log": "a49f5d6596bea22d691b994321113eeaf4aab26f0b124bd5a060b885483c81c2",
+  "browser.log": "92f78f6a418d189c49c00a422389eaa116f26fed30f249e9346d8b12cf35cd1d",
+  "pack.json": "67b15959bc7c11f5ab5f20270cde50fa11ab460a50e6bc6b590b3bb9ba4ea761",
+  "package-receipt.json": "0ecc6372aa6104632a1b113dad46dc993d51f01040f6580446662cb8ce0c032c",
+  "startup.log": "f30ce2c96941da956f75d0b2730e6538fed298d9007ae03f2145feb6072898ff",
+  "verify-package.mjs": "26232ac3262974c7347849718a5bccbcf2aedfcc1248416d0a9d79ae3d0f5d3d",
+  "verify-accepted-tuple.mjs": "e0b3d5f6bf85937001ca4f84cdfff41c64c8006fb36f85e32385b856e6d9ebf9"
+}

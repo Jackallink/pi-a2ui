@@ -1,0 +1,13 @@
+# Check063 — DX34 diagnostics candidate
+
+2026-11-14. Spec013, base570b67a (PR44 unchanged), branch codex/dx-34-35-38. Native isolated worktree; primary uncommitted benchmark design retained. Fresh Node24.18.1 npmci/baseline199/199. Independent design/TDD intent GO at e43da13,0Major/2P2; explicit a2uiUsage shape and error merge/cause/idempotence/identity test intent added to spec. [Design review](dx-usability-evidence/design-review-r1.md).
+
+D1 actual existing compiler/helper/API RED12/12: missing actual forbidden key/location/validator owner/workspace root, wrong reserved-path guidance, missing diagnostic metadata. Original d1-red-all.log is not a missing-module/fixture failure; the new helper function is only reached after a constructor metadata assertion that fails first against old code. Corrected implementation focused12/12.
+
+Typed diagnostics preserve status/unformatted reason/cause and add actual known location once. All original forbidden key predicates/valid bindings, coding literal IDs, validation order, artifact rejection/IO/permission/capacity remain; errors use owner boundaries instead of guessing component IDs. Property-pointer strings are constructed only on failure to avoid amplification on otherwise valid large keys. Helpers retain exact successful {surfaceId,source}/source bytes/exits and use typed forbiddenKey for advice.
+
+Full first run209/211: two old preflight-resource tests required exact message equality; new surface suffix intentionally changed presentation. They now assert the unchanged unformatted reason plus status, while new tests assert location. Source nesting/unmatched-delimiter denial is preserved. Initial tsc found a nested-function unknown surfaceId narrowing error; corrected to the captured validated optional string. These are preserved compatibility/type corrections, not additional feature RED.
+
+Corrected full211/211, tsc/build pass. Raw private d1-red-all.log, d1-green.log, d1-full.log (2 wording failures), d1-full-final.log, d1-tsc-final.log, d1-build-corrected.log. No browser/full production or real model claim at this slice; final relevant gates follow D2/D3. D2 budget and D3 documentation not implemented in D1. No user/global install, PR44, tag/release or issue closure.
+
+Independent fixed6355ffa D1 code review: GO,0P0/P1/P2. Reviewer independently passed115 related tests,7 additional probes,tsc and byte-exact in-memory bundle rebuild; did not rerun full211/browser/package. [Report](dx-usability-evidence/d1-code-review-r1.md). D2 admitted under the existing user authorization, with its own behavioral RED/check/review.

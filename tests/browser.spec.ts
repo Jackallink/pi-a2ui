@@ -59,10 +59,12 @@ test("official form submits draft context and literal text remains escaped", asy
   await expect(page.getByText(literal, { exact: true })).toBeVisible();
   await expect(page.locator("img")).toHaveCount(0);
   await page.getByRole("textbox").fill("Ada from browser");
+  const acceptedSnapshot=canvas.session.snapshot();
   await page.getByRole("button", { name: "Submit" }).click();
   await expect(page.locator("#notice")).toHaveText("Sent to Pi");
   expect(canvas.sent).toHaveLength(1);
   expect(canvas.sent[0]).toContain('"name":"Ada from browser"');
+  expect(JSON.parse(canvas.sent[0].split('\n')[1])).toMatchObject({epoch:acceptedSnapshot.epoch,revision:acceptedSnapshot.surfaces[0].revision,surfaceId:'form',event:'submit',context:{name:'Ada from browser',kind:'plan'}});
   expect(external).toEqual([]); expect(errors).toEqual([]);
 });
 

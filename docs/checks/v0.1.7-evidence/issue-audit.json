@@ -1,0 +1,95 @@
+{
+  "date": "2026-11-15",
+  "baseline": "67bcb7db5b2d202defb3a3ad52a677c18a23e03b",
+  "initialTotalIssues": 32,
+  "initialOpenIssues": [
+    43,
+    38,
+    37,
+    36,
+    35,
+    34
+  ],
+  "initialClosedIssues": [
+    42,
+    41,
+    40,
+    39,
+    32,
+    29,
+    26,
+    25,
+    24,
+    23,
+    22,
+    21,
+    20,
+    19,
+    17,
+    16,
+    15,
+    14,
+    13,
+    12,
+    11,
+    10,
+    9,
+    3,
+    2,
+    1
+  ],
+  "additionalImmediateClosures": [],
+  "v017Scope": [
+    34,
+    35,
+    36,
+    37,
+    38
+  ],
+  "v017Parent": 47,
+  "v017Milestone": 7,
+  "unimplementedBenchmarkParent": 43,
+  "historicalCounterDrift": {
+    "milestone4": {
+      "number": 4,
+      "open_issues": 8,
+      "closed_issues": 0,
+      "state": "closed"
+    },
+    "actualMilestone4Issues": [
+      {
+        "number": 16,
+        "state": "closed"
+      },
+      {
+        "number": 15,
+        "state": "closed"
+      },
+      {
+        "number": 14,
+        "state": "closed"
+      },
+      {
+        "number": 13,
+        "state": "closed"
+      },
+      {
+        "number": 12,
+        "state": "closed"
+      },
+      {
+        "number": 11,
+        "state": "closed"
+      },
+      {
+        "number": 10,
+        "state": "closed"
+      },
+      {
+        "number": 9,
+        "state": "closed"
+      }
+    ],
+    "action": "Record disagreement only; do not reopen/reclose existing closed issues or fabricate backlog"
+  }
+}

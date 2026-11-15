@@ -23,7 +23,7 @@ export class ArtifactStore{
  private alive(pending:Pending,signal?:AbortSignal){if(this.stopped||pending.generation!==this.generation||signal?.aborted)throw new UiError(409,'Artifact registration cancelled');}
  async register(path:string,kind:ArtifactKind,signal?:AbortSignal,root=this.root):Promise<ArtifactMeta>{
   if(this.stopped)throw new UiError(503,'Artifact store closed');
-  if(!Object.hasOwn(caps,kind)||typeof path!=='string'||path.length>4096||isAbsolute(path)||/[\\\x00-\x1f\x7f:]/.test(path)||path.split('/').some(part=>!part||part==='.'||part==='..'))throw new UiError(400,'Expected a relative workspace artifact path');
+  if(!Object.hasOwn(caps,kind)||typeof path!=='string'||path.length>4096||isAbsolute(path)||/[\\\x00-\x1f\x7f:]/.test(path)||path.split('/').some(part=>!part||part==='.'||part==='..'))throw new UiError(400,'Expected a relative workspace artifact path',{diagnostic:{workspaceRoot:resolve(root)}});
   if(this.entries.size+this.pending.size>=16)throw new UiError(413,'Artifact count capacity reached');
   const reservation:Pending={bytes:0,generation:this.generation};this.pending.add(reservation);let handle:FileHandle|undefined;
   try{

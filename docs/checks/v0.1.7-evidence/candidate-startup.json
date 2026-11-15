@@ -1,0 +1,18 @@
+{
+  "passed": true,
+  "node": "v24.18.1",
+  "packageVersion": "0.1.7",
+  "normalRegistration": true,
+  "agentRuns": 0,
+  "modelRequests": 0,
+  "uniqueSkill": true,
+  "uniqueA2uiCommands": 3,
+  "privateRegistrationRemoved": true,
+  "processExited": true,
+  "observedNodeProcesses": 5,
+  "allNode24": true,
+  "allCwdWithinOwnedRun": true,
+  "packagePayloadUnchanged": true,
+  "operatorFilesUnchanged": true,
+  "resultSHA256": "1cb7234d01bc3905321349249a28a2d0f318229352d22566b20d61317faf2148"
+}
