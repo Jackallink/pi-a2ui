@@ -1,6 +1,6 @@
 # BM4 — first-attempt GLM authoring baseline
 
-Lifecycle: in-progress. Strict. Canonical Spec018, parent43. Predecessors BM2 PR53 / BM3 PR54 remain unmerged. Manual measurement, never a CI/release gate. Only user-approved model `volcengine-ark/glm-5.3-flash` on exact `https://ark.cn-beijing.volces.com/api/plan/v3`; user budget12distinct scenarios, one attempt each, no automatic retry. No new publication/global package/config change.
+Lifecycle: review-ready. Strict. Canonical Spec018, parent43. Predecessors BM2 PR53 / BM3 PR54 remain unmerged. Manual measurement, never a CI/release gate. Only user-approved model `volcengine-ark/glm-5.3-flash` on exact `https://ark.cn-beijing.volces.com/api/plan/v3`; user budget12distinct scenarios, one attempt each, no automatic retry. No new publication/global package/config change.
 
 ## Goal and scope
 
