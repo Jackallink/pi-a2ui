@@ -1,0 +1,17 @@
+# v0.1.8 independent postpublication review
+
+**发布验证 GO；P0=0、P1=0、P2=0。** 可执行已授权owned Git cleanup，成功并保留preservation回执后关闭49/readback；43保持OPEN。BM2仅在018闭环后进入另行design/review，不属本评审。记录source固定 **c6866ddf60da7d116e5bb655d6a023b431f94467**，仅包外发布证据；未运行新模型/安装/cleanup/CI/完整测试或读auth正文，未改source/index/发布物，仅写报告。
+
+**真实CI/发布身份。** Live PR50已MERGED：head18f9c457060284ae53b0e3bbde3891fcbe09df09与merge **24b8288ec6f717836f94743720238c82cb0a56c9** tree相同。独立live run43687873449/job132732057969为success，head准确18f；直接下载job日志，实际guarded Node **24.22.2**、265tests/265pass/0fail、typecheck成功。实际checkout/event SHA **3846e6227ee6ad1bcc7b86157cefa5947c9a966f**是tree等于head的synthetic merge，不冒称main merge。Annotated tag **3a8311af1178681d9669f4ddba140a5d30648004** peels24b；Latest stable release **445872228/v0.1.8**仅tgz+SUMS。
+
+独立从GitHub重新下载两资产至内存：TAR SHA **29df29e48ac69cfe22b6b2f2b2491d92dea5b74a3338a4e9f89c294c62f3a0d6**，SUMS自身 **d0637294f4a5cce74198d3b68bb06ee69774437fc99e4889c798380bbfec3244**，内容正确。75files逐个与publishedmerge/source、freshGit clone、downloaded production prefix、premergeconsumer一致；cloneHEAD=24b，两新prefix无dev/host copies。c686相对publishedmerge无75payload变化。Live7旧tag objects及7旧release资产集合对照before snapshot不变。新018metadata未重标旧017/BM1候选工件。
+
+**消费者/actual GLM。** NormalGit原始RPC/receipt核实one package/project skill、commands/status0agent/0model、3actualNode24.18.1/ownedcwd、0700run/PiClosed；clone留待审后清理。两prefix helper018/32queries/19templates/8routes/3doc/error/bytes的producer收据已读，不冒称另跑全部。本地265/tsc/build、35BM1和9synthetic canaries保持各自来源，不能替代下面actual model层。
+
+独立重算/重parse新result SHA **14bb4fda589316366fc7ae451adc43291f53a0e3e1a2e9effb152e8d9379a3bc**、RPC **d6aef1c0d1ef0db43419c2f2ca27d678630f8c7bc680f7f13f70807aca8932c9**：成功get_state的exact volcengine-ark/glm-5.3-flash/https://ark.cn-beijing.volces.com/api/plan/v3在首agent之前，实际assistant也仅该provider/model。一次new natural story/no suppliedDSL、explicit isolated profile，非normal registration。2successful installed-helper bash在唯一successful render前，0read/0renderfail；checked/rendered参数EXACT相同，双UTF8 SHA均 **18bdecbdda63b29f3a1c2f378dcec6e141cc7dc13ad5d3300de9a5bb40c27575**，exact flag=true，无归一化/重用旧LF故事。
+
+实际guarded snapshot、唯一forwarded user和final assistant JSON独立核为精确typed{name:'Ada',accept:true}、2agentRuns。Invalid0POST/0newagent、valid1POST/202及action identity来自受审live callback断言和verified flags；不存在单独rawHTTP capture，本报告不冒称读取。原始RPC/ACK已直接核严格string/boolean类型。额外observer **e0b3d5f6bf85937001ca4f84cdfff41c64c8006fb36f85e32385b856e6d9ebf9**及同run accepted-tuple已核hash；另从actualsnapshot直接对照action top-level tuple，epochSHA **61c59d089ba5101a029d41f14ef0d7eab5c345592ca12b6b91431e8240571052**、skill-acceptance/revision1正确。独立snapshot计数与tool.details/model-visible text均6/64、1/4、this6；不是离线global猜测或delivery-currentness证明。
+
+page-errors原始[]；5actualNode24.18.1/ownedcwd，所有browser/Pi/显式TCP listener cleanup、package/operator preservation stage通过。用户4config/global017clean/primary8drafts不变引用独立producer preservation记录，不重读auth正文；本轮既有global017并非root升级。旧失败仍为原历史失败，BM1仅两族，单故事不是BM4/通用质量成本或部署证明；已知依赖风险保留未waive。
+
+**剩余收尾。** Git cleanup源码SHA **70c9179a55dda621ffbf57287607471499bac51c16f0f7bd696e63e561ec2567**与premerge所审相同，只可在passed normal receipt/PiClosed/owned realpath/marker/privatefixture guards后actualPi remove-l本018注册、复核marker/settings；缓存不强删，用户global017/旧tag/assets/primarydrafts不动。此操作及49closure尚未执行，不能提前称完成。取得成功cleanup/preservation后关49读回、43OPEN，再进入已授权BM2设计/独立评审；不含实施/新模型/CI扩张。后续Check/spec/guide证据更新限包外，不移动tag或改变75payload。
