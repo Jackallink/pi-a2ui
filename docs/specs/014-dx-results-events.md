@@ -1,6 +1,6 @@
 # Remaining DX — bounded result reports and event provenance
 
-Lifecycle: draft. Strict. 2026-11-15. Continues user-authorized issue workflow; branch codex/dx-36-37 starts at61640a2 (PR45), with PR44/45 and globalv0.1.5 unchanged. This is post016 source work, no release/version/installation authorization. Node24 only; no model evaluation.
+Lifecycle: review-ready. Strict. 2026-11-15. Independent design/TDD-intent GO at7715f2c,0P0/P1/P2; Check066 carries execution evidence. Continues user-authorized issue workflow; branch codex/dx-36-37 starts at61640a2 (PR45), with PR44/45 and globalv0.1.5 unchanged. This is post016 source work, no release/version/installation authorization. Node24 only; no model evaluation.
 
 ## Goal, scope and choice
 
