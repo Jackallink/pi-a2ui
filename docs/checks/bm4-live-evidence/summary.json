@@ -1,0 +1,1081 @@
+{
+  "mode": "live-first-attempt",
+  "planned": 12,
+  "attemptedEpisodes": 12,
+  "started": 12,
+  "startedUnknown": 0,
+  "notRun": 0,
+  "providerRequests": 43,
+  "knownAdmittedRequests": 43,
+  "actualModelRequests": 43,
+  "requestAccounting": "known",
+  "providerCompleted": 41,
+  "knownProviderCompleted": 41,
+  "candidatesChecked": 10,
+  "compileValid": 10,
+  "rendered": 7,
+  "intentPass": 7,
+  "interactionApplicable": 6,
+  "interactionPass": 1,
+  "staticApplicable": 6,
+  "staticPass": 6,
+  "firstPassSuccess": 7,
+  "harnessAccepted": true,
+  "stopped": null,
+  "identity": {
+    "source": "365b783214a961b900e7fc3afc38296f318d3cf3",
+    "dirty": false,
+    "node": "v24.18.1",
+    "pi": "1.5.0",
+    "files": {
+      "dist/assistant-cli.mjs": "e89e6603600fa78d65796e50fdf1398ae2a1a9f0a113fda7c6c8c31aebce0533",
+      "dist/client.css": "eb647f62a9394dc836512bbbdd06d03813e8dfa70b758ceb1ec3566d6f51e96e",
+      "dist/client.js": "78922a871bf029c0c69362243596784149a04aa9888648f930a36197895de1c2",
+      "dist/index.html": "5f221a3dff76a7ebde3a90738eacc4d0837d1cae42d66ad906ba37d680a51a28",
+      "extension.ts": "32e56d019f8fbe0abd60f062ba1930aaa0c2b029d0ec20f0ef9e00dbe4a042f4",
+      "package-lock.json": "049f61fa6659ee16d25686309a14b8de5dabec5acfa57304142b1211411f9e2c",
+      "package.json": "77ece0a6789683949c959ffa89412ebc5f54f7ac1235fe4e2df9f3d49c9c0721",
+      "scripts/benchmark-model.mjs": "165037ba777055770f2e4b43217734fc462f0725ecf8c2f4d13d08222361b686",
+      "skills/pi-a2ui/SKILL.md": "b611a96a8ebd74f19d5b85fec72e5a5c53fc32bc8282e92a0186ab0bd5616800",
+      "skills/pi-a2ui/examples/activity-timeline.express": "f1355efc71e12329d4161548554ca4ca780e6046ec281798e50f74ed49a5ac2e",
+      "skills/pi-a2ui/examples/artifacts.express": "ef77e8527844d75ebef86c6018596be71be9beb70e7d5b8365ba97d2ae3eec3a",
+      "skills/pi-a2ui/examples/command-actions.express": "35ce35c279be320398d228e417323caff2242b263861ca23be68805f5a09213e",
+      "skills/pi-a2ui/examples/details.express": "37a89cbad308a330e544ba005b9795c5f5ff38fc3164c6deadede657a52f0b80",
+      "skills/pi-a2ui/examples/evidence-location.express": "2a88eedcce7c73bfb343fdbf14aeaaf7dc1efaf45ded7d604ea2e81f4dfbce88",
+      "skills/pi-a2ui/examples/feedback-states.express": "fed6e9bcf1764af65500a1b39fbc821110386dd3b3093cb76375f83352d62813",
+      "skills/pi-a2ui/examples/layout.express": "56f9075eba2bf45b30dd986c30e898d37954840b1580eba2fabc522b2f5ccaf6",
+      "skills/pi-a2ui/examples/list-table.express": "d91d89c936979604da0254f21f7e805f2a2674d69a1b6e21bafb899339562904",
+      "skills/pi-a2ui/examples/live.express": "31d02bc6862375c55a0e155c679b307f53fc2e6d1be58e92c340de274d2ae6e6",
+      "skills/pi-a2ui/examples/manifest.json": "01e11042217378f07fd4dc2dea903df9466dd2c8f37adebdb159af7bc872e251",
+      "skills/pi-a2ui/examples/modal.express": "88e127c514b3bd136d930424962593fb84f49568fa732527bd34c5f6b51ac60b",
+      "skills/pi-a2ui/examples/reading.express": "241f775d1f407fc8ca2b5e260f4bd01cd2ffe46a3815bd18b3b0233baa466133",
+      "skills/pi-a2ui/examples/review.express": "8d109685d55a46a6b64068d1c0d7a6caf1d7b1ef32448b2b4c2babd0c9efea13",
+      "skills/pi-a2ui/examples/searchable-picker.express": "e20a0b0fb77648cebeff3780c57774c48bd0aebf9b9bbc01c8faf4ab1d2fa62f",
+      "skills/pi-a2ui/examples/status.express": "aaf4c74b1cf32d0c8349c6b076b3521dd8aee8db7155dc85d5ef5723fea13f71",
+      "skills/pi-a2ui/examples/summary-metrics.express": "f4179613b8718f017851dabf32e601a3f38bc772b520b4bc89890ef3a5b556ea",
+      "skills/pi-a2ui/examples/tree-navigation.express": "f2cae36388d51fb2b640eb9b70191ed83a12f4be29af34ad1fac2d2d56eca280",
+      "skills/pi-a2ui/examples/typed-form.express": "89db086adf21dfb9c89e87bdcb93f4cde7dd59eec402a3289e59dfb0d513de8c",
+      "skills/pi-a2ui/examples/user-form.express": "ca9cc31b09f9848a5156727651ebcddef371669c0a00ab27335246946934ddb0",
+      "skills/pi-a2ui/examples/validated-form.express": "c2ee3fc58ef9b5a720d82787c6d167ab917bb2bd78ba7b2c728952ec238ae4ed",
+      "skills/pi-a2ui/references/adapting-templates.md": "9a2a3e16d636d3e7a60430daf250577f6f185ecba6ea4b44203e29066cbc644b",
+      "skills/pi-a2ui/references/artifacts.md": "13603e34b6a506f1b6c616d790e7d9b549259c7497ee7567bf0ac324928f3f62",
+      "skills/pi-a2ui/references/coding-and-live.md": "719f5f0bc0b21a35ebff348a47855660674cc0c0330d5477a6300fad598de360",
+      "skills/pi-a2ui/references/core-components.md": "8eb8be34c4c5a9b035d2ba388bfd67ef12865bd46bffad98752cdc55a48c3b9c",
+      "skills/pi-a2ui/references/event-provenance.md": "e2ac883a9c5f1a4451f6bdbab1e2f79a010394e9c8a8a35f3d7e58c2aae7d55f",
+      "skills/pi-a2ui/references/helper.md": "3e8f95b01702a8896f06a414b48b4255cb23877779605f9956b8cca00338090f",
+      "skills/pi-a2ui/references/keyboard-actions.md": "033ab4a3942f2f2c3ded555c5443e8ccfdbba2dfd6d76c28ce3092f4a962ccb9",
+      "skills/pi-a2ui/references/navigation-and-selection.md": "4dcdd8102aaeb8ae976f9a2e4bd036b2ba27e019f3f9f822b60315f015594ef6",
+      "skills/pi-a2ui/references/summaries-and-feedback.md": "ec72b33adb720fc0ef09567172527948e4ebcbccb4a767805929923e75bb178b",
+      "skills/pi-a2ui/references/syntax-and-errors.md": "c8f522d888425369f0cce8c8d3baa8c7affbc6ccedff40f36a50b15032938b79",
+      "skills/pi-a2ui/references/timeline-and-evidence.md": "794d6f426e958181568aaf9cf4fba7b00e09ac030b07229613c407bbef405f0f",
+      "skills/pi-a2ui/references/workbench-components.md": "c05b8d51c27ca3d9dcd7495e796de34e23cd414e50e6c5840503d3918832f1ef",
+      "skills/pi-a2ui/scripts/a2ui.mjs": "4d0df7347b2dac45ff21709e2d0c19c076b337455a75fada0de2d0e0d6d4461d",
+      "src/artifact-elements.ts": "b5cf4e102c47f8511dbe773fa628017f04740e3353913c1726ea38e346c55736",
+      "src/artifact-store.ts": "b89b8f1e451b997d56b61ccd31294483edfc5d3c74e5efdda69763452f586306",
+      "src/assistant-cli.ts": "f18afd5314063f6af2cad2b679d54dd2edc454c5ec99c8cf1fa0d74eb54bd091",
+      "src/assistant-guidance.ts": "c85d75d9e6d5394cd5693ee254e772edc41ba0097791629634432b6120551f07",
+      "src/authoring-policy.ts": "21173872870e68d17824c8be88d2d20e370abef0f5429523b0d6812cd58822e1",
+      "src/browser-catalog.ts": "5a6747bceddd50430db955e88558b15306c5faf23424b8329d862b0c20acfe77",
+      "src/browser-interactions.ts": "f45063cb0c83e96c18c3b1c68c30298e20b1f070bf6f8ce806e5406c5c1b16cb",
+      "src/catalog.ts": "1d2a00569425f512de1f762be50797a4ace5eb47f26ae9a9f236dc62649562d8",
+      "src/client.css": "eb647f62a9394dc836512bbbdd06d03813e8dfa70b758ceb1ec3566d6f51e96e",
+      "src/client.ts": "231a90ab7cae2405144ba248278371fb2f2f6bebd8dc920edf2fe812a4198a97",
+      "src/coding-elements.ts": "7812909bfa896a8400984f4272517d8b8aabd25d224f77bc63dea29510b84b5c",
+      "src/coding.ts": "d1970d43d7ef42085aabda7f2c2e3b1c286aa324682a9ac12d475d1fd1179c2a",
+      "src/command-palette.ts": "bbc680963d46a56dd039247fcaea70c9e9cfd9b930f8c3949b6edcf79cbebee4",
+      "src/compiler.ts": "c6b6dd6c61443a09801599dd130e4fc813d0115ad7a57632c609a6f23efd1ec2",
+      "src/controller.ts": "cd96dcad9b37784947bb4ef8c97908a30f9e9c7a491f7c13988019326e3f68e8",
+      "src/detail-elements.ts": "0ec9596f3566c2a3e7423323a2e96d354ddd3bc0fe202e3f8c51af4de2a4818d",
+      "src/inputs.ts": "32c9565e4635eca1f5a52335c11ae7e47efa5a885871de6dfc513444ca28ac34",
+      "src/interactions.ts": "2221b36bcf6595d62b978353a47d86f1c2bc52b9ed4acfd5f59b98972ba50e7c",
+      "src/live-elements.ts": "423bdcfb14e5fcbe54a27a98adcb20d21e82748e0ce2fc5164ea8b0d646ab06e",
+      "src/live-tools.ts": "507682f50e9ff0eab8b9635db5c15580fa90d9d0ef346054a54aac8da4be8f8c",
+      "src/live.ts": "e5e559969b4646dc0dfa11557338e9e2b1539aa91bea69a9e9d254934c5cc744",
+      "src/protocol.ts": "3977b7acb21906822dcd797342db8e4a50b9a2009eb47ceb24d7d249276af957",
+      "src/selection-element.ts": "60e3f6df7124770aacb75478080c2acf59a660c3c1f0b7c0420ae15f8ec493d5",
+      "src/server.ts": "aaa381e959257a41e83f72e2a86ef4b424583603d3e745b1536087a5cf6d36c6",
+      "src/session.ts": "77a23aadc4c1b748641504e3257676636e426aa031ab726bfbace95f46fe79b0",
+      "src/status-elements.ts": "09c06683b94c8bc8e362c69d1c60a8cf7b3e33c615b1fb20b6d474537b1c6aaf",
+      "src/table-elements.ts": "5a00ed7e3e1111031ff8e6c66ecf7e58108fbaf0ff53a3783913f6cc9b0f9405",
+      "src/text-elements.ts": "8586bbb765ae6c82be85596ec8e5486d6686e9b67fef240fe12034f3fa10509f",
+      "src/timeline-element.ts": "c7d5c728b5aa001653f34c5681299c751227a1c974b284945561203d38f82712",
+      "src/validation-element.ts": "fc646dbcb2ad7a4dc3df0b37efce7e5407869952bd308556d1ae12f1eb97995a",
+      "src/workbench.ts": "23f16f945b86a1d2c47478dedfd54f825359a3f0f87760827aeca77e58bd7376",
+      "tests/benchmark-model/browser.spec.ts": "f8598416517a294e2f8cb9ce40c5f38202c7f774d9bdd03f4e3fe5c749778e85",
+      "tests/benchmark-model/fixtures.ts": "d8023102c76b5b59db7dee57dc134b8ebc9344a7b9a70569752be743208d6038",
+      "tests/benchmark-model/guards.ts": "ceeadfce4ec65456ffe4dead7d2c8b5c6a36648a7726bd5825fb1952ec2ba384",
+      "tests/benchmark-model/oracles.ts": "c78f431ff9fa592d5211c054764b8a4e91ab05d0e5c91ebd17c6acf85f571ab5",
+      "tests/benchmark-model/payload.json": "3472b776212b540ed505fb5198e22117c1d6a26a191fcb83eee0d77b6fc67635",
+      "tests/benchmark-model/profile.json": "dc177a215e129b2c00735b126aca2a78c1db321ceceb9cb863d4de3ad0836685",
+      "tests/benchmark-model/scenarios.json": "a721551aee6ae3b59606fdd148939ffc2b83e2c87f707deafdd1ecb6cf371e8b",
+      "tests/benchmark-model/worker.ts": "0108cb95328671feb773eb182cc38934280905aee34cc4d60c2df9632cc387e7"
+    }
+  },
+  "profile": {
+    "profile": "v0.1.8-glm-first-v1",
+    "model": {
+      "provider": "volcengine-ark",
+      "id": "glm-5.3-flash",
+      "baseUrl": "https://ark.cn-beijing.volces.com/api/plan/v3"
+    },
+    "caps": {
+      "requests": 5,
+      "tools": 8,
+      "maxTokens": 3072,
+      "requestMs": 45000,
+      "caseMs": 90000,
+      "cleanupMs": 10000,
+      "batchMs": 1200000
+    },
+    "archiveSHA256": "278d12ca380ea940959357b06e3d9db7cdca9740b0f30b96c6eedb238cdbf0d9",
+    "nodeMajor": 24,
+    "pi": "1.5.0",
+    "cases": 12,
+    "retry": false,
+    "ciInference": false
+  },
+  "rawReportSHA256": "cf44a0be28c51652086c4bef24b86fbb135ef971f42aabd31b350ae972ef098b",
+  "rawLogSHA256": "456837b903a1962b90187fbef1b19a7aa667d3dab0e0067f32e9d82b5022a4df",
+  "allUserConfigHashesUnchangedAcross12": true,
+  "billingCost": "unknown; SDK cost defaults are not invoices",
+  "cases": [
+    {
+      "id": "M01",
+      "stage": "success",
+      "started": true,
+      "requests": 3,
+      "actualModelRequests": 3,
+      "providerCompleted": 3,
+      "candidateChecked": true,
+      "compileValid": true,
+      "rendered": true,
+      "intentPass": true,
+      "interactionPass": true,
+      "staticPass": false,
+      "toolCount": 3,
+      "toolAttempts": 3,
+      "sourceSHA256": "6c41e21204fa66c07ebe7cabcaba5408464104facc78a701150a9861109bf5e0",
+      "payloadHash": "916279510bf6af336e37030e3c362a5c86f08864ddaf9bad6bc1917a2fb5c2eb",
+      "usageKnown": true,
+      "knownAdmittedRequests": 3,
+      "requestAccounting": "known",
+      "serverClosed": true,
+      "browserProcessClosed": true,
+      "userConfigUnchanged": true,
+      "cleanupFailures": [],
+      "cancelledContinuationCalls": 1,
+      "caseReceiptSHA256": "126ce5c90eaa6470c487876f196a467225e56108e2485e243fa99f3193b4ca8d",
+      "journalSHA256": "7ce69f95b98158ac3e0caab4c0f8c3415af3abdf3fbfa5eec086e8d1cf1bc341",
+      "providerUsage": [
+        {
+          "prompt_tokens": 9589,
+          "completion_tokens": 1436,
+          "total_tokens": 11025
+        },
+        {
+          "prompt_tokens": 11087,
+          "completion_tokens": 137,
+          "total_tokens": 11224
+        },
+        {
+          "prompt_tokens": 11296,
+          "completion_tokens": 69,
+          "total_tokens": 11365
+        }
+      ],
+      "requestOptions": [
+        {
+          "model": "glm-5.3-flash",
+          "maxTokens": 3072,
+          "maxRetries": 0,
+          "timeoutMs": 45000,
+          "redirect": "error"
+        },
+        {
+          "model": "glm-5.3-flash",
+          "maxTokens": 3072,
+          "maxRetries": 0,
+          "timeoutMs": 45000,
+          "redirect": "error"
+        },
+        {
+          "model": "glm-5.3-flash",
+          "maxTokens": 3072,
+          "maxRetries": 0,
+          "timeoutMs": 45000,
+          "redirect": "error"
+        }
+      ],
+      "statuses": [
+        202
+      ],
+      "queue": {
+        "epoch": "e559fcb4-e10c-4aab-be22-299171396831",
+        "revision": 1,
+        "surfaceId": "bm4",
+        "event": "inspect",
+        "sourceComponentId": "root_child_children_1",
+        "context": {
+          "file": "src/app.ts",
+          "line": 42
+        }
+      }
+    },
+    {
+      "id": "M02",
+      "stage": "toolpolicy",
+      "started": true,
+      "requests": 4,
+      "actualModelRequests": 4,
+      "providerCompleted": 4,
+      "candidateChecked": true,
+      "compileValid": true,
+      "rendered": false,
+      "intentPass": false,
+      "interactionPass": false,
+      "staticPass": false,
+      "toolCount": 3,
+      "toolAttempts": 4,
+      "sourceSHA256": "be8eabcdb3355b0db288832865ccdaa765f18e0496dbb63b331b2f27e74ce792",
+      "payloadHash": "916279510bf6af336e37030e3c362a5c86f08864ddaf9bad6bc1917a2fb5c2eb",
+      "usageKnown": true,
+      "knownAdmittedRequests": 4,
+      "requestAccounting": "known",
+      "serverClosed": null,
+      "browserProcessClosed": null,
+      "userConfigUnchanged": true,
+      "cleanupFailures": [],
+      "cancelledContinuationCalls": 1,
+      "caseReceiptSHA256": "99ec32e8fa7644cbffaaf62ebd9fce9dcf05cbe8d0bacd242e159372a2fcd89b",
+      "journalSHA256": "60c6ccda1cf7ff8f1194a4f83c6040c9be9d73fd9d36bc466079bc0c80312530",
+      "providerUsage": [
+        {
+          "prompt_tokens": 9600,
+          "completion_tokens": 1998,
+          "total_tokens": 11598
+        },
+        {
+          "prompt_tokens": 11746,
+          "completion_tokens": 1647,
+          "total_tokens": 13393
+        },
+        {
+          "prompt_tokens": 13454,
+          "completion_tokens": 153,
+          "total_tokens": 13607
+        },
+        {
+          "prompt_tokens": 13779,
+          "completion_tokens": 192,
+          "total_tokens": 13971
+        }
+      ],
+      "requestOptions": [
+        {
+          "model": "glm-5.3-flash",
+          "maxTokens": 3072,
+          "maxRetries": 0,
+          "timeoutMs": 45000,
+          "redirect": "error"
+        },
+        {
+          "model": "glm-5.3-flash",
+          "maxTokens": 3072,
+          "maxRetries": 0,
+          "timeoutMs": 45000,
+          "redirect": "error"
+        },
+        {
+          "model": "glm-5.3-flash",
+          "maxTokens": 3072,
+          "maxRetries": 0,
+          "timeoutMs": 45000,
+          "redirect": "error"
+        },
+        {
+          "model": "glm-5.3-flash",
+          "maxTokens": 3072,
+          "maxRetries": 0,
+          "timeoutMs": 45000,
+          "redirect": "error"
+        }
+      ],
+      "statuses": [],
+      "failure": "checked source changed before a2ui_render (profile violation; not compiler rejection)",
+      "handoff": {
+        "difference": "terminal LF removed only",
+        "checkedUTF8Bytes": 536,
+        "attemptedUTF8Bytes": 535,
+        "sourceLogicChangeClaimed": false
+      }
+    },
+    {
+      "id": "M03",
+      "stage": "provider",
+      "started": true,
+      "requests": 3,
+      "actualModelRequests": 3,
+      "providerCompleted": 2,
+      "candidateChecked": null,
+      "compileValid": false,
+      "rendered": false,
+      "intentPass": false,
+      "interactionPass": false,
+      "staticPass": false,
+      "toolCount": 2,
+      "toolAttempts": 2,
+      "sourceSHA256": null,
+      "payloadHash": "916279510bf6af336e37030e3c362a5c86f08864ddaf9bad6bc1917a2fb5c2eb",
+      "usageKnown": false,
+      "knownAdmittedRequests": 3,
+      "requestAccounting": "known",
+      "serverClosed": null,
+      "browserProcessClosed": null,
+      "userConfigUnchanged": true,
+      "cleanupFailures": [],
+      "cancelledContinuationCalls": null,
+      "caseReceiptSHA256": "fbf937acde923e1c0ef0ad8099519a56edaac5db4b9be66f9d151563db75a0f2",
+      "journalSHA256": "e145679fea86db8092f6f33439700d5e1903d17fc709fd6a007e599d0acd81a2",
+      "providerUsage": [
+        {
+          "prompt_tokens": 9627,
+          "completion_tokens": 1805,
+          "total_tokens": 11432
+        },
+        {
+          "prompt_tokens": 11611,
+          "completion_tokens": 1724,
+          "total_tokens": 13335
+        }
+      ],
+      "requestOptions": [
+        {
+          "model": "glm-5.3-flash",
+          "maxTokens": 3072,
+          "maxRetries": 0,
+          "timeoutMs": 45000,
+          "redirect": "error"
+        },
+        {
+          "model": "glm-5.3-flash",
+          "maxTokens": 3072,
+          "maxRetries": 0,
+          "timeoutMs": 45000,
+          "redirect": "error"
+        },
+        {
+          "model": "glm-5.3-flash",
+          "maxTokens": 3072,
+          "maxRetries": 0,
+          "timeoutMs": 45000,
+          "redirect": "error"
+        }
+      ],
+      "statuses": [],
+      "failure": "case deadline"
+    },
+    {
+      "id": "M04",
+      "stage": "success",
+      "started": true,
+      "requests": 4,
+      "actualModelRequests": 4,
+      "providerCompleted": 4,
+      "candidateChecked": true,
+      "compileValid": true,
+      "rendered": true,
+      "intentPass": true,
+      "interactionPass": false,
+      "staticPass": true,
+      "toolCount": 5,
+      "toolAttempts": 5,
+      "sourceSHA256": "155102ac846ffd20b66ff7cbc8ced08c8d0c5039937d4cb1c0edf522961133ac",
+      "payloadHash": "916279510bf6af336e37030e3c362a5c86f08864ddaf9bad6bc1917a2fb5c2eb",
+      "usageKnown": true,
+      "knownAdmittedRequests": 4,
+      "requestAccounting": "known",
+      "serverClosed": true,
+      "browserProcessClosed": true,
+      "userConfigUnchanged": true,
+      "cleanupFailures": [],
+      "cancelledContinuationCalls": 1,
+      "caseReceiptSHA256": "04134c8d1c56841bb3a56bfc6b02c692b4876b35a2345f71dc3ea8f15fceb1aa",
+      "journalSHA256": "7c52a8f87001819c9eb847e2076ccaa21fd87fca074a8aa6928c1962ae023c1f",
+      "providerUsage": [
+        {
+          "prompt_tokens": 9594,
+          "completion_tokens": 1105,
+          "total_tokens": 10699
+        },
+        {
+          "prompt_tokens": 11646,
+          "completion_tokens": 407,
+          "total_tokens": 12053
+        },
+        {
+          "prompt_tokens": 12115,
+          "completion_tokens": 137,
+          "total_tokens": 12252
+        },
+        {
+          "prompt_tokens": 12336,
+          "completion_tokens": 109,
+          "total_tokens": 12445
+        }
+      ],
+      "requestOptions": [
+        {
+          "model": "glm-5.3-flash",
+          "maxTokens": 3072,
+          "maxRetries": 0,
+          "timeoutMs": 45000,
+          "redirect": "error"
+        },
+        {
+          "model": "glm-5.3-flash",
+          "maxTokens": 3072,
+          "maxRetries": 0,
+          "timeoutMs": 45000,
+          "redirect": "error"
+        },
+        {
+          "model": "glm-5.3-flash",
+          "maxTokens": 3072,
+          "maxRetries": 0,
+          "timeoutMs": 45000,
+          "redirect": "error"
+        },
+        {
+          "model": "glm-5.3-flash",
+          "maxTokens": 3072,
+          "maxRetries": 0,
+          "timeoutMs": 45000,
+          "redirect": "error"
+        }
+      ],
+      "statuses": []
+    },
+    {
+      "id": "M05",
+      "stage": "success",
+      "started": true,
+      "requests": 4,
+      "actualModelRequests": 4,
+      "providerCompleted": 4,
+      "candidateChecked": true,
+      "compileValid": true,
+      "rendered": true,
+      "intentPass": true,
+      "interactionPass": false,
+      "staticPass": true,
+      "toolCount": 4,
+      "toolAttempts": 4,
+      "sourceSHA256": "74cd3a2dfc87511f5682f41097b3bc9b1b2f893babf9e4ae2488a902af7ad12a",
+      "payloadHash": "916279510bf6af336e37030e3c362a5c86f08864ddaf9bad6bc1917a2fb5c2eb",
+      "usageKnown": true,
+      "knownAdmittedRequests": 4,
+      "requestAccounting": "known",
+      "serverClosed": true,
+      "browserProcessClosed": true,
+      "userConfigUnchanged": true,
+      "cleanupFailures": [],
+      "cancelledContinuationCalls": 1,
+      "caseReceiptSHA256": "1b55c7e2cedbd2df801adbdae724865bdeb8a49e40fd213d4a831ce610fc054e",
+      "journalSHA256": "da2cc933ec5cbc02b7a915c7b642f593844c791e981fb9106adf204ad5b54b5c",
+      "providerUsage": [
+        {
+          "prompt_tokens": 9583,
+          "completion_tokens": 1001,
+          "total_tokens": 10584
+        },
+        {
+          "prompt_tokens": 10771,
+          "completion_tokens": 143,
+          "total_tokens": 10914
+        },
+        {
+          "prompt_tokens": 10977,
+          "completion_tokens": 139,
+          "total_tokens": 11116
+        },
+        {
+          "prompt_tokens": 11152,
+          "completion_tokens": 102,
+          "total_tokens": 11254
+        }
+      ],
+      "requestOptions": [
+        {
+          "model": "glm-5.3-flash",
+          "maxTokens": 3072,
+          "maxRetries": 0,
+          "timeoutMs": 45000,
+          "redirect": "error"
+        },
+        {
+          "model": "glm-5.3-flash",
+          "maxTokens": 3072,
+          "maxRetries": 0,
+          "timeoutMs": 45000,
+          "redirect": "error"
+        },
+        {
+          "model": "glm-5.3-flash",
+          "maxTokens": 3072,
+          "maxRetries": 0,
+          "timeoutMs": 45000,
+          "redirect": "error"
+        },
+        {
+          "model": "glm-5.3-flash",
+          "maxTokens": 3072,
+          "maxRetries": 0,
+          "timeoutMs": 45000,
+          "redirect": "error"
+        }
+      ],
+      "statuses": []
+    },
+    {
+      "id": "M06",
+      "stage": "success",
+      "started": true,
+      "requests": 3,
+      "actualModelRequests": 3,
+      "providerCompleted": 3,
+      "candidateChecked": true,
+      "compileValid": true,
+      "rendered": true,
+      "intentPass": true,
+      "interactionPass": false,
+      "staticPass": true,
+      "toolCount": 3,
+      "toolAttempts": 3,
+      "sourceSHA256": "86c0687b94ef89c5a98970c9116c8f17a456f0682dcc4f8bd6b9e8e49df3e58c",
+      "payloadHash": "916279510bf6af336e37030e3c362a5c86f08864ddaf9bad6bc1917a2fb5c2eb",
+      "usageKnown": true,
+      "knownAdmittedRequests": 3,
+      "requestAccounting": "known",
+      "serverClosed": true,
+      "browserProcessClosed": true,
+      "userConfigUnchanged": true,
+      "cleanupFailures": [],
+      "cancelledContinuationCalls": 1,
+      "caseReceiptSHA256": "58e32f43cf995f427c3f676dc3cc61df2e476df85dccc4f4dae87e967e96bd43",
+      "journalSHA256": "fb0bd3175e4826cec08d6696e4c82fa0f539eedbd04f5ee9a8bbb73048c1378e",
+      "providerUsage": [
+        {
+          "prompt_tokens": 9575,
+          "completion_tokens": 505,
+          "total_tokens": 10080
+        },
+        {
+          "prompt_tokens": 10141,
+          "completion_tokens": 135,
+          "total_tokens": 10276
+        },
+        {
+          "prompt_tokens": 10310,
+          "completion_tokens": 36,
+          "total_tokens": 10346
+        }
+      ],
+      "requestOptions": [
+        {
+          "model": "glm-5.3-flash",
+          "maxTokens": 3072,
+          "maxRetries": 0,
+          "timeoutMs": 45000,
+          "redirect": "error"
+        },
+        {
+          "model": "glm-5.3-flash",
+          "maxTokens": 3072,
+          "maxRetries": 0,
+          "timeoutMs": 45000,
+          "redirect": "error"
+        },
+        {
+          "model": "glm-5.3-flash",
+          "maxTokens": 3072,
+          "maxRetries": 0,
+          "timeoutMs": 45000,
+          "redirect": "error"
+        }
+      ],
+      "statuses": []
+    },
+    {
+      "id": "M07",
+      "stage": "success",
+      "started": true,
+      "requests": 4,
+      "actualModelRequests": 4,
+      "providerCompleted": 4,
+      "candidateChecked": true,
+      "compileValid": true,
+      "rendered": true,
+      "intentPass": true,
+      "interactionPass": false,
+      "staticPass": true,
+      "toolCount": 4,
+      "toolAttempts": 4,
+      "sourceSHA256": "d705ff665d62dcb0ec2d12d77b71b14a1f2c59832fece6e4955dcfbdc9d2f92b",
+      "payloadHash": "916279510bf6af336e37030e3c362a5c86f08864ddaf9bad6bc1917a2fb5c2eb",
+      "usageKnown": true,
+      "knownAdmittedRequests": 4,
+      "requestAccounting": "known",
+      "serverClosed": true,
+      "browserProcessClosed": true,
+      "userConfigUnchanged": true,
+      "cleanupFailures": [],
+      "cancelledContinuationCalls": 1,
+      "caseReceiptSHA256": "e2969b294f4b83522734ac0042e415befc4fb20874abb492f1b97765489483f8",
+      "journalSHA256": "66f39fe328eeb4f3fafae37cd4654f61366b65bd6d96636486c36db22a9af534",
+      "providerUsage": [
+        {
+          "prompt_tokens": 9584,
+          "completion_tokens": 1367,
+          "total_tokens": 10951
+        },
+        {
+          "prompt_tokens": 11831,
+          "completion_tokens": 1546,
+          "total_tokens": 13377
+        },
+        {
+          "prompt_tokens": 13438,
+          "completion_tokens": 142,
+          "total_tokens": 13580
+        },
+        {
+          "prompt_tokens": 13651,
+          "completion_tokens": 95,
+          "total_tokens": 13746
+        }
+      ],
+      "requestOptions": [
+        {
+          "model": "glm-5.3-flash",
+          "maxTokens": 3072,
+          "maxRetries": 0,
+          "timeoutMs": 45000,
+          "redirect": "error"
+        },
+        {
+          "model": "glm-5.3-flash",
+          "maxTokens": 3072,
+          "maxRetries": 0,
+          "timeoutMs": 45000,
+          "redirect": "error"
+        },
+        {
+          "model": "glm-5.3-flash",
+          "maxTokens": 3072,
+          "maxRetries": 0,
+          "timeoutMs": 45000,
+          "redirect": "error"
+        },
+        {
+          "model": "glm-5.3-flash",
+          "maxTokens": 3072,
+          "maxRetries": 0,
+          "timeoutMs": 45000,
+          "redirect": "error"
+        }
+      ],
+      "statuses": []
+    },
+    {
+      "id": "M08",
+      "stage": "toolpolicy",
+      "started": true,
+      "requests": 4,
+      "actualModelRequests": 4,
+      "providerCompleted": 4,
+      "candidateChecked": true,
+      "compileValid": true,
+      "rendered": false,
+      "intentPass": false,
+      "interactionPass": false,
+      "staticPass": false,
+      "toolCount": 3,
+      "toolAttempts": 4,
+      "sourceSHA256": "7bbc37611c968df474b38fa79aa60c53ea78f78788c6ef85b4d962b7a306ae1f",
+      "payloadHash": "916279510bf6af336e37030e3c362a5c86f08864ddaf9bad6bc1917a2fb5c2eb",
+      "usageKnown": true,
+      "knownAdmittedRequests": 4,
+      "requestAccounting": "known",
+      "serverClosed": null,
+      "browserProcessClosed": null,
+      "userConfigUnchanged": true,
+      "cleanupFailures": [],
+      "cancelledContinuationCalls": 1,
+      "caseReceiptSHA256": "00ecc00e981011d17c598908441eeea48a86d5f819f1d81712853f059e73d544",
+      "journalSHA256": "1896990f072a5c3b0d8b8ae23e4786be586014dcdca4ef085e949fbd38fed83f",
+      "providerUsage": [
+        {
+          "prompt_tokens": 9600,
+          "completion_tokens": 2319,
+          "total_tokens": 11919
+        },
+        {
+          "prompt_tokens": 11993,
+          "completion_tokens": 391,
+          "total_tokens": 12384
+        },
+        {
+          "prompt_tokens": 12447,
+          "completion_tokens": 139,
+          "total_tokens": 12586
+        },
+        {
+          "prompt_tokens": 12689,
+          "completion_tokens": 124,
+          "total_tokens": 12813
+        }
+      ],
+      "requestOptions": [
+        {
+          "model": "glm-5.3-flash",
+          "maxTokens": 3072,
+          "maxRetries": 0,
+          "timeoutMs": 45000,
+          "redirect": "error"
+        },
+        {
+          "model": "glm-5.3-flash",
+          "maxTokens": 3072,
+          "maxRetries": 0,
+          "timeoutMs": 45000,
+          "redirect": "error"
+        },
+        {
+          "model": "glm-5.3-flash",
+          "maxTokens": 3072,
+          "maxRetries": 0,
+          "timeoutMs": 45000,
+          "redirect": "error"
+        },
+        {
+          "model": "glm-5.3-flash",
+          "maxTokens": 3072,
+          "maxRetries": 0,
+          "timeoutMs": 45000,
+          "redirect": "error"
+        }
+      ],
+      "statuses": [],
+      "failure": "checked source changed before a2ui_render (profile violation; not compiler rejection)",
+      "handoff": {
+        "difference": "terminal LF removed only",
+        "checkedUTF8Bytes": 305,
+        "attemptedUTF8Bytes": 304,
+        "sourceLogicChangeClaimed": false
+      }
+    },
+    {
+      "id": "M09",
+      "stage": "toolpolicy",
+      "started": true,
+      "requests": 5,
+      "actualModelRequests": 5,
+      "providerCompleted": 5,
+      "candidateChecked": true,
+      "compileValid": true,
+      "rendered": false,
+      "intentPass": false,
+      "interactionPass": false,
+      "staticPass": false,
+      "toolCount": 4,
+      "toolAttempts": 5,
+      "sourceSHA256": "f9631d6464cbd8b4772da579965649057ae4ab60ca3faf5ad6f8800e3e67fb8a",
+      "payloadHash": "916279510bf6af336e37030e3c362a5c86f08864ddaf9bad6bc1917a2fb5c2eb",
+      "usageKnown": true,
+      "knownAdmittedRequests": 5,
+      "requestAccounting": "known",
+      "serverClosed": null,
+      "browserProcessClosed": null,
+      "userConfigUnchanged": true,
+      "cleanupFailures": [],
+      "cancelledContinuationCalls": 1,
+      "caseReceiptSHA256": "e4f3047a1bb70e28b2ed22f7788073781e8fbdda79cf851828e8f7d38c3fe96d",
+      "journalSHA256": "affdfb8013d39e1250ef72d6db454e0cdd4e359f5eae1b9c30011c825a08c55a",
+      "providerUsage": [
+        {
+          "prompt_tokens": 9608,
+          "completion_tokens": 1878,
+          "total_tokens": 11486
+        },
+        {
+          "prompt_tokens": 11670,
+          "completion_tokens": 210,
+          "total_tokens": 11880
+        },
+        {
+          "prompt_tokens": 11974,
+          "completion_tokens": 480,
+          "total_tokens": 12454
+        },
+        {
+          "prompt_tokens": 12517,
+          "completion_tokens": 139,
+          "total_tokens": 12656
+        },
+        {
+          "prompt_tokens": 12766,
+          "completion_tokens": 140,
+          "total_tokens": 12906
+        }
+      ],
+      "requestOptions": [
+        {
+          "model": "glm-5.3-flash",
+          "maxTokens": 3072,
+          "maxRetries": 0,
+          "timeoutMs": 45000,
+          "redirect": "error"
+        },
+        {
+          "model": "glm-5.3-flash",
+          "maxTokens": 3072,
+          "maxRetries": 0,
+          "timeoutMs": 45000,
+          "redirect": "error"
+        },
+        {
+          "model": "glm-5.3-flash",
+          "maxTokens": 3072,
+          "maxRetries": 0,
+          "timeoutMs": 45000,
+          "redirect": "error"
+        },
+        {
+          "model": "glm-5.3-flash",
+          "maxTokens": 3072,
+          "maxRetries": 0,
+          "timeoutMs": 45000,
+          "redirect": "error"
+        },
+        {
+          "model": "glm-5.3-flash",
+          "maxTokens": 3072,
+          "maxRetries": 0,
+          "timeoutMs": 45000,
+          "redirect": "error"
+        }
+      ],
+      "statuses": [],
+      "failure": "checked source changed before a2ui_render (profile violation; not compiler rejection)",
+      "handoff": {
+        "difference": "terminal LF removed only",
+        "checkedUTF8Bytes": 331,
+        "attemptedUTF8Bytes": 330,
+        "sourceLogicChangeClaimed": false
+      }
+    },
+    {
+      "id": "M10",
+      "stage": "provider",
+      "started": true,
+      "requests": 1,
+      "actualModelRequests": 1,
+      "providerCompleted": 0,
+      "candidateChecked": null,
+      "compileValid": false,
+      "rendered": false,
+      "intentPass": false,
+      "interactionPass": false,
+      "staticPass": false,
+      "toolCount": 0,
+      "toolAttempts": 0,
+      "sourceSHA256": null,
+      "payloadHash": "916279510bf6af336e37030e3c362a5c86f08864ddaf9bad6bc1917a2fb5c2eb",
+      "usageKnown": false,
+      "knownAdmittedRequests": 1,
+      "requestAccounting": "known",
+      "serverClosed": null,
+      "browserProcessClosed": null,
+      "userConfigUnchanged": true,
+      "cleanupFailures": [],
+      "cancelledContinuationCalls": null,
+      "caseReceiptSHA256": "9856df5f846bd1614df886915baa4d246831c9e3f6041e93fac2f8450f8c376f",
+      "journalSHA256": "249977f53eabba30aa6d5dcb314ef7f7702452cc9609fa55e9371778f5c95321",
+      "providerUsage": [],
+      "requestOptions": [
+        {
+          "model": "glm-5.3-flash",
+          "maxTokens": 3072,
+          "maxRetries": 0,
+          "timeoutMs": 45000,
+          "redirect": "error"
+        }
+      ],
+      "statuses": [],
+      "failure": "The operation was aborted due to timeout"
+    },
+    {
+      "id": "M11",
+      "stage": "success",
+      "started": true,
+      "requests": 4,
+      "actualModelRequests": 4,
+      "providerCompleted": 4,
+      "candidateChecked": true,
+      "compileValid": true,
+      "rendered": true,
+      "intentPass": true,
+      "interactionPass": false,
+      "staticPass": true,
+      "toolCount": 5,
+      "toolAttempts": 5,
+      "sourceSHA256": "b997074c901835ddec2c368a5894a997266936f00d14e150764b3d131941e07e",
+      "payloadHash": "916279510bf6af336e37030e3c362a5c86f08864ddaf9bad6bc1917a2fb5c2eb",
+      "usageKnown": true,
+      "knownAdmittedRequests": 4,
+      "requestAccounting": "known",
+      "serverClosed": true,
+      "browserProcessClosed": true,
+      "userConfigUnchanged": true,
+      "cleanupFailures": [],
+      "cancelledContinuationCalls": 1,
+      "caseReceiptSHA256": "85beae4fb6c2b9207ff638f255703ba20b6b0a8cae90b3d756175e355b28cc0f",
+      "journalSHA256": "c0505e646a10e9647ef928bd074a8aca8eaed04a6f7edb67176e86714efbdfba",
+      "providerUsage": [
+        {
+          "prompt_tokens": 9591,
+          "completion_tokens": 1445,
+          "total_tokens": 11036
+        },
+        {
+          "prompt_tokens": 11450,
+          "completion_tokens": 360,
+          "total_tokens": 11810
+        },
+        {
+          "prompt_tokens": 11871,
+          "completion_tokens": 162,
+          "total_tokens": 12033
+        },
+        {
+          "prompt_tokens": 12102,
+          "completion_tokens": 84,
+          "total_tokens": 12186
+        }
+      ],
+      "requestOptions": [
+        {
+          "model": "glm-5.3-flash",
+          "maxTokens": 3072,
+          "maxRetries": 0,
+          "timeoutMs": 45000,
+          "redirect": "error"
+        },
+        {
+          "model": "glm-5.3-flash",
+          "maxTokens": 3072,
+          "maxRetries": 0,
+          "timeoutMs": 45000,
+          "redirect": "error"
+        },
+        {
+          "model": "glm-5.3-flash",
+          "maxTokens": 3072,
+          "maxRetries": 0,
+          "timeoutMs": 45000,
+          "redirect": "error"
+        },
+        {
+          "model": "glm-5.3-flash",
+          "maxTokens": 3072,
+          "maxRetries": 0,
+          "timeoutMs": 45000,
+          "redirect": "error"
+        }
+      ],
+      "statuses": []
+    },
+    {
+      "id": "M12",
+      "stage": "success",
+      "started": true,
+      "requests": 4,
+      "actualModelRequests": 4,
+      "providerCompleted": 4,
+      "candidateChecked": true,
+      "compileValid": true,
+      "rendered": true,
+      "intentPass": true,
+      "interactionPass": false,
+      "staticPass": true,
+      "toolCount": 4,
+      "toolAttempts": 4,
+      "sourceSHA256": "b17294b2b9261a20da84d06b1357271db96f72100046b232fbd7269c6114dc59",
+      "payloadHash": "916279510bf6af336e37030e3c362a5c86f08864ddaf9bad6bc1917a2fb5c2eb",
+      "usageKnown": true,
+      "knownAdmittedRequests": 4,
+      "requestAccounting": "known",
+      "serverClosed": true,
+      "browserProcessClosed": true,
+      "userConfigUnchanged": true,
+      "cleanupFailures": [],
+      "cancelledContinuationCalls": 1,
+      "caseReceiptSHA256": "a8b1401e979352e976e98df51e631c5c26035e898b3e059c84775047332a59d0",
+      "journalSHA256": "a012d6edfd16fcb37d61f17e73feab438d68fd87ff144c9c0422ba6526fa692d",
+      "providerUsage": [
+        {
+          "prompt_tokens": 9609,
+          "completion_tokens": 980,
+          "total_tokens": 10589
+        },
+        {
+          "prompt_tokens": 10663,
+          "completion_tokens": 368,
+          "total_tokens": 11031
+        },
+        {
+          "prompt_tokens": 11092,
+          "completion_tokens": 186,
+          "total_tokens": 11278
+        },
+        {
+          "prompt_tokens": 11379,
+          "completion_tokens": 173,
+          "total_tokens": 11552
+        }
+      ],
+      "requestOptions": [
+        {
+          "model": "glm-5.3-flash",
+          "maxTokens": 3072,
+          "maxRetries": 0,
+          "timeoutMs": 45000,
+          "redirect": "error"
+        },
+        {
+          "model": "glm-5.3-flash",
+          "maxTokens": 3072,
+          "maxRetries": 0,
+          "timeoutMs": 45000,
+          "redirect": "error"
+        },
+        {
+          "model": "glm-5.3-flash",
+          "maxTokens": 3072,
+          "maxRetries": 0,
+          "timeoutMs": 45000,
+          "redirect": "error"
+        },
+        {
+          "model": "glm-5.3-flash",
+          "maxTokens": 3072,
+          "maxRetries": 0,
+          "timeoutMs": 45000,
+          "redirect": "error"
+        }
+      ],
+      "statuses": []
+    }
+  ],
+  "interpretation": "Strict frozen workflow conformance, not general UI/model quality; three policy failures are terminal-LF loss only."
+}

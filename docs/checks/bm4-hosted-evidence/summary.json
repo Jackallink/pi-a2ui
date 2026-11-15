@@ -1,0 +1,45 @@
+{
+  "pr": 55,
+  "head": "c22e67b2c75a8e5f1ac3a8e6e78a59a98b3d69da",
+  "base": "07d6f164b19781870de84c968c7b9c159fcae5a7",
+  "checkout": "ccfe128086588c0612d9e64b4a9256346bd360b3",
+  "parents": [
+    "07d6f164b19781870de84c968c7b9c159fcae5a7",
+    "c22e67b2c75a8e5f1ac3a8e6e78a59a98b3d69da"
+  ],
+  "runId": 43718860820,
+  "url": "https://github.com/Jackallink/pi-a2ui/actions/runs/43718860820",
+  "jobs": [
+    {
+      "id": 132826236836,
+      "name": "chromium",
+      "conclusion": "success"
+    },
+    {
+      "id": 132826237032,
+      "name": "node24",
+      "conclusion": "success"
+    },
+    {
+      "id": 132826831264,
+      "name": "golden-union",
+      "conclusion": "success"
+    }
+  ],
+  "node": "v24.22.2",
+  "nodeTests": 419,
+  "browserTests": 83,
+  "bm2Cases": 68,
+  "bm3Accepted": true,
+  "linuxPixelBaseline": "not-defined-for-environment",
+  "actualModelCallsInCI": 0,
+  "artifact": {
+    "id": 14163099581,
+    "name": "bm3-layout-43718860820-1",
+    "zipSHA256": "de757fc60e4a604ca10e0a0240f9c2ab4e1de415dc48f7d5092031dfd577cb2d",
+    "files": 4,
+    "expiresAt": "2026-11-22T13:26:53Z"
+  },
+  "rawLogSHA256": "c511901a2c9e62f98a80609fd18ff452dcc685962f7702852e202f3523d878c1",
+  "mergedReleasedOrIssuesClosed": false
+}

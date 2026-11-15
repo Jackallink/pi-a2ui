@@ -1,0 +1,3 @@
+ACTUAL OLD F01 RED: F01 raw pre-SDK config value must never appear
+ACTUAL OLD F02 RED: real hung-worker admitted requests; old source excerpt says {"started":false,"requests":0}
+2 behavioral REDs observed; F02 source-excerpt consumer only, not full old CLI

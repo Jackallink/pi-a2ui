@@ -1,0 +1,31 @@
+✖ BM4 legal bound Modal trigger Text is semantic positive (37.523583ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 683.303041
+
+✖ failing tests:
+
+test at tests/benchmark-model.test.ts:2:8847
+✖ BM4 legal bound Modal trigger Text is semantic positive (37.523583ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert.ok(components.some(c=>c.id===modal.trigger&&c.component==='Text'&&c.text==='Open details'))
+  
+      at intent (/Users/jakeliu/.codex/worktrees/pi-a2ui-bm4/pi-a2ui/tests/benchmark-model/oracles.ts:29:182)
+      at TestContext.<anonymous> (/Users/jakeliu/.codex/worktrees/pi-a2ui-bm4/pi-a2ui/tests/benchmark-model.test.ts:87:212)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1325:25)
+      at Test.start (node:internal/test_runner/test:1191:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:385:17) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

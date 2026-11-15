@@ -1,0 +1,3 @@
+# Technical trace walkthrough
+
+Explicit execute → verifyNode24/clean source/archive/readonlymodeltuple → owned serial caseworker/agentDir/project/store → actualPiSDK with onlyactualpackedskill + inlineactualextension → naturalrequest → actualread/helperquery/write/edit → onceactualCLIpreflight → unchangeda2ui_render → actual018compiler/session/server → headlessopener/authconnect/plainorigin → independenttree/nativeintent → actualbrowseraction→HTTP202→actualextensionpi.sendUserMessagefollowUp→actualSDKqueueobserved → abortwhiletool_resultheld→noextra inference→shutdown/dispose/ownedcleanup→sanitizedreceipt. Static/local cases have0POST/queue. Defaultdryrun ends before auth/config/runtime loading,0requests.
