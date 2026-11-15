@@ -1,3 +1,4 @@
+import {FORBIDDEN_AUTHORING_KEYS,compilerErrorMessage} from './authoring-policy.js';
 import {validateInteractions} from './interactions.ts';
 import {validateWorkbench} from './workbench.ts';
 import { A2uiGenerator, CatalogConfig, ExpressFormatFactory, RendererState } from '@a2ui/agent';
@@ -40,7 +41,7 @@ export function isBinding(value: unknown): value is { '@path': string } {
 function noExpressions(value: unknown): void {
   if (!value || typeof value !== 'object') return;
   for (const [key, child] of Object.entries(value)) {
-    if (key === 'checks' || key === 'path' || key.startsWith('@') && key !== '@path' || key === 'call' || key === 'callFunction') throw new UiError(400, 'Executable expressions and checks are unavailable');
+    if (FORBIDDEN_AUTHORING_KEYS.includes(key) || key.startsWith('@') && key !== '@path') throw new UiError(400, 'Executable expressions and checks are unavailable');
     if (key === '@path' && !isBinding(value)) throw new UiError(400, 'Only absolute data bindings are supported');
     noExpressions(child);
   }
@@ -211,6 +212,6 @@ export function compile(surfaceId: string, source: string): SurfaceMessage {
     return validateSurface(message);
   } catch (error) {
     if (error instanceof UiError) throw error;
-    throw new UiError(400, 'Invalid Express source: ' + (error instanceof Error ? error.message : 'compilation failed'));
+    throw new UiError(400, 'Invalid Express source: ' + compilerErrorMessage(error,interactionsCatalog),{cause:error});
   }
 }

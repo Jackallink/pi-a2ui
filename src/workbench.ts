@@ -13,11 +13,12 @@ export type ToolProgress=z.infer<typeof taskProgressApi.schema>;
 const artifactUrl=z.string().regex(/^\/api\/artifacts\/[a-f0-9]{32}$/);
 export const artifactPreviewApi={name:'ArtifactPreview',schema:z.object({src:artifactUrl,kind:z.enum(['image','video','audio']),label:z.string().min(1).max(256)}).strict()} satisfies ComponentApi;
 export const workbenchApis:ComponentApi[]=[dataTableApi,codeBlockApi,markdownApi,detailsApi,statusBadgeApi,taskProgressApi,artifactPreviewApi];
+export const APPROVED_ICON_NAMES:readonly string[]=Object.freeze(['check','close','error','info','warning','folder','help','refresh','play','pause','search','settings']);
 export function validateWorkbench(message:SurfaceMessage,initial=false):void{
  let progressCount=0,modalCount=0;
  for(const c of message.createSurface.components){
   if(['Image','Video','AudioPlayer'].includes(c.component)){artifactUrl.parse(c.url);if(c.posterUrl!==undefined)artifactUrl.parse(c.posterUrl);for(const prop of ['description','fit','variant'])if(c[prop]!==undefined&&typeof c[prop]!=='string')throw new UiError(400,'Artifact media props must be static');}
-  if(c.component==='Icon'&&!['check','close','error','info','warning','folder','help','refresh','play','pause','search','settings'].includes(c.name as string))throw new UiError(400,'Icon name must be a static approved local icon');
+  if(c.component==='Icon'&&!APPROVED_ICON_NAMES.includes(c.name as string))throw new UiError(400,'Icon name must be a static approved local icon');
   if(c.component==='Modal'){
    if(++modalCount>1)throw new UiError(400,'Only one Modal per surface');const trigger=message.createSurface.components.find(node=>node.id===c.trigger);
    if(!trigger||!['Text','Icon'].includes(trigger.component))throw new UiError(400,'Modal trigger must be Text or Icon');

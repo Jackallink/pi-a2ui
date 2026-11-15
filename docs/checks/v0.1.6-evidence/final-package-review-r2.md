@@ -1,0 +1,33 @@
+# v0.1.6 independent package/installation review — R2
+
+Decision: **GO for the exact candidate's production packaging, documented Git/local installation boundary, offline helper/resources and normal private package/skill discovery. Zero unresolved P0/P1 package findings.** This is a scoped package GO, not whole016 functional acceptance, A02 R3 approval, real GLM acceptance, production-readiness certification or release GO. Merge/tag/publication/user installation remain unauthorized in this task.
+
+Fixed source: **c3c4a5d04be97bdd16765be9e9ba489bdae31486**; whole-version base main3b8947d. Exact new production TAR SHA256: **a3bfcb43d875237774bba8c8e41444cb688840a0d081c27b2daea2af074d6cd5**,73 regular files. External installed package is `/private/var/folders/jr/kpn3gspj5c9c53r1f5f4dgt00000gn/T/pi-a2ui-v016-c3-vum36i/package` as pinned by production-path.txt. Predecessor a749757/archive966ac7d checks remain in final-package-review.md; they are not renamed as this new artifact.
+
+## New artifact and correction verification
+
+Independently calculated the new TAR hash and compared every one of73payload files with both fixed source and the new external production installation: exact match. Independently compared these packed bytes with predecessora749757: **only README.md, skills/pi-a2ui/SKILL.md and skills/pi-a2ui/references/syntax-and-errors.md differ**. All JS/source/helper/catalog/libs/templates/manifest/license bytes are unchanged. There are no developer scripts/tests/.local/.pi/node_modules in the payload; the new production dependency tree contains no typescript/tsx/esbuild/Playwright/hostPi/typebox copies.
+
+The corrected first skill recipe uses `mktemp ./a2ui-form-XXXXXX`, quotes every use and prints its new file path to stderr, leaving stdout for exact tool arguments. Independently executed that actual recipe from the **new production package**, twice in an owned cwd containing spaces. Pre-existing form.express and literal a2ui-form-XXXXXX sentinels both survived unchanged; two distinct new source files were created at mode0600; each file exactly matched its returned source and stdout was exactly {surfaceId,source}. Executed the actual new README example|check stdin pipeline: exact tool arguments, no added file and sentinels preserved. The error reference correctly distinguishes component.parameters from diagnostic-envelope allowedProperties/hint. Evidence: package-review-scratch/r2-probe.json.
+
+The separate authoring R2 receipt independently closes the original destructive-recipe P1 and field-description P2 at this samec3c4a5d source, with0openP0/P1/P2. That report explicitly excludes A02's preflight-browser cleanup correction, as does this package verdict.
+
+## Unchanged contracts and directly applicable prior checks
+
+Package/lock identify0.1.6; Node engine>=24<25/.nvmrc24; pi.extensions and pi.skills explicit; production SDK pins unchanged. HostPi/typebox peers are wildcard/optional and absent from runtime dependencies. Git/remove recipes retain published immutablev0.1.5; candidate016 developer recipes are labelled separately. Local install prepares production dependencies with npm install --omit=dev --ignore-scripts --legacy-peer-deps, without a consumer rebuild. No new registry/global binary/doctor/runtime authority is promised. SDK error filtering and typed causes change authoring guidance while preserving actual compile/check authority and existing success envelopes.
+
+Predecessor independently executed production work remains applicable to the byte-identical helpers/templates/resources:32component queries,19exactsource-preflight roundtrips,8pattern routes and5usage/lookup/compiler/UTF8 error cases allpass from foreign cwd/tmp under Node24.18.1. Query outputs have the exact named-argument envelope, valid packaged references, initialized-value/DateTime required flags and native stream-only guidance; failure stdout stays empty. Focused authoring/skill/docs/package source suite21/21passed before the correction; new recipe preservation is separately covered above rather than pretending that old run covered new docs.
+
+Predecessor independent in-memory esbuild write:false matched client SHA256 `828e361f691d58aec2a00576a6ff918aa8811f4c13a7e6e07a3f5184872f53b9` and helper `761acccea57e7748165a19942e2230ea15c8b057cf44401f9bd9a58f590d161f`; both artifacts remain byte-identical atc3c4a5d. Build/license generation and full third-party legal material are unchanged. There is no reason to repeat unchanged32query/19example/browser work solely for these three documentation edits.
+
+## New production/startup receipts and evidence ownership
+
+Root final-c3-production.log directly reports the new exacta3bfcb archive,73source-matching files,32queries/19preflight/8patterns and no developer/host copies. Root final-c3-node.log reports197/197pass,0failed/skipped/cancelled; final-c3-tsc.log passes. Earlier45browser cases retain their actual source/client/helper byte-identity scope; this reviewer did not rerun or broaden them.
+
+Inspected **new** final-c3-startup.log and its actual private result/rpc/runtime receipts without reading or copying auth/config files. Normal private project registration uses no explicit extension/skill override. Independently verified the one skill command's sourceInfo points to the exact new external production SKILL.md, origin=package/scope=project; five actual Node24 children all have cwd inside the owned run; RPC has0agent_start events. Receipt records0model requests, external-fetch denial, status execution, package/operator preservation, Pi exit and owned registration removal. browserObserved=false honestly preserves that no browser behavior was observed at startup. This is a normal package/skill discovery result, not an explicit-profile model result.
+
+All reviewer Node execution used the private Node24 wrapper; no model/provider request, credential/config copy, real-user install/global setting change, remote write or product source mutation occurred. Scratch consists only of ignored review probes, logs and owned recipe test files.
+
+## Remaining whole-candidate boundary
+
+At this receipt, no actual016GLM result has been supplied and A02's dedicated R3 verdict is pending. They remain required separate evidence before whole-candidate acceptance. When supplied, pin their exact script/source/package/archive identity, actual template/check/render/action/typed-ack outcomes, transport/report errors and cleanup; do not infer model compliance from these offline checks. Any packaged-byte delta afterc3c4a5d requires an identity/delta review; this scoped GO does not authorize merge/tag/publish or replacement of the user's015.
