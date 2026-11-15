@@ -1839,7 +1839,12 @@
       "expected": {
         "outcome": "rejected",
         "status": 400,
-        "reasonIncludes": "Coding actions"
+        "reasonIncludes": "Coding actions",
+        "diagnostic": {
+          "componentId": "inspect",
+          "componentType": "Button",
+          "propertyPath": "/action/event/context"
+        }
       }
     },
     {
