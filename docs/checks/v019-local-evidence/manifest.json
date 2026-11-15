@@ -1,0 +1,115 @@
+{
+  "source": "dd41ca40c70529095e5433da0e2ebca7d722c456",
+  "tree": "0e1ba5be1f9c20c8825bb762d7ce29a99094a1fb",
+  "node": "v24.18.1",
+  "localCIOnly": true,
+  "actionsWorkflow": {
+    "id": 418909498,
+    "state": "disabled_manually"
+  },
+  "goldenIdentity": {
+    "profile": "v0.1.8-golden-v2",
+    "source": "dd41ca40c70529095e5433da0e2ebca7d722c456",
+    "dirty": false,
+    "lockHash": "2c4dacdefa74793ed14aacb7496869cd6f12658b1b044848ae5c998504c2f585",
+    "datasetHash": "6666061e48ae7bc2d133fd7f2a5c36c8e4649dd97edef34dc12a419dcdeb7adc",
+    "oracleSetHash": "25c6eb8347fddeaffb3dcba9042e7814cbf6a070d06290aa40b130abd6a34a48",
+    "catalogHash": "61e4f817e2d692479eb034b44cb71f9ff8748b03d9ee4b663ec86c910c6ef51b",
+    "assetHash": "04fb8480b4b5ab849423fe1dcbb738244d31a3bd165e1b411d65ead32e32eaf2",
+    "nodeMajor": 24
+  },
+  "browser": {
+    "node": "v24.18.1",
+    "platform": "darwin",
+    "arch": "arm64",
+    "browserVersion": "158.0.8127.18",
+    "viewport": {
+      "width": 1280,
+      "height": 900
+    },
+    "deviceScaleFactor": 1,
+    "theme": "light",
+    "locale": "en-US",
+    "timezone": "UTC",
+    "reducedMotion": "reduce",
+    "browserRevision": "1254"
+  },
+  "fullNode": {
+    "tests": 457,
+    "pass": 457,
+    "fail": 0
+  },
+  "fullBrowser": {
+    "tests": 89,
+    "pass": 89,
+    "fail": 0
+  },
+  "typecheck": true,
+  "actualModelRequests": 0,
+  "realV2Baseline": "not-run",
+  "rawLogs": [
+    {
+      "path": ".local/v019-handoff-evidence/full-node-r2.log",
+      "sha256": "15f1d4e62a7f3c656f66507c6441380dd0af4f205250fda86cbada9879260db6"
+    },
+    {
+      "path": ".local/v019-handoff-evidence/full-types-r2.log",
+      "sha256": "1f0266fdd4c017520db051a92d212903ce5949123108c25175ee7038308a5508"
+    },
+    {
+      "path": ".local/v019-handoff-evidence/full-browser-r2.log",
+      "sha256": "d17d925130198ecec78cb2ad5d587a428089ae2fe6dcc29d756755686f606ed1"
+    },
+    {
+      "path": ".local/v019-handoff-evidence/full-browser-r3.log",
+      "sha256": "5a9c794f0a0417881a806b46468f26bd7d2b69688825843dd503782481b2ea49"
+    },
+    {
+      "path": ".local/v019-handoff-evidence/union-r2.json",
+      "sha256": "30fb5e13a31d97895025063abd74e11e6ffb42da1620f5dbd8bfb30caec4f126"
+    },
+    {
+      "path": ".local/v019-handoff-evidence/dry-run-r2.json",
+      "sha256": "32329968bb6522fcef32a20252f8ea76ab3ea075bf3ea679676847f5f19b67fc"
+    },
+    {
+      "path": ".local/v019-handoff-evidence/offline-r2.log",
+      "sha256": "90fb04022272aff04cd810449e891b994bc57f5d92e57e7c96f5eb8a6d559bee"
+    },
+    {
+      "path": ".local/v019-handoff-evidence/developer-example.log",
+      "sha256": "c12f8fa1f09114e6487e45e8eb0907f29637ac9becc71357b0199871f8108549"
+    },
+    {
+      "path": ".local/v019-handoff-evidence/local-startup.log",
+      "sha256": "2d9b79700217d79c9e8dac644af4a0419a604a93942687075d1b2b9dbb758742"
+    },
+    {
+      "path": ".local/v019-handoff-evidence/git-startup.json",
+      "sha256": "ecaf362664ca778885c554b486ee0a67e2af11ee72f0c80e9c66e95c522f04e4"
+    },
+    {
+      "path": ".local/v019-handoff-evidence/git-startup.log",
+      "sha256": "4906b0ac23513f6dd504a6a829a86b9f8cbc7bdc63fff77781cccf325113839b"
+    },
+    {
+      "path": ".local/v019-handoff-evidence/package-review-r1.md",
+      "sha256": "9137120412f84d8ef49715d77d6b9cb6bb22459f1c7f4a6dfc928d485e60d431"
+    },
+    {
+      "path": ".local/v019-handoff-evidence/code-review-r2.md",
+      "sha256": "28b24ef0a580c69b3b4632cacd5d9a245ac8ed186740c601981317720ed5b10d"
+    },
+    {
+      "path": ".local/v019-handoff-evidence/code-review-r3.md",
+      "sha256": "948c64cac6df73d5f6b92a1cf4f71a5122717f0fdf415a6f1e62313e34058bf4"
+    }
+  ],
+  "offlineRaw": {
+    "path": ".local/bm4/run-1794754179248-79865/report.json",
+    "sha256": "b6cfe4cae7453da5b000567cad3fbf4913ba41de91a62bd51208bf8956f17a33"
+  },
+  "archiveSHA256": "6a2dd059571c5f1fb56c16cbfbd650d2cb79979694a9eea7845ddb92af70c5eb",
+  "priorFailure": "r2 browser omitted owned locked browser path;78 setup failures/11pass. No behavioral RED or source change. r3 used explicit owned1254 browser cache.",
+  "audit": "4 existing high severity findings in unchanged018 dependency graph; not zero-vulnerability acceptance, no automatic dependency changes."
+}
