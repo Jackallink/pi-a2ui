@@ -34,3 +34,10 @@ test('BM4 actual hung worker kills owned detached browser and removes only owned
 
 for(const id of ['M01','M02'])test('BM4 legal binding/nestedlayout actual browser '+id,async()=>{const {report}=await runCase(id,'binding-layout');expect(report.stage).toBe('success');expect(report.intentPass).toBe(true);expect(report.interactionPass).toBe(true);expect(report.statuses).toEqual([202]);expect(report.cleanupFailures).toEqual([]);});
 test('BM4 wrong request identity stops admission before any transport and marks batch fatal',async()=>{const {report}=await runCase('M01','identity');expect(report.stage).toBe('admission');expect(report.requests).toBe(0);expect(report.actualModelRequests).toBe(0);expect(report.fatal).toBe(true);expect(report.harnessFailure).toBe(true);expect(report.toolCount).toBe(0);});
+
+test('BM4 v2 terminal LF handoff reaches actual render and typed Pi queue',async()=>{
+ const {report}=await runCase('M02','terminal-lf');expect(report.compileValid).toBe(true);expect(report.source.endsWith('\n')).toBe(true);
+ const calls=report.transcript.filter((t:any)=>t.kind==='assistant').flatMap((t:any)=>t.content).filter((c:any)=>c.type==='toolCall'&&c.name==='a2ui_render');expect(calls).toHaveLength(1);const originalSource=calls[0].arguments.source;expect(originalSource+'\n').toBe(report.source);
+ const {compile}=await import('../../src/compiler.ts');expect(compile('bm4',originalSource)).toEqual(compile('bm4',report.source));
+ expect(report.stage).toBe('success');expect(report.rendered).toBe(true);expect(report.intentPass).toBe(true);expect(report.interactionPass).toBe(true);expect(report.statuses).toEqual([202]);expect(report.requests).toBe(3);expect(report.actualModelRequests).toBe(0);
+});

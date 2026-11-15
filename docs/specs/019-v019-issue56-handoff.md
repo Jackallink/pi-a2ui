@@ -1,6 +1,6 @@
 # v0.1.9 — issue56 checked-source handoff and issue closure
 
-Lifecycle: draft. Profile: strict. Canonicalspec019. User changed scope on2026-11-15: finish all open43/51/52/56 as the nextversion. Baseline906155450e60723a44c5b42a3fee74787e96a15c includes reviewedPR53→54→55. Root implements, independentreviews only delegated. Node24.x only, Git/localdistribution, no npmpublication. Actionsworkflow418909498 manuallydisabled byuserquota instruction; allfuturechecks local. No new realmodelbudget: preserve sole365 GLMrun12/43/7of12 and unknownusage, no repair/rescore/retry.
+Lifecycle: tdd-approved. Profile: strict. Canonicalspec019. User changed scope on2026-11-15: finish all open43/51/52/56 as the nextversion. Baseline906155450e60723a44c5b42a3fee74787e96a15c includes reviewedPR53→54→55. Root implements, independentreviews only delegated. Node24.x only, Git/localdistribution, no npmpublication. Actionsworkflow418909498 manuallydisabled byuserquota instruction; allfuturechecks local. No new realmodelbudget: preserve sole365 GLMrun12/43/7of12 and unknownusage, no repair/rescore/retry.
 
 ## Goal / non-goals
 
