@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "releaseId": 445744807,
+  "url": "https://github.com/Jackallink/pi-a2ui/releases/tag/v0.1.6",
+  "tag": "v0.1.6",
+  "mergeCommit": "def4174e0a4193c5245f5ec13d80501c26197030",
+  "tagObject": "c8cc04203631b0659cce70863258f755c00436b1",
+  "archiveSHA256": "7208611764bc4d75c26b435c68108511d701275f8787974ea45dc34e923813be",
+  "assetNames": [
+    "SHA256SUMS",
+    "pi-a2ui-0.1.6.tgz"
+  ],
+  "assetsUnchangedFromPremerge": true
+}

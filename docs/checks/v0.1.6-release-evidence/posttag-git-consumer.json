@@ -1,0 +1,20 @@
+{
+  "passed": true,
+  "node": "v24.18.1",
+  "expectedCommit": "def4174e0a4193c5245f5ec13d80501c26197030",
+  "source": "git:github.com/Jackallink/pi-a2ui@v0.1.6",
+  "normalRegistration": true,
+  "modelRequests": 0,
+  "oneSkill": true,
+  "uniqueCommands": true,
+  "enabledStatus": true,
+  "agentRuns": 0,
+  "sourceCommit": "def4174e0a4193c5245f5ec13d80501c26197030",
+  "allPayloadFilesMatch": 74,
+  "runtime": {
+    "observedNodeProcesses": 3,
+    "allNode24": true,
+    "allCwdWithinOwnedRun": true
+  },
+  "piClosed": true
+}

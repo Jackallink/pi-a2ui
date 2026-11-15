@@ -1,0 +1,18 @@
+{
+  "premerge-node.log": "7fd055cd985f4b27cb990d9f434d434b80505b668858f67350aa4c8320ae3df1",
+  "premerge-tsc.log": "20d06c2621913fc2e60c271b0442109d7d285ee3ed5a9560b7c6fa0aaf1ef43c",
+  "premerge-build.log": "1f2b0f0f2c25a5aa744f1d775aaf2587e0571c316cbdbbb12b203296711859cb",
+  "premerge-browser.log": "c9618fc104c85b367a74d15ed0595ae8d34b17f8a612a1ce01bdede5594888d8",
+  "release-docs-node.log": "6cf4a7b8f97b8ba1644383cc73d4d8a0797122e55ea9abb619a52f2d0e6c35c1",
+  "pack.json": "d6955acbb6f5c85e27166dc7d8bd586e8f25141a72344bf047a94fb9438fa403",
+  "package-receipt.json": "37ac5719fc6a4d5c7f1e3be87af66e9f751a648079eb69aac0a458dc46aa61a0",
+  "download-helper.json": "37ac5719fc6a4d5c7f1e3be87af66e9f751a648079eb69aac0a458dc46aa61a0",
+  "git-helper.json": "37ac5719fc6a4d5c7f1e3be87af66e9f751a648079eb69aac0a458dc46aa61a0",
+  "postpub-glm.log": "19b42f1e47400ca71cadfa2025274bc4bf30f39952051d185722606d0cc71ce3",
+  "postpub-glm-summary.json": "c020b1e385e65236b81925f91c5292ad3f8f3b55ab1de156f792da77bf8e1a82",
+  "git-consumer.mjs": "a8cea96d5f601f690488662383c0ffdb68072fd675d276b542cf67a6410e41e0",
+  "git-cleanup.mjs": "ea96363211fe2a551f96bb742dfe3b3dbdfff840cf1a4942ab7ebf0b56b07ff2",
+  "git-result.json": "092de56bbb5792d705c9617411240a234d9fed6b6d392f9433b38e7d1d315e33",
+  "git-cleanup-result.json": "387d7db7862a6a012616e93fb6938938461351f78afcf25a7e642316bbb5d2d0",
+  "postpublication-review-r1.md": "b9a77f60ff092c279a705fb3bca6dd328d4874277b22cb2db5757e98f2b7c084"
+}

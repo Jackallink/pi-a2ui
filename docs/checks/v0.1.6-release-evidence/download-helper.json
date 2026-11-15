@@ -1,0 +1,17 @@
+{
+  "node": "v24.18.1",
+  "packageVersion": "0.1.6",
+  "packedFiles": 74,
+  "changedFromReviewed570b67a": [
+    "CHANGELOG.md",
+    "README.md"
+  ],
+  "componentQueries": 32,
+  "examples": 19,
+  "patterns": 8,
+  "errorRecovery": true,
+  "sourceBytes": true,
+  "devHostToolsAbsent": true,
+  "payloadUnchanged": true,
+  "rawReceiptSHA256": "37ac5719fc6a4d5c7f1e3be87af66e9f751a648079eb69aac0a458dc46aa61a0"
+}
