@@ -1,0 +1,47 @@
+✖ BM2 evaluator intent canary C04: legal wrong intent must fail semantic (617.33525ms)
+✖ BM2 evaluator intent canary C25: legal wrong intent must fail semantic (559.713792ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 0
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1281.8305
+
+✖ failing tests:
+
+test at tests/golden.test.ts:1:300
+✖ BM2 evaluator intent canary C04: legal wrong intent must fail semantic (617.33525ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  null !== 'semantic'
+  
+      at TestContext.<anonymous> (/Users/jakeliu/.codex/worktrees/pi-a2ui-dx/pi-a2ui/tests/golden.test.ts:16:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1332:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:385:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: null,
+    expected: 'semantic',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/golden.test.ts:1:300
+✖ BM2 evaluator intent canary C25: legal wrong intent must fail semantic (559.713792ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  null !== 'semantic'
+  
+      at TestContext.<anonymous> (/Users/jakeliu/.codex/worktrees/pi-a2ui-dx/pi-a2ui/tests/golden.test.ts:16:12)
+      at async Test.run (node:internal/test_runner/test:1332:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:911:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: null,
+    expected: 'semantic',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

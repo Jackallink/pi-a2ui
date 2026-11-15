@@ -13,9 +13,11 @@
     }
   ],
   "expected": {
-    "submittedRevision": 2,
     "status": 409,
     "dataFrames": 0,
     "atomic": true
+  },
+  "input": {
+    "submittedRevision": 2
   }
 }
