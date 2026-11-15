@@ -1,0 +1,108 @@
+{
+  "source": "cb89bc61d1632c7032c339483a8554e71938d010",
+  "tree": "e65264c6e09664ae4637727f0854fac0a8eac664",
+  "node": "v24.18.1",
+  "browser": {
+    "node": "v24.18.1",
+    "platform": "darwin",
+    "arch": "arm64",
+    "browserVersion": "158.0.8127.18",
+    "viewport": {
+      "width": 1280,
+      "height": 900
+    },
+    "deviceScaleFactor": 1,
+    "theme": "light",
+    "locale": "en-US",
+    "timezone": "UTC",
+    "reducedMotion": "reduce",
+    "browserRevision": "1254"
+  },
+  "nodeTests": 472,
+  "browserTests": 90,
+  "typecheck": true,
+  "golden": {
+    "cases": 68,
+    "positive": 45,
+    "negative": 23
+  },
+  "raw": [
+    {
+      "path": ".local/v019-issue57-evidence/full-node-r2.log",
+      "sha256": "2bea7ff71f6228cf6ae2259e38432e6e49148f83f61032c02bbc7dc3945a7b9d"
+    },
+    {
+      "path": ".local/v019-issue57-evidence/full-browser-r2.log",
+      "sha256": "97930fda8d8084a13cbbd38aacd1738da22f4ab790fb05674cf719f92fb37651"
+    },
+    {
+      "path": ".local/v019-issue57-evidence/full-types-r2.log",
+      "sha256": "1f0266fdd4c017520db051a92d212903ce5949123108c25175ee7038308a5508"
+    },
+    {
+      "path": ".local/v019-issue57-evidence/offline-r2.log",
+      "sha256": "10f9d1bb97757de6e3dec9c2be4e7132cda73d54b62bdfd4dc7b9447c4403a52"
+    },
+    {
+      "path": ".local/v019-issue57-evidence/dry-run-r2.json",
+      "sha256": "47a2e0dbd6907a78341a17152639b74842f64bd1a45c8212c0ddfa84f49a328b"
+    },
+    {
+      "path": ".local/v019-issue57-evidence/local-startup-r2.log",
+      "sha256": "2f799cfcbb2d2f60b9cebbfe365671822b03269b5a49ade7ae162043a7e833ed"
+    },
+    {
+      "path": ".local/v019-issue57-evidence/git-startup-r2.json",
+      "sha256": "4927bd888fc07cb7adc514c4491bcfa8b4a84faae8e00a974b6235f0e0023059"
+    },
+    {
+      "path": ".local/v019-issue57-evidence/git-startup-r2.log",
+      "sha256": "cb52b949447c04b6c4f500e5ac5e1044a5bf364aa773664827c70ded20629a7e"
+    },
+    {
+      "path": ".local/v019-issue57-evidence/candidate-pack-r2.json",
+      "sha256": "123385ad6a2406b841d129128a7ac6187814318723177bcad9852e696c99be77"
+    },
+    {
+      "path": ".local/v019-issue57-evidence/prepack-r2.json",
+      "sha256": "e8056052faed4066f4804fd91b0b7e99f952cd1cb19a1817928ef9c93d4de146"
+    },
+    {
+      "path": ".local/v019-issue57-evidence/union-r2.json",
+      "sha256": "92a63df5c56c6440bd019e9eead58f8c446dacea7de8b27d61f3c900b4b67b68"
+    },
+    {
+      "path": ".local/v019-issue57-evidence/golden-node-r2.json",
+      "sha256": "8358f70308ad48ae8dd6233e28439b3b97555491905d0a16b916fea62e0e9161"
+    },
+    {
+      "path": ".local/v019-issue57-evidence/golden-browser-r2.json",
+      "sha256": "0034c43f009b6d8ad68a7f71176e05cfee0232a3500dd16ed91abd01fd7b5f89"
+    }
+  ],
+  "offlineRaw": {
+    "path": ".local/bm4/run-1794760988963-89690/report.json",
+    "sha256": "48de173f625a9b1ebf4b26a4a672a2625ae948fda6cc85f6affe7b0fd9c1fa22"
+  },
+  "cards": {
+    "source": "cb89bc61d1632c7032c339483a8554e71938d010",
+    "captures": ".local/run-summary-captures/cb89bc61d1632c7032c339483a8554e71938d010-1794760877374"
+  },
+  "archiveSHA256": "34e522c97202c6f1379fd8efcd7cc52ea707aa8857f99afe13d6e3a9c6c58812",
+  "realV2Baseline": "not-run",
+  "actualModelRequests": 0,
+  "actionsState": "disabled_manually",
+  "bm3": {
+    "raw": ".local/bm3-layout/run-1794760893458-58203",
+    "accepted": true,
+    "states": 3,
+    "checks": 4,
+    "advisoryImagesChanged": [
+      false,
+      false,
+      false
+    ],
+    "baselineUpdated": false
+  },
+  "priorCandidate": "8339/3fc fullvalidation and P2 documentation correction retained separately"
+}
