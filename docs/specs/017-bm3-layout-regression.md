@@ -1,6 +1,6 @@
 # BM3 — deterministic layout across search, audit and return
 
-Lifecycle: draft. Profile: strict. Canonical spec; parent issue43. Baseline fef18935165efdc2d6b152bebf75e2f830a06341 contains independently reviewed BM2 candidate PR53; current source/runtime/assets remain018. User authorizes subsequent BM/issues implementation after each design/TDD gate. This slice is zero-model. No merge, release or global installation change.
+Lifecycle: in-progress. Profile: strict. Canonical spec; parent issue43. Baseline fef18935165efdc2d6b152bebf75e2f830a06341 contains independently reviewed BM2 candidate PR53; current source/runtime/assets remain018. User authorizes subsequent BM/issues implementation after each design/TDD gate. This slice is zero-model. No merge, release or global installation change.
 
 ## Goal, non-goals and evidence boundary
 

@@ -9,3 +9,8 @@ Spec017 freezes explicit unrelated pair matrix, deep hit/native interaction orac
 Official primary-source action verification: actions/upload-artifact release v7.0.2, immutable `cf430e030ddbb5b0abf93d22962f4752f3646cd9`; actual official action.yml runs node24, SHA/pointer in bm3-design-evidence/upload-action-pin.json. Later workflow uses7day synthetic-only retention, existing read-only permissions; independentworkflow review before push. No new npm dependency. Existing owned browser runner5min/job10min and BM2 cleanup contracts remain.
 
 Admission pending independent concrete design/TDD GO. Planned AC001–006 map to3state/native controls, real CSS detector fault/restoration/missing target, legal nesting/modal, baseline integrity/comparability/capture-only, and source-bound cleanup/CI/pack exclusion. Rollback visual test/fixture/baseline/runner/artifact slice together, preserve018/BM2/failedreceipts. No detector code or baseline has been implemented/accepted yet.
+
+
+## Independent admission
+
+R1 atab7219f: design/TDD-intentGO0P0/P1 and1P2 (explicit observable tablefilter/sort outcomes); reportSHA256c42fbb8ec979fbaca01a92e4b923029328bcc63a48e197c89a8eca26657f3012 retained. FixedSpec/Round3 literalfilter,File/Statusascending→descending+aria-sort,restoreFileasc andunchangedlocalPOSTcount in8b77e8bf2e7b50ae9f8894807cea022226ffc56a. R2GO0P0/P1/P2,reportSHA2569d8bcb427b9dabc26416066b3fb0a25e02f69dc623997faf9a975f5066c94d6f. Lifecycle draft→walkthrough-approved→tdd-approved→in-progress. Root maybuildno-op detector andactualCSSfaultRED; not baseline/implementation/CI/model/publicationacceptance.
