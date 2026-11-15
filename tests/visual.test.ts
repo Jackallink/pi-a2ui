@@ -48,3 +48,13 @@ test('BM3 image differences stay advisory and unmatched Linux/fonts stay explici
 test('BM3 full regression runner refuses capture-only even when acquisition controls would pass',async()=>{
  await assert.rejects(promisify(execFile)(process.execPath,['tests/golden/run-browser.mjs'],{env:{...process.env,BM3_CAPTURE_ONLY:'1'},timeout:3000}),error=>String((error as{stderr?:string}).stderr).includes('capture-only is not acceptance'));
 });
+test('BM3 actual body primary survives a simultaneous cleanup fault in real Playwright lifecycle',async()=>{
+ let observed:{stdout?:string;code?:number}|undefined;
+ try{await promisify(execFile)(process.execPath,['node_modules/playwright/cli.js','test','--config=tests/visual/failure-canary.config.ts'],{timeout:15000,maxBuffer:131072});assert.fail('owned intentional failures must not pass');}
+ catch(error){observed=error as typeof observed;}
+ assert.equal(observed?.code,1,'intentional real body/cleanup errors occurred');
+ const output=String(observed.stdout).replace(/\x1b\[[0-9;]*[A-Za-z]/g,'');const line=output.split('\n').find(line=>line.includes('BM3_PRIMARY_CANARY '));assert.ok(line,'actual fixture emitted failure observation');
+ const receipt=JSON.parse(line.slice(line.indexOf('BM3_PRIMARY_CANARY ')+'BM3_PRIMARY_CANARY '.length));
+ assert.equal(receipt.status,'failed');assert.ok(receipt.actualError.includes('owned original assertion'),'real primary assertion precondition');assert.equal(receipt.serverClosed,true);assert.equal(receipt.sessionClosed,true);
+ assert.ok(receipt.primary.errors.some((message:string)=>message.includes('owned original assertion')),'retained primary must include actual body error');assert.ok(receipt.cleanup.includes('owned original assertion'));assert.ok(receipt.cleanup.includes('owned teardown fault'));
+});

@@ -98,3 +98,7 @@ export async function writeEvidence(states:StateEvidence[],checks:Record<string,
  console.log('BM3 evidence '+JSON.stringify({source:identity.source,mode:report.mode,accepted:report.accepted,states:states.length,checks,baseline:report.baseline,run:RUN_DIR}));
  assert.ok(complete,'BM3 all states/controls/canaries/cleanup must complete');if(!CAPTURE_ONLY)assert.equal(report.accepted,true,'BM3 normal acceptance requires clean source and declared valid baseline');
 }
+// Constructed extraction of the prior fixture behavior for the primary-retention RED consumer.
+export function primaryFailure(info:{title:string;status:unknown;errors:readonly{message?:string;value?:unknown}[]},setup:unknown){
+ return{test:info.title,status:info.status,setup:setup?String(setup):undefined,errors:[]as string[]};
+}
