@@ -11,8 +11,8 @@
 |---|---|
 |tests/golden/cases.json,fixtures/|64fixedcases/completecontrols; noJS/modules/shell/eval|
 |tests/golden/registry.ts|loadCases(root):GoldenCase[]; strictschema/fixedkeys/safecontainedregularfiles; noautodiscoverypadding|
-|tests/golden/compiler.ts|evaluateCompiler(case:GoldenCase,sourceOverride?:string):CaseResult viarealcompile+CLI andfixedsemanticoracle|
-|tests/golden/case-worker.ts|FixedownedNode24C/S execution, typedIPC; compileInOwnedWorker(source) observation for canarypreconditions; staticcases only, no usercode selection|
+|tests/golden/compiler.ts|evaluateCompiler(case:GoldenCase,sourceOverride?:string):Promise<CaseResult> viarealcompile+CLI andfixedsemanticoracle|
+|tests/golden/case-worker.ts|FixedownedNode24C/S execution, typedIPC; compileInOwnedWorker(source):Promise<CompileObservation> observation for canarypreconditions; staticcases only, no usercode selection|
 |tests/golden/session.ts|evaluateSession(case,ownedRoot):Promise<CaseResult>;12staticrealstate/HTTPpaths; finallycleanup|
 |tests/golden/browser.spec.ts|6staticrealPlaywrightcaseexecutors,existingcanvas/authpattern; noPi/model|
 |tests/golden.test.ts|RootNodeauto-discovery;58data rows andseparateharnesscanaries|
@@ -24,16 +24,17 @@ GoldenCase/CaseResult shapes areSpec016'sregistry/stage/identityfields; noaltern
 
 - [ ] After userimplementationGO, independentTDDkickoff freezes completefixture/control sources and reason/location matchers against018contracts before codeexpansion. Validatefixturesavailable, separateexistingproductnegativesfromnewharnessbehavior.
 - [ ] Write registry/coverage consumer tests first (64fixedIDs,42/22,46/12/6,path/oracle safety), then minimal runnable loader/fixtures. Missing files/import failures are setup, not behavioralRED.
-- [ ] Implement minimal compiler adapter delegatingrealcompile; run a compile-valid wrongintent case before semanticchecks and observe evaluator-contractRED. Pin this newconstructedadapter source, never label it018productdefect. Example future assertion:
+- [ ] Implement minimal compiler adapter delegatingrealcompile; run a compile-valid wrongintent case before semanticchecks and observe evaluator-contractRED. Pin this newconstructedadapter source, never label it018productdefect. Example future assertion inside an async node:test consumer:
 
 ```ts
 const repoRoot = process.cwd();
 const caseC04 = loadCases(repoRoot).find(row => row.id === 'C04')!;
 const fixture = readFileSync(resolve(repoRoot,caseC04.fixture),'utf8');
 const changed = fixture.replace('src/example.ts','src/other.ts');
-const precondition = compileInOwnedWorker(changed);
+const precondition = await compileInOwnedWorker(changed);
 assert.equal(precondition.kind,'accepted');
-assert.equal(evaluateCompiler(caseC04,changed).failedStage,'semantic');
+const result = await evaluateCompiler(caseC04,changed);
+assert.equal(result.failedStage,'semantic');
 ```
 
 `sourceOverride` is the explicitly declared optional test-local string argument, never a registry field or product API. Canary receipts hash actual override input and retain originalfixture identity; they do not count as golden rows.
@@ -67,3 +68,5 @@ assert.equal(evaluateCompiler(caseC04,changed).failedStage,'semantic');
 Spec016common datasetHash includes the whole64registry/allfixture+controls/media map; commonoracleSetHash includes alladapters/worker/oracles includingbrowser eveninNodejob. Eachcaseactualinputhash is matched to itsown manifest, not othercases. Canaryoverrideinputhash/canary=trueexclude64. Samecommit/lock/catalog/profile/commonhashes precedeunion; layerenvironmentcompatibility is explicit.
 
 Futurethin case-worker isolates synchronousC/S work under realparent30s watchdog; actualCLI is separatelytracked10schild; HTTP5s abort; S07/08controlledclock+1sobservation; browser5saction/30scase; teardown5s; onlyownedchildTERMthen2sKILL/runnercap. Schema/fixtures/concrete matchers and this boundedworker protocol receive TDDkickoff review before implementation. Currentdesignadds no worker/fixture/code/job. Cleanup order andprimary+cleanupfailure reporting followSpec016; no Promise.race syncpreemption or globalprocesskills.
+
+All parent compiler/session/worker helpers are Promise-returning asynchronousspawn/IPC controllers. Tests await precondition/evaluation/childexit/teardown; only child-localrealcompile is synchronous. CompileObservation discriminator/payload is specified inSpec016, not inferred from arbitrarythrow/exitcode. No worker code is implemented in this design.
