@@ -5,12 +5,14 @@ export interface Scenario{id:string;request:string;action?:{button:string;event:
 export function intent(row:Scenario,snapshot:Snapshot,artifactSrc?:string):{buttonId?:string}{
  assert.equal(snapshot.surfaces.length,1);const surface=snapshot.surfaces[0];assert.equal(surface.surfaceId,'bm4');
  const components=surface.message.createSurface.components;const one=(name:string,where:(c:Component)=>boolean=()=>true)=>{const candidates=components.filter(c=>c.component===name&&where(c));assert.equal(candidates.length,1,`intent requires one ${name}`);return candidates[0];};
- const value=(input:Component)=>{const path=(input.value as {'@path'?:string})?.['@path'];assert.ok(path?.startsWith('/'),'bound value');return path!.slice(1).split('/').reduce<any>((data,key)=>data?.[key],surface.message.createSurface.dataModel);};
- const field=(name:string,label:string,initial:unknown)=>{const c=one(name,c=>c.label===label);assert.deepEqual(value(c),initial,`initial ${label}`);return c;};
- const containsText=(id:unknown,literal:string):boolean=>{const stack=[id],seen=new Set<unknown>();while(stack.length){const current=stack.pop();if(seen.has(current))continue;seen.add(current);const c=components.find(c=>c.id===current);if(!c)continue;if(c.component==='Text'&&c.text===literal)return true;stack.push(c.child,...(Array.isArray(c.children)?c.children:[]));}return false;};
- const text=(literal:string)=>assert.ok(components.some(c=>c.component==='Text'&&c.text===literal),'missing literal '+literal);
+ const resolved=(value:unknown):any=>{if(!value||typeof value!=='object'||!('@path'in value))return value;const path=(value as {'@path':string})['@path'];assert.ok(path.startsWith('/'),'absolute binding');return path.slice(1).split('/').map(segment=>segment.replaceAll('~1','/').replaceAll('~0','~')).reduce<any>((data,key)=>data?.[key],surface.message.createSurface.dataModel);};
+ const value=(input:Component)=>resolved(input.value);
+ const buttonText=(id:unknown):string=>{const c=components.find(c=>c.id===id);if(!c)return '';if(c.component==='Text')return String(resolved(c.text));const ids=[...(typeof c.child==='string'?[c.child]:[]),...(Array.isArray(c.children)?c.children:[])];return ids.map(buttonText).join(' ').trim();};
+ const field=(name:string,label:string,initial:unknown)=>{const c=one(name,c=>resolved(c.label)===label);assert.deepEqual(value(c),initial,`initial ${label}`);return c;};
+ const containsText=(id:unknown,literal:string):boolean=>{const stack=[id],seen=new Set<unknown>();while(stack.length){const current=stack.pop();if(seen.has(current))continue;seen.add(current);const c=components.find(c=>c.id===current);if(!c)continue;if(c.component==='Text'&&resolved(c.text)===literal)return true;stack.push(c.child,...(Array.isArray(c.children)?c.children:[]));}return false;};
+ const text=(literal:string)=>assert.ok(components.some(c=>c.component==='Text'&&resolved(c.text)===literal),'missing literal '+literal);
  let button:Component|undefined;
- if(row.action){button=one('Button',c=>components.some(label=>label.id===c.child&&label.component==='Text'&&label.text===row.action!.button));
+ if(row.action){button=one('Button',c=>components.some(label=>label.id===c.child&&buttonText(label.id)===row.action!.button));
   const event=(button.action as any)?.event;assert.equal(event?.name,row.action.event);assert.deepEqual(Object.keys(event.context??{}).sort(),Object.keys(row.action.context).sort(),'exact requested context keys');
   for(const [key,expected]of Object.entries(row.action.context))if(!['M02','M03','M08'].includes(row.id))assert.deepEqual(event.context[key],expected,'literal context '+key);
  }

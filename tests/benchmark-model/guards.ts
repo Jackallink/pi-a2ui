@@ -5,14 +5,21 @@ import profile from './profile.json' with {type:'json'};
 export const MODEL=Object.freeze(profile.model);
 export const CAPS=Object.freeze(profile.caps);
 export const PROFILE=profile.profile;
+export class BudgetViolation extends Error {constructor(readonly kind:'identity'|'budget'|'stopped',message:string){super(message);}}
 export class RequestBudget {
  attempts=0;blocked=0;stopped=false;
  constructor(readonly limit=CAPS.requests){}
  admit(url:string,model:{provider:string;id:string;baseUrl:string}):void {
-  try{assert.deepEqual({provider:model.provider,id:model.id,baseUrl:model.baseUrl},MODEL,'model identity');assert.equal(url,MODEL.baseUrl+'/chat/completions','endpoint identity');
-   assert.equal(this.stopped,false,'post-stop provider request');assert.ok(this.attempts<this.limit,'request budget exceeded');this.attempts++;
-  }catch(error){this.blocked++;throw error;}
+  const reject=(kind:BudgetViolation['kind'],message:string):never=>{this.blocked++;throw new BudgetViolation(kind,message);};
+  if(model.provider!==MODEL.provider||model.id!==MODEL.id||model.baseUrl!==MODEL.baseUrl)reject('identity','model identity rejected');
+  if(url!==MODEL.baseUrl+'/chat/completions')reject('identity','endpoint identity rejected');
+  if(this.stopped)reject('stopped','post-stop provider request');
+  if(this.attempts>=this.limit)reject('budget','request budget exceeded');
+  this.attempts++;
  }
+}
+export function configAdmission(modelsText:string,authText:string,env:NodeJS.ProcessEnv):ReturnType<typeof selectedConfig>{
+ try{return selectedConfig(JSON.parse(modelsText),JSON.parse(authText),env);}catch{throw new Error('BM4 readonly Ark configuration admission failed (literal/env only; identity/credential/header must match)');}
 }
 export function configValue(value:unknown,env:NodeJS.ProcessEnv):string {
  assert.equal(typeof value,'string','config must be string');const text=value as string;

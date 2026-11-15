@@ -31,3 +31,6 @@ test('BM4 actual hung worker kills owned detached browser and removes only owned
  await expect.poll(async()=>{try{process.kill(resource.browserPid,0);return false;}catch(error){return(error as NodeJS.ErrnoException).code==='ESRCH';}},{timeout:3000}).toBe(true);
  await assert.rejects(fetch(resource.origin,{signal:AbortSignal.timeout(1000)}));const {readdir}=await import('node:fs/promises');expect((await readdir(run)).filter(name=>name.startsWith('M01-workspace-'))).toEqual([]);
 });
+
+for(const id of ['M01','M02'])test('BM4 legal binding/nestedlayout actual browser '+id,async()=>{const {report}=await runCase(id,'binding-layout');expect(report.stage).toBe('success');expect(report.intentPass).toBe(true);expect(report.interactionPass).toBe(true);expect(report.statuses).toEqual([202]);expect(report.cleanupFailures).toEqual([]);});
+test('BM4 wrong request identity stops admission before any transport and marks batch fatal',async()=>{const {report}=await runCase('M01','identity');expect(report.stage).toBe('admission');expect(report.requests).toBe(0);expect(report.actualModelRequests).toBe(0);expect(report.fatal).toBe(true);expect(report.harnessFailure).toBe(true);expect(report.toolCount).toBe(0);});

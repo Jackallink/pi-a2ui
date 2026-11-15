@@ -14,3 +14,9 @@ export const SOURCES:Record<string,string>={
  M12:'root = Column([ArtifactPreview(src="ARTIFACT_SRC",kind="image",label="Sample image"),Image(url="ARTIFACT_SRC",description="Sample image")])',
 };
 export const PNG=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+a2a0AAAAASUVORK5CYII=','base64');
+
+export function bindingVariant(id:string):string {
+ if(id==='M01')return '$/button = "Inspect file"\n'+SOURCES.M01.replace('Button(Text("Inspect file")','Button(Column([Text(text=$/button)])');
+ if(id==='M02')return '$/label = "Name"\n'+SOURCES.M02.replace('$/name = ""','$/form = {"name/value":""}').replaceAll('$/name','{"@path":"/form/name~1value"}').replace('label="Name"','label=$/label');
+ throw new Error('unknown binding control');
+}

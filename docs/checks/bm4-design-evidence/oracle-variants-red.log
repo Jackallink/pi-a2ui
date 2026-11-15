@@ -1,0 +1,80 @@
+✖ BM4 legal pointer escape is semantic positive (35.596084ms)
+✖ BM4 legal bound label and text is semantic positive (4.853708ms)
+✖ BM4 nested Button label layout is semantic positive (2.922542ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 0
+ℹ fail 3
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 627.288708
+
+✖ failing tests:
+
+test at tests/benchmark-model.test.ts:2:6300
+✖ BM4 legal pointer escape is semantic positive (35.596084ms)
+  AssertionError [ERR_ASSERTION]: initial Name
+  
+  undefined !== ''
+  
+      at field (/Users/jakeliu/.codex/worktrees/pi-a2ui-bm4/pi-a2ui/tests/benchmark-model/oracles.ts:9:103)
+      at intent (/Users/jakeliu/.codex/worktrees/pi-a2ui-bm4/pi-a2ui/tests/benchmark-model/oracles.ts:20:24)
+      at TestContext.<anonymous> (/Users/jakeliu/.codex/worktrees/pi-a2ui-bm4/pi-a2ui/tests/benchmark-model.test.ts:77:93)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1325:25)
+      at Test.start (node:internal/test_runner/test:1191:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:385:17) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: '',
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests/benchmark-model.test.ts:2:6300
+✖ BM4 legal bound label and text is semantic positive (4.853708ms)
+  AssertionError [ERR_ASSERTION]: intent requires one Button
+  
+  0 !== 1
+  
+      at one (/Users/jakeliu/.codex/worktrees/pi-a2ui-bm4/pi-a2ui/tests/benchmark-model/oracles.ts:7:199)
+      at intent (/Users/jakeliu/.codex/worktrees/pi-a2ui-bm4/pi-a2ui/tests/benchmark-model/oracles.ts:13:24)
+      at TestContext.<anonymous> (/Users/jakeliu/.codex/worktrees/pi-a2ui-bm4/pi-a2ui/tests/benchmark-model.test.ts:77:93)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1325:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:911:18)
+      at Test.postRun (node:internal/test_runner/test:1465:19)
+      at Test.run (node:internal/test_runner/test:1390:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:385:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/benchmark-model.test.ts:2:6300
+✖ BM4 nested Button label layout is semantic positive (2.922542ms)
+  AssertionError [ERR_ASSERTION]: intent requires one Button
+  
+  0 !== 1
+  
+      at one (/Users/jakeliu/.codex/worktrees/pi-a2ui-bm4/pi-a2ui/tests/benchmark-model/oracles.ts:7:199)
+      at intent (/Users/jakeliu/.codex/worktrees/pi-a2ui-bm4/pi-a2ui/tests/benchmark-model/oracles.ts:13:24)
+      at TestContext.<anonymous> (/Users/jakeliu/.codex/worktrees/pi-a2ui-bm4/pi-a2ui/tests/benchmark-model.test.ts:77:93)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1325:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:911:18)
+      at Test.postRun (node:internal/test_runner/test:1465:19)
+      at Test.run (node:internal/test_runner/test:1390:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:911:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

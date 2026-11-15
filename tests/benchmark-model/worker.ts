@@ -1,6 +1,6 @@
 // Owned one-episode worker. Never log configuration, headers or bootstrap URLs.
 import assert from 'node:assert/strict';
-import {readFile,writeFile,mkdir,mkdtemp,cp,symlink,rm,lstat,realpath} from 'node:fs/promises';
+import {readFile,writeFile,mkdir,mkdtemp,appendFile,cp,symlink,rm,lstat,realpath} from 'node:fs/promises';
 import {readFileSync} from 'node:fs';
 import {resolve,join,dirname} from 'node:path';
 import {homedir} from 'node:os';
@@ -10,9 +10,9 @@ import {ModelRuntime,SettingsManager,SessionManager,DefaultResourceLoader,create
 import {chromium,expect,type Browser,type BrowserServer,type Page} from '@playwright/test';
 import a2ui from '../../extension.ts';
 import {interactionsCatalog} from '../../src/catalog.ts';
-import {MODEL,CAPS,RequestBudget,selectedConfig,literalCredentials,ordinaryPath,helperCommand,redact} from './guards.ts';
+import {MODEL,CAPS,RequestBudget,BudgetViolation,configAdmission,literalCredentials,ordinaryPath,helperCommand,redact} from './guards.ts';
 import {intent,interact,type Scenario} from './oracles.ts';
-import {SOURCES,PNG} from './fixtures.ts';
+import {SOURCES,PNG,bindingVariant} from './fixtures.ts';
 import {killTrackedDetachedChildren} from '../../node_modules/@earendil-works/pi-coding-agent/dist/utils/shell.js';
 import {forwardedPayload} from '../golden/oracles.ts';
 import type {Snapshot} from '../../src/protocol.ts';
@@ -23,9 +23,9 @@ const hash=(value:Buffer|string)=>createHash('sha256').update(value).digest('hex
 const wait=async(predicate:()=>boolean,ms=5000)=>{const until=Date.now()+ms;while(!predicate()){assert.ok(Date.now()<until,'receipt deadline');await new Promise(resolve=>setTimeout(resolve,10));}};
 async function deadline<T>(promise:Promise<T>,ms:number,label:string):Promise<T>{let timer:ReturnType<typeof setTimeout>;return await Promise.race([promise,new Promise<never>((_,reject)=>{timer=setTimeout(()=>reject(new Error(label+' deadline')),ms);})]).finally(()=>clearTimeout(timer));}
 export async function episode(row:Scenario,{offline,run,simulation}:{offline:boolean;run:string;simulation?:string}){
- assert.ok(!simulation||offline&&['failed-check','changed-render','unsafe-bash','rate-limit','no-render','wrong-intent','cleanup-fault','request-budget','tool-budget','browser-hang'].includes(simulation),'offline simulation only');
+ assert.ok(!simulation||offline&&['failed-check','changed-render','unsafe-bash','rate-limit','no-render','wrong-intent','cleanup-fault','request-budget','tool-budget','browser-hang','identity','binding-layout'].includes(simulation),'offline simulation only');
  assert.equal(process.versions.node.split('.')[0],'24');assert.ok(['darwin','linux'].includes(process.platform),'manual profile supports macOS/Linux');assert.equal(process.env.PI_OFFLINE,'1');
- const result:any={id:row.id,simulation:simulation??null,started:false,stage:'setup',requests:0,requestOptions:[],providerUsage:[],actualModelRequests:0,compileValid:false,rendered:false,intentPass:false,interactionPass:false,staticPass:false,usage:[],tools:[],transcript:[],testFailures:[],cleanupFailures:[]};
+ const result:any={id:row.id,simulation:simulation??null,started:false,stage:'setup',requests:0,providerCompleted:0,requestOptions:[],providerUsage:[],actualModelRequests:0,compileValid:false,rendered:false,intentPass:false,interactionPass:false,staticPass:false,usage:[],tools:[],transcript:[],testFailures:[],cleanupFailures:[]};
  const budget=new RequestBudget(),secrets:string[]=[];const owned=await realpath(await mkdtemp(join(run,row.id+'-workspace-')));const agentDir=join(owned,'agent'),project=join(owned,'project'),pack=join(owned,'package');
  const configPaths=['settings.json','auth.json','models.json','models-store.json'].map(p=>join(homedir(),'.pi/agent',p));
  const configHashes=async()=>Promise.all(configPaths.map(async(path)=>{try{return hash(await readFile(path));}catch(error){if((error as NodeJS.ErrnoException).code==='ENOENT')return null;throw error;}}));
@@ -46,7 +46,8 @@ export async function episode(row:Scenario,{offline,run,simulation}:{offline:boo
   const names={components:[...interactionsCatalog.components.keys()],examples:examples.map(e=>e.name),patterns:examples.flatMap(e=>e.pattern?[e.pattern]:[])};
   let config:{key:string;headers:Record<string,string>;model:Record<string,unknown>};
   if(offline)config={key:'synthetic-$opaque!key',headers:{'X-BM4-Fixture':'synthetic-$opaque!header'},model:{id:MODEL.id,name:MODEL.id,reasoning:false,input:['text'],contextWindow:65536,maxTokens:4096}};
-  else{beforeHashes=await configHashes();const models=JSON.parse(await readFile(configPaths[2],'utf8'));let auth={};try{auth=JSON.parse(await readFile(configPaths[1],'utf8'));}catch(error){if((error as NodeJS.ErrnoException).code!=='ENOENT')throw error;}config=selectedConfig(models,auth,process.env);}
+  else{try{beforeHashes=await configHashes();const modelsText=await readFile(configPaths[2],'utf8');let authText='{}';try{authText=await readFile(configPaths[1],'utf8');}catch(error){if((error as NodeJS.ErrnoException).code!=='ENOENT')throw error;}config=configAdmission(modelsText,authText,process.env);}catch{result.fatal=true;throw new Error('BM4 readonly Ark configuration admission failed (literal/env only; identity/credential/header must match)');}}
+
   secrets.push(config.key,...Object.values(config.headers));
   // Only non-secret static model identity is persisted; never real models/auth/header config.
   const modelsPath=join(agentDir,'models.json');await writeFile(modelsPath,JSON.stringify({providers:{[MODEL.provider]:{baseUrl:MODEL.baseUrl,api:'openai-completions',models:[config.model]}}}),{mode:0o600});
@@ -54,19 +55,25 @@ export async function episode(row:Scenario,{offline,run,simulation}:{offline:boo
   const model=runtime.getModel(MODEL.provider,MODEL.id);assert.ok(model);assert.equal(model.baseUrl,MODEL.baseUrl);const realStream=runtime.streamSimple.bind(runtime);
   let syntheticTurn=0;
   runtime.streamSimple=(selected,context,options)=>{
-   assert.ok(!stop,'stopped model continuation');assert.equal(selected.provider,MODEL.provider);assert.equal(selected.id,MODEL.id);assert.equal(selected.baseUrl,MODEL.baseUrl);
+   if(stop||selected.provider!==MODEL.provider||selected.id!==MODEL.id||selected.baseUrl!==MODEL.baseUrl){result.fatal=true;result.harnessFailure=true;stopRun('admission','runtime model identity or stopped continuation rejected');throw new Error('runtime identity rejected');}
    return realStream(selected,context,{...options,maxRetries:0,maxTokens:CAPS.maxTokens,timeoutMs:CAPS.requestMs,fetch:async(input,init)=>{
-    const url=typeof input==='string'||input instanceof URL?String(input):input.url;try{budget.admit(url,selected);}catch(error){stopRun('provider',error);throw error;}result.requests=budget.attempts;result.actualModelRequests=offline?0:budget.attempts;result.requestOptions.push({model:MODEL.id,maxTokens:CAPS.maxTokens,maxRetries:0,timeoutMs:CAPS.requestMs,redirect:'error'});
-    const body=JSON.parse(String(init?.body));assert.equal(body.model,MODEL.id);assert.ok(body.max_tokens===CAPS.maxTokens||body.max_completion_tokens===CAPS.maxTokens,'output cap on actual body');body.parallel_tool_calls=false;
-    const headers=new Headers(init?.headers);assert.equal(headers.get('authorization'),'Bearer '+config.key,'opaque key preserved through actual SDK');for(const[name,value]of Object.entries(config.headers))headers.set(name,value);
-    result.skillLoadedInProviderContext=JSON.stringify(body.messages).includes('Known task: example');assert.equal(result.skillLoadedInProviderContext,true,'actual loaded skill content');
+    const url=typeof input==='string'||input instanceof URL?String(input):input.url;let body:any,headers:Headers;
+    try{
+     body=JSON.parse(String(init?.body));if(simulation==='identity')body.model='forbidden-fixture-model';assert.equal(body.model,MODEL.id);assert.ok(body.max_tokens===CAPS.maxTokens||body.max_completion_tokens===CAPS.maxTokens,'actual output cap');body.parallel_tool_calls=false;
+     headers=new Headers(init?.headers);assert.ok(headers.get('authorization')==='Bearer '+config.key,'opaque key bytes');for(const[name,value]of Object.entries(config.headers))headers.set(name,value);
+     result.skillLoadedInProviderContext=JSON.stringify(body.messages).includes('Known task: example');assert.equal(result.skillLoadedInProviderContext,true);
+     budget.admit(url,selected);
+    }catch(error){if(!(error instanceof BudgetViolation)||error.kind!=='budget'){result.fatal=true;result.harnessFailure=true;}stopRun(error instanceof BudgetViolation&&error.kind==='budget'?'provider':'admission',error instanceof BudgetViolation?error.message:'request identity/body/auth/profile admission rejected');throw new Error('BM4 request admission stopped');}
+    result.requests=budget.attempts;result.actualModelRequests=offline?0:budget.attempts;result.requestOptions.push({model:MODEL.id,maxTokens:CAPS.maxTokens,maxRetries:0,timeoutMs:CAPS.requestMs,redirect:'error'});
+    // Durable before-dispatch admission journal: a missing final receipt never implies zero cost.
+    await appendFile(join(run,row.id+'.requests.jsonl'),JSON.stringify({id:row.id,index:budget.attempts,mode:offline?'offline':'live',provider:MODEL.provider,model:MODEL.id,endpoint:MODEL.baseUrl+'/chat/completions'})+'\n',{mode:0o600});
     if(offline){assert.equal(headers.get('X-BM4-Fixture'),'synthetic-$opaque!header');syntheticTurn++;
      if(simulation==='rate-limit'){result.providerStatuses=[429];result.fatal=true;stopRun('provider','synthetic provider HTTP429');return new Response('synthetic429',{status:429});}
      if(simulation==='no-render')return new Response('data: '+JSON.stringify({id:'fixture',object:'chat.completion.chunk',model:MODEL.id,choices:[{index:0,delta:{role:'assistant',content:'No render fixture'},finish_reason:'stop'}]})+'\n\ndata: [DONE]\n\n',{headers:{'content-type':'text/event-stream'}});
      let tool:string,args:unknown;
      if(simulation==='request-budget'){tool='read';args={path:skill};}
      else if(row.id==='M12'&&syntheticTurn===1){tool='a2ui_register_artifact';args={path:'sample.png',kind:'image'};}
-     else{const turn=syntheticTurn-(row.id==='M12'?1:0);if(turn===1){tool='write';args={path:draft,content:(simulation==='failed-check'?'root = UnknownComponent()':SOURCES[row.id].replaceAll('ARTIFACT_SRC',artifactSrc??'MISSING')).replace('line:42',simulation==='wrong-intent'||simulation==='cleanup-fault'?'line:"42"':'line:42')}}else if(turn===2){tool='bash';args={command:`node "${helper}" check --surface-id bm4 "${draft}"`};}else{assert.equal(turn,3,'no postrender synthetic continuation');tool='a2ui_render';args=simulation==='changed-render'?{...checked,source:'root = Text("changed after check")'}:checked;}}
+     else{const turn=syntheticTurn-(row.id==='M12'?1:0);if(turn===1){tool='write';args={path:draft,content:(simulation==='failed-check'?'root = UnknownComponent()':(simulation==='binding-layout'?bindingVariant(row.id):SOURCES[row.id]).replaceAll('ARTIFACT_SRC',artifactSrc??'MISSING')).replace('line:42',simulation==='wrong-intent'||simulation==='cleanup-fault'?'line:"42"':'line:42')}}else if(turn===2){tool='bash';args={command:`node "${helper}" check --surface-id bm4 "${draft}"`};}else{assert.equal(turn,3,'no postrender synthetic continuation');tool='a2ui_render';args=simulation==='changed-render'?{...checked,source:'root = Text("changed after check")'}:checked;}}
      if(simulation==='unsafe-bash'){tool='bash';args={command:'node '+helper+' catalog; touch SHOULD_NOT_EXIST'};}
      result.providerUsage.push({prompt_tokens:10,completion_tokens:2,total_tokens:12});
      const common={id:'synthetic-'+row.id+'-'+syntheticTurn,object:'chat.completion.chunk',created:1,model:MODEL.id};const chunks=[{...common,choices:[{index:0,delta:{role:'assistant',tool_calls:simulation==='tool-budget'?Array.from({length:9},(_,index)=>({index,id:'budget-call-'+index,type:'function',function:{name:'bash',arguments:JSON.stringify({command:'node '+helper+' catalog'})}})):[{index:0,id:'synthetic-call-'+syntheticTurn,type:'function',function:{name:tool,arguments:JSON.stringify(args)}}]},finish_reason:null}]},{...common,choices:[{index:0,delta:{},finish_reason:'tool_calls'}],usage:{prompt_tokens:10,completion_tokens:2,total_tokens:12}}];
@@ -81,17 +88,17 @@ export async function episode(row:Scenario,{offline,run,simulation}:{offline:boo
   const factory=(pi:ExtensionAPI)=>{
    const host:ExtensionAPI={...pi,exec:async(command,args)=>{
     assert.ok(['open','xdg-open','rundll32'].includes(command),'host opener only');assert.equal(args.length,process.platform==='win32'?2:1);const privateUrl=args.at(-1)!;const parsed=new URL(privateUrl);assert.equal(parsed.hostname,'127.0.0.1');secrets.push(privateUrl);origin=parsed.origin;
-    opener=(async()=>{browserServer=await chromium.launchServer({headless:true,executablePath:process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH});const browserProcess=browserServer.process();const profileArg=browserProcess.spawnargs.find(arg=>arg.startsWith('--user-data-dir='));assert.ok(profileArg);await writeFile(join(run,row.id+'.resources.json'),JSON.stringify({workerPid:process.pid,browserPid:browserProcess.pid,profileArg,origin}),{mode:0o600});browser=await chromium.connect(browserServer.wsEndpoint());const context=await browser.newContext({viewport:{width:1280,height:900},locale:'en-US',timezoneId:'UTC',reducedMotion:'reduce'});await context.route('**/*',route=>new URL(route.request().url()).origin===origin?route.continue():route.abort());page=await context.newPage();page.setDefaultTimeout(5000);page.setDefaultNavigationTimeout(5000);
+    opener=(async()=>{browserServer=await chromium.launchServer({headless:true,handleSIGTERM:false,handleSIGINT:false,handleSIGHUP:false,executablePath:process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH});const browserProcess=browserServer.process();const profileArg=browserProcess.spawnargs.find(arg=>arg.startsWith('--user-data-dir='));assert.ok(profileArg);await writeFile(join(run,row.id+'.resources.json'),JSON.stringify({workerPid:process.pid,browserPid:browserProcess.pid,profileArg,origin}),{mode:0o600});browser=await chromium.connect(browserServer.wsEndpoint());const context=await browser.newContext({viewport:{width:1280,height:900},locale:'en-US',timezoneId:'UTC',reducedMotion:'reduce'});await context.route('**/*',route=>new URL(route.request().url()).origin===origin?route.continue():route.abort());page=await context.newPage();page.setDefaultTimeout(5000);page.setDefaultNavigationTimeout(5000);
      page.on('request',request=>{if(request.url()===origin+'/api/actions'&&request.method()==='POST')posts.push(request.postDataJSON());});page.on('response',response=>{if(response.url()===origin+'/api/actions'&&response.request().method()==='POST')statuses.push(response.status());});
      const token=new URLSearchParams(parsed.hash.slice(1)).get('token');if(token)secrets.push(token);const connected=await context.request.post(origin+'/api/connect',{headers:{origin},data:{token},timeout:5000});assert.equal(connected.status(),200);await page.addInitScript(()=>{const original=window.fetch.bind(window);(window as any).bm4ActionStarts=0;window.fetch=(input,options)=>{if(new URL(String(input),location.href).pathname==='/api/actions')(window as any).bm4ActionStarts++;return original(input,options);};});await page.goto(origin!);
     })();await opener;return{stdout:'',stderr:'',code:0,killed:false,truncated:false};}};
    a2ui(host);
-   pi.on('message_end',event=>{const message=event.message as any;if(message.role!=='assistant')return;if(message.stopReason==='error'&&!stop)stopRun('provider',message.errorMessage??'provider stream error');result.transcript.push({kind:'assistant',content:message.content,stopReason:message.stopReason});result.usage.push(message.usage?Object.fromEntries(['input','output','cacheRead','cacheWrite','totalTokens'].map(key=>[key,message.usage[key]??null])):null);});
+   pi.on('message_end',event=>{const message=event.message as any;if(message.role!=='assistant')return;if(message.stopReason==='error'&&!stop)stopRun('provider',message.errorMessage??'provider stream error');if(['toolUse','stop','length'].includes(message.stopReason))result.providerCompleted++;result.transcript.push({kind:'assistant',content:message.content,stopReason:message.stopReason});result.usage.push(message.usage?Object.fromEntries(['input','output','cacheRead','cacheWrite','totalTokens'].map(key=>[key,message.usage[key]??null])):null);});
    pi.on('tool_call',event=>{
     try{assert.equal(stop,false,'case stopped');assert.equal(pending,false,'overlapping tools forbidden');pending=true;assert.ok(++toolCount<=CAPS.tools,'tool budget');assert.ok(!event.parentToolCallId,'nestedtools forbidden');const input=event.input as any;
      if(event.toolName==='read')ordinaryPath(input.path,[pack,project],project);
      else if(event.toolName==='write'||event.toolName==='edit'){assert.equal(checkAttempted,false,'draft frozen after first preflight');assert.equal(resolve(project,input.path),draft,'write/edit owned draft only');if(event.toolName==='write')assert.ok(Buffer.byteLength(input.content)<=32768);}
-     else if(event.toolName==='bash'){const admitted=helperCommand(input.command,helper,draft,project,names);input.command=admitted.command;input.timeout=10;if(admitted.check){assert.equal(checkAttempted,false,'only first preflight');ordinaryPath(draft,[project],project);checkAttempted=true;}}
+     else if(event.toolName==='bash'){const admitted=helperCommand(input.command,helper,draft,project,names);input.command=admitted.command;input.timeout=10;if(admitted.check){assert.equal(checkAttempted,false,'only first preflight');ordinaryPath(draft,[project],project);checkAttempted=true;result.candidateChecked=true;}}
      else if(event.toolName==='a2ui_register_artifact'){assert.equal(input.path,'sample.png');assert.equal(input.kind,'image');assert.equal(artifactSrc,undefined,'register once');}
      else{assert.equal(event.toolName,'a2ui_render','allowed tool only');assert.ok(checked,'successful actual CLI required');assert.deepEqual(input,checked,'unchanged successfulcheck toolarguments');assert.equal(result.renderAttempted,undefined,'one render attempt');result.renderAttempted=true;}
      result.tools.push({name:event.toolName,input:structuredClone(input)});
@@ -136,7 +143,7 @@ export async function episode(row:Scenario,{offline,run,simulation}:{offline:boo
   if(browser)await clean('browser',async()=>{await browserServer?.kill();result.browserProcessClosed=true;if(browser!.isConnected())await browser!.close();if(simulation==='cleanup-fault')throw new Error('injected cleanup fault after actual browser closed');});
   if(origin)try{await realFetch(origin,{signal:AbortSignal.timeout(1000)});result.cleanupFailures.push('owned server remains reachable');}catch{result.serverClosed=true;}
   globalThis.fetch=realFetch;process.removeListener('SIGTERM',interrupted);process.removeListener('SIGINT',interrupted);
-  if(beforeHashes){try{assert.deepEqual(await configHashes(),beforeHashes);result.userConfigUnchanged=true;}catch{result.cleanupFailures.push('real config hashes changed');}}
+  if(beforeHashes){try{assert.deepEqual(await configHashes(),beforeHashes);result.userConfigUnchanged=true;result.userConfigHashes=beforeHashes;}catch{result.cleanupFailures.push('real config hashes changed');}}
   killTrackedDetachedChildren();await clean('workspace',()=>rm(owned,{recursive:true,force:true}));
   if(result.cleanupFailures.length)result.harnessFailure=true;
   result.requests=budget.attempts;result.blockedRequests=budget.blocked;result.toolAttempts=toolCount;result.toolCount=result.tools.length;result.usageKnown=result.providerUsage.length===budget.attempts&&result.providerUsage.every((u:any)=>['prompt_tokens','completion_tokens','total_tokens'].every(key=>typeof u[key]==='number')); 

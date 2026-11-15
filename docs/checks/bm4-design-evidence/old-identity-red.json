@@ -1,0 +1,9 @@
+{
+  "stage": "provider",
+  "requests": 0,
+  "actualModelRequests": 0,
+  "blockedRequests": 1,
+  "fatal": null,
+  "harnessFailure": null,
+  "error": "endpoint identity\n+ actual - expected\n\n+ 'https://forbidden-fixture.invalid/chat/completions'\n- 'https://ark.cn-beijing.volces.com/api/plan/v3/chat/completions'\n"
+}

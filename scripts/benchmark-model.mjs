@@ -42,6 +42,22 @@ export async function ownedChild(id,run,offline,timeout=102000,simulation){
  for(const name of readdirSync(run).filter(name=>name.startsWith(id+'-workspace-'))){const path=join(run,name);assert.ok(lstatSync(path).isDirectory()&&!lstatSync(path).isSymbolicLink());rmSync(path,{recursive:true});}
  return value;
 }
+export function requestJournal(id,run,offline){
+ const path=join(run,id+'.requests.jsonl');if(!existsSync(path))return [];
+ const records=readFileSync(path,'utf8').trim().split('\n').filter(Boolean).map(line=>JSON.parse(line));assert.ok(records.length<=profile.caps.requests);
+ records.forEach((row,index)=>{assert.deepEqual(row,{id,index:index+1,mode:offline?'offline':'live',provider:profile.model.provider,model:profile.model.id,endpoint:profile.model.baseUrl+'/chat/completions'});});return records;
+}
+export function workerReceipt(id,run,offline){
+ let journal=[];const unknown=reason=>({id,started:null,stage:'harness',error:reason,requests:null,actualModelRequests:offline?0:null,knownAdmittedRequests:journal.length,requestAccounting:'unknown',harnessFailure:true});
+ try{
+  journal=requestJournal(id,run,offline);const path=join(run,id+'.json');if(!existsSync(path))return unknown('owned worker final receipt missing; start/request outcome unknown');
+  const result=JSON.parse(readFileSync(path,'utf8'));assert.equal(result.id,id);assert.equal(result.requests,journal.length,'receipt/journal request agreement');assert.ok(result.requests<=profile.caps.requests);assert.ok((result.toolCount??0)<=profile.caps.tools);result.knownAdmittedRequests=journal.length;result.requestAccounting='known';return result;
+ }catch{return unknown('owned worker receipt/journal invalid; start/request outcome unknown');}
+}
+export function summarize(results,offline){
+ const count=key=>results.filter(r=>r[key]===true).length;const unknown=results.some(r=>r.requests===null);const known=results.reduce((sum,r)=>sum+(r.knownAdmittedRequests??r.requests??0),0);
+ return{planned:12,attemptedEpisodes:results.filter(r=>!r.notRun).length,started:count('started'),startedUnknown:results.filter(r=>r.started===null).length,notRun:results.filter(r=>!!r.notRun).length,providerRequests:unknown?null:known,knownAdmittedRequests:known,actualModelRequests:offline?0:unknown?null:known,requestAccounting:unknown?'unknown':'known',providerCompleted:unknown?null:results.reduce((sum,r)=>sum+(r.providerCompleted??0),0),knownProviderCompleted:results.reduce((sum,r)=>sum+(r.providerCompleted??0),0),candidatesChecked:count('candidateChecked'),compileValid:count('compileValid'),rendered:count('rendered'),intentPass:count('intentPass'),interactionApplicable:scenarios.filter(s=>s.action).length,interactionPass:count('interactionPass'),staticApplicable:scenarios.filter(s=>!s.action).length,staticPass:count('staticPass'),firstPassSuccess:results.filter(r=>r.intentPass&&(r.interactionPass||r.staticPass)).length,harnessAccepted:results.length===12&&!results.some(r=>r.harnessFailure),results};
+}
 async function main(){
  assert.equal(process.versions.node.split('.')[0],'24','Node24.x required');const args=process.argv.slice(2);const execute=args[0]==='--execute',offline=args[0]==='--offline';
  if(args.length===1&&args[0]==='--help'){console.log('Node24: node scripts/benchmark-model.mjs [--dry-run | --offline | --execute --archive ABS_TGZ]\nDefault dry-run: zero inference/config reads. Execute:12GLM first attempts, no retries; manual only.');return;}
@@ -57,17 +73,14 @@ async function main(){
  const started=Date.now(),results=[];let stopped;
  for(const row of scenarios){
   if(stopped||Date.now()-started>=profile.caps.batchMs){stopped??='batch deadline';results.push({id:row.id,started:false,notRun:stopped});continue;}
-  const child=await ownedChild(row.id,run,offline,Math.min(102000,profile.caps.batchMs-(Date.now()-started)));
+  let child;try{child=await ownedChild(row.id,run,offline,Math.min(102000,profile.caps.batchMs-(Date.now()-started)));}catch{child={code:null,signal:null,failure:'owned worker cleanup/identity verification failed'};}
   // Workers never write credentials/headers/URLs; do not persist arbitrary crash output.
-  const path=join(run,row.id+'.json');let result;
-  if(existsSync(path))result=JSON.parse(readFileSync(path,'utf8'));
-  else result={id:row.id,started:false,stage:'setup',error:'owned worker ended without receipt',harnessFailure:true};
+  const result=workerReceipt(row.id,run,offline);
   if(child.code!==0||child.failure||child.fallbackBrowserKill){result.harnessFailure=true;result.process={code:child.code,signal:child.signal,failure:child.failure,fallbackBrowserKill:child.fallbackBrowserKill};}
   results.push(result);console.log(JSON.stringify({id:row.id,stage:result.stage,requests:result.requests,compile:result.compileValid,intent:result.intentPass,interaction:result.interactionPass,actualModel:!offline}));
   if(result.fatal||result.harnessFailure)stopped=result.error||'harness failure';
  }
- const count=key=>results.filter(r=>r[key]===true).length;
- const report={mode:offline?'synthetic-offline':'live-first-attempt',identity:stamp,profile,planned:12,started:count('started'),notRun:results.filter(r=>!r.started).length,providerRequests:results.reduce((sum,r)=>sum+(r.requests??0),0),actualModelRequests:offline?0:results.reduce((sum,r)=>sum+(r.requests??0),0),compileValid:count('compileValid'),rendered:count('rendered'),intentPass:count('intentPass'),interactionApplicable:scenarios.filter(s=>s.action).length,interactionPass:count('interactionPass'),staticApplicable:scenarios.filter(s=>!s.action).length,staticPass:count('staticPass'),harnessAccepted:results.length===12&&!results.some(r=>r.harnessFailure),stopped:stopped??null,results};
+ const report={mode:offline?'synthetic-offline':'live-first-attempt',identity:stamp,profile,...summarize(results,offline),stopped:stopped??null};
  writeFileSync(join(run,'report.json'),JSON.stringify(report,null,2)+'\n',{mode:0o600});console.log(JSON.stringify({report:join(run,'report.json'),harnessAccepted:report.harnessAccepted,actualModelRequests:report.actualModelRequests}));if(!report.harnessAccepted)process.exitCode=1;
 }
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url))main().catch(()=>{console.error('BM4 admission failed; check Node24, frozen clean source, explicit arguments and approved archive. No automatic retry.');process.exitCode=1;});
