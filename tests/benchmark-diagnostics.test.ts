@@ -56,6 +56,18 @@ for (const family of registry.families) {
     const moved = replaced(guide,family.doc.marker,'') + `\n## Other\n${family.doc.marker}\n`;
     rejectsAt('doc-contract', () => verifyDocumentation(family,moved));
   });
+  for (const level of [1,3]) {
+    test(`BM1 ${family.id}: rejects a duplicate outside-fence heading at level ${level}`, () => {
+      const bad = `${'#'.repeat(level)} ${family.doc.heading}\n\n${guide}`;
+      rejectsAt('doc-contract', () => verifyDocumentation(family,bad));
+    });
+  }
+  test(`BM1 ${family.id}: the unique repair heading must remain level two`, () => {
+    for (const prefix of ['#','###']) {
+      const bad = replaced(guide,`## ${family.doc.heading}`,`${prefix} ${family.doc.heading}`);
+      rejectsAt('doc-contract', () => verifyDocumentation(family,bad));
+    }
+  });
   test(`BM1 ${family.id}: requires a supported complete example fence`, () => {
     const source = documentSource(family,guide);
     const unsupported = replaced(guide,`\`\`\`text\n${source}`,`\`\`\`json\n${source}`);
