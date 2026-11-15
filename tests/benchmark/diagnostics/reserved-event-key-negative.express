@@ -1,0 +1,2 @@
+inspect = Button(child=Text(text="Inspect"),action=Event("inspect_file",{path:"src/example.ts"}))
+root = Column(children=[inspect])
