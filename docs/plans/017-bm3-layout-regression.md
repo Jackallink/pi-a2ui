@@ -1,0 +1,10 @@
+# BM3 implementation plan
+
+Goal: deterministic three-state readability/action regression, Spec017 canonical. No new runtime/CSS/SDK/dependencies/model/version. Root implements; independent reviews only delegated. BM2 PR53 is a predecessor, not silently merged by this slice. Strict lifecycle/gates and risk/rollback are inSpec017; tracker owns progress, Checks own results.
+
+1. Freeze complete search/audit inputs and fixed subjects/pairs, native hit-test/font/baseline/lifetime contracts. Validate3walkthroughs, independently review design/TDD and official immutable Node24 artifact pin. No code before GO.
+2. Write consumers and minimal no-op detector with actual valid page/independently observed CSS-overlap fault. Pin meaningful behavioral RED; setup/missing-module failures are not it. Implement minimum finite-rect/pair/hit checks and restore positive control.
+3. Real Search→Audit→Return actions with actual serverPOST202/accepted version/typed callback; add native table controls and legitimate nesting/Modal positive controls. Record Node24/lockedbrowser/fonts/fixture/renderer/oracle/source identity; bounded cleanup/fault tests reuse reviewed BM2 helper.
+4. Explicit capture-only acquisition reports accepted=false. Inspect3synthetic images, independent visual review, manually copy exact PNGs with provenance manifest. No automatic baseline updater. Normal declared-local baseline validation, advisory differences and explicit Linux non-comparability.
+5. Extend existing5minute owned browser runner with visual tests and exact official upload-artifact SHA (Node24/read-only job permission/7day synthetic-only retention). Check narrow→full relevant node/types/browser/build/pack; confirm BM2 exact68 compatible union still works.
+6. Pin source and independent code/baseline/workflow review. Correct NO-GO with retained failures and bounded fresh review. Only then create stacked PR and actual Node24CI, retain actual source/job/artifact receipts. No merge/release/issue43closure; BM4 design/profile review follows before its authorized12GLM-first-attempt baseline.

@@ -1,0 +1,1 @@
+root = Card(child=Column(children=[Text(text="Legal containment"),Modal(trigger=Text(text="Open details"),content=Column(children=[Text(text="Local details"),Text(text="Nested body")]))]))

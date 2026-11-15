@@ -1,0 +1,9 @@
+{
+  "purpose": "complete fixtures before detector code",
+  "profile": "v0.1.8-layout-v1",
+  "files": {
+    "tests/visual/fixtures/audit.express": "f29782d5e0705f553d19e33a939c22103984f4ac42411759048bc17d9cfa3150",
+    "tests/visual/fixtures/modal.express": "97cba544626e2e7456049d6185259eebc8859461f9431de5a733e4aab69e6230",
+    "tests/visual/fixtures/search.express": "de3fd256dde7ed709f9f7077179660ee3c9c7c6dc16df203b6f2f977933fb64c"
+  }
+}

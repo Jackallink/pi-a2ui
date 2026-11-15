@@ -1,0 +1,2 @@
+back = Button(child=Text(text="Back to search"),action=Event("back"))
+root = Card(child=Column(children=[Text(text="Audit results"),DataTable(caption="Reported findings",columns=[{id:"file",label:"File"},{id:"status",label:"Status"}],rows=[{id:"a",cells:["src/example.ts","Illustrative finding"]},{id:"b",cells:["src/other.ts","Not executed"]}]),back]))
