@@ -1,0 +1,19 @@
+{
+  "node": "v24.18.1",
+  "packageVersion": "0.1.7",
+  "packedFiles": 75,
+  "changedFromCandidate": [
+    "CHANGELOG.md",
+    "README.md"
+  ],
+  "componentQueries": 32,
+  "examples": 19,
+  "patterns": 8,
+  "docExamples": 3,
+  "largerRun": true,
+  "diagnostics": true,
+  "localLimit": true,
+  "sourceBytes": true,
+  "devToolsAbsent": true,
+  "rawReceiptSHA256": "88b39f829dc607319f7aeea9196ed9c11a131e3aa315f6ede4a8153fc13a5b64"
+}

@@ -1,0 +1,28 @@
+{
+  "passed": true,
+  "releaseId": 445819249,
+  "stable": true,
+  "latest": true,
+  "tag": "v0.1.7",
+  "tagObject": "4250466a40f0f696109f1e52cd5f5772a0dc0aa5",
+  "peeledCommit": "9e685b35de6b022380eb04b27efb4e1c6a72fa94",
+  "archiveSHA256": "82287b96fa116eb60c35b5cb38de265b2a0d09fa017e5f6065e8befd0acea3e2",
+  "downloadEqualsUpload": true,
+  "sourceArchiveFilesVerified": 75,
+  "assets": [
+    {
+      "id": 749872480,
+      "name": "pi-a2ui-0.1.7.tgz",
+      "size": 270307,
+      "digest": "sha256:82287b96fa116eb60c35b5cb38de265b2a0d09fa017e5f6065e8befd0acea3e2",
+      "browser_download_url": "https://github.com/Jackallink/pi-a2ui/releases/download/v0.1.7/pi-a2ui-0.1.7.tgz"
+    },
+    {
+      "id": 749872493,
+      "name": "SHA256SUMS",
+      "size": 84,
+      "digest": "sha256:b61e2b7d3b4bd5f55dae200c8232e7b52f4f8c87cfa6314bb32a8f2f959a77e3",
+      "browser_download_url": "https://github.com/Jackallink/pi-a2ui/releases/download/v0.1.7/SHA256SUMS"
+    }
+  ]
+}

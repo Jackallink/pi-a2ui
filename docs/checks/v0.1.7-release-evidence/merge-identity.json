@@ -1,0 +1,13 @@
+{
+  "pr": 48,
+  "state": "MERGED",
+  "reviewedHead": "0af1f61b2f111ed52ed80d5ae1d3136d78edaf38",
+  "mergeCommit": "9e685b35de6b022380eb04b27efb4e1c6a72fa94",
+  "mergeParents": [
+    "67bcb7db5b2d202defb3a3ad52a677c18a23e03b",
+    "0af1f61b2f111ed52ed80d5ae1d3136d78edaf38"
+  ],
+  "treeMatchesReviewedHead": true,
+  "payloadFilesVerified": 75,
+  "original45And46Contained": true
+}
