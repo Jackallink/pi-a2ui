@@ -1,0 +1,23 @@
+# v0.1.9 package / profile / local CI implementation R1 — NO-GO
+
+**Fixed source:** 08f9e5bbf64ca3c45a72830771e5f4d28e7c3666. **0 P0 / 1 P1 / 1 P2.** Scope: actual archive/source identity, expected payload delta, version/profile admission, executable helper/developer docs and user-directed local-CI policy. Core handoff implementation has its separate code-review gate. No model, real config-content access, source edit or remote mutation.
+
+## Findings
+
+**F-01 — P1: current-release test contract was not migrated to019; required full Node validation fails.** `tests/package.test.ts:9–11` still requires current0.1.8; `:37–39` still requires top changelog version[0,1,8]. Actual package/root lock/changelog correctly identify019. Fresh fixed-source full-node.log is **457tests/455pass/2fail/0skip/cancel** at exactly these assertions. This is a release-test metadata omission, not a production runtime failure, and cannot be waived by95narrow passes or correct archive bytes. Update current-version/changelog assertions to019, retain explicit published018/earlier-history checks, preserve this RED and verify a new fixed source with required full receipts.
+
+**F-02 — P2: developer BM4 prose still denies the package-version change.** `docs/benchmarks/bm4.md:31` says no productpackageversion change in its general current-profile section, contradicting019 metadata and its current019execute example. Scope the sentence to historical v1 or distinguish unchanged runtime/CSS/dependencies from normal019release metadata. This file is outside payload, so the repair need not change archive/profile pin.
+
+## Independently verified package / profile boundaries
+
+Actual archive **pi-a2ui-0.1.9.tgz**, **SHA256e3403959ab64f2fe2c12e579940a1d97bc00068a05e081a0c9437ea77220f806**. Independently inspected all75regular contained tar entries and compared every byte to fixed08fGit blobs/current source, private candidate-pack hash map and npm prepack path/size manifest: all match. File set equals retained018candidatearchive278d12ca…; exactly4files change: **package.json,README.md,CHANGELOG.md,skills/pi-a2ui/references/helper.md**. Runtime/src/dist/extension/helperCLI, examples, assets and legal material otherwise identical. Dependency and SRI graph unchanged: package JSON differs onlyversion; lock differs onlytop/rootpackageversions. Declared optional wildcard Pi/typebox host peers and pi.skills/extensions/file allowlist remain intact. No tests/profiles/docs/CI/AGENTS/node_modules enter payload. Candidate-pack receiptSHA **0f245066c1b8bb77036035215ecd0c181b0283c6c1265e31e818879bde2977a8**.
+
+v2profile has exact019package/archive binding; model/caps/node/Pi/retry policy equal v1. Script/guards use v2, default stamp binds packageVersion, case receipt requires its v2profile; explicit archive admission checks digest, exact75allowlist and all source bytes. Profiles are outside payload, avoiding digest self-reference. Frozen v1profile still matches365 and original realreport remainscf44a0be28c51652086c4bef24b86fbb135ef971f42aabd31b350ae972ef098b. No oldscore rescore or newrealmodel budget is implied.
+
+Bounded independent Node24.18.1 public-helper probe: catalog reports019/32components, check returns exactlysurfaceId/source and preserves UTF8/LF/CRLF; developer LFcomparison example executes successfully while attemptedB remains unchanged. These byte-equal source probes are not an installed Pi consumer claim. Helper prose correctly preserves production CLI/runtime authority, introduces no receipt API or normalization. README installation references still target published018 pending concrete release preparation; no019tag/publication is falsely asserted.
+
+## Local CI / remaining gates
+
+New rootAGENTS contains Scope/Inheritance/Override/EvidencePath and dated2026-11-15user local-only override, retains strict review/tests/source/package/consumer acceptance, forbids hosted rerun/re-enable or permission bypass. Read-only live API confirms workflow418909498 **disabled_manually**; no run triggered. Producer fixed-source **89Chromium** and tsc pass; full Node remains RED above, actual public--offline/strictunion final receipts still pending. No reviewer broad suite rerun was performed.
+
+**Disposition:** NO-GO for fixed08flocal-CI candidate until F-01 and the small F-02 correction receive bounded new-source verification. Package-byte gate itself passes. Later actual dependency integration/main checks, owned normal Git/local Pi startup/skill+tool uniqueness, final release artifact/readback and issue43/51/52/56closure remain distinct gates; none are completed by this report. No global install/config changes, npm publication, merge/tag/release or issue mutation occurred.

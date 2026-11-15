@@ -1,0 +1,21 @@
+{
+  "passed": true,
+  "results": [
+    {
+      "source": "git:github.com/Jackallink/pi-a2ui@dd41ca40c70529095e5433da0e2ebca7d722c456",
+      "node": "v24.18.1",
+      "projectRegistrationRemoved": true,
+      "ownedCloneRemoved": true,
+      "markerPreserved": true,
+      "agentSettingsPreserved": true
+    },
+    {
+      "source": "git:github.com/Jackallink/pi-a2ui@7bb6a0b0f4eb48820cf1d6f6c92dd29efa06ac8c",
+      "node": "v24.18.1",
+      "projectRegistrationRemoved": true,
+      "ownedCloneRemoved": true,
+      "markerPreserved": true,
+      "agentSettingsPreserved": true
+    }
+  ]
+}

@@ -1,6 +1,8 @@
 # v0.1.9 — issue56 checked-source handoff and issue closure
 
-Lifecycle: review-ready. Profile: strict. Canonicalspec019. User changed scope on2026-11-15: finish all open43/51/52/56 as the nextversion. Baseline906155450e60723a44c5b42a3fee74787e96a15c includes reviewedPR53→54→55. Root implements, independentreviews only delegated. Node24.x only, Git/localdistribution, no npmpublication. Actionsworkflow418909498 manuallydisabled byuserquota instruction; allfuturechecks local. No new realmodelbudget: preserve sole365 GLMrun12/43/7of12 and unknownusage, no repair/rescore/retry.
+Lifecycle: complete. Profile: strict. Canonicalspec019. User changed scope on2026-11-15: finish all open43/51/52/56 as the nextversion. Baseline906155450e60723a44c5b42a3fee74787e96a15c includes reviewedPR53→54→55. Root implements, independentreviews only delegated. Node24.x only, Git/localdistribution, no npmpublication. Actionsworkflow418909498 manuallydisabled byuserquota instruction; allfuturechecks local. No new realmodelbudget: preserve sole365 GLMrun12/43/7of12 and unknownusage, no repair/rescore/retry.
+
+> Delivery update2026-11-15: implemented, independently reviewed and accepted on actual integrated0.1.9 source `7bb6a0b0f4eb48820cf1d6f6c92dd29efa06ac8c`; see [Check106](../checks/106-v019-integrated-main.md). Earlier admission/unmerged/future-implementation wording below is retained design-stage context and is superseded for delivery status by this record. Functional constraints and all original RED/GLM v1 evidence remain unchanged. Local Node24 replaces hosted execution under the user quota instruction; it does not waive gates. Publication/tag/global upgrade and any new real-model budget remain separately authorized actions.
 
 ## Goal / non-goals
 
