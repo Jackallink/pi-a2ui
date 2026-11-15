@@ -1,0 +1,1 @@
+root = Details(title="More",child=Text("Body"),open=false)

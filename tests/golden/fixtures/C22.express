@@ -1,0 +1,1 @@
+root = Modal(trigger=Text("Open"),content=Text("Body"))

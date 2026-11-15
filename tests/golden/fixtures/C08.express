@@ -1,0 +1,2 @@
+$/v = ["a"]
+root = ChoicePicker(label="Pick",variant="multipleSelection",options=[{label:"A",value:"a"},{label:"B",value:"b"}],value=$/v)

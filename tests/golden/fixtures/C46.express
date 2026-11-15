@@ -1,0 +1,9 @@
+review = Button(child=Text(text="Review"),action=Event("review",{proposalId:"proposal-example",resultId:"result-example"}))
+inspect = Button(child=Text(text="Ask a question"),action=Event("question",{}))
+root = Column(children=[
+  CodeDiff(proposalId="proposal-example",filename="example.ts",baseRevision="base-example",before="old",after="new"),
+  TestResults(resultId="result-example",command="example only",evidence="Illustrative fixture, not an executed test",cases=[{id:"sample",name:"Not run",status:"skip"}],summary={pass:0,fail:0,skip:1,error:0}),
+  review,
+  inspect
+])
+

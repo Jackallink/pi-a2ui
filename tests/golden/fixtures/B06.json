@@ -1,0 +1,10 @@
+{
+  "source": "root = Modal(trigger=Text(\"Open\"),content=Text(\"Body\"))",
+  "steps": "browser/modal/local-focus",
+  "expected": {
+    "dialogText": "Body",
+    "restoreFocus": true,
+    "posts": 0,
+    "dispatches": 0
+  }
+}

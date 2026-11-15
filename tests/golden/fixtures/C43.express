@@ -1,0 +1,5 @@
+$/v = ""
+field = TextField("Name",$/v)
+submit = Button(Text("Save"),action=Event("submit",{name:$/v}))
+guard = FormValidation(buttons=["submit"],rules=[{fieldId:"absent",message:"Enter 2 to 5",required:true,minLength:2,maxLength:5}])
+root = Column(children=[field,guard,submit])

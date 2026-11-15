@@ -1,0 +1,2 @@
+$/v = true
+root = CheckBox(label="Accept",value=$/v)

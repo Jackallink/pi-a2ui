@@ -1,0 +1,1 @@
+root = Button(child=Text("Go"),action=Event("inspect_file",{file:"src/example.ts"}))

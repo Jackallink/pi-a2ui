@@ -1,0 +1,14 @@
+{
+  "source": "$/name = \"\"\n$/ok = false\nname = TextField(label=\"Name\",value=$/name)\nok = CheckBox(label=\"Accept\",value=$/ok)\nsubmit = Button(child=Text(text=\"Save form\"),action=Event(\"submit\",{name:$/name,accept:$/ok}))\ncancel = Button(child=Text(text=\"Cancel\"),action=Event(\"cancel\"))\nvalidation = FormValidation(buttons=[\"submit\"],rules=[{fieldId:\"name\",message:\"Enter 2 to 5 characters\",required:true,minLength:2,maxLength:5},{fieldId:\"ok\",message:\"Accept to continue\",required:true}])\nroot = Column(children=[name,ok,validation,submit,cancel])\n",
+  "steps": "session/capacity/surfaces4",
+  "expected": {
+    "sizes": [
+      1,
+      1,
+      1,
+      1
+    ],
+    "surfaceCount": 4,
+    "components": 4
+  }
+}

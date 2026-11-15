@@ -1,0 +1,3 @@
+first = Text("A")
+second = Text("B")
+root = Tabs(tabs=[{title:"First",child:first},{title:"Second",child:second}])

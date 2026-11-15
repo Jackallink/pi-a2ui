@@ -1,0 +1,21 @@
+{
+  "source": "root = Chart(kind=\"line\",series=[{name:\"A\",points:[{label:\"one\",value:-2}]}])",
+  "steps": "session/data/stale-chart",
+  "series": [
+    {
+      "name": "A",
+      "points": [
+        {
+          "label": "two",
+          "value": 3
+        }
+      ]
+    }
+  ],
+  "expected": {
+    "submittedRevision": 2,
+    "status": 409,
+    "dataFrames": 0,
+    "atomic": true
+  }
+}

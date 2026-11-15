@@ -1,0 +1,2134 @@
+{
+  "schemaVersion": 1,
+  "profile": "v0.1.8-golden-v2",
+  "cases": [
+    {
+      "id": "B01",
+      "contractKey": "browser/guard/valid-typed-submit",
+      "layer": "browser",
+      "polarity": "positive",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "browser/guard/valid-typed-submit",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": null,
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/B01.json",
+      "steps": [
+        {
+          "op": "browser",
+          "caseId": "B01"
+        }
+      ],
+      "expected": {
+        "outcome": "accepted",
+        "oracle": "browser/guard/valid-typed-submit"
+      }
+    },
+    {
+      "id": "B02",
+      "contractKey": "browser/guard/invalid-no-post",
+      "layer": "browser",
+      "polarity": "negative",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "browser/guard/invalid-no-post",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": null,
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/B02.json",
+      "steps": [
+        {
+          "op": "browser",
+          "caseId": "B02"
+        }
+      ],
+      "expected": {
+        "outcome": "rejected",
+        "oracle": "browser/guard/invalid-no-post"
+      }
+    },
+    {
+      "id": "B03",
+      "contractKey": "browser/picker/typed-selection",
+      "layer": "browser",
+      "polarity": "positive",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "browser/picker/typed-selection",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": null,
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/B03.json",
+      "steps": [
+        {
+          "op": "browser",
+          "caseId": "B03"
+        }
+      ],
+      "expected": {
+        "outcome": "accepted",
+        "oracle": "browser/picker/typed-selection"
+      }
+    },
+    {
+      "id": "B04",
+      "contractKey": "browser/palette/hidden-target",
+      "layer": "browser",
+      "polarity": "negative",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "browser/palette/hidden-target",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": null,
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/B04.json",
+      "steps": [
+        {
+          "op": "browser",
+          "caseId": "B04"
+        }
+      ],
+      "expected": {
+        "outcome": "rejected",
+        "oracle": "browser/palette/hidden-target"
+      }
+    },
+    {
+      "id": "B05",
+      "contractKey": "browser/table/local-sort",
+      "layer": "browser",
+      "polarity": "positive",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "browser/table/local-sort",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": null,
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/B05.json",
+      "steps": [
+        {
+          "op": "browser",
+          "caseId": "B05"
+        }
+      ],
+      "expected": {
+        "outcome": "accepted",
+        "oracle": "browser/table/local-sort"
+      }
+    },
+    {
+      "id": "B06",
+      "contractKey": "browser/modal/local-focus",
+      "layer": "browser",
+      "polarity": "positive",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "browser/modal/local-focus",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": null,
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/B06.json",
+      "steps": [
+        {
+          "op": "browser",
+          "caseId": "B06"
+        }
+      ],
+      "expected": {
+        "outcome": "accepted",
+        "oracle": "browser/modal/local-focus"
+      }
+    },
+    {
+      "id": "B07",
+      "contractKey": "browser/event/two-intentional-clicks",
+      "layer": "browser",
+      "polarity": "positive",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "browser/event/two-intentional-clicks",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": null,
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/B07.json",
+      "steps": [
+        {
+          "op": "browser",
+          "caseId": "B07"
+        }
+      ],
+      "expected": {
+        "outcome": "accepted",
+        "oracle": "browser/event/two-intentional-clicks"
+      }
+    },
+    {
+      "id": "C01",
+      "contractKey": "compiler/ActivityTimeline/initial-static",
+      "layer": "compiler",
+      "polarity": "positive",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "compiler/ActivityTimeline/initial-static",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": null,
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/C01.express",
+      "steps": [
+        {
+          "op": "compiler",
+          "caseId": "C01"
+        }
+      ],
+      "expected": {
+        "outcome": "accepted",
+        "oracle": "component-shape",
+        "subject": {
+          "id": "root",
+          "component": "ActivityTimeline",
+          "values": {
+            "stream": "tools",
+            "state": "idle",
+            "entries": []
+          }
+        }
+      }
+    },
+    {
+      "id": "C02",
+      "contractKey": "compiler/ArtifactPreview/local-shape",
+      "layer": "compiler",
+      "polarity": "positive",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "compiler/ArtifactPreview/local-shape",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": null,
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/C02.express",
+      "steps": [
+        {
+          "op": "compiler",
+          "caseId": "C02"
+        }
+      ],
+      "expected": {
+        "outcome": "accepted",
+        "oracle": "component-shape",
+        "subject": {
+          "id": "root",
+          "component": "ArtifactPreview",
+          "values": {
+            "src": "/api/artifacts/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "kind": "image",
+            "label": "Preview"
+          }
+        }
+      }
+    },
+    {
+      "id": "C03",
+      "contractKey": "compiler/AudioPlayer/local-shape",
+      "layer": "compiler",
+      "polarity": "positive",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "compiler/AudioPlayer/local-shape",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": null,
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/C03.express",
+      "steps": [
+        {
+          "op": "compiler",
+          "caseId": "C03"
+        }
+      ],
+      "expected": {
+        "outcome": "accepted",
+        "oracle": "component-shape",
+        "subject": {
+          "id": "root",
+          "component": "AudioPlayer",
+          "values": {
+            "url": "/api/artifacts/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          }
+        }
+      }
+    },
+    {
+      "id": "C04",
+      "contractKey": "compiler/Button/file-intent",
+      "layer": "compiler",
+      "polarity": "positive",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "compiler/Button/file-intent",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": null,
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/C04.express",
+      "steps": [
+        {
+          "op": "compiler",
+          "caseId": "C04"
+        }
+      ],
+      "expected": {
+        "outcome": "accepted",
+        "oracle": "component-shape",
+        "subject": {
+          "id": "root",
+          "component": "Button",
+          "values": {
+            "action": {
+              "event": {
+                "name": "inspect_file",
+                "context": {
+                  "file": "src/example.ts"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "C05",
+      "contractKey": "compiler/Card/static-child",
+      "layer": "compiler",
+      "polarity": "positive",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "compiler/Card/static-child",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": null,
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/C05.express",
+      "steps": [
+        {
+          "op": "compiler",
+          "caseId": "C05"
+        }
+      ],
+      "expected": {
+        "outcome": "accepted",
+        "oracle": "component-shape",
+        "subject": {
+          "id": "root",
+          "component": "Card",
+          "values": {}
+        },
+        "texts": [
+          "Body"
+        ]
+      }
+    },
+    {
+      "id": "C06",
+      "contractKey": "compiler/Chart/finite-negative-value",
+      "layer": "compiler",
+      "polarity": "positive",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "compiler/Chart/finite-negative-value",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": null,
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/C06.express",
+      "steps": [
+        {
+          "op": "compiler",
+          "caseId": "C06"
+        }
+      ],
+      "expected": {
+        "outcome": "accepted",
+        "oracle": "component-shape",
+        "subject": {
+          "id": "root",
+          "component": "Chart",
+          "values": {
+            "kind": "line",
+            "series": [
+              {
+                "name": "A",
+                "points": [
+                  {
+                    "label": "one",
+                    "value": -2
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "C07",
+      "contractKey": "compiler/CheckBox/bound-boolean",
+      "layer": "compiler",
+      "polarity": "positive",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "compiler/CheckBox/bound-boolean",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": null,
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/C07.express",
+      "steps": [
+        {
+          "op": "compiler",
+          "caseId": "C07"
+        }
+      ],
+      "expected": {
+        "outcome": "accepted",
+        "oracle": "component-shape",
+        "subject": {
+          "id": "root",
+          "component": "CheckBox",
+          "values": {
+            "value": {
+              "@path": "/v"
+            }
+          }
+        },
+        "dataModel": {
+          "v": true
+        }
+      }
+    },
+    {
+      "id": "C08",
+      "contractKey": "compiler/ChoicePicker/bound-array",
+      "layer": "compiler",
+      "polarity": "positive",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "compiler/ChoicePicker/bound-array",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": null,
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/C08.express",
+      "steps": [
+        {
+          "op": "compiler",
+          "caseId": "C08"
+        }
+      ],
+      "expected": {
+        "outcome": "accepted",
+        "oracle": "component-shape",
+        "subject": {
+          "id": "root",
+          "component": "ChoicePicker",
+          "values": {
+            "variant": "multipleSelection",
+            "value": {
+              "@path": "/v"
+            }
+          }
+        },
+        "dataModel": {
+          "v": [
+            "a"
+          ]
+        }
+      }
+    },
+    {
+      "id": "C09",
+      "contractKey": "compiler/CodeBlock/literal-lines",
+      "layer": "compiler",
+      "polarity": "positive",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "compiler/CodeBlock/literal-lines",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": null,
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/C09.express",
+      "steps": [
+        {
+          "op": "compiler",
+          "caseId": "C09"
+        }
+      ],
+      "expected": {
+        "outcome": "accepted",
+        "oracle": "component-shape",
+        "subject": {
+          "id": "root",
+          "component": "CodeBlock",
+          "values": {
+            "code": "a\nb",
+            "language": "text"
+          }
+        }
+      }
+    },
+    {
+      "id": "C10",
+      "contractKey": "compiler/CodeDiff/illustrative-record",
+      "layer": "compiler",
+      "polarity": "positive",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "compiler/CodeDiff/illustrative-record",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": null,
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/C10.express",
+      "steps": [
+        {
+          "op": "compiler",
+          "caseId": "C10"
+        }
+      ],
+      "expected": {
+        "outcome": "accepted",
+        "oracle": "component-shape",
+        "subject": {
+          "id": "root",
+          "component": "CodeDiff",
+          "values": {
+            "proposalId": "proposal-golden",
+            "filename": "example.ts",
+            "baseRevision": "base-golden",
+            "before": "old",
+            "after": "new"
+          }
+        }
+      }
+    },
+    {
+      "id": "C11",
+      "contractKey": "compiler/Column/local64",
+      "layer": "compiler",
+      "polarity": "positive",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "compiler/Column/local64",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": null,
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/C11.express",
+      "steps": [
+        {
+          "op": "compiler",
+          "caseId": "C11"
+        }
+      ],
+      "expected": {
+        "outcome": "accepted",
+        "oracle": "component-shape",
+        "subject": {
+          "id": "root",
+          "component": "Column",
+          "values": {}
+        },
+        "componentCount": 64
+      }
+    },
+    {
+      "id": "C12",
+      "contractKey": "compiler/DataTable/typed-cells",
+      "layer": "compiler",
+      "polarity": "positive",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "compiler/DataTable/typed-cells",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": null,
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/C12.express",
+      "steps": [
+        {
+          "op": "compiler",
+          "caseId": "C12"
+        }
+      ],
+      "expected": {
+        "outcome": "accepted",
+        "oracle": "component-shape",
+        "subject": {
+          "id": "root",
+          "component": "DataTable",
+          "values": {
+            "rows": [
+              {
+                "id": "a",
+                "cells": [
+                  2
+                ]
+              },
+              {
+                "id": "b",
+                "cells": [
+                  1
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "C13",
+      "contractKey": "compiler/DateTimeInput/leap-day",
+      "layer": "compiler",
+      "polarity": "positive",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "compiler/DateTimeInput/leap-day",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": null,
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/C13.express",
+      "steps": [
+        {
+          "op": "compiler",
+          "caseId": "C13"
+        }
+      ],
+      "expected": {
+        "outcome": "accepted",
+        "oracle": "component-shape",
+        "subject": {
+          "id": "root",
+          "component": "DateTimeInput",
+          "values": {
+            "value": "2024-02-29",
+            "enableDate": true,
+            "enableTime": false
+          }
+        }
+      }
+    },
+    {
+      "id": "C14",
+      "contractKey": "compiler/Details/static-closed",
+      "layer": "compiler",
+      "polarity": "positive",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "compiler/Details/static-closed",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": null,
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/C14.express",
+      "steps": [
+        {
+          "op": "compiler",
+          "caseId": "C14"
+        }
+      ],
+      "expected": {
+        "outcome": "accepted",
+        "oracle": "component-shape",
+        "subject": {
+          "id": "root",
+          "component": "Details",
+          "values": {
+            "title": "More",
+            "open": false
+          }
+        },
+        "texts": [
+          "Body"
+        ]
+      }
+    },
+    {
+      "id": "C15",
+      "contractKey": "compiler/Divider/static",
+      "layer": "compiler",
+      "polarity": "positive",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "compiler/Divider/static",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": null,
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/C15.express",
+      "steps": [
+        {
+          "op": "compiler",
+          "caseId": "C15"
+        }
+      ],
+      "expected": {
+        "outcome": "accepted",
+        "oracle": "component-shape",
+        "subject": {
+          "id": "root",
+          "component": "Divider",
+          "values": {}
+        }
+      }
+    },
+    {
+      "id": "C16",
+      "contractKey": "compiler/FormValidation/valid-definition",
+      "layer": "compiler",
+      "polarity": "positive",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "compiler/FormValidation/valid-definition",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": null,
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/C16.express",
+      "steps": [
+        {
+          "op": "compiler",
+          "caseId": "C16"
+        }
+      ],
+      "expected": {
+        "outcome": "accepted",
+        "oracle": "component-shape",
+        "subject": {
+          "id": "guard",
+          "component": "FormValidation",
+          "values": {
+            "buttons": [
+              "submit"
+            ],
+            "rules": [
+              {
+                "fieldId": "field",
+                "message": "Enter 2 to 5",
+                "required": true,
+                "minLength": 2,
+                "maxLength": 5
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "C17",
+      "contractKey": "compiler/Icon/finite-name",
+      "layer": "compiler",
+      "polarity": "positive",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "compiler/Icon/finite-name",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": null,
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/C17.express",
+      "steps": [
+        {
+          "op": "compiler",
+          "caseId": "C17"
+        }
+      ],
+      "expected": {
+        "outcome": "accepted",
+        "oracle": "component-shape",
+        "subject": {
+          "id": "root",
+          "component": "Icon",
+          "values": {
+            "name": "settings"
+          }
+        }
+      }
+    },
+    {
+      "id": "C18",
+      "contractKey": "compiler/Image/local-shape",
+      "layer": "compiler",
+      "polarity": "positive",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "compiler/Image/local-shape",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": null,
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/C18.express",
+      "steps": [
+        {
+          "op": "compiler",
+          "caseId": "C18"
+        }
+      ],
+      "expected": {
+        "outcome": "accepted",
+        "oracle": "component-shape",
+        "subject": {
+          "id": "root",
+          "component": "Image",
+          "values": {
+            "url": "/api/artifacts/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          }
+        }
+      }
+    },
+    {
+      "id": "C19",
+      "contractKey": "compiler/List/static-order",
+      "layer": "compiler",
+      "polarity": "positive",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "compiler/List/static-order",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": null,
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/C19.express",
+      "steps": [
+        {
+          "op": "compiler",
+          "caseId": "C19"
+        }
+      ],
+      "expected": {
+        "outcome": "accepted",
+        "oracle": "component-shape",
+        "subject": {
+          "id": "root",
+          "component": "List",
+          "values": {}
+        },
+        "texts": [
+          "A",
+          "B"
+        ]
+      }
+    },
+    {
+      "id": "C20",
+      "contractKey": "compiler/LogView/initial-server-output",
+      "layer": "compiler",
+      "polarity": "positive",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "compiler/LogView/initial-server-output",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": null,
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/C20.express",
+      "steps": [
+        {
+          "op": "compiler",
+          "caseId": "C20"
+        }
+      ],
+      "expected": {
+        "outcome": "accepted",
+        "oracle": "component-shape",
+        "subject": {
+          "id": "root",
+          "component": "LogView",
+          "values": {
+            "state": "idle",
+            "text": "",
+            "omitted": false
+          }
+        }
+      }
+    },
+    {
+      "id": "C21",
+      "contractKey": "compiler/MarkdownView/literal-source",
+      "layer": "compiler",
+      "polarity": "positive",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "compiler/MarkdownView/literal-source",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": null,
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/C21.express",
+      "steps": [
+        {
+          "op": "compiler",
+          "caseId": "C21"
+        }
+      ],
+      "expected": {
+        "outcome": "accepted",
+        "oracle": "component-shape",
+        "subject": {
+          "id": "root",
+          "component": "MarkdownView",
+          "values": {
+            "text": "# Heading\n\n**Bold**"
+          }
+        }
+      }
+    },
+    {
+      "id": "C22",
+      "contractKey": "compiler/Modal/distinct-slots",
+      "layer": "compiler",
+      "polarity": "positive",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "compiler/Modal/distinct-slots",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": null,
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/C22.express",
+      "steps": [
+        {
+          "op": "compiler",
+          "caseId": "C22"
+        }
+      ],
+      "expected": {
+        "outcome": "accepted",
+        "oracle": "component-shape",
+        "subject": {
+          "id": "root",
+          "component": "Modal",
+          "values": {}
+        },
+        "texts": [
+          "Open",
+          "Body"
+        ]
+      }
+    },
+    {
+      "id": "C23",
+      "contractKey": "compiler/Row/static-order",
+      "layer": "compiler",
+      "polarity": "positive",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "compiler/Row/static-order",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": null,
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/C23.express",
+      "steps": [
+        {
+          "op": "compiler",
+          "caseId": "C23"
+        }
+      ],
+      "expected": {
+        "outcome": "accepted",
+        "oracle": "component-shape",
+        "subject": {
+          "id": "root",
+          "component": "Row",
+          "values": {}
+        },
+        "texts": [
+          "A",
+          "B"
+        ]
+      }
+    },
+    {
+      "id": "C24",
+      "contractKey": "compiler/SearchablePicker/member-array",
+      "layer": "compiler",
+      "polarity": "positive",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "compiler/SearchablePicker/member-array",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": null,
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/C24.express",
+      "steps": [
+        {
+          "op": "compiler",
+          "caseId": "C24"
+        }
+      ],
+      "expected": {
+        "outcome": "accepted",
+        "oracle": "component-shape",
+        "subject": {
+          "id": "root",
+          "component": "SearchablePicker",
+          "values": {
+            "value": {
+              "@path": "/v"
+            }
+          }
+        },
+        "dataModel": {
+          "v": [
+            "a"
+          ]
+        }
+      }
+    },
+    {
+      "id": "C25",
+      "contractKey": "compiler/Slider/valid-grid",
+      "layer": "compiler",
+      "polarity": "positive",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "compiler/Slider/valid-grid",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": null,
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/C25.express",
+      "steps": [
+        {
+          "op": "compiler",
+          "caseId": "C25"
+        }
+      ],
+      "expected": {
+        "outcome": "accepted",
+        "oracle": "component-shape",
+        "subject": {
+          "id": "root",
+          "component": "Slider",
+          "values": {
+            "min": 0,
+            "max": 10,
+            "steps": 10,
+            "value": 4
+          }
+        }
+      }
+    },
+    {
+      "id": "C26",
+      "contractKey": "compiler/StatusBadge/reported-provenance",
+      "layer": "compiler",
+      "polarity": "positive",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "compiler/StatusBadge/reported-provenance",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": null,
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/C26.express",
+      "steps": [
+        {
+          "op": "compiler",
+          "caseId": "C26"
+        }
+      ],
+      "expected": {
+        "outcome": "accepted",
+        "oracle": "component-shape",
+        "subject": {
+          "id": "root",
+          "component": "StatusBadge",
+          "values": {
+            "label": "Reported",
+            "status": "info",
+            "provenance": "reported"
+          }
+        }
+      }
+    },
+    {
+      "id": "C27",
+      "contractKey": "compiler/Tabs/distinct-children",
+      "layer": "compiler",
+      "polarity": "positive",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "compiler/Tabs/distinct-children",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": null,
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/C27.express",
+      "steps": [
+        {
+          "op": "compiler",
+          "caseId": "C27"
+        }
+      ],
+      "expected": {
+        "outcome": "accepted",
+        "oracle": "component-shape",
+        "subject": {
+          "id": "root",
+          "component": "Tabs",
+          "values": {
+            "tabs": [
+              {
+                "title": "First",
+                "child": "first"
+              },
+              {
+                "title": "Second",
+                "child": "second"
+              }
+            ]
+          }
+        },
+        "texts": [
+          "A",
+          "B"
+        ]
+      }
+    },
+    {
+      "id": "C28",
+      "contractKey": "compiler/TaskProgress/server-owned",
+      "layer": "compiler",
+      "polarity": "positive",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "compiler/TaskProgress/server-owned",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": null,
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/C28.express",
+      "steps": [
+        {
+          "op": "compiler",
+          "caseId": "C28"
+        }
+      ],
+      "expected": {
+        "outcome": "accepted",
+        "oracle": "component-shape",
+        "subject": {
+          "id": "root",
+          "component": "TaskProgress",
+          "values": {
+            "state": "idle",
+            "started": 0,
+            "settled": 0,
+            "failed": 0,
+            "omitted": false
+          }
+        }
+      }
+    },
+    {
+      "id": "C29",
+      "contractKey": "compiler/TestResults/skip-summary",
+      "layer": "compiler",
+      "polarity": "positive",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "compiler/TestResults/skip-summary",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": null,
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/C29.express",
+      "steps": [
+        {
+          "op": "compiler",
+          "caseId": "C29"
+        }
+      ],
+      "expected": {
+        "outcome": "accepted",
+        "oracle": "component-shape",
+        "subject": {
+          "id": "root",
+          "component": "TestResults",
+          "values": {
+            "summary": {
+              "pass": 0,
+              "fail": 0,
+              "skip": 1,
+              "error": 0
+            },
+            "evidence": "Illustrative fixture, not an executed test"
+          }
+        }
+      }
+    },
+    {
+      "id": "C30",
+      "contractKey": "compiler/Text/literal-markup",
+      "layer": "compiler",
+      "polarity": "positive",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "compiler/Text/literal-markup",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": null,
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/C30.express",
+      "steps": [
+        {
+          "op": "compiler",
+          "caseId": "C30"
+        }
+      ],
+      "expected": {
+        "outcome": "accepted",
+        "oracle": "component-shape",
+        "subject": {
+          "id": "root",
+          "component": "Text",
+          "values": {
+            "text": "<b>x</b>"
+          }
+        }
+      }
+    },
+    {
+      "id": "C31",
+      "contractKey": "compiler/TextField/bound-string",
+      "layer": "compiler",
+      "polarity": "positive",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "compiler/TextField/bound-string",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": null,
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/C31.express",
+      "steps": [
+        {
+          "op": "compiler",
+          "caseId": "C31"
+        }
+      ],
+      "expected": {
+        "outcome": "accepted",
+        "oracle": "component-shape",
+        "subject": {
+          "id": "root",
+          "component": "TextField",
+          "values": {
+            "value": {
+              "@path": "/v"
+            }
+          }
+        },
+        "dataModel": {
+          "v": "Ada"
+        }
+      }
+    },
+    {
+      "id": "C32",
+      "contractKey": "compiler/Video/local-shape",
+      "layer": "compiler",
+      "polarity": "positive",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "compiler/Video/local-shape",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": null,
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/C32.express",
+      "steps": [
+        {
+          "op": "compiler",
+          "caseId": "C32"
+        }
+      ],
+      "expected": {
+        "outcome": "accepted",
+        "oracle": "component-shape",
+        "subject": {
+          "id": "root",
+          "component": "Video",
+          "values": {
+            "url": "/api/artifacts/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          }
+        }
+      }
+    },
+    {
+      "id": "C33",
+      "contractKey": "compiler/Event/reserved-path",
+      "layer": "compiler",
+      "polarity": "negative",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "compiler/Event/reserved-path",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": "tests/golden/fixtures/C33-control.express",
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/C33.express",
+      "steps": [
+        {
+          "op": "compiler",
+          "caseId": "C33"
+        }
+      ],
+      "expected": {
+        "outcome": "rejected",
+        "status": 400,
+        "reasonIncludes": "Forbidden map key",
+        "diagnostic": {
+          "componentId": "root",
+          "componentType": "Button",
+          "forbiddenKey": "path",
+          "propertyPath": "/action/event/context/path"
+        }
+      }
+    },
+    {
+      "id": "C34",
+      "contractKey": "compiler/parser/unclosed-bracket",
+      "layer": "compiler",
+      "polarity": "negative",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "compiler/parser/unclosed-bracket",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": "tests/golden/fixtures/C34-control.express",
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/C34.express",
+      "steps": [
+        {
+          "op": "compiler",
+          "caseId": "C34"
+        }
+      ],
+      "expected": {
+        "outcome": "rejected",
+        "status": 400,
+        "reasonIncludes": "parse"
+      }
+    },
+    {
+      "id": "C35",
+      "contractKey": "compiler/catalog/unknown-type",
+      "layer": "compiler",
+      "polarity": "negative",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "compiler/catalog/unknown-type",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": "tests/golden/fixtures/C35-control.express",
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/C35.express",
+      "steps": [
+        {
+          "op": "compiler",
+          "caseId": "C35"
+        }
+      ],
+      "expected": {
+        "outcome": "rejected",
+        "status": 400,
+        "reasonIncludes": "not defined"
+      }
+    },
+    {
+      "id": "C36",
+      "contractKey": "compiler/schema/unknown-property",
+      "layer": "compiler",
+      "polarity": "negative",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "compiler/schema/unknown-property",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": "tests/golden/fixtures/C36-control.express",
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/C36.express",
+      "steps": [
+        {
+          "op": "compiler",
+          "caseId": "C36"
+        }
+      ],
+      "expected": {
+        "outcome": "rejected",
+        "status": 400,
+        "reasonIncludes": "unknown"
+      }
+    },
+    {
+      "id": "C37",
+      "contractKey": "compiler/tree/missing-child",
+      "layer": "compiler",
+      "polarity": "negative",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "compiler/tree/missing-child",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": "tests/golden/fixtures/C37-control.express",
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/C37.express",
+      "steps": [
+        {
+          "op": "compiler",
+          "caseId": "C37"
+        }
+      ],
+      "expected": {
+        "outcome": "rejected",
+        "status": 400,
+        "reasonIncludes": "missing"
+      }
+    },
+    {
+      "id": "C38",
+      "contractKey": "compiler/tree/repeated-child",
+      "layer": "compiler",
+      "polarity": "negative",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "compiler/tree/repeated-child",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": "tests/golden/fixtures/C38-control.express",
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/C38.express",
+      "steps": [
+        {
+          "op": "compiler",
+          "caseId": "C38"
+        }
+      ],
+      "expected": {
+        "outcome": "rejected",
+        "status": 400,
+        "reasonIncludes": "repeated"
+      }
+    },
+    {
+      "id": "C39",
+      "contractKey": "compiler/tree/unreachable",
+      "layer": "compiler",
+      "polarity": "negative",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "compiler/tree/unreachable",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": "tests/golden/fixtures/C39-control.express",
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/C39.express",
+      "steps": [
+        {
+          "op": "compiler",
+          "caseId": "C39"
+        }
+      ],
+      "expected": {
+        "outcome": "rejected",
+        "status": 400,
+        "reasonIncludes": "not reachable"
+      }
+    },
+    {
+      "id": "C40",
+      "contractKey": "compiler/tree/depth17",
+      "layer": "compiler",
+      "polarity": "negative",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "compiler/tree/depth17",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": "tests/golden/fixtures/C40-control.express",
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/C40.express",
+      "steps": [
+        {
+          "op": "compiler",
+          "caseId": "C40"
+        }
+      ],
+      "expected": {
+        "outcome": "rejected",
+        "status": 413,
+        "reasonIncludes": "Tree depth exceeded"
+      }
+    },
+    {
+      "id": "C41",
+      "contractKey": "compiler/capacity/local65",
+      "layer": "compiler",
+      "polarity": "negative",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "compiler/capacity/local65",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": "tests/golden/fixtures/C41-control.express",
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/C41.express",
+      "steps": [
+        {
+          "op": "compiler",
+          "caseId": "C41"
+        }
+      ],
+      "expected": {
+        "outcome": "rejected",
+        "status": 413,
+        "reasonIncludes": "Component limit"
+      }
+    },
+    {
+      "id": "C42",
+      "contractKey": "compiler/CheckBox/wrong-initial-type",
+      "layer": "compiler",
+      "polarity": "negative",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "compiler/CheckBox/wrong-initial-type",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": "tests/golden/fixtures/C42-control.express",
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/C42.express",
+      "steps": [
+        {
+          "op": "compiler",
+          "caseId": "C42"
+        }
+      ],
+      "expected": {
+        "outcome": "rejected",
+        "status": 400,
+        "reasonIncludes": "boolean"
+      }
+    },
+    {
+      "id": "C43",
+      "contractKey": "compiler/FormValidation/unreachable-target",
+      "layer": "compiler",
+      "polarity": "negative",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "compiler/FormValidation/unreachable-target",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": "tests/golden/fixtures/C43-control.express",
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/C43.express",
+      "steps": [
+        {
+          "op": "compiler",
+          "caseId": "C43"
+        }
+      ],
+      "expected": {
+        "outcome": "rejected",
+        "status": 400,
+        "reasonIncludes": "field"
+      }
+    },
+    {
+      "id": "C44",
+      "contractKey": "compiler/TestResults/summary166",
+      "layer": "compiler",
+      "polarity": "negative",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "compiler/TestResults/summary166",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": "tests/golden/fixtures/C44-control.express",
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/C44.express",
+      "steps": [
+        {
+          "op": "compiler",
+          "caseId": "C44"
+        }
+      ],
+      "expected": {
+        "outcome": "rejected",
+        "status": 400,
+        "reasonIncludes": "128"
+      }
+    },
+    {
+      "id": "C45",
+      "contractKey": "compiler/TestResults/summary-mismatch",
+      "layer": "compiler",
+      "polarity": "negative",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "compiler/TestResults/summary-mismatch",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": "tests/golden/fixtures/C45-control.express",
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/C45.express",
+      "steps": [
+        {
+          "op": "compiler",
+          "caseId": "C45"
+        }
+      ],
+      "expected": {
+        "outcome": "rejected",
+        "status": 400,
+        "reasonIncludes": "summary"
+      }
+    },
+    {
+      "id": "C46",
+      "contractKey": "compiler/coding/unrelated-button-ids",
+      "layer": "compiler",
+      "polarity": "negative",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "compiler/coding/unrelated-button-ids",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": "tests/golden/fixtures/C46-control.express",
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/C46.express",
+      "steps": [
+        {
+          "op": "compiler",
+          "caseId": "C46"
+        }
+      ],
+      "expected": {
+        "outcome": "rejected",
+        "status": 400,
+        "reasonIncludes": "Coding actions"
+      }
+    },
+    {
+      "id": "S01",
+      "contractKey": "session/capacity/surfaces4",
+      "layer": "session",
+      "polarity": "positive",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "session/capacity/surfaces4",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": null,
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/S01.json",
+      "steps": [
+        {
+          "op": "session",
+          "caseId": "S01"
+        }
+      ],
+      "expected": {
+        "outcome": "accepted",
+        "oracle": "session/capacity/surfaces4"
+      }
+    },
+    {
+      "id": "S02",
+      "contractKey": "session/capacity/surfaces5",
+      "layer": "session",
+      "polarity": "negative",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "session/capacity/surfaces5",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": null,
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/S02.json",
+      "steps": [
+        {
+          "op": "session",
+          "caseId": "S02"
+        }
+      ],
+      "expected": {
+        "outcome": "rejected",
+        "oracle": "session/capacity/surfaces5"
+      }
+    },
+    {
+      "id": "S03",
+      "contractKey": "session/capacity/aggregate64",
+      "layer": "session",
+      "polarity": "positive",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "session/capacity/aggregate64",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": null,
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/S03.json",
+      "steps": [
+        {
+          "op": "session",
+          "caseId": "S03"
+        }
+      ],
+      "expected": {
+        "outcome": "accepted",
+        "oracle": "session/capacity/aggregate64"
+      }
+    },
+    {
+      "id": "S04",
+      "contractKey": "session/capacity/aggregate65",
+      "layer": "session",
+      "polarity": "negative",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "session/capacity/aggregate65",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": null,
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/S04.json",
+      "steps": [
+        {
+          "op": "session",
+          "caseId": "S04"
+        }
+      ],
+      "expected": {
+        "outcome": "rejected",
+        "oracle": "session/capacity/aggregate65"
+      }
+    },
+    {
+      "id": "S05",
+      "contractKey": "session/capacity/replacement-reclaims",
+      "layer": "session",
+      "polarity": "positive",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "session/capacity/replacement-reclaims",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": null,
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/S05.json",
+      "steps": [
+        {
+          "op": "session",
+          "caseId": "S05"
+        }
+      ],
+      "expected": {
+        "outcome": "accepted",
+        "oracle": "session/capacity/replacement-reclaims"
+      }
+    },
+    {
+      "id": "S06",
+      "contractKey": "session/atomicity/invalid-replacement",
+      "layer": "session",
+      "polarity": "negative",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "session/atomicity/invalid-replacement",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": null,
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/S06.json",
+      "steps": [
+        {
+          "op": "session",
+          "caseId": "S06"
+        }
+      ],
+      "expected": {
+        "outcome": "rejected",
+        "oracle": "session/atomicity/invalid-replacement"
+      }
+    },
+    {
+      "id": "S07",
+      "contractKey": "session/data/valid-chart-sequence",
+      "layer": "session",
+      "polarity": "positive",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "session/data/valid-chart-sequence",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": null,
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/S07.json",
+      "steps": [
+        {
+          "op": "session",
+          "caseId": "S07"
+        }
+      ],
+      "expected": {
+        "outcome": "accepted",
+        "oracle": "session/data/valid-chart-sequence"
+      }
+    },
+    {
+      "id": "S08",
+      "contractKey": "session/data/stale-chart",
+      "layer": "session",
+      "polarity": "negative",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "session/data/stale-chart",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": null,
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/S08.json",
+      "steps": [
+        {
+          "op": "session",
+          "caseId": "S08"
+        }
+      ],
+      "expected": {
+        "outcome": "rejected",
+        "oracle": "session/data/stale-chart"
+      }
+    },
+    {
+      "id": "S09",
+      "contractKey": "session/artifact/authenticated-revocation",
+      "layer": "session",
+      "polarity": "positive",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "session/artifact/authenticated-revocation",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": null,
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/S09.json",
+      "steps": [
+        {
+          "op": "session",
+          "caseId": "S09"
+        }
+      ],
+      "expected": {
+        "outcome": "accepted",
+        "oracle": "session/artifact/authenticated-revocation"
+      }
+    },
+    {
+      "id": "S10",
+      "contractKey": "session/artifact/relative-escape",
+      "layer": "session",
+      "polarity": "negative",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "session/artifact/relative-escape",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": null,
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/S10.json",
+      "steps": [
+        {
+          "op": "session",
+          "caseId": "S10"
+        }
+      ],
+      "expected": {
+        "outcome": "rejected",
+        "oracle": "session/artifact/relative-escape"
+      }
+    },
+    {
+      "id": "S11",
+      "contractKey": "session/event/accepted-reentrancy",
+      "layer": "session",
+      "polarity": "positive",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "session/event/accepted-reentrancy",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": null,
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/S11.json",
+      "steps": [
+        {
+          "op": "session",
+          "caseId": "S11"
+        }
+      ],
+      "expected": {
+        "outcome": "accepted",
+        "oracle": "session/event/accepted-reentrancy"
+      }
+    },
+    {
+      "id": "S12",
+      "contractKey": "session/event/stale-submit",
+      "layer": "session",
+      "polarity": "negative",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "session/event/stale-submit",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": null,
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/S12.json",
+      "steps": [
+        {
+          "op": "session",
+          "caseId": "S12"
+        }
+      ],
+      "expected": {
+        "outcome": "rejected",
+        "oracle": "session/event/stale-submit"
+      }
+    },
+    {
+      "id": "S13",
+      "contractKey": "session/event/same-id-retry",
+      "layer": "session",
+      "polarity": "positive",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "session/event/same-id-retry",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": null,
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/S13.json",
+      "steps": [
+        {
+          "op": "session",
+          "caseId": "S13"
+        }
+      ],
+      "expected": {
+        "outcome": "accepted",
+        "oracle": "session/event/same-id-retry"
+      }
+    },
+    {
+      "id": "S14",
+      "contractKey": "session/event/id-collision",
+      "layer": "session",
+      "polarity": "negative",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "session/event/id-collision",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": null,
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/S14.json",
+      "steps": [
+        {
+          "op": "session",
+          "caseId": "S14"
+        }
+      ],
+      "expected": {
+        "outcome": "rejected",
+        "oracle": "session/event/id-collision"
+      }
+    },
+    {
+      "id": "S15",
+      "contractKey": "session/event/fresh-id-same-intent",
+      "layer": "session",
+      "polarity": "positive",
+      "contractVersion": "v0.1.8-golden-v2",
+      "intent": "session/event/fresh-id-same-intent",
+      "initialState": {
+        "kind": "none"
+      },
+      "controlFixture": null,
+      "reference": {
+        "source": "docs/specs/016-bm2-golden-scenarios.md"
+      },
+      "fixture": "tests/golden/fixtures/S15.json",
+      "steps": [
+        {
+          "op": "session",
+          "caseId": "S15"
+        }
+      ],
+      "expected": {
+        "outcome": "accepted",
+        "oracle": "session/event/fresh-id-same-intent"
+      }
+    }
+  ]
+}

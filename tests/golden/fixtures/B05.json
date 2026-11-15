@@ -1,0 +1,42 @@
+{
+  "source": "root = DataTable(caption=\"Scores\",columns=[{id:\"score\",label:\"Score\"}],rows=[{\"id\": \"null\", \"cells\": [null]}, {\"id\": \"false\", \"cells\": [false]}, {\"id\": \"true\", \"cells\": [true]}, {\"id\": \"n158\", \"cells\": [158]}, {\"id\": \"n212\", \"cells\": [212]}, {\"id\": \"n640\", \"cells\": [640]}, {\"id\": \"n77\", \"cells\": [77]}, {\"id\": \"s158\", \"cells\": [\"158\"]}, {\"id\": \"s212\", \"cells\": [\"212\"]}, {\"id\": \"s640\", \"cells\": [\"640\"]}, {\"id\": \"s77\", \"cells\": [\"77\"]}, {\"id\": \"emoji\", \"cells\": [\"😀\"]}, {\"id\": \"bmp\", \"cells\": [\"\"]}, {\"id\": \"tieA\", \"cells\": [158]}, {\"id\": \"tieB\", \"cells\": [158]}])",
+  "steps": "browser/table/local-sort",
+  "ascending": [
+    "null",
+    "false",
+    "true",
+    "n77",
+    "n158",
+    "tieA",
+    "tieB",
+    "n212",
+    "n640",
+    "s158",
+    "s212",
+    "s640",
+    "s77",
+    "emoji",
+    "bmp"
+  ],
+  "descending": [
+    "bmp",
+    "emoji",
+    "s77",
+    "s640",
+    "s212",
+    "s158",
+    "n640",
+    "n212",
+    "n158",
+    "tieA",
+    "tieB",
+    "n77",
+    "true",
+    "false",
+    "null"
+  ],
+  "expected": {
+    "posts": 0,
+    "dispatches": 0
+  }
+}
