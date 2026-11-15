@@ -1,6 +1,6 @@
 # BM1 — diagnostic documentation and executable recovery
 
-Lifecycle: in-progress. Profile: strict. 2026-11-15. Canonical BM1 contract; [plan009](../plans/009-benchmark.md) owns steps/roadmap. User agreed to the two-family BM1 slice, independent design/code review then offline CI/PR verification, tentatively0.1.8. No merge/publication/global upgrade or BM2–BM4 implementation is inferred. Node24.x only, **zero model calls**.
+Lifecycle: review-ready. Profile: strict. 2026-11-15. Canonical BM1 contract; [plan009](../plans/009-benchmark.md) owns steps/roadmap. User agreed to the two-family BM1 slice, independent design/code review then offline CI/PR verification, tentatively0.1.8. No merge/publication/global upgrade or BM2–BM4 implementation is inferred. Node24.x only, **zero model calls**.
 
 ## Source and historical drift
 
@@ -67,3 +67,7 @@ Canaries operate only on in-memory doc/registry copies or injected fixture reads
 After offline code review GO, add `.github/workflows/benchmark.yml`: pull_request/workflow_dispatch; ubuntu-24.04,10min; permissions contents:read, checkout persist-credentials:false, setup-node24, actualNode major assertion/patch+checkout/event SHA logs; npmci→npmtest→npmruncheck. Pinned checkoutv7.0.1 SHA3d3c42e5aac5ba805825da76410c181273ba90b1/setup-nodev7.1.0 SHA949feb2413d6458794dcd2491c4babbbce0c15c1, both official action.yml Node24 reverified inCheck076. No secrets,models,publish,writepermission,pull_request_target or protection changes. PR synthetic merge/source SHA must be recorded honestly; unknown/cancelled/timeout is not GREEN. Workflow itself receives final independent review before authorized push/PR.
 
 User agreement authorizes this bounded design→review→implementation→offlineCI/PR verification sequence; it does not authorize merging/publishing018 or closing parent43. BM1 child stays open until its eventual integrated delivery gate; report review-ready PR and realCI, then request release decision on concrete artifacts. Runtime regression discovered during work stops expansion and requires updated spec/review. Rollback reverts the test/fixture/helper/workflow/marker slice together; preserve original drafts/reports/failure receipts/userconfigs/tags/assets. Main risks: profile drift, false-positive detector or false coverage; explicit facts/oracles/canaries/stages and realCI address them.
+
+## Implementation / CI admission evidence
+
+Current-profile design/TDD GO is [Check076](../checks/076-bm1-current-profile-design.md); runnable document-binding RED, independent R1 NO-GO/F-01 corrective RED→GREEN and R2 code GO are [Check077](../checks/077-bm1-offline-implementation.md). Final workflow GO and the actual Node24 PR job are [Check078](../checks/078-bm1-workflow-pr-ci.md). Intended contracts are unchanged; implementation drift was the cross-level heading false-positive, repaired to match the existing uniqueness/H2 requirement. Historical legacy-policy-v1 design remains in Check062; no legacy expectation is used as a current product oracle. Review-ready is not merged/released/parent43 complete. Later evidence-only commits require latest-head CI readback before handoff.
