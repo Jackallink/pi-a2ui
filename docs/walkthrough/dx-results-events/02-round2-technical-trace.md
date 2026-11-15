@@ -1,0 +1,9 @@
+# DX36/37 Round2 — traces
+
+2026-11-15. Spec014; paths/ACs fromRound1.
+
+P-001: user reads reference → Handler CLI check/compile and TestResults component → state source/evidence/cases2/summary2 with unchanged snapshot format → API existing check then a2ui_render → backend SDK schema128 and validateCoding exact row counts → response admitted tool snapshot → UI existing TestResults evidence paragraph/summary/table. Byte/source/depth/global budgets still apply; missing doc is gap, not runtime RED.
+P-002: click → Handler src/client.ts submit current mounted envelope → API POST/api/actions(cookie+origin,epoch,revision,eventId,message) → backend src/server.ts / UiSession.acceptAction validates current state epoch/revision/context/guards/reserves ID → JSON literal captures server epoch and chosen surface.revision → existing extension dispatch → pi.sendUserMessage followUp → future model message. UI202ack unchanged; metadata does not grant execution rights.
+P-003: stale/forged/duplicate user action → Handler same client submit/API POST/api/actions → backend acceptAction current state gates → response stale409/no dispatch; context forged403; duplicate current accepted:true,duplicate:true; sync bridge failure503 and same-epoch reservation rollback → UI existing error/ack. Accepted then replaced/reset: original serialized string remains queued; callback cannot retag it. No added async boundary or post-delivery state read.
+
+State catalog: currentsession Snapshot epoch, persurface structural revision, accepted-event ledger unchanged. Envelope input and HTTPresponse unchanged. Output adds only top-level epoch/revision, old four JSON fields and prefix preserved. Context with same-named data keys stays nested. Historical snapshot may be stale after restore; no new current-state query or automatic drop implementation.
