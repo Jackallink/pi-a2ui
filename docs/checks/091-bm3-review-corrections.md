@@ -9,3 +9,8 @@ F02: bounded fonts.ready now precedes page-state actions/observations, and final
 F03: report stores actual POST envelope/status, decoded accepted callback and raw dispatch for each of the2actions. Fixed report verification requires actual202/oldacceptedtuple/context/raw consistency/distincteventIDs; missingstatus/callback/wrongraw canaries reject. No Pi/model claim; application controller remains the declared simulation.
 
 Narrow corrective Node baseline/policy/failure controls15passed,typespass; fresh full-source normal browser/report and complete suites follow. Original3visually approved Mac image bytes and capture source/proposal unchanged; source/asset/oracle changes remain explicit advisory variables, baseline integrity still mandatory. No runtime/dependency/permission/global/model/merge/release/issueclosure. Bounded independent R2 on newsource required; retain original failures/NO-GO. Rollback visual slice only.
+
+
+## R2 outcome
+
+Fixed28c791262b6a84d8055eca6cca9607394c45befc independentboundedR2GO0P0/P1/P2;reportSHA256263c1c60f3070cbe0c15cfe1a62525e1e1f4b159eeee04a0a1f7cc03c8b03166. Independent15Nodecontrols+deferredreadiness control/actualreport hash/real202+rawacceptedtuples/BM2strictunion validated. Freshfull362Node/58Chromium/tsc passes;normal3state accepted=true,clean source,4actualchecks,0primary/cleanupfailures. Baseline image chain and75payload unchanged. Check092 captures exactsource. Lifecycle in-progress→review-ready;actualhostedCI/artifactremainmandatorybeforehandoff. No model/merge/release/issueclosure.

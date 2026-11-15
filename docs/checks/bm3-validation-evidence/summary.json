@@ -1,0 +1,23 @@
+{
+  "source": "28c791262b6a84d8055eca6cca9607394c45befc",
+  "localNode": "v24.18.1",
+  "nodeTests": 362,
+  "browserTests": 58,
+  "bm2Cases": 68,
+  "bm3States": 3,
+  "reportSHA256": "c2fb823c811568d9eb059721ebbb794ce22ed54f56c1d39ae7a301124a9fccd3",
+  "packageFiles": 75,
+  "packageArchiveSHA256": "278d12ca380ea940959357b06e3d9db7cdca9740b0f30b96c6eedb238cdbf0d9",
+  "all75PayloadBlobsMatch": true,
+  "baselinePNGsUnchanged": true,
+  "normalAccepted": true,
+  "pixelGate": false,
+  "baselineStatus": "comparable-advisory",
+  "pngByteHashChanges": [
+    "search",
+    "audit",
+    "return"
+  ],
+  "modelsCalled": 0,
+  "mergedOrReleased": false
+}
