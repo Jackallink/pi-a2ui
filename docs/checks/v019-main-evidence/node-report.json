@@ -1,0 +1,631 @@
+{
+  "identity": {
+    "profile": "v0.1.8-golden-v2",
+    "source": "7bb6a0b0f4eb48820cf1d6f6c92dd29efa06ac8c",
+    "dirty": false,
+    "lockHash": "2c4dacdefa74793ed14aacb7496869cd6f12658b1b044848ae5c998504c2f585",
+    "datasetHash": "6666061e48ae7bc2d133fd7f2a5c36c8e4649dd97edef34dc12a419dcdeb7adc",
+    "oracleSetHash": "25c6eb8347fddeaffb3dcba9042e7814cbf6a070d06290aa40b130abd6a34a48",
+    "catalogHash": "61e4f817e2d692479eb034b44cb71f9ff8748b03d9ee4b663ec86c910c6ef51b",
+    "assetHash": "04fb8480b4b5ab849423fe1dcbb738244d31a3bd165e1b411d65ead32e32eaf2",
+    "nodeMajor": 24
+  },
+  "role": "node",
+  "environment": {
+    "node": "v24.18.1",
+    "platform": "darwin",
+    "arch": "arm64"
+  },
+  "results": [
+    {
+      "id": "C01",
+      "layer": "compiler",
+      "polarity": "positive",
+      "fixtureHash": "5be2b6326489948de762e56bc0fad0ca0d39e4c5c85db7f5d8a72407811ced8a",
+      "actualInputHash": "5be2b6326489948de762e56bc0fad0ca0d39e4c5c85db7f5d8a72407811ced8a",
+      "canary": false,
+      "pass": true,
+      "failedStage": null
+    },
+    {
+      "id": "C02",
+      "layer": "compiler",
+      "polarity": "positive",
+      "fixtureHash": "6ccdb494efcc422b32c56f49f42d155da9a4d06718c1864f4d3c0a0cf45824c3",
+      "actualInputHash": "6ccdb494efcc422b32c56f49f42d155da9a4d06718c1864f4d3c0a0cf45824c3",
+      "canary": false,
+      "pass": true,
+      "failedStage": null
+    },
+    {
+      "id": "C03",
+      "layer": "compiler",
+      "polarity": "positive",
+      "fixtureHash": "03ef4e6d587fbde388932ff14d9c8eb1a1917688e2bb0b9122c1094f0d2f8458",
+      "actualInputHash": "03ef4e6d587fbde388932ff14d9c8eb1a1917688e2bb0b9122c1094f0d2f8458",
+      "canary": false,
+      "pass": true,
+      "failedStage": null
+    },
+    {
+      "id": "C04",
+      "layer": "compiler",
+      "polarity": "positive",
+      "fixtureHash": "7184e4ba3093ea2c837e585127a789f18e2f27d9649df85f4d97336fc3f84499",
+      "actualInputHash": "7184e4ba3093ea2c837e585127a789f18e2f27d9649df85f4d97336fc3f84499",
+      "canary": false,
+      "pass": true,
+      "failedStage": null
+    },
+    {
+      "id": "C05",
+      "layer": "compiler",
+      "polarity": "positive",
+      "fixtureHash": "9a853da00950d93a65002164c8801b207135093d2116d0cd559b2ad6cd7b092f",
+      "actualInputHash": "9a853da00950d93a65002164c8801b207135093d2116d0cd559b2ad6cd7b092f",
+      "canary": false,
+      "pass": true,
+      "failedStage": null
+    },
+    {
+      "id": "C06",
+      "layer": "compiler",
+      "polarity": "positive",
+      "fixtureHash": "88868f9edbda949f478c4b1f4b46fddf0850203587f9700d683fbb8fe8d46abf",
+      "actualInputHash": "88868f9edbda949f478c4b1f4b46fddf0850203587f9700d683fbb8fe8d46abf",
+      "canary": false,
+      "pass": true,
+      "failedStage": null
+    },
+    {
+      "id": "C07",
+      "layer": "compiler",
+      "polarity": "positive",
+      "fixtureHash": "d81146c46c4589d0a5a02e0e3ea35eee4bb9a3f609903451254a75e6cae26464",
+      "actualInputHash": "d81146c46c4589d0a5a02e0e3ea35eee4bb9a3f609903451254a75e6cae26464",
+      "canary": false,
+      "pass": true,
+      "failedStage": null
+    },
+    {
+      "id": "C08",
+      "layer": "compiler",
+      "polarity": "positive",
+      "fixtureHash": "f53f5de5a52fa9c12ffec2ff58a6ed30db8bd770ba3d83ad70b6ea8f7fccde8c",
+      "actualInputHash": "f53f5de5a52fa9c12ffec2ff58a6ed30db8bd770ba3d83ad70b6ea8f7fccde8c",
+      "canary": false,
+      "pass": true,
+      "failedStage": null
+    },
+    {
+      "id": "C09",
+      "layer": "compiler",
+      "polarity": "positive",
+      "fixtureHash": "d619fe51ef846b1a44e49cc9367f5fca677974a64787f1a7a2ecf7ebff07b641",
+      "actualInputHash": "d619fe51ef846b1a44e49cc9367f5fca677974a64787f1a7a2ecf7ebff07b641",
+      "canary": false,
+      "pass": true,
+      "failedStage": null
+    },
+    {
+      "id": "C10",
+      "layer": "compiler",
+      "polarity": "positive",
+      "fixtureHash": "2b96835b76d235cc6712e56f204da3dcb1ed9d2348ca5fd28a9f4e5b3a885a56",
+      "actualInputHash": "2b96835b76d235cc6712e56f204da3dcb1ed9d2348ca5fd28a9f4e5b3a885a56",
+      "canary": false,
+      "pass": true,
+      "failedStage": null
+    },
+    {
+      "id": "C11",
+      "layer": "compiler",
+      "polarity": "positive",
+      "fixtureHash": "fa33a6f7b468f9db667e0cc4e97814a0c4b3d1f16cb5407b471559831cba58fc",
+      "actualInputHash": "fa33a6f7b468f9db667e0cc4e97814a0c4b3d1f16cb5407b471559831cba58fc",
+      "canary": false,
+      "pass": true,
+      "failedStage": null
+    },
+    {
+      "id": "C12",
+      "layer": "compiler",
+      "polarity": "positive",
+      "fixtureHash": "1ac54cd42f8b3b7450ce193dba5d34e489028d15e2608363f6312501df5bedc0",
+      "actualInputHash": "1ac54cd42f8b3b7450ce193dba5d34e489028d15e2608363f6312501df5bedc0",
+      "canary": false,
+      "pass": true,
+      "failedStage": null
+    },
+    {
+      "id": "C13",
+      "layer": "compiler",
+      "polarity": "positive",
+      "fixtureHash": "ffb3536df17fae480afbd51aea4c5a49b346977627700ce638e5f92a88a4a32b",
+      "actualInputHash": "ffb3536df17fae480afbd51aea4c5a49b346977627700ce638e5f92a88a4a32b",
+      "canary": false,
+      "pass": true,
+      "failedStage": null
+    },
+    {
+      "id": "C14",
+      "layer": "compiler",
+      "polarity": "positive",
+      "fixtureHash": "edbb77fb5bd530cb107d562b74cc67f5ba06d4ba87dcb07a2bb9e51f928e7292",
+      "actualInputHash": "edbb77fb5bd530cb107d562b74cc67f5ba06d4ba87dcb07a2bb9e51f928e7292",
+      "canary": false,
+      "pass": true,
+      "failedStage": null
+    },
+    {
+      "id": "C15",
+      "layer": "compiler",
+      "polarity": "positive",
+      "fixtureHash": "0b0a37fc515d925fa234314adc7ee1fd9fc191086107de49c13ad2ae01041997",
+      "actualInputHash": "0b0a37fc515d925fa234314adc7ee1fd9fc191086107de49c13ad2ae01041997",
+      "canary": false,
+      "pass": true,
+      "failedStage": null
+    },
+    {
+      "id": "C16",
+      "layer": "compiler",
+      "polarity": "positive",
+      "fixtureHash": "1ad7647145f02d679c1413f36cd413bfed50645850bf73424b4d69239f58a2ac",
+      "actualInputHash": "1ad7647145f02d679c1413f36cd413bfed50645850bf73424b4d69239f58a2ac",
+      "canary": false,
+      "pass": true,
+      "failedStage": null
+    },
+    {
+      "id": "C17",
+      "layer": "compiler",
+      "polarity": "positive",
+      "fixtureHash": "96169d1dbc2fbcd076d3ee63b07e6b8b7ebfd2c83c6f9df2184ffccc27e3a787",
+      "actualInputHash": "96169d1dbc2fbcd076d3ee63b07e6b8b7ebfd2c83c6f9df2184ffccc27e3a787",
+      "canary": false,
+      "pass": true,
+      "failedStage": null
+    },
+    {
+      "id": "C18",
+      "layer": "compiler",
+      "polarity": "positive",
+      "fixtureHash": "7f9b44e2c12cc931fead541156f889232e0095298ea39b35da6e269ccb9c105e",
+      "actualInputHash": "7f9b44e2c12cc931fead541156f889232e0095298ea39b35da6e269ccb9c105e",
+      "canary": false,
+      "pass": true,
+      "failedStage": null
+    },
+    {
+      "id": "C19",
+      "layer": "compiler",
+      "polarity": "positive",
+      "fixtureHash": "b9f17db2f70446a26ec21f13c74a715545dc4fb910bef134e47ce12d828fc93c",
+      "actualInputHash": "b9f17db2f70446a26ec21f13c74a715545dc4fb910bef134e47ce12d828fc93c",
+      "canary": false,
+      "pass": true,
+      "failedStage": null
+    },
+    {
+      "id": "C20",
+      "layer": "compiler",
+      "polarity": "positive",
+      "fixtureHash": "01258d3a70c9f7c685a91db2b274910cd70116dedc901fc5f2f0421d7fca2e3b",
+      "actualInputHash": "01258d3a70c9f7c685a91db2b274910cd70116dedc901fc5f2f0421d7fca2e3b",
+      "canary": false,
+      "pass": true,
+      "failedStage": null
+    },
+    {
+      "id": "C21",
+      "layer": "compiler",
+      "polarity": "positive",
+      "fixtureHash": "cb0ebfba03146570b29f3faa22f76f7dc135ee97193d93b8d1a9666433da2df3",
+      "actualInputHash": "cb0ebfba03146570b29f3faa22f76f7dc135ee97193d93b8d1a9666433da2df3",
+      "canary": false,
+      "pass": true,
+      "failedStage": null
+    },
+    {
+      "id": "C22",
+      "layer": "compiler",
+      "polarity": "positive",
+      "fixtureHash": "36073886db12e1bddd627461c8baeb7b19fac5fcd7c50035790c37fef4d58627",
+      "actualInputHash": "36073886db12e1bddd627461c8baeb7b19fac5fcd7c50035790c37fef4d58627",
+      "canary": false,
+      "pass": true,
+      "failedStage": null
+    },
+    {
+      "id": "C23",
+      "layer": "compiler",
+      "polarity": "positive",
+      "fixtureHash": "71d6d63037abc267a835fe67c0042e140a6a42ed0b2161cf808b8a9bf91c839f",
+      "actualInputHash": "71d6d63037abc267a835fe67c0042e140a6a42ed0b2161cf808b8a9bf91c839f",
+      "canary": false,
+      "pass": true,
+      "failedStage": null
+    },
+    {
+      "id": "C24",
+      "layer": "compiler",
+      "polarity": "positive",
+      "fixtureHash": "d1b96535b64501e33a891ed40ef6bdb723f56cb1ab5392f0bd0b0e283fa04e2b",
+      "actualInputHash": "d1b96535b64501e33a891ed40ef6bdb723f56cb1ab5392f0bd0b0e283fa04e2b",
+      "canary": false,
+      "pass": true,
+      "failedStage": null
+    },
+    {
+      "id": "C25",
+      "layer": "compiler",
+      "polarity": "positive",
+      "fixtureHash": "fdf22c78f3dda9d51fcc4ad735c755ac86ec3cd5f5880d120d8d4017f01661b9",
+      "actualInputHash": "fdf22c78f3dda9d51fcc4ad735c755ac86ec3cd5f5880d120d8d4017f01661b9",
+      "canary": false,
+      "pass": true,
+      "failedStage": null
+    },
+    {
+      "id": "C26",
+      "layer": "compiler",
+      "polarity": "positive",
+      "fixtureHash": "4f2cae7d605d592f494f731e31a6635cc6447353ca11bc1eae9032dfd4d1e980",
+      "actualInputHash": "4f2cae7d605d592f494f731e31a6635cc6447353ca11bc1eae9032dfd4d1e980",
+      "canary": false,
+      "pass": true,
+      "failedStage": null
+    },
+    {
+      "id": "C27",
+      "layer": "compiler",
+      "polarity": "positive",
+      "fixtureHash": "c84c4bf220daa1b48c79f5e93099028a8b80a9e550c8f19d2a52899e9a7f2125",
+      "actualInputHash": "c84c4bf220daa1b48c79f5e93099028a8b80a9e550c8f19d2a52899e9a7f2125",
+      "canary": false,
+      "pass": true,
+      "failedStage": null
+    },
+    {
+      "id": "C28",
+      "layer": "compiler",
+      "polarity": "positive",
+      "fixtureHash": "1a0caa1a6a4a497c68e8099980d667ca4f4d2d4c7b76b968e4e54706f4e64f97",
+      "actualInputHash": "1a0caa1a6a4a497c68e8099980d667ca4f4d2d4c7b76b968e4e54706f4e64f97",
+      "canary": false,
+      "pass": true,
+      "failedStage": null
+    },
+    {
+      "id": "C29",
+      "layer": "compiler",
+      "polarity": "positive",
+      "fixtureHash": "122274232e66ed40f21bdec4d4e1bc675d8ea754f7ddea42cb88b0cc52a18de1",
+      "actualInputHash": "122274232e66ed40f21bdec4d4e1bc675d8ea754f7ddea42cb88b0cc52a18de1",
+      "canary": false,
+      "pass": true,
+      "failedStage": null
+    },
+    {
+      "id": "C30",
+      "layer": "compiler",
+      "polarity": "positive",
+      "fixtureHash": "7dca0942a112e08ff6ea81c6060e2980da5511957db3a1eac757a8f7f054ee9a",
+      "actualInputHash": "7dca0942a112e08ff6ea81c6060e2980da5511957db3a1eac757a8f7f054ee9a",
+      "canary": false,
+      "pass": true,
+      "failedStage": null
+    },
+    {
+      "id": "C31",
+      "layer": "compiler",
+      "polarity": "positive",
+      "fixtureHash": "79a6f646e55913493c15c0b47de6bc8737969db96c3e8485d33d41082d7e838c",
+      "actualInputHash": "79a6f646e55913493c15c0b47de6bc8737969db96c3e8485d33d41082d7e838c",
+      "canary": false,
+      "pass": true,
+      "failedStage": null
+    },
+    {
+      "id": "C32",
+      "layer": "compiler",
+      "polarity": "positive",
+      "fixtureHash": "3995a5103b81a1b424b6e25fff2f4086a81fc1b0326da9b571b8ad01b9118340",
+      "actualInputHash": "3995a5103b81a1b424b6e25fff2f4086a81fc1b0326da9b571b8ad01b9118340",
+      "canary": false,
+      "pass": true,
+      "failedStage": null
+    },
+    {
+      "id": "C33",
+      "layer": "compiler",
+      "polarity": "negative",
+      "fixtureHash": "c8e9e9076f37be977845592b7ea1415e7df934136a0932d53b544665b36a7274",
+      "actualInputHash": "c8e9e9076f37be977845592b7ea1415e7df934136a0932d53b544665b36a7274",
+      "canary": false,
+      "pass": true,
+      "failedStage": null
+    },
+    {
+      "id": "C34",
+      "layer": "compiler",
+      "polarity": "negative",
+      "fixtureHash": "755a0fdabec66c1d3d572668ba5f41664ffeee6b9c757670e3035445377294ce",
+      "actualInputHash": "755a0fdabec66c1d3d572668ba5f41664ffeee6b9c757670e3035445377294ce",
+      "canary": false,
+      "pass": true,
+      "failedStage": null
+    },
+    {
+      "id": "C35",
+      "layer": "compiler",
+      "polarity": "negative",
+      "fixtureHash": "0247c36f0d947f6c6b50828a63dd49d4af065f646179a024795009966fd10f7d",
+      "actualInputHash": "0247c36f0d947f6c6b50828a63dd49d4af065f646179a024795009966fd10f7d",
+      "canary": false,
+      "pass": true,
+      "failedStage": null
+    },
+    {
+      "id": "C36",
+      "layer": "compiler",
+      "polarity": "negative",
+      "fixtureHash": "926167d787a8f51891d0ff82f0777d0cc95a34eb5d74d12f7e7ebfedba917e07",
+      "actualInputHash": "926167d787a8f51891d0ff82f0777d0cc95a34eb5d74d12f7e7ebfedba917e07",
+      "canary": false,
+      "pass": true,
+      "failedStage": null
+    },
+    {
+      "id": "C37",
+      "layer": "compiler",
+      "polarity": "negative",
+      "fixtureHash": "dd4e0d9335eb919bedad33fe2d9ce7351a82fe7fa0a80c79e1d67076ec9dbec7",
+      "actualInputHash": "dd4e0d9335eb919bedad33fe2d9ce7351a82fe7fa0a80c79e1d67076ec9dbec7",
+      "canary": false,
+      "pass": true,
+      "failedStage": null
+    },
+    {
+      "id": "C38",
+      "layer": "compiler",
+      "polarity": "negative",
+      "fixtureHash": "91849b5d0efd5eb17f14376589b0ffdbd9539d73ec9cf061839e7715f8753013",
+      "actualInputHash": "91849b5d0efd5eb17f14376589b0ffdbd9539d73ec9cf061839e7715f8753013",
+      "canary": false,
+      "pass": true,
+      "failedStage": null
+    },
+    {
+      "id": "C39",
+      "layer": "compiler",
+      "polarity": "negative",
+      "fixtureHash": "85324d7e6b7561de9ef45e1e23f44253284e5be0cd1441101b8d91e032f3818b",
+      "actualInputHash": "85324d7e6b7561de9ef45e1e23f44253284e5be0cd1441101b8d91e032f3818b",
+      "canary": false,
+      "pass": true,
+      "failedStage": null
+    },
+    {
+      "id": "C40",
+      "layer": "compiler",
+      "polarity": "negative",
+      "fixtureHash": "a376b262aa8d2773ecac4bd014fdf62773c1d5e8d7dc959e58649e29524a694f",
+      "actualInputHash": "a376b262aa8d2773ecac4bd014fdf62773c1d5e8d7dc959e58649e29524a694f",
+      "canary": false,
+      "pass": true,
+      "failedStage": null
+    },
+    {
+      "id": "C41",
+      "layer": "compiler",
+      "polarity": "negative",
+      "fixtureHash": "1a3e3c0d1dea509bbf6530bd4b8344702240bba9ed8ef92ff551de3be102efa6",
+      "actualInputHash": "1a3e3c0d1dea509bbf6530bd4b8344702240bba9ed8ef92ff551de3be102efa6",
+      "canary": false,
+      "pass": true,
+      "failedStage": null
+    },
+    {
+      "id": "C42",
+      "layer": "compiler",
+      "polarity": "negative",
+      "fixtureHash": "cb8818b882f9954d9745e539eb2505764172eeb24ff346438c86705be36fc6e6",
+      "actualInputHash": "cb8818b882f9954d9745e539eb2505764172eeb24ff346438c86705be36fc6e6",
+      "canary": false,
+      "pass": true,
+      "failedStage": null
+    },
+    {
+      "id": "C43",
+      "layer": "compiler",
+      "polarity": "negative",
+      "fixtureHash": "df933f0bad5704e8676f65953016c4039c59e65c0e3ff349b13cced0b99d457c",
+      "actualInputHash": "df933f0bad5704e8676f65953016c4039c59e65c0e3ff349b13cced0b99d457c",
+      "canary": false,
+      "pass": true,
+      "failedStage": null
+    },
+    {
+      "id": "C44",
+      "layer": "compiler",
+      "polarity": "negative",
+      "fixtureHash": "5e35aeb3fd694b575c490f6d0c169240fa07241692cb2f9524f6588e5e0ecfe6",
+      "actualInputHash": "5e35aeb3fd694b575c490f6d0c169240fa07241692cb2f9524f6588e5e0ecfe6",
+      "canary": false,
+      "pass": true,
+      "failedStage": null
+    },
+    {
+      "id": "C45",
+      "layer": "compiler",
+      "polarity": "negative",
+      "fixtureHash": "236dde525d48c7c0101184185070d9d596d91256baa6ca2d25c624ee9b469912",
+      "actualInputHash": "236dde525d48c7c0101184185070d9d596d91256baa6ca2d25c624ee9b469912",
+      "canary": false,
+      "pass": true,
+      "failedStage": null
+    },
+    {
+      "id": "C46",
+      "layer": "compiler",
+      "polarity": "negative",
+      "fixtureHash": "1ceaf48e9e1165d6ca261889332b22e296d3bf3c62c8d1db33f33f729cd2232f",
+      "actualInputHash": "1ceaf48e9e1165d6ca261889332b22e296d3bf3c62c8d1db33f33f729cd2232f",
+      "canary": false,
+      "pass": true,
+      "failedStage": null
+    },
+    {
+      "id": "S01",
+      "layer": "session",
+      "polarity": "positive",
+      "fixtureHash": "0c56046bda001ddbb1e6344d659275732a0e0854709d6c84d4810b938d23dcdc",
+      "actualInputHash": "0c56046bda001ddbb1e6344d659275732a0e0854709d6c84d4810b938d23dcdc",
+      "canary": false,
+      "pass": true,
+      "failedStage": null
+    },
+    {
+      "id": "S02",
+      "layer": "session",
+      "polarity": "negative",
+      "fixtureHash": "609d244cd2fb74abc3a90092c740e51dcba3adc9da27a78a0340be976e177977",
+      "actualInputHash": "609d244cd2fb74abc3a90092c740e51dcba3adc9da27a78a0340be976e177977",
+      "canary": false,
+      "pass": true,
+      "failedStage": null
+    },
+    {
+      "id": "S03",
+      "layer": "session",
+      "polarity": "positive",
+      "fixtureHash": "4906d7969f6147b7616a50ff540e5b9c013607386bce30b3573b72db43418d7b",
+      "actualInputHash": "4906d7969f6147b7616a50ff540e5b9c013607386bce30b3573b72db43418d7b",
+      "canary": false,
+      "pass": true,
+      "failedStage": null
+    },
+    {
+      "id": "S04",
+      "layer": "session",
+      "polarity": "negative",
+      "fixtureHash": "1f8152f107e307c392d99bb54a7a1b9777e53e3b9314fe14da6553ad9fc75c9b",
+      "actualInputHash": "1f8152f107e307c392d99bb54a7a1b9777e53e3b9314fe14da6553ad9fc75c9b",
+      "canary": false,
+      "pass": true,
+      "failedStage": null
+    },
+    {
+      "id": "S05",
+      "layer": "session",
+      "polarity": "positive",
+      "fixtureHash": "165c4b4bb2f48d3889ef504f54e9508a98a6903046f248f92d152cf3eee7d267",
+      "actualInputHash": "165c4b4bb2f48d3889ef504f54e9508a98a6903046f248f92d152cf3eee7d267",
+      "canary": false,
+      "pass": true,
+      "failedStage": null
+    },
+    {
+      "id": "S06",
+      "layer": "session",
+      "polarity": "negative",
+      "fixtureHash": "39d838df0f53a046664000da9b2a44f5cb1b5b4e44bec1593d206d478395a0b3",
+      "actualInputHash": "39d838df0f53a046664000da9b2a44f5cb1b5b4e44bec1593d206d478395a0b3",
+      "canary": false,
+      "pass": true,
+      "failedStage": null
+    },
+    {
+      "id": "S07",
+      "layer": "session",
+      "polarity": "positive",
+      "fixtureHash": "3aa0d123b5721a042b38ab21d301b360bed13eb7501f45c2c551a3639ae95924",
+      "actualInputHash": "3aa0d123b5721a042b38ab21d301b360bed13eb7501f45c2c551a3639ae95924",
+      "canary": false,
+      "pass": true,
+      "failedStage": null
+    },
+    {
+      "id": "S08",
+      "layer": "session",
+      "polarity": "negative",
+      "fixtureHash": "66ff7901b6e69d4c94fe5225ac937ff2ff6cb1de094b2e1c2ed7d42784f8a123",
+      "actualInputHash": "66ff7901b6e69d4c94fe5225ac937ff2ff6cb1de094b2e1c2ed7d42784f8a123",
+      "canary": false,
+      "pass": true,
+      "failedStage": null
+    },
+    {
+      "id": "S09",
+      "layer": "session",
+      "polarity": "positive",
+      "fixtureHash": "8e52ba00753d321b248d6752cc1120343c81715272c5c84fc9a9977370064d90",
+      "actualInputHash": "8e52ba00753d321b248d6752cc1120343c81715272c5c84fc9a9977370064d90",
+      "canary": false,
+      "pass": true,
+      "failedStage": null
+    },
+    {
+      "id": "S10",
+      "layer": "session",
+      "polarity": "negative",
+      "fixtureHash": "fa63492898386e9a14d0c8f23ec68810f7dc90f9e956497d924485a681650e0c",
+      "actualInputHash": "fa63492898386e9a14d0c8f23ec68810f7dc90f9e956497d924485a681650e0c",
+      "canary": false,
+      "pass": true,
+      "failedStage": null
+    },
+    {
+      "id": "S11",
+      "layer": "session",
+      "polarity": "positive",
+      "fixtureHash": "6b9a181bb05c62338078d7daac0a9e6df626b540429c432cee29a06b724f11d9",
+      "actualInputHash": "6b9a181bb05c62338078d7daac0a9e6df626b540429c432cee29a06b724f11d9",
+      "canary": false,
+      "pass": true,
+      "failedStage": null
+    },
+    {
+      "id": "S12",
+      "layer": "session",
+      "polarity": "negative",
+      "fixtureHash": "4d8da37cd11decc564c4e53bbf0cc7ac0bfdb169191263a7f310e452d51d0133",
+      "actualInputHash": "4d8da37cd11decc564c4e53bbf0cc7ac0bfdb169191263a7f310e452d51d0133",
+      "canary": false,
+      "pass": true,
+      "failedStage": null
+    },
+    {
+      "id": "S13",
+      "layer": "session",
+      "polarity": "positive",
+      "fixtureHash": "c9cba294966402d87584d2f47a3c8eef2749a19d9b219cacd9103dd7d56e3541",
+      "actualInputHash": "c9cba294966402d87584d2f47a3c8eef2749a19d9b219cacd9103dd7d56e3541",
+      "canary": false,
+      "pass": true,
+      "failedStage": null
+    },
+    {
+      "id": "S14",
+      "layer": "session",
+      "polarity": "negative",
+      "fixtureHash": "8297d2ba2978b1e4bc6c9f0276dcd7e5bd6973c75dbbfdc51bf3dc625e4bb55b",
+      "actualInputHash": "8297d2ba2978b1e4bc6c9f0276dcd7e5bd6973c75dbbfdc51bf3dc625e4bb55b",
+      "canary": false,
+      "pass": true,
+      "failedStage": null
+    },
+    {
+      "id": "S15",
+      "layer": "session",
+      "polarity": "positive",
+      "fixtureHash": "3aaa87105a7ddb67a74f00f9f8e23f2e0f30784066de6686026f1768dedaf7e8",
+      "actualInputHash": "3aaa87105a7ddb67a74f00f9f8e23f2e0f30784066de6686026f1768dedaf7e8",
+      "canary": false,
+      "pass": true,
+      "failedStage": null
+    }
+  ]
+}

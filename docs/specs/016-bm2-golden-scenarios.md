@@ -1,6 +1,8 @@
 # BM2 — layered golden scenarios
 
-Lifecycle: review-ready (v2). Profile: strict. 2026-11-15. Canonical BM2 specification; issue43 and plan016. User authorizes implementation after updated independent design/TDD admission. No merge, release or global installation change is authorized. Historical v1 design reviews remain Check082; this v2 adds issues51/52.
+Lifecycle: complete (v2). Profile: strict. 2026-11-15. Canonical BM2 specification; issue43 and plan016. User authorizes implementation after updated independent design/TDD admission. No merge, release or global installation change is authorized. Historical v1 design reviews remain Check082; this v2 adds issues51/52.
+
+> Delivery update2026-11-15: implemented, independently reviewed and accepted on actual integrated0.1.9 source `7bb6a0b0f4eb48820cf1d6f6c92dd29efa06ac8c`; see [Check106](../checks/106-v019-integrated-main.md). Earlier admission/unmerged/future-implementation wording below is retained design-stage context and is superseded for delivery status by this record. Functional constraints and all original RED/GLM v1 evidence remain unchanged. Local Node24 replaces hosted execution under the user quota instruction; it does not waive gates. Publication/tag/global upgrade and any new real-model budget remain separately authorized actions.
 
 ## Source, goal and evidence boundary
 

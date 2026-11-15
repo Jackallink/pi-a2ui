@@ -1,0 +1,103 @@
+{
+  "source": "7bb6a0b0f4eb48820cf1d6f6c92dd29efa06ac8c",
+  "archiveSHA256": "6a2dd059571c5f1fb56c16cbfbd650d2cb79979694a9eea7845ddb92af70c5eb",
+  "local": {
+    "mode": "startup",
+    "node": "v24.18.1",
+    "packageVersion": "0.1.9",
+    "packageFingerprint": "0767c2f209c2ffc14ecec3cfa2152b3b11958ed2ea9529a858e16ad1e6800f35",
+    "modelRequestsAllowed": false,
+    "passed": true,
+    "stages": [
+      {
+        "name": "helper-identity",
+        "status": "passed"
+      },
+      {
+        "name": "host-identity",
+        "status": "passed"
+      },
+      {
+        "name": "fixture",
+        "status": "passed"
+      },
+      {
+        "name": "registration",
+        "status": "passed"
+      },
+      {
+        "name": "startup",
+        "status": "passed"
+      },
+      {
+        "name": "status",
+        "status": "passed"
+      },
+      {
+        "name": "cleanup.pi",
+        "status": "passed"
+      },
+      {
+        "name": "cleanup.registration",
+        "status": "passed"
+      },
+      {
+        "name": "child-runtime",
+        "status": "passed"
+      },
+      {
+        "name": "cleanup.diagnostics",
+        "status": "passed"
+      },
+      {
+        "name": "preservation",
+        "status": "passed"
+      }
+    ],
+    "observed": {
+      "normalRegistration": true,
+      "explicitPackageSkillProfile": false,
+      "suppliedDsl": false,
+      "skillForward": false,
+      "resolvedProvider": "volcengine-ark",
+      "resolvedModel": "glm-5.3-flash",
+      "agentPlanEndpointVerified": true,
+      "uniqueA2uiCommands": 3,
+      "uniqueSkill": true,
+      "statusCommandExecuted": true,
+      "agentRuns": 0,
+      "modelRequests": 0,
+      "externalFetchDenied": true,
+      "browserObserved": false,
+      "processExited": true,
+      "privateRegistrationRemoved": true,
+      "observedNodeProcesses": 5,
+      "allNode24": true,
+      "allCwdWithinOwnedRun": true,
+      "packagePayloadUnchanged": true,
+      "operatorFilesUnchanged": true
+    },
+    "catalogId": "https://jackallink.github.io/pi-a2ui/catalogs/interactions-v1.json",
+    "hostPi": "1.5.0"
+  },
+  "git": {
+    "passed": true,
+    "node": "v24.18.1",
+    "expectedCommit": "7bb6a0b0f4eb48820cf1d6f6c92dd29efa06ac8c",
+    "source": "git:github.com/Jackallink/pi-a2ui@7bb6a0b0f4eb48820cf1d6f6c92dd29efa06ac8c",
+    "normalRegistration": true,
+    "modelRequests": 0,
+    "oneSkill": true,
+    "uniqueCommands": true,
+    "enabledStatus": true,
+    "agentRuns": 0,
+    "sourceCommit": "7bb6a0b0f4eb48820cf1d6f6c92dd29efa06ac8c",
+    "allPayloadFilesMatch": 75,
+    "runtime": {
+      "observedNodeProcesses": 3,
+      "allNode24": true,
+      "allCwdWithinOwnedRun": true
+    },
+    "piClosed": true
+  }
+}

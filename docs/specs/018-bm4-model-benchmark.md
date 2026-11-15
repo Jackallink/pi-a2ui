@@ -1,6 +1,8 @@
 # BM4 — first-attempt GLM authoring baseline
 
-Lifecycle: review-ready. Strict. Canonical Spec018, parent43. Predecessors BM2 PR53 / BM3 PR54 remain unmerged. Manual measurement, never a CI/release gate. Only user-approved model `volcengine-ark/glm-5.3-flash` on exact `https://ark.cn-beijing.volces.com/api/plan/v3`; user budget12distinct scenarios, one attempt each, no automatic retry. No new publication/global package/config change.
+Lifecycle: complete. Strict. Canonical Spec018, parent43. Predecessors BM2 PR53 / BM3 PR54 remain unmerged. Manual measurement, never a CI/release gate. Only user-approved model `volcengine-ark/glm-5.3-flash` on exact `https://ark.cn-beijing.volces.com/api/plan/v3`; user budget12distinct scenarios, one attempt each, no automatic retry. No new publication/global package/config change.
+
+> Delivery update2026-11-15: implemented, independently reviewed and accepted on actual integrated0.1.9 source `7bb6a0b0f4eb48820cf1d6f6c92dd29efa06ac8c`; see [Check106](../checks/106-v019-integrated-main.md). Earlier admission/unmerged/future-implementation wording below is retained design-stage context and is superseded for delivery status by this record. Functional constraints and all original RED/GLM v1 evidence remain unchanged. Local Node24 replaces hosted execution under the user quota instruction; it does not waive gates. Publication/tag/global upgrade and any new real-model budget remain separately authorized actions.
 
 ## Goal and scope
 

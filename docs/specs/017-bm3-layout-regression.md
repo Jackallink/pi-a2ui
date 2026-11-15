@@ -1,6 +1,8 @@
 # BM3 — deterministic layout across search, audit and return
 
-Lifecycle: review-ready. Profile: strict. Canonical spec; parent issue43. Baseline fef18935165efdc2d6b152bebf75e2f830a06341 contains independently reviewed BM2 candidate PR53; current source/runtime/assets remain018. User authorizes subsequent BM/issues implementation after each design/TDD gate. This slice is zero-model. No merge, release or global installation change.
+Lifecycle: complete. Profile: strict. Canonical spec; parent issue43. Baseline fef18935165efdc2d6b152bebf75e2f830a06341 contains independently reviewed BM2 candidate PR53; current source/runtime/assets remain018. User authorizes subsequent BM/issues implementation after each design/TDD gate. This slice is zero-model. No merge, release or global installation change.
+
+> Delivery update2026-11-15: implemented, independently reviewed and accepted on actual integrated0.1.9 source `7bb6a0b0f4eb48820cf1d6f6c92dd29efa06ac8c`; see [Check106](../checks/106-v019-integrated-main.md). Earlier admission/unmerged/future-implementation wording below is retained design-stage context and is superseded for delivery status by this record. Functional constraints and all original RED/GLM v1 evidence remain unchanged. Local Node24 replaces hosted execution under the user quota instruction; it does not waive gates. Publication/tag/global upgrade and any new real-model budget remain separately authorized actions.
 
 ## Goal, non-goals and evidence boundary
 
