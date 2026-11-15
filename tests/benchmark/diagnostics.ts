@@ -123,9 +123,10 @@ export function documentSource(family:Family, markdown:string):string {
       const heading = text.match(/^ {0,3}(#{1,6})[ \t]+(.+?)\s*#*\s*$/);
       return heading ? [{line,level:heading[1].length,title:heading[2]}] : [];
     });
-    const matches = headings.filter(heading => heading.level === 2 && heading.title === family.doc.heading);
+    const matches = headings.filter(heading => heading.title === family.doc.heading);
     assert.equal(matches.length, 1, 'expected one repair heading');
     const start = matches[0];
+    assert.equal(start.level, 2, 'repair heading must be level two');
     const end = headings.find(heading => heading.line > start.line && heading.level <= start.level)?.line ?? lines.length;
     const markers = visible.filter(({text}) => text.trim() === family.doc.marker);
     assert.equal(markers.length, 1, 'expected one outside-fence diagnostic marker');
