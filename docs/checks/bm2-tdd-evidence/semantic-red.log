@@ -17,7 +17,7 @@ test at tests/golden.test.ts:1:300
   
   null !== 'semantic'
   
-      at TestContext.<anonymous> (/Users/jakeliu/.codex/worktrees/pi-a2ui-dx/pi-a2ui/tests/golden.test.ts:16:12)
+      at TestContext.<anonymous> ($WORKTREE/tests/golden.test.ts:16:12)
       at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
       at async Test.run (node:internal/test_runner/test:1332:7)
       at async startSubtestAfterBootstrap (node:internal/test_runner/harness:385:3) {
@@ -35,7 +35,7 @@ test at tests/golden.test.ts:1:300
   
   null !== 'semantic'
   
-      at TestContext.<anonymous> (/Users/jakeliu/.codex/worktrees/pi-a2ui-dx/pi-a2ui/tests/golden.test.ts:16:12)
+      at TestContext.<anonymous> ($WORKTREE/tests/golden.test.ts:16:12)
       at async Test.run (node:internal/test_runner/test:1332:7)
       at async Test.processPendingSubtests (node:internal/test_runner/test:911:7) {
     generatedMessage: true,

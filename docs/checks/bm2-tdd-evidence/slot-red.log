@@ -16,7 +16,7 @@ test at tests/golden.test.ts:1:7291
   
   null !== 'semantic'
   
-      at TestContext.<anonymous> (/Users/jakeliu/.codex/worktrees/pi-a2ui-dx/pi-a2ui/tests/golden.test.ts:114:57)
+      at TestContext.<anonymous> ($WORKTREE/tests/golden.test.ts:114:57)
       at async Test.run (node:internal/test_runner/test:1332:7)
       at async startSubtestAfterBootstrap (node:internal/test_runner/harness:385:3) {
     generatedMessage: true,

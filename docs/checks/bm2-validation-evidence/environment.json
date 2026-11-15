@@ -1,0 +1,8 @@
+{
+  "node": "v24.18.1",
+  "executableBasename": "node",
+  "executablePathSHA256": "7e0d84ad4c385d35a54d8dbcdcf00a37ffdc3d6e0258d61962bad58889802f5d",
+  "cwdSHA256": "ff70c8480bfe998b6d72e32834c6c25d99a948e817262011d6f5fc3899187196",
+  "cwdRole": "task-owned isolated worktree",
+  "scope": "companion runtime observation for identical Node24 wrapper and owned process.execPath children; not syscall/billing tracing"
+}

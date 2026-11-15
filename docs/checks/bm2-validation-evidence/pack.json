@@ -1,0 +1,13 @@
+{
+  "candidateSource": "40746f73f4d24ed57eac3881114be7110e3eb266",
+  "retainedPackedSource": "9e475ee97eab79e3b10cc8d614a506fedbce07e4",
+  "sourcePayloadBlobsEqual": true,
+  "files": 75,
+  "archiveSHA256": "278d12ca380ea940959357b06e3d9db7cdca9740b0f30b96c6eedb238cdbf0d9",
+  "onlyChangesVersusPublished018": [
+    "skills/pi-a2ui/references/event-provenance.md",
+    "skills/pi-a2ui/references/workbench-components.md"
+  ],
+  "newPackBuildRequired": false,
+  "publishedOrInstalled": false
+}

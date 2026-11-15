@@ -1,0 +1,41 @@
+{
+  "source": "40746f73f4d24ed57eac3881114be7110e3eb266",
+  "scope": "source-bound local evidence; absolute workspace paths redacted, raw retained privately",
+  "files": {
+    "node.log": {
+      "rawSHA256": "3a0d7b79ac62c6d9edd339af88bf5f85ef91475f278736c5f561ebbe422556a4",
+      "publishedSHA256": "3a0d7b79ac62c6d9edd339af88bf5f85ef91475f278736c5f561ebbe422556a4",
+      "pathRedactionOnly": true
+    },
+    "browser.log": {
+      "rawSHA256": "6996227011dc71246cf5fa0a9999a80cfb47c06686122e4c121737643b3b356f",
+      "publishedSHA256": "6996227011dc71246cf5fa0a9999a80cfb47c06686122e4c121737643b3b356f",
+      "pathRedactionOnly": true
+    },
+    "typecheck.log": {
+      "rawSHA256": "bbf95e1fe942b47a1a1676ecb48357bb2afd3ffcdb2dc612e59d24bf0e78ccca",
+      "publishedSHA256": "bbf95e1fe942b47a1a1676ecb48357bb2afd3ffcdb2dc612e59d24bf0e78ccca",
+      "pathRedactionOnly": true
+    },
+    "union.json": {
+      "rawSHA256": "ee279c198a08873cab6704fc88c1f5378b16b74702030e80695c28cde0bb4a20",
+      "publishedSHA256": "ee279c198a08873cab6704fc88c1f5378b16b74702030e80695c28cde0bb4a20",
+      "pathRedactionOnly": true
+    },
+    "pack.json": {
+      "rawSHA256": "55d6fef404fa2093463ca322e81d082526460cdfda09115ba49ecc3b98c3d296",
+      "publishedSHA256": "55d6fef404fa2093463ca322e81d082526460cdfda09115ba49ecc3b98c3d296",
+      "pathRedactionOnly": true
+    },
+    "node-report.json": {
+      "rawSHA256": "562b8a87d34af95d06cfa00ed6c901452db74cb92463ac786437b604345ef6e5",
+      "publishedSHA256": "562b8a87d34af95d06cfa00ed6c901452db74cb92463ac786437b604345ef6e5",
+      "pathRedactionOnly": true
+    },
+    "browser-report.json": {
+      "rawSHA256": "90836ea0a719ee7610441e67ef4e6de7aaa5e9565678997646e4a74e0f7a6878",
+      "publishedSHA256": "90836ea0a719ee7610441e67ef4e6de7aaa5e9565678997646e4a74e0f7a6878",
+      "pathRedactionOnly": true
+    }
+  }
+}
