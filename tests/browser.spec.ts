@@ -24,6 +24,38 @@ const test = base.extend<{ canvas: Canvas }>({
 });
 test.use({ launchOptions: { executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH } });
 
+test('RSC actual connected extension renders and persists native settled summary without new actions',async({page})=>{
+ const {default:install}=await import('../extension.ts');
+ const {SessionManager}=await import('@earendil-works/pi-coding-agent');
+ const manager=SessionManager.inMemory(process.cwd());
+ const tools=new Map<string,any>(),handlers=new Map<string,any>();
+ let opened='',openCalls=0,messages=0,posts=0;
+ const host={registerTool(t:any){tools.set(t.name,t);},registerCommand(){},on(n:string,h:any){handlers.set(n,h);},sendUserMessage(){messages++;},appendEntry(type:string,data:unknown){manager.appendCustomEntry(type,data);},getActiveTools:()=>['a2ui_render'],setActiveTools(){},exec:async(_program:string,args:string[])=>{opened=args.at(-1)!;openCalls++;return{code:0,stdout:'',stderr:''};}};
+ install(host as any);const ctx={cwd:process.cwd(),sessionManager:manager,ui:{notify(){}}};
+ await handlers.get('session_start')({},ctx);
+ try{
+  await tools.get('a2ui_render').execute('model',{surfaceId:'model',source:'root = Text("Model surface")'},undefined,undefined,ctx);
+  const url=new URL(opened),origin=url.origin,token=new URLSearchParams(url.hash.slice(1)).get('token');
+  expect((await page.request.post(origin+'/api/connect',{headers:{origin},data:{token}})).status()).toBe(200);
+  page.on('request',request=>{if(request.url()===origin+'/api/actions'&&request.method()==='POST')posts++;});
+  await page.goto(origin);await expect(page.getByText('Model surface',{exact:true})).toBeVisible();
+  const beforeOpen=openCalls;
+  handlers.get('agent_start')({});handlers.get('tool_execution_start')({toolCallId:'observed',toolName:'bash'});
+  handlers.get('tool_execution_end')({toolCallId:'observed',result:{content:[]},isError:true});
+  handlers.get('agent_end')({messages:[{role:'assistant',stopReason:'stop'}]});
+  handlers.get('agent_settled')({aborted:false});
+  const card=page.getByRole('region',{name:'Canvas run-summary',exact:true});
+  await expect(card.getByText('Run summary',{exact:true})).toBeVisible({timeout:3000});
+  await expect(card.getByText('Run completed',{exact:true})).toBeVisible();
+  await expect(card.getByText(/1 failed/)).toBeVisible();
+  await expect(card.getByText('bash',{exact:true})).toBeVisible();
+  const receipts=manager.getBranch().filter(entry=>entry.type==='custom'&&entry.customType==='pi-a2ui.run-summary.v1');
+  expect(receipts).toHaveLength(1);
+  expect(manager.buildSessionContext().messages).toEqual([]);
+  expect(openCalls).toBe(beforeOpen);expect(messages).toBe(0);expect(posts).toBe(0);
+ }finally{await page.close();await handlers.get('session_shutdown')({});}
+});
+
 async function open(page: Page, canvas: Canvas) {
   await page.goto(canvas.origin);
   await expect(page.getByRole("textbox")).toBeVisible();
