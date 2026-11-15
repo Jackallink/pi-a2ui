@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Add the extension-rendered run summary card (issue #57 lever A): after a settled run with at least one non-a2ui tool call and an already-open canvas browser, the extension renders a preset data-driven surface (`run-summary`) with a run-outcome StatusBadge and the native tool ActivityTimeline, republished after render so the fresh surface receives the observed timeline. It is pure observed runtime data with no model request; it never starts a server, never evicts model surfaces, skips tool-free prose turns and full budgets, and always replaces its own surface in place. The surface id `run-summary` is reserved against model renders (409); the card reflects the most recent run that had tool calls and is replaced at the next such settle.
+- Keep the catalog, dependencies and permissions unchanged.
 ## 0.1.8 - 2026-11-15
 
 - Add BM1 development-side regression coverage for two registered diagnostic families: reserved Event keys and current coding Button record IDs. Bind actual rejections to uniquely located, executable shipped repair examples and independent intended-data assertions.

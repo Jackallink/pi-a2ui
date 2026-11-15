@@ -87,6 +87,8 @@ Supported components include bounded native-tool LogView and finite line/bar Cha
 
 Rendering validates the entire replacement before publishing it. Invalid source leaves the old surface intact. A tool result does not wait for a human; the browser action becomes a later structured user message, with `followUp` during generation. “Sent to Pi” acknowledges one local dispatch attempt, not model success; asynchronous failures appear in Pi. Ambiguous network failures are not automatically retried.
 
+When a run settles with at least one non-a2ui tool call and a canvas browser is already open, the extension renders a data-driven **run summary card** on its own `run-summary` surface: a StatusBadge for the run outcome plus the native tool ActivityTimeline, republished after render so the fresh surface receives the observed timeline. It never starts a server, never evicts a model surface (it renders only when budget is free or the card surface already exists), never appears for tool-free prose turns, and is replaced at the next settle of a run with tool calls. The id `run-summary` is reserved: model `a2ui_render` calls with that surfaceId are rejected. Pause A2UI with `/a2ui-toggle` to stop it.
+
 ## Component support and extension opportunities
 
 This version exposes **18 official Basic types +14 custom Pi types =32** in interactions-v1 (published workbench-v1 has29):

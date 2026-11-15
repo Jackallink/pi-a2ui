@@ -79,6 +79,24 @@ test('native tool lifecycle updates only current run logs and chart snapshots re
  }finally{await handlers.get('session_shutdown')({});}
 });
 
+test('run summary card: reserved model surfaceId rejects atomically and no card renders without a browser',async()=>{
+ const tools=new Map<string,any>(),commands=new Map<string,any>(),handlers=new Map<string,any>();
+ const host={registerTool(t:any){tools.set(t.name,t);},registerCommand(n:string,c:any){commands.set(n,c);},on(n:string,h:any){handlers.set(n,h);},sendUserMessage(){},exec:async()=>({code:0,stdout:'',stderr:''}),getActiveTools:()=>['a2ui_render'],setActiveTools(){}} as unknown as ExtensionAPI;
+ install(host);const ctx={sessionManager:{getBranch:()=>[]},ui:{notify(){}}};await handlers.get('session_start')({},ctx);
+ try{
+  let rejected:any;try{await tools.get('a2ui_render').execute('reserved',{surfaceId:'run-summary',source:'root = Text("Squat")'},undefined,undefined,ctx);}catch(error){rejected=error;}
+  assert.equal(rejected?.status,409);assert.match(String(rejected?.message),/reserved/i);
+  await tools.get('a2ui_render').execute('model',{surfaceId:'model-1',source:'root = Text("Model surface")'},undefined,undefined,ctx);
+  handlers.get('agent_start')({});handlers.get('tool_execution_start')({toolCallId:'t1',toolName:'bash'});handlers.get('tool_execution_end')({toolCallId:'t1',result:{content:[]},isError:false});
+  handlers.get('agent_end')({messages:[{role:'assistant',stopReason:'stop'}]});handlers.get('agent_settled')({aborted:false});
+  await new Promise(r=>setTimeout(r,150));
+  const messages:string[]=[];await commands.get('a2ui-status').handler('',{...ctx,ui:{notify:(value:unknown)=>messages.push(String(value))}});
+  assert.match(messages[0],/1 surface\(s\)/);assert.doesNotMatch(messages[0],/2 surface/);
+  const probe=await tools.get('a2ui_render').execute('probe',{surfaceId:'probe',source:'root = Text("Probe")'},undefined,undefined,ctx);
+  assert.deepEqual(probe.details.a2uiSnapshot.surfaces.map((surface:any)=>surface.surfaceId),['model-1','probe']); // rejected attempt left no trace
+ }finally{await handlers.get('session_shutdown')({});}
+});
+
 test('first render with no connected browser auto-opens once, success path',async()=>{
  const tools=new Map<string,any>(),handlers=new Map<string,any>();const execCalls:unknown[][]=[];
  const host={registerTool(t:any){tools.set(t.name,t);},registerCommand(){},on(n:string,h:any){handlers.set(n,h);},sendUserMessage(){},exec:(...args:unknown[])=>{execCalls.push(args);return Promise.resolve({code:0,stdout:'',stderr:''});},getActiveTools:()=>['read'],setActiveTools(){}} as unknown as ExtensionAPI;

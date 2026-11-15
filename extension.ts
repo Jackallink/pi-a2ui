@@ -5,6 +5,7 @@ import { promptSnippet } from "./src/compiler.ts";
 import { CanvasController, restoreBranch } from "./src/controller.ts";
 import { UiSession } from "./src/session.ts";
 import { LIMITS, UiError, snapshotUsage } from "./src/protocol.ts";
+import { RUN_CARD_SURFACE_ID, assertUnreservedSurfaceId, maybeRenderRunCard } from "./src/run-card.ts";
 
 export default function a2ui(pi: ExtensionAPI) {
   const makeController = () => new CanvasController(new UiSession(text => {
@@ -39,7 +40,12 @@ export default function a2ui(pi: ExtensionAPI) {
     const last=[...event.messages].reverse().find(message=>message.role==='assistant') as {stopReason?:string}|undefined;
     endedRun=live;live.finishRun(last?.stopReason==='error'?'error':last?.stopReason==='aborted'?'interrupted':undefined);
   });
-  pi.on("agent_settled",event=>{if(event.aborted)endedRun?.finishRun('interrupted');endedRun=undefined;});
+  pi.on("agent_settled",event=>{
+    if(event.aborted)endedRun?.finishRun('interrupted');
+    const finished=endedRun;endedRun=undefined;
+    if (!finished) return;
+    maybeRenderRunCard({finished,aborted:event.aborted===true,snapshot:controller.session.snapshot(),browserClients:controller.server?.clients??0,episodeId:episodeSequence,currentEpisode:()=>episodeSequence,render:(surfaceId,source)=>controller.render(surfaceId,source),refresh:()=>finished.refresh()});
+  });
 
   pi.registerTool({
     name:"a2ui_render",
@@ -49,11 +55,12 @@ export default function a2ui(pi: ExtensionAPI) {
       + "\nTOOL CONTRACT: source is raw complete Express DSL WITHOUT <a2ui> tags or markdown fences. Exactly one surface matching surfaceId, root required. Only the components/signatures declared above. No functions, SDK checks, templates, HTML or RPC; use declarative FormValidation rules for guarded forms. Only MarkdownView renders its declared limited markdown subset; source itself has no markdown fences. Initialize every input value binding with its declared type. Event context may contain literal JSON or direct input value bindings. Authoring trees reserve checks, path, call, callFunction and @-prefixed keys except valid @path bindings; use file for a literal filename. This restriction does not rename the artifact tool path parameter. DateTimeInput requires explicit enableDate/enableTime flags and static matching local bounds. A full render replaces that surface; preserve other surfaces by using different IDs. Example: $/form/name = \"\"\nroot = Card(Column([Text(\"Your plan\"), TextField(\"Name\", $/form/name), Button(Text(\"Submit\"), action=Event(\"submit\", {name: $/form/name}))]))",
     promptSnippet:"SearchablePicker(label,options,value,variant?) supports local search over declared typed choices. FormValidation(buttons=...,rules=...) adds client/server guarded-submit rules. Render interactive forms/cards with a2ui_render; read the pi-a2ui skill for named-argument templates and offline DSL preflight.",
     parameters: Type.Object({
-      surfaceId:Type.String({pattern:"^[A-Za-z0-9_-]{1,64}$",description:"Stable name of the surface to create or fully replace."}),
+      surfaceId:Type.String({pattern:"^[A-Za-z0-9_-]{1,64}$",description:"Stable name of the surface to create or fully replace. The id \"run-summary\" is reserved for the extension run summary card."}),
       source:Type.String({minLength:1,maxLength:LIMITS.sourceBytes,description:"Complete raw A2UI Express DSL, no wrapper tags. Match the signatures in the tool description."}),
     },{additionalProperties:false}),
     async execute(_toolCallId, params, signal, _onUpdate, ctx) {
       if (!controller.session.enabled) throw new UiError(503,"A2UI is disabled; use /a2ui-toggle to enable");
+      assertUnreservedSurfaceId(params.surfaceId);
       const snapshot = await controller.render(params.surfaceId, params.source, signal);
       live.refresh();
       const surface = snapshot.surfaces.find(item => item.surfaceId === params.surfaceId)!;
