@@ -21,3 +21,7 @@
 |CIunknown/cancelled/timeout|Incomplete/failedCI|No successclaimorreleaseclosure|
 
 Productstate/request/notifications/retry/authareunchanged; testcopiesonlyreadrealreferences. Runtime/dependencydriftblocksandrequiresfreshspec/review. Rollbacksliceincludingtest/CI/docbindings, preservepublished017/originaldrafts/failedreceipts. No open technicalscopeblocker; independentdesign/TDDGO remains preimplementationgate, rootowns corrections. BM2–BM4/merge/release43closureexcluded.
+
+## P-004 — authorized018release succession
+
+UserGO2026-11-15 supersedes historicalcandidate-only boundaries: Given fixedacceptedb5bb171 and realPRCI, When version-contract tests firstREDthenminimal018metadata/docs, independentpremergeGO/exactheadCI/merge/tag/assets/download/productionhelper+normalGitdiscovery andoneallowedGLM/browser/typedACK/rawtuple/budget/cleanup/preservation/postGO pass, Then close49andmarkBM1complete,keep43OPENandoldtags/assets/global015/drafts unchanged. Operatoraction → releasehandler/versionstate → GitHubtag/assets andprivatePi APIs → frozenproduct/backend/compiler/bridge → source-boundreceipts → userpublishedinstallandtracker. Setup/version/mismatchedsource/modeltuple/cleanup/job failures blockdependentsteps, nofallback/forceassets. Rollback017insamescope. OnlyafterreleaseclosurestartBM2design+independentreview, noBM2implementation. ActualresultsChecks079–081.

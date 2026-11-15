@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.8 - 2026-11-15
+
+- Add BM1 development-side regression coverage for two registered diagnostic families: reserved Event keys and current coding Button record IDs. Bind actual rejections to uniquely located, executable shipped repair examples and independent intended-data assertions.
+- Add strict fixed-profile fixtures, structural/compile/compile-valid semantic canaries and explicit setup/negative/error stages, including cross-level duplicate-heading rejection. Preserve original failed receipts and independent reviews.
+- Run read-only Node24 PR CI with pinned official actions, fresh dependency installation, unit tests, typecheck and actual runtime/source identity logs. Tests/fixtures/workflow do not enter the75-file runtime package.
+- Keep runtime/SDK/CLI/dependencies/permissions and32types/19templates/8routes unchanged; only two skill reference markers accompany the development gate. Git/local distribution only, no npm.
+- Keep benchmark43 open: BM2–BM4 are separate slices. BM1 is not all-error coverage or a model-quality/cost benchmark.
+
 ## 0.1.7 - 2026-11-15
 
 - Integrate the reviewed DX work from PR45/46. No new components, runtime dependencies or permissions.

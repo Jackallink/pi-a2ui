@@ -17,3 +17,7 @@
 |AC-005|Fixedreviewedsource/workflow and authorizedPR|Node24 localchecks/pack and hostedjob run|Actualunit/type/build/75packscope + correctSHArealCI,0model; unrun/cancelledjob notGREEN|
 
 IN2families/testlocalhelper/markers/offlineCI; OUT runtime/SDK/newCLI/60cases/visual/model/mergepublication/global replacement. Empty/duplicate/profile/pathescape, unknownerrors and CIcancel/timeout are failures; no auto-update/retry. Parent43staysOPEN. No unresolvedpublicbehaviorchoice: usecurrent017diagnostics andexistingdocdata, retain oldlegacy evidence.
+
+## P-004 — authorized018release succession
+
+UserGO2026-11-15 supersedes historicalcandidate-only boundaries: Given fixedacceptedb5bb171 and realPRCI, When version-contract tests firstREDthenminimal018metadata/docs, independentpremergeGO/exactheadCI/merge/tag/assets/download/productionhelper+normalGitdiscovery andoneallowedGLM/browser/typedACK/rawtuple/budget/cleanup/preservation/postGO pass, Then close49andmarkBM1complete,keep43OPENandoldtags/assets/global015/drafts unchanged. Operatoraction → releasehandler/versionstate → GitHubtag/assets andprivatePi APIs → frozenproduct/backend/compiler/bridge → source-boundreceipts → userpublishedinstallandtracker. Setup/version/mismatchedsource/modeltuple/cleanup/job failures blockdependentsteps, nofallback/forceassets. Rollback017insamescope. OnlyafterreleaseclosurestartBM2design+independentreview, noBM2implementation. ActualresultsChecks079–081.
