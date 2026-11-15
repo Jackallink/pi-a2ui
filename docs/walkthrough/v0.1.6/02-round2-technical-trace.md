@@ -23,3 +23,7 @@ Operator opts in → Handler validated entry/RPC/browser worker → state admitt
 User asks a known task → Handler SKILL/example/check/tool → state source→checked→committed → API existing exact {surfaceId,source} → backend same compiler and tool, later declared browser action follows Pi permission boundary → UI renders and Pi continues; no mandatory discovery/read tour or waiting/polling tool. Unknown parameters route to component NAME; unknown task routes to existing patterns/references.
 
 No second validator or new authorization. Node24 actual process.execPath used for children. Private diagnostics/stages never copy credentials or log bootstrap URLs. User runtime snapshots/budgets stay unchanged.
+
+## 路径 P-006 — authorized release succession (2026-11-15)
+
+User GO → Handler root release workflow and existing acceptance scripts → state exact reviewed PR44/docs-only release payload → API GitHub merge,annotatedtag,release/upload/download and private Pi install-l--approve Git@v0.1.6 → backend GitHub immutable source/assets plus real installed helper/normal skill startup and allowed-GLM explicit-profile roundtrip → response archive SHA256/all-file identity,normal discovery and typed browser/context/ACK receipts → UI operator installs documented pinned ref; tracker closes39–42/milestone6 only after final independent GO. PR45/46/future issues and global015 untouched. A failure preserves receipt/assets, keeps issues open and never force-moves tags or falls back models.

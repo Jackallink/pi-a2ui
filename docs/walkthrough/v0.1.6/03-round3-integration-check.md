@@ -32,3 +32,7 @@ Spec011/Round1 AC map and Round2 traces apply. No implementation or passing new 
 - Public scripts get no implicit old-package fallback; historical Check commands remain historical.
 - Open blockers: none at draft root draft was superseded by R1 twoP1 NO-GO; R2 adds complete authoring overlay and all-mode ownedcwd/env isolation before fresh independent review.
 - Rollback/source and metadata boundaries are in spec011. 本表不是独立GO或真实模型结果。
+
+## Authorized release checks — 2026-11-15
+
+IT-007/P-006/RG-001–005: docs-only release delta preserves reviewed runtime/skill; exact-headmerge→tree/payloadcompare→immutabletag→stableassets→downloadhash→freshprivateGit@tag/normaldiscovery/helper→onlyallowedGLM/browser/context/ACK→independentpostpublicationGO→read-back39–42/milestone6closure. User explicitly authorized this succession, superseding the historical no-publication boundary only for PR44/0.1.6. Wronghead/hash/install/modeltuple/stagefailure blocks issueclosure; retain failure and do not replace a published asset/tag. Userconfig/global015 and45/46 remain outside mutations.

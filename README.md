@@ -4,11 +4,9 @@ A local interactive canvas for the Pi coding agent. Pi keeps the conversation an
 
 Requires **Node 24.x** and Pi >=1.5.0. A2UI protocol 1.0, pinned Agent SDK 0.1.0 and Web Core/Lit 0.15.0.
 
-Published **0.1.5** adds eight daily interaction groups,19 skill templates and read-only pattern discovery to the readable workbench delivered in0.1.4. It uses Pi's existing model and tools. Native live updates and local sort/copy controls need no extra inference; a declared Button action can start the next Pi model turn. Project live acceptance uses only Volcengine Ark Agent Plan `glm-5.3-flash`.
+Version **0.1.6** adds component parameter queries, project-aware error guidance and a shorter template → adapt → check → render skill path. It retains the eight daily interaction groups,19 skill templates and read-only pattern discovery delivered in0.1.5. It uses Pi's existing model and tools. Native live updates and local sort/copy controls need no extra inference; a declared Button action can start the next Pi model turn. Project live acceptance uses only Volcengine Ark Agent Plan `glm-5.3-flash`.
 
-This branch prepares **0.1.6**: component parameter queries, project-aware errors and a shorter skill path. It is a candidate, not a published tag. Installation commands below stay on the published0.1.5.
-
-See the [v0.1.5 guide](docs/releases/v0.1.5.md) for installation, compatibility and acceptance boundaries. The [v0.1.4 guide](docs/releases/v0.1.4.md) remains available for rollback.
+See the [v0.1.6 guide](docs/releases/v0.1.6.md) for installation, compatibility and acceptance boundaries. The [v0.1.5 guide](docs/releases/v0.1.5.md) remains available for rollback.
 
 Project source is MIT licensed. The bundled browser libraries retain their own licenses; complete third-party license/notice texts are included in `THIRD_PARTY_LICENSES.txt` in the distribution.
 
@@ -22,7 +20,7 @@ From the Pi project where you want this package enabled:
 
 ```sh
 nvm use 24
-pi install -l --approve git:github.com/Jackallink/pi-a2ui@v0.1.5
+pi install -l --approve git:github.com/Jackallink/pi-a2ui@v0.1.6
 ```
 
 Pi clones the pinned ref and installs production dependencies. Ready browser assets and full third-party licenses are committed in the repository; no browser build is required. Tags/commits are pinned: `pi update --extensions` does not advance a configured tag to the next release. To upgrade, select the new release ref.
@@ -138,7 +136,7 @@ node scripts/live-acceptance.mjs --package /absolute/path/to/installed/pi-a2ui -
 node scripts/live-acceptance.mjs --package /absolute/path/to/installed/pi-a2ui --expected-version 0.1.6 --evidence-dir /absolute/private/evidence
 ```
 
-The0.1.6 value targets a locally prepared candidate; use the exact installed version when checking another package. No implicit `.local/installed/package` or environment-based scenario/restore override remains. Help and invalid arguments do not start Pi/browser/model work. Startup observes registration/discovery/status, not browser rendering or model compliance.
+The0.1.6 value selects this release; use the exact installed version when checking another package. No implicit `.local/installed/package` or environment-based scenario/restore override remains. Help and invalid arguments do not start Pi/browser/model work. Startup observes registration/discovery/status, not browser rendering or model compliance.
 
 Real model acceptance is separately **opt-in** and uses only existing Agent Plan `volcengine-ark/glm-5.3-flash`, verified against `https://ark.cn-beijing.volces.com/api/plan/v3` before the prompt. Credentials stay in Pi and are never copied. Select an installed Chromium executable; no download is attempted:
 
@@ -164,7 +162,7 @@ All eight additional groups are included in [v0.1.5](docs/specs/008-v0.1.5-inter
 ## Remove
 
 ```sh
-pi remove -l --approve git:github.com/Jackallink/pi-a2ui@v0.1.5
+pi remove -l --approve git:github.com/Jackallink/pi-a2ui@v0.1.6
 # For the local route instead:
 pi remove -l --approve /absolute/path/to/pi-a2ui
 ```

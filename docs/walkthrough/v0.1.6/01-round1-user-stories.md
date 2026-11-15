@@ -2,6 +2,8 @@
 
 Participants: user direction/root design; independent review follows. Scope spec011 A01–A03; no doctor/new components/publication/user install. Lifecycle draft; tests below are intent, not passed.
 
+Historical candidate scope above is superseded only for release succession by userGO2026-11-15/spec011 release section: US-006/P-006 operator wants immutable0.1.6 installed and verified from the published ref. Given only PR44/issues39–42 are admitted, When merge/tag/GitHub publication and fresh consumer/allowed GLM checks finish with independent GO, Then RG-001–005 authorize closing39–42/milestone6 while PR45/46,34–38/43 and user-global015 remain untouched. No new runtime behavior.
+
 ## 用户故事
 
 | ID / path | 故事 | 优先级 |

@@ -1,8 +1,8 @@
 # Changelog
 
-## 0.1.6 - 2026-11-14
+## 0.1.6 - 2026-11-15
 
-- Prepare the authoring-reliability candidate; publication remains separately gated. No new catalog components or runtime permissions.
+- Improve authoring reliability while preserving the existing catalog and runtime permissions.
 - Add read-only `component NAME` guidance from actual catalog schemas with project-specific constraints, required flags, references and examples. Keep existing helper outputs and exact check arguments compatible.
 - Add structured project-aware compiler/input/usage recovery hints while filtering unsupported SDK-only checks/functions from compiler advice.
 - Start the skill with known-template → adapt → check → render; preserve all19 templates and eight progressive routes.
