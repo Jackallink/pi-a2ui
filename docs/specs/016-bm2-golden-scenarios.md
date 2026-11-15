@@ -1,6 +1,6 @@
 # BM2 — layered golden scenarios
 
-Lifecycle: draft (v2 implementation/TDD succession). Profile: strict. 2026-11-15. Canonical BM2 specification; issue43 and plan016. User authorizes implementation after updated independent design/TDD admission. No merge, release or global installation change is authorized. Historical v1 design reviews remain Check082; this v2 adds issues51/52.
+Lifecycle: in-progress (v2). Profile: strict. 2026-11-15. Canonical BM2 specification; issue43 and plan016. User authorizes implementation after updated independent design/TDD admission. No merge, release or global installation change is authorized. Historical v1 design reviews remain Check082; this v2 adds issues51/52.
 
 ## Source, goal and evidence boundary
 

@@ -13,3 +13,10 @@ First evaluator RED will use an explicitly constructed new compile-only adapter 
 #52 source characterization: `acceptAction` already reserves accepted eventIds and canonical fingerprints before dispatch. Identical same-ID retry does not dispatch again; conflicting same-ID rejects409; browser generates new UUID per intentional click, so repeated intent may forward twice with identical JSON (forwarded payload omits eventId). Adopt docB, preserve legitimate repeat actions, require application idempotency/intent verification for ambiguous non-idempotent effects. No runtime/sequence/exactly-once change.
 
 Admission: pending independent review of exact commit plus concrete fixtures. Canonical spec lifecycle remains draft until this review GO; only then walkthrough-approved → tdd-approved → in-progress. Risks/rollback follow Spec016. Plans remain static; execution evidence belongs here and tracker.
+
+
+## Independent admission outcome
+
+R1 at86c22fc: NO-GO,0P0/3P1/1P2 (independent input/oracle, observable row identity, active counts, literal/diagnostic drift). Original report retained in bm2-tdd-evidence/review-r1.md, SHA2569557d4fb574191ad0913f2e339e4fc87fd5cc50346c9adb7b20a7167b2cbbfcd. Corrections are separate commits eda1439/1628582/ca45a9e/1aefd43.
+
+R2 fixed1aefd439a910f8355f00ed75f0260c802cf767a4: GO,0openP0/P1/P2, bm2-tdd-evidence/review-r2.md SHA256231b2d9b149462aa9342bfd0e5103bc319980a33441ec7886aab56b11d901b89. Lifecycle draft→walkthrough-approved→tdd-approved→in-progress. Root may implement the minimal evaluator and obtain constructed-adapter behavioral RED; no68case/browser/CI pass, BM3/4/model/merge/release claim.
