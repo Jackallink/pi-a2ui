@@ -55,7 +55,8 @@ export async function episode(row:Scenario,{offline,run,simulation}:{offline:boo
   const model=runtime.getModel(MODEL.provider,MODEL.id);assert.ok(model);assert.equal(model.baseUrl,MODEL.baseUrl);const realStream=runtime.streamSimple.bind(runtime);
   let syntheticTurn=0;
   runtime.streamSimple=(selected,context,options)=>{
-   if(stop||selected.provider!==MODEL.provider||selected.id!==MODEL.id||selected.baseUrl!==MODEL.baseUrl){result.fatal=true;result.harnessFailure=true;stopRun('admission','runtime model identity or stopped continuation rejected');throw new Error('runtime identity rejected');}
+   if(stop){result.cancelledContinuationCalls=(result.cancelledContinuationCalls??0)+1;throw new Error('owned case already stopped before provider transport');}
+   if(selected.provider!==MODEL.provider||selected.id!==MODEL.id||selected.baseUrl!==MODEL.baseUrl){result.fatal=true;result.harnessFailure=true;stopRun('admission','runtime model identity or stopped continuation rejected');throw new Error('runtime identity rejected');}
    return realStream(selected,context,{...options,maxRetries:0,maxTokens:CAPS.maxTokens,timeoutMs:CAPS.requestMs,fetch:async(input,init)=>{
     const url=typeof input==='string'||input instanceof URL?String(input):input.url;let body:any,headers:Headers;
     try{
