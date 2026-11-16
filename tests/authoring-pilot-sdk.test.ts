@@ -45,3 +45,11 @@ for(const canary of ['ordinary','semantic','preparation','fatal','reasoning'])te
  if(canary==='preparation'){assert.equal(report.results[0].requests,6);assert.equal(report.results[0].firstCandidate.submitted,false);assert.equal(report.conclusion,'incomplete-candidates');}
  for(const id of PAIR.order)assert.ok(existsSync(join(lines[0].run,id+'.capture.json')));
 });
+
+test('R2F1 the sixth response can finish its legal write check render bundle without a seventh request',async()=>{
+ const {r}=await run('last-bundle');assert.equal(r.requests,6);assert.equal(r.toolIntents,8);assert.equal(r.outcome,'render_committed');assert.equal(r.contentValid,true);assert.equal(r.firstCandidate.grade.correct,true);assert.equal(r.fatal,false);
+});
+test('R2F3 actual SDK missing DONE cannot become known success on the last row',async()=>{
+ const {r,dir}=await run('missing-done','FP02-C');const raw=JSON.parse(readFileSync(join(dir,'FP02-C.offline-missing-done.json'),'utf8'));
+ assert.equal(raw.requestDiagnostics[0].doneObserved,false);assert.equal(r.requestAccounting,'unknown');assert.equal(r.requests,null);assert.equal(r.knownAdmittedRequests,1);assert.equal(r.fatal,true);
+});

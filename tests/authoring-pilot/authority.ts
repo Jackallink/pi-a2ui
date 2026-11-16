@@ -5,6 +5,7 @@ import {join,dirname,resolve} from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {ROOT,digest,assertOwned,jsonFile,identityInputs} from '../trigger-smoke/policy.ts';
 import {PilotBudget} from '../trigger-pilot/contracts.ts';
+import {diagnosticsClosed} from './oracle.ts';
 import {PAIR,PAIR_ID,PAIR_SHA,ARCHIVES,DIFFERENT} from './profile.ts';
 
 const payload=()=>jsonFile(join(ROOT,'tests/benchmark-model/payload.json')) as string[];
@@ -72,7 +73,7 @@ function priorCases(run:string,id:string):void{
  const index=PAIR.order.indexOf(id);assert.ok(index>=0);const proof=new PilotBudget(join(run,'live-requests.jsonl'),'live',PAIR_ID).evidence();assert.equal(proof.complete,true);
  for(const prior of PAIR.order.slice(0,index)){
   const parent=jsonFile(join(run,prior+'.completed.json')),raw=jsonFile(join(run,prior+'.live.json'));assert.equal(parent.rawSHA256,digest(ordinary(join(run,prior+'.live.json'))));
-  const r=parent.result;assert.equal(r.id,prior);assert.equal(r.kind,'live');assert.equal(r.experiment,PAIR_ID);assert.equal(r.fatal,false);assert.ok(!r.harnessFailure);assert.equal(r.requestAccounting,'known');assert.equal(r.process.code,0);assert.equal(r.process.fallback,false);assert.deepEqual(r.cleanupErrors,[]);assert.equal(r.requests,proof.rows.filter((v:any)=>v.episode===prior).length);assert.equal(raw.requests,r.requests);assert.ok(r.requests>=1&&r.requests<=6);assert.equal(raw.requestDiagnostics.length,r.requests);assert.ok(raw.requestDiagnostics.every((d:any)=>d.status>=200&&d.status<300&&['stop','toolUse'].includes(d.sdkStopReason)&&d.doneObserved&&['eof','cancelled'].includes(d.streamState)&&d.errors.length===0&&d.finishReasons.some((v:string)=>['stop','tool_calls'].includes(v))));assert.equal(raw.fatal,false);
+  const r=parent.result;assert.equal(r.id,prior);assert.equal(r.kind,'live');assert.equal(r.experiment,PAIR_ID);assert.equal(r.fatal,false);assert.ok(!r.harnessFailure);assert.equal(r.requestAccounting,'known');assert.equal(r.process.code,0);assert.equal(r.process.fallback,false);assert.deepEqual(r.cleanupErrors,[]);assert.equal(r.requests,proof.rows.filter((v:any)=>v.episode===prior).length);assert.equal(raw.requests,r.requests);assert.ok(r.requests>=1&&r.requests<=6);assert.equal(raw.requestDiagnostics.length,r.requests);assert.ok(raw.requestDiagnostics.every((d:any)=>d.status>=200&&d.status<300&&['stop','toolUse'].includes(d.sdkStopReason)&&d.doneObserved&&['eof','cancelled'].includes(d.streamState)&&d.errors.length===0&&d.finishReasons.some((v:string)=>['stop','tool_calls'].includes(v))));assert.equal(raw.fatal,false);assert.equal(diagnosticsClosed(raw,proof.rows),true);
  }
  assert.ok(proof.rows.every((r:any)=>PAIR.order.indexOf(r.episode)<index),'future or current admissions before start');
 }

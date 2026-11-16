@@ -43,3 +43,15 @@ Gate2独立报告`.local/authoring-pilot-implementation/gate2-review.md` SHA256 
 - 私有driver12工具意图在完整assistant消息中、SDK schema前计数；实际tool execution另计。首次check保存实际source/surfaceId与hash，schema/INPUT/ordinary与fatal严格分开。POST前重验物化两包及实际workspace拷贝76文件，实际active factory/compiler/validator从该臂import；新C/G不走NEW→OLD。
 
 保全快照`.local/authoring-pilot-implementation/preservation-before.json`：原产品76+锁+冻结profile/Check099共79文件未变。历史22回执/旧grant/锁与两归档另按原static-preflight核对。没有provider/model请求或真实配置读取；无grant。当前还不声称完整CI、代码GO或执行准入完成；准入继续按上节顺序。
+
+## R1 NO-GO与纠正（保留失败，不扩大授权）
+
+9c1d039bbf92ab357a3227454a177abc0b845579/treee6ced1662b7d85c5b1b0f014da7c080f48408bfd的完整Node568/568通过（`node-full-9c1d039.log`，405s）；独立code R1仍NO-GO：3P1+1P2，报告SHA `93754b8b359dee21f0f2da01f085fa2934c755d6c961c409d28ece88e2204746`。因此不继续browser/live grant；这份通过不能覆盖审查失败。
+
+F1第6响应内合法write/check/render被tool_result过早stop；F2方向信号漏了完整batch/成功workflow门槛；F3parent未检查每行诊断，尤其末行；F4单LF较短源已有CR/LF也被容忍。分别先补反例：`r2-pure-red.log`3fail；`r2-sdk-red.log`2fail真实SDK证明第6响应被截断、末行已render却缺DONE仍known。追加`sse-flag-red.log`与`unknown-red.log`证明SSE error flag和lost receipt候选分母问题；失败均保存。
+
+纠正：paired仅在下一次stream/POST入口关闭已用满请求的会话，同响应其它合法工具仍受12意图及单check/render约束；parent每一行核对journal index/body hash、SDK stop/toolUse、唯一有效finish、DONE、空errors、无SSE error、eof或DONE后cancelled，缺口保留raw及firstCandidate/observedOutcome但promote fatal unknown。已观测source判分不因transport缺口丢失；丢失receipt无candidate证据时分母为unknown，只有已知无candidate才是0/N/A。
+
+方向信号需4个实际候选+known grades+完整journal/diagnostics、无fatal/harness/cleanup/unknown；G至少一个usable UI还需成功preflight、exact/严格single-terminal-lf及首次candidate之前成功skill/example观察。单LF只在较短源末尾不含CR/LF时允许。静态grade、首UI、流程与provider终态分别保留。
+
+`r2-pure-green.log`8pass，`r2-sdk-green.log`3pass（含6响应8意图实际UI，无第7请求，以及实际末行缺DONE→unknown），`r2-unknown-green.log`4pass；当前这些仍是开发定向证据，新source完整验收及独立R2仍待。无新实际grant/config/provider请求。原两包、79文件与历史冻结材料保全要求不变。

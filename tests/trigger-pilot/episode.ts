@@ -54,7 +54,7 @@ export async function episode(id:string,run:string,kind:string,simulation='',exp
  const record:any={id,kind,experiment,simulation:simulation||null,node:process.version,started:false,requests:0,renderRequested:false,renderAttempted:false,renderCommitted:false,preparation:false,outcome:'setup',transcript:[],tools:[],usage:[],requestDiagnostics:[],cleanupErrors:[],modelCalls:0,...(policy.paired?{fatal:false,firstCandidate:{submitted:false},workflow:{skillRead:false,exampleRead:false,checkBeforeCandidate:false},preSubmissionWrites:0}:{} )};
  let session:any,runtime:any,browser:Browser|undefined,browserServer:BrowserServer|undefined,page:Page|undefined,opener:Promise<void>|undefined,origin:string|undefined;
  let stopped=false,toolCount=0,renderCount=0,checkAttempted=false,checkCallId:string|undefined,abortWait:Promise<void>|undefined,caseTimer:ReturnType<typeof setTimeout>|undefined,currentDiagnostic:any,checkedSource:string|undefined,renderedSource:string|undefined,armCompile:any,armValidate:any;
- const submitCandidate=(source:string,surfaceId:string,via:string)=>{if(!record.firstCandidate.submitted)record.firstCandidate={submitted:true,via,surfaceId,sourceSHA256:hash(source),grade:judgeSource(surfaceId,source,row,armCompile,armValidate),preSubmissionWrites:record.preSubmissionWrites};};
+ const submitCandidate=(source:string,surfaceId:string,via:string)=>{if(!record.firstCandidate.submitted)record.firstCandidate={submitted:true,via,surfaceId,sourceSHA256:hash(source),grade:judgeSource(surfaceId,source,row,armCompile,armValidate),preSubmissionWrites:record.preSubmissionWrites,workflowBefore:{skillRead:record.workflow.skillRead,exampleRead:record.workflow.exampleRead}};};
  const secrets:string[]=[];const realFetch=globalThis.fetch;let beforeConfig:(string|null)[]|undefined;
  const configPaths=['settings.json','auth.json','models.json','models-store.json'].map(p=>join(homedir(),'.pi/agent',p));
  const configHashes=async()=>Promise.all(configPaths.map(async p=>{try{return hash(await readFile(p));}catch(e){if((e as NodeJS.ErrnoException).code==='ENOENT')return null;throw e;}}));
@@ -76,6 +76,7 @@ export async function episode(id:string,run:string,kind:string,simulation='',exp
   const model=runtime.getModel(PROFILE.model.provider,PROFILE.model.id);assert.ok(model);const stream=runtime.streamSimple.bind(runtime);
   runtime.streamSimple=(selected:any,context:any,options:any)=>{
    currentDiagnostic=undefined;
+   if(policy.paired&&!stopped&&budget.rows().filter(r=>r.episode===id).length>=policy.limit(id))stop(record.preparation?'preparation_limited':'budget_limited');
    if(stopped)throw new Error('episode stopped before provider continuation');
    return stream(selected,context,{...options,maxTokens:1536,maxRetries:0,timeoutMs:30000,fetch:async(input:any,init:any)=>{
     if(stopped)throw new Error('episode stopped before transport');
@@ -126,14 +127,17 @@ export async function episode(id:string,run:string,kind:string,simulation='',exp
        ][Math.min(turn-1,4)]:{name:'a2ui_render',arguments:{surfaceId:'pilot',source}};
       }
      }
+     if(policy.paired&&simulation==='last-bundle')tool=turn<6?{name:'read',arguments:{path:skill}}:{name:'write',arguments:{path:draft,content:JSON.parse(await readFile(join(ROOT,'tests/authoring-pilot/fixtures.json'),'utf8'))[scenarioId]}};
+     if(policy.paired&&simulation==='missing-done')tool={name:'a2ui_render',arguments:{surfaceId:'pilot',source:JSON.parse(await readFile(join(ROOT,'tests/authoring-pilot/fixtures.json'),'utf8'))[scenarioId]}};
      if(policy.paired&&simulation==='missing-draft')tool={name:'bash',arguments:{command:`node "${helper}" check --surface-id pilot "${draft}"`}};
      if(policy.paired&&simulation==='unknown-tool')tool={name:'forbidden_execute',arguments:{}};
      const delta=tool?{role:'assistant',tool_calls:[{index:0,id:'call-'+turn,type:'function',function:{name:tool.name,arguments:JSON.stringify(tool.arguments)}}]}:{role:'assistant',content:text};
+     if(policy.paired&&simulation==='last-bundle'&&turn===6)(delta as any).tool_calls=[tool,{name:'bash',arguments:{command:`node "${helper}" check --surface-id pilot "${draft}"`}},{name:'a2ui_render',arguments:{surfaceId:'pilot',source:tool.arguments.content}}].map((t:any,i:number)=>({index:i,id:'call-bundle-'+i,type:'function',function:{name:t.name,arguments:JSON.stringify(t.arguments)}}));
      if(policy.paired&&simulation==='tool-cap')(delta as any).tool_calls=Array.from({length:13},(_,i)=>({index:i,id:'call-many-'+i,type:'function',function:{name:'read',arguments:JSON.stringify({path:skill})}}));
      if(simulation==='reasoning')(delta as any).reasoning_content='PRIVATE_SMOKE_THOUGHT_DO_NOT_PERSIST';
      const common={id:'pilot-synthetic',object:'chat.completion.chunk',created:1,model:PROFILE.model.id};const usage=simulation==='usage-missing'?{}:{usage:{prompt_tokens:10,completion_tokens:2,total_tokens:12}};
      const chunks=[{...common,choices:[{index:0,delta,finish_reason:null}]},{...common,choices:[{index:0,delta:{},finish_reason:simulation==='truncated'?'length':tool?'tool_calls':'stop'}],...usage}];
-     response=new Response(chunks.map(c=>'data: '+JSON.stringify(c)+'\n\n').join('')+'data: [DONE]\n\n',{headers:{'content-type':'text/event-stream'}});
+     response=new Response(chunks.map(c=>'data: '+JSON.stringify(c)+'\n\n').join('')+(policy.paired&&simulation==='missing-done'?'':'data: [DONE]\n\n'),{headers:{'content-type':'text/event-stream'}});
      if(policy.paired&&simulation==='inflight-abort'){response=new Response(new ReadableStream({start(controller){setTimeout(()=>{error('episode',new Error('synthetic in-flight interruption'));stop('provider_unknown',true);controller.error(new Error('synthetic in-flight abort'));},100);}}),{headers:{'content-type':'text/event-stream'}});}
      if(simulation==='rate-limit')response=new Response('{"error":{"message":"synthetic rate limit"}}',{status:429});
      if(simulation==='read-then-stream-error'&&turn===2)response=new Response(new ReadableStream({pull(c){c.error(new Error('synthetic interruption headers: {Authorization: "Bearer synthetic-hidden"}; body: {reasoning_content:"private-canary"}'));}}));
@@ -175,7 +179,7 @@ export async function episode(id:string,run:string,kind:string,simulation='',exp
      if(event.isError){stop('render_compile');return;}
      record.renderCommitted=true;record.snapshot=(event.details as any)?.a2uiSnapshot;
      try{await timeout(opener??Promise.reject(new Error('missing opener')),10000,'browser opener');assert.ok(page);const canvas=page.getByRole('region',{name:'Canvas '+record.surfaceId,exact:true});await canvas.waitFor({timeout:5000});record.domText=await canvas.innerText();record.browserVersion=browser!.version();assert.equal(record.actionPosts,0,'no action dispatch authorized');await page.screenshot({path:join(run,id+'.png')});record.domObserved=true;if(policy.smoke||policy.paired){const candidates=formCandidates(record.snapshot,record.surfaceId,policy.paired?row:undefined);if(policy.paired&&simulation==='dom-number')await canvas.evaluate(root=>{const search={walk(node:ParentNode):HTMLInputElement|undefined{for(const e of Array.from(node.querySelectorAll('*'))){if(e instanceof HTMLInputElement)return e;const found=e.shadowRoot&&search.walk(e.shadowRoot);if(found)return found;}return undefined;}};const input=search.walk(root);if(input)input.type='number';});record.contentBinding=await canvas.evaluate(domFormBinding,candidates);record.contentValid=record.contentBinding.matched;}if(simulation==='hang'){await writeFile(join(run,id+'.hang-ready'),'actual DOM observed\n');await new Promise(()=>{});}stop((policy.smoke||policy.paired)&&!record.contentValid?'ui_invalid':'render_committed',policy.smoke&&!record.contentValid);}catch(error){record.browserError=error instanceof Error?error.message.slice(0,4096):'browser error';record.harnessFailure=true;stop('browser_error',true);}
-    }else if((policy.smoke||policy.paired)&&record.requests>=policy.limit(id))stop(record.preparation?'preparation_limited':'budget_limited');
+    }else if(policy.smoke&&record.requests>=policy.limit(id))stop(record.preparation?'preparation_limited':'budget_limited');
    });
   };
   const safety=`Sandbox file writes are limited to ${draft}; use write/edit to create this file. Reads are limited to the shipped package and this workspace. Shell permits only a direct Node invocation of the shipped helper's read-only queries/check, without shell operators or redirection. Do not execute other programs. Follow the user's task; no real business operation is authorized.`;
@@ -191,7 +195,7 @@ export async function episode(id:string,run:string,kind:string,simulation='',exp
   if(origin){try{await realFetch(origin,{signal:AbortSignal.timeout(1000)});record.cleanupErrors.push('server remains open');}catch{record.serverClosed=true;}}
   if(beforeConfig){try{assert.deepEqual(await configHashes(),beforeConfig);record.userConfigUnchanged=true;}catch{record.cleanupErrors.push('user config changed');}}
   killTrackedDetachedChildren();globalThis.fetch=realFetch;process.removeListener('SIGTERM',interrupt);process.removeListener('SIGINT',interrupt);
-  await clean('workspace',()=>rm(workspace,{recursive:true,force:true}));if(policy.paired)record.sourceMatch=sourceMatch(checkedSource,renderedSource);record.toolAttempts=toolCount;record.toolCount=record.tools.length;record.offlineConfigGuard=(globalThis as any).pilotReadGuard;record.usage=record.requestDiagnostics.map((d:any)=>d.usage);record.usageKnown=record.usage.length===record.requests&&record.usage.every(completeUsage);if(record.cleanupErrors.length){record.harnessFailure=true;record.fatal=true;}
+  await clean('workspace',()=>rm(workspace,{recursive:true,force:true}));if(policy.paired){record.sourceMatch=sourceMatch(checkedSource,renderedSource);if(record.firstCandidate.submitted){record.workflow.skillRead=record.firstCandidate.workflowBefore.skillRead;record.workflow.exampleRead=record.firstCandidate.workflowBefore.exampleRead;}}record.toolAttempts=toolCount;record.toolCount=record.tools.length;record.offlineConfigGuard=(globalThis as any).pilotReadGuard;record.usage=record.requestDiagnostics.map((d:any)=>d.usage);record.usageKnown=record.usage.length===record.requests&&record.usage.every(completeUsage);if(record.cleanupErrors.length){record.harnessFailure=true;record.fatal=true;}
   if(simulation==='torn-journal'&&kind==='offline')appendFileSync(journal,'{"index":2');
   writeFileSync(join(run,id+'.'+kind+(simulation?'-'+simulation:'')+'.json'),redact(record,secrets)+'\n',{mode:0o600});
  }

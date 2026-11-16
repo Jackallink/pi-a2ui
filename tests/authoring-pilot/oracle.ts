@@ -39,19 +39,26 @@ export function judgeSource(surfaceId:string,source:string,scenario:any,compile:
 }
 export function sourceMatch(checked?:string,rendered?:string):string{
  if(rendered===undefined)return'no-render';if(checked===undefined)return'unchecked';if(checked===rendered)return'exact';
- return checked+'\n'===rendered||rendered+'\n'===checked?'single-terminal-lf':'mismatch';
+ const shorter=checked.length<rendered.length?checked:rendered,longer=checked.length<rendered.length?rendered:checked;
+ return !/[\r\n]$/.test(shorter)&&shorter+'\n'===longer?'single-terminal-lf':'mismatch';
+}
+export function diagnosticsClosed(record:any,journalRows?:any[]):boolean{
+ if(!Number.isSafeInteger(record.requests)||record.requests<1||record.requests>6||!Array.isArray(record.requestDiagnostics)||record.requestDiagnostics.length!==record.requests)return false;
+ const own=journalRows?.filter(r=>r.episode===record.id);if(own&&own.length!==record.requests)return false;
+ return record.requestDiagnostics.every((d:any,i:number)=>d.request===i+1&&Number.isSafeInteger(d.journalIndex)&&d.journalIndex>=1&&/^[a-f0-9]{64}$/.test(d.bodySHA256)&&(!own||d.journalIndex===own[i].index&&d.bodySHA256===own[i].bodySHA256)&&d.sseErrorObserved!==true&&d.status>=200&&d.status<300&&d.doneObserved===true&&['eof','cancelled'].includes(d.streamState)&&Array.isArray(d.errors)&&d.errors.length===0&&Array.isArray(d.finishReasons)&&d.finishReasons.length===1&&((d.sdkStopReason==='stop'&&d.finishReasons.includes('stop'))||(d.sdkStopReason==='toolUse'&&d.finishReasons.includes('tool_calls'))));
 }
 export function pairSummary(results:any[],journal:any,live:boolean):any{
  const arms:any={};
  for(const arm of ['C','G']){
   const rows=results.filter(r=>r.id.endsWith('-'+arm)),submitted=rows.filter(r=>r.firstCandidate?.submitted===true),correct=submitted.filter(r=>r.firstCandidate.grade?.correct===true).length;
-  arms[arm]={planned:2,actuallySubmitted:submitted.length,correct,correctOverPlanned:correct/2,correctOverSubmitted:submitted.length?correct/submitted.length:null,submittedRateLabel:submitted.length?`${correct}/${submitted.length}`:'N/A',usableUi:rows.filter(r=>r.renderCommitted&&r.contentValid===true).length};
+  const unknownCandidates=rows.filter(r=>!r.notRun&&r.firstCandidate?.submitted!==true&&r.firstCandidate?.submitted!==false).length;
+  arms[arm]={planned:2,observedSubmitted:submitted.length,unknownCandidateRows:unknownCandidates,actuallySubmitted:unknownCandidates?null:submitted.length,correct,correctOverPlanned:unknownCandidates?null:correct/2,correctOverSubmitted:!unknownCandidates&&submitted.length?correct/submitted.length:null,submittedRateLabel:unknownCandidates?'unknown':submitted.length?`${correct}/${submitted.length}`:'N/A',usableUi:rows.filter(r=>r.renderCommitted&&r.contentValid===true).length};
  }
- const allKnown=results.length===4&&results.every(r=>r.firstCandidate?.submitted===true&&typeof r.firstCandidate.grade?.correct==='boolean');
+ const allKnown=results.length===4&&journal.complete===true&&results.every(r=>!r.notRun&&!r.fatal&&!r.harnessFailure&&Array.isArray(r.cleanupErrors)&&r.cleanupErrors.length===0&&r.requestAccounting==='known'&&diagnosticsClosed(r,journal.rows)&&r.firstCandidate?.submitted===true&&typeof r.firstCandidate.grade?.correct==='boolean');
  let wins=0,reverses=0;if(allKnown)for(const id of ['FP01','FP02']){const c=results.find(r=>r.id===id+'-C').firstCandidate.grade.correct,g=results.find(r=>r.id===id+'-G').firstCandidate.grade.correct;if(!c&&g)wins++;if(c&&!g)reverses++;}
  const accountingKnown=journal.complete&&results.every(r=>r.notRun||r.requestAccounting==='known'&&Number.isSafeInteger(r.requests));
- const outcomesKnown=results.every(r=>r.notRun||!['provider_unknown','output_truncated'].includes(r.outcome));
+ const outcomesKnown=results.every(r=>r.notRun||diagnosticsClosed(r,journal.rows)||r.outcome==='provider_error'&&r.requestDiagnostics?.every((d:any)=>Number.isInteger(d.status)&&d.status>=400&&d.status<600));
  const known=Math.max(journal.rows.length,results.reduce((n,r)=>n+(r.requests??r.knownAdmittedRequests??0),0));
- const workflowUi=results.some(r=>r.id.endsWith('-G')&&r.contentValid===true&&r.workflow?.skillRead&&r.workflow?.exampleRead&&r.workflow?.checkBeforeCandidate);
+ const workflowUi=results.some(r=>r.id.endsWith('-G')&&r.contentValid===true&&r.preflightPassed===true&&['exact','single-terminal-lf'].includes(r.sourceMatch)&&r.workflow?.skillRead&&r.workflow?.exampleRead&&r.workflow?.checkBeforeCandidate);
  return{plannedSessions:4,arms,completeKnownPairs:allKnown?2:0,wins:allKnown?wins:null,reverses:allKnown?reverses:null,conclusion:!allKnown?'incomplete-candidates':wins>=1&&reverses===0&&arms.G.usableUi>=arms.C.usableUi&&workflowUi?'small-direction-signal':'no-clear-gain',knownAdmittedRequests:known,requestAccountingKnown:accountingKnown,requestOutcomesKnown:outcomesKnown,actualModelRequests:live?(accountingKnown&&outcomesKnown?known:null):0,currencyFee:null};
 }

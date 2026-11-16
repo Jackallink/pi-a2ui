@@ -38,11 +38,13 @@ test('APO02 compiler plus exact case contract rejects wrong keys labels variants
 });
 test('APR01 source comparison tolerates only one terminal LF and absent candidates never imply uplift',()=>{
  assert.deepEqual([sourceMatch('a','a'),sourceMatch('a\n','a'),sourceMatch('a\n\n','a'),sourceMatch('a\r\n','a'),sourceMatch(undefined,'a'),sourceMatch('a',undefined)],['exact','single-terminal-lf','mismatch','mismatch','unchecked','no-render']);
- const rows=['FP01-C','FP01-G','FP02-G','FP02-C'].map(id=>({id,requests:0,requestAccounting:'known',outcome:'preparation_limited',firstCandidate:{submitted:false}}));
+ const rows:any[]=['FP01-C','FP01-G','FP02-G','FP02-C'].map(id=>({id,requests:0,requestAccounting:'known',outcome:'preparation_limited',firstCandidate:{submitted:false}}));
  const summary=pairSummary(rows,{complete:true,rows:[]},false);assert.equal(summary.arms.C.correctOverSubmitted,null);assert.equal(summary.arms.G.submittedRateLabel,'N/A');assert.equal(summary.conclusion,'incomplete-candidates');assert.equal(summary.completeKnownPairs,0);
  for(const r of rows)r.firstCandidate={submitted:true,grade:{correct:r.id.endsWith('-G')}} as any;
- Object.assign(rows[1],{renderCommitted:true,contentValid:true,workflow:{skillRead:true,exampleRead:true,checkBeforeCandidate:true}});
- assert.equal(pairSummary(rows,{complete:true,rows:[]},false).conclusion,'small-direction-signal');
+ for(let i=0;i<rows.length;i++)Object.assign(rows[i],{requests:1,cleanupErrors:[],requestDiagnostics:[{request:1,journalIndex:i+1,bodySHA256:'a'.repeat(64),status:200,doneObserved:true,streamState:'cancelled',sdkStopReason:'toolUse',finishReasons:['tool_calls'],errors:[]}]});
+ const journal={complete:true,rows:rows.map((r:any,i:number)=>({episode:r.id,index:i+1,bodySHA256:'a'.repeat(64)}))};
+ Object.assign(rows[1],{renderCommitted:true,contentValid:true,preflightPassed:true,sourceMatch:'exact',workflow:{skillRead:true,exampleRead:true,checkBeforeCandidate:true}});
+ assert.equal(pairSummary(rows,journal,false).conclusion,'small-direction-signal');
  Object.assign(rows[3],{firstCandidate:{submitted:false}});assert.equal(pairSummary(rows,{complete:true,rows:[]},false).conclusion,'incomplete-candidates');
 });
 test('APC01 paired body identity preserves real C/G guidance instead of old A/B rewriting',()=>{
