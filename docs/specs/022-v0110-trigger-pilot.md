@@ -6,7 +6,7 @@
 
 ## 当前修复切片：仅离线的 transport diagnostics v2
 
-用户已同意继续修正评测脚本；本切片状态 in-progress（draft→walkthrough-approved→tdd-approved→in-progress）。三轮增量走查结构校验与独立Gate1/Gate2已GO，设计稿固定在提交a27fb6b；证据见[Check116](../checks/116-trigger-pilot-offline-repair.md)。下文旧pilot协议保留为历史；本节定义当前增量需求，不重新批准原付费批次。
+用户已同意继续修正评测脚本；本离线切片状态 complete（draft→walkthrough-approved→tdd-approved→in-progress→review-ready→complete）。三轮增量走查结构校验、独立Gate1/Gate2、修正后的固定源码完整本地CI及独立R2代码/隐私/成本评审均GO；设计稿固定在提交a27fb6b，最终运行源码1984c328，证据见[Check116](../checks/116-trigger-pilot-offline-repair.md)。此complete仅覆盖AC007–010的离线修复；主动触发效果仍未验收、原pilot整体维持in-progress。下文旧pilot协议保留为历史，不重新批准原付费批次。
 
 目标：让后续评测明确实际GLM参数，并在正常结束、SDK取消、流中断或超时时留下逐请求证据。非目标：追查已丢失的旧错误、补跑/重打分、证明主动触发有效、改动产品内核/依赖/安装、提交PR/发布。实际调用预算为0；`--execute`及直接live worker必须在读取真实配置或创建工作区之前拒绝。原36请求仅作为历史/潜在协议上限保留，不能当成本轮授权。profile使用新id并明确live禁用，旧run/回执/独占锁不变。
 
@@ -14,7 +14,7 @@ GLM策略：SDK模型标记reasoning=true，session使用low；发往受保护tr
 
 逐请求记录：durable journal准入后创建`requestDiagnostics`条目，关联episode内序号及journal index/bodySHA256；HTTP status、stream终止态(eof/cancelled/error)、finish_reason、DONE是否观察到、已收到字节、usage和SDK结束状态各自记录。usage初始null；每个已解析的usage立即保存，不依赖flush/EOF，不求和同请求重复usage。只采集非负安全整数的prompt/completion/total及可选reasoning_tokens；缺失/无效字段仍null，完整性单独算，不用部分usage宣称总费用。取消不继续排空、不主动追加请求；已有usage不能证明流或模型结果完整。
 
-错误记录：transport/SDK/episode中断在对应请求条目记录来源与有界脱敏错误文本；去掉已知凭据、Bearer、token/authorization以及URL，最多1024 UTF-8 bytes，禁止额外复制原始header、body或推理内容到diagnostics。错误文本若含嵌入header/body/messages/reasoning/推理payload标记，则整段省略，仅保存固定安全占位及原文SHA256；不能因为内容在error.message里就复制原始payload。多字节文本仍按UTF-8 byte限制。只读超时/错误类别不推断供应商根因；错误文本仅属私有回执，公开导出仍白名单。最外层/信号/硬杀的缺收据路径继续保守unknown，保留journal与主错，不能用错误/usage诊断洗成成功。旧`providerStatus`/`usage`兼容字段由请求条目派生；旧报告字节不修改。
+错误记录：transport/SDK/episode中断在对应请求条目记录来源与有界脱敏错误文本；去掉已知凭据、Bearer、token/authorization以及URL，最多1024 UTF-8 bytes，禁止额外复制原始header、body或推理内容到diagnostics。错误文本若含嵌入header/body/messages/reasoning/推理payload标记，则整段省略，仅保存固定安全占位及原文SHA256；不能因为内容在error.message里就复制原始payload。多字节文本仍按UTF-8 byte限制。只读超时/错误类别不推断供应商根因；错误文本仅属私有回执，公开导出仍白名单。最外层/信号/硬杀的缺收据路径继续保守unknown，保留journal与主错，不能用错误/usage诊断洗成成功。`usage`兼容字段由请求条目派生；`providerStatus`保留最后收到HTTP响应的旧语义，逐请求归属必须读requestDiagnostics，不能把旧单值归给随后失联的请求。旧报告字节不修改。
 
 AC-007(P0)：native-thinking与严格总输出参数在实际SDK首请求A/B一致、未知模式/缺字段在journal前拒绝；新增profile及CLI/worker拒绝live、零真实配置/HTTP。
 AC-008(P1)：同一stream观察代码用于合成和live响应；usage在finish后取消、分块UTF8/CRLF、EOF、read error和超时前后不丢失；缺失/部分/非法usage保持unknown；1MiB响应边界不放宽。
