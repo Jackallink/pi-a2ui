@@ -1,5 +1,7 @@
 # Check121：首次表单编写引导的实施
 
+状态：complete（有限实现/合同与本地验收），独立代码GO；未验证模型遵从/改善，未发布或全局更新。
+
 用户已同意聚焦skill/CLI，在完整Spec024设计及独立Gate1 GO交付后以“然后呢”要求继续。本轮按继续推进已收敛的有限设计处理，明确继续Gate2/TDD后实施；不是扩大模型/权限/发布范围的授权。基点b569203acb84575fdfecd5fbf2a503f62b37a46d，既有隔离worktree/branch codex/authoring-first-use-design，初始clean。当时Gate2待准入；随后独立Gate2 GO后开始测试先行实施，真实模型预算仍0。
 
 ## Gate2：测试意图与RED口径
@@ -20,7 +22,7 @@ SMG07必要维护的先RED：仅在owned fixture复制出的extension.ts添加�
 
 独立Gate2 GO→先记录文档合同/fixture RED→最小修改入口文字/现有notes/既有子文档→原build→对应GREEN→固定候选全本地验证/pack/startup与独立代码GO→本地checkpoint。root实施，reviewer只读。不将写skill的通用压力测试建议当成新模型预算，效果仍未知。没有合并/推送/发布/本机安装授权。
 
-原始RED/错误/产物置于.local/authoring-first-use-implementation，原始模型收据和历史设计稿保持。当前仅Gate2测试意图，没有新增实际测试结果；后续记录会固定source/tree/Node/SDK/lock/assets并保留所有失败。
+原始RED/错误/产物置于.local/authoring-first-use-implementation，原始模型收据和历史设计稿保持。本段是Gate2 kickoff时的测试意图，不冒称当时已有实际结果；后续执行结果及固定身份另节记录。
 
 
 ## Gate2 GO与首轮RED→GREEN
@@ -36,3 +38,33 @@ SMG07必要维护的先RED：仅在owned fixture复制出的extension.ts添加�
 此时仅相关GREEN；固定候选完整本地检查、pack/owned正常加载与独立代码门禁尚待完成。生产allowlist7文件按spec改变，另69payload/85受保护输入及22历史raw entries保持；不冒称全部旧92输入仍原SHA。完整计数和source-bound原始指纹后续补录。
 
 相关authoring-cli/skill-docs/skill/skill-patterns/extension回归34/34通过；AF03/04+SMG07三项和AF05浏览器一项另有独立日志。浏览器warning仅为继承的NO_COLOR/FORCE_COLOR环境提示，不是页内错误。下一候选将以全量检查替代此窄范围结论。
+
+
+## 固定候选完整验收
+
+实际代码候选`095459084f0bf8ab26c803c4b7e2f2dbb6b004ba`，tree`21b59f8f369e592de073de74ade2c5899391ba34`，执行时clean；Node24.18.1/Pi1.5.0/Chromium158.0.8127.18 revision1254，lock hash与全部原始回执见[validation.json](authoring-first-use-implementation/validation.json)，该公开文件为私有原件逐字节副本，SHA256 `b51a48b849c27432783f19676e415f4704d5d3ebd163db7b99d73a9705ece319`。
+
+| 必需检查 | 本候选实际结果 |
+| --- | --- |
+| 全Node（serial） | 540/540，0fail，exit0，297467ms |
+| TypeScript | tsc --noEmit，exit0 |
+| 完整四组browser（serial） | 91/91，exit0，含新增AF05真实helper→extension→owned DOM |
+| strict golden union | 68=45positive+23negative；原始node/browser报告身份一致，当前source/lock/dataset/oracles/catalog/assets/浏览器均校验 |
+| 原build与候选pack | exit0；76文件逐字节等于候选源码和独立解包consumer；仅helper生成资产按spec改变，browser JS/CSS/HTML/第三方许可原SHA |
+| 正常包注册/skill发现启动 | startup exit0；1个skill、3个命令、hostPi1.5.0，5个Node24子进程均在owned cwd，agentRuns/modelRequests0、external fetch denied；registration已移除，package/operator files unchanged |
+| AF01/AF02实际交付metadata | 实际registerTool的AUTHORING index602、长catalog index1097，参数schema未改，注册捕获fetch0；独立解包包的component FormValidation实际输出新notes，旧JSON shape/reference/examples保留 |
+| SMG07完整来源 | authority-ZtJlHW owned结果：旧发布payload+当前guard，合法双witness、13拒绝/额外漂移、并发spawn单赢家、replay0，配置/provider0 |
+
+本地浏览器套件中的BM4是synthetic控制，不是冻结真实基线重跑；BM3像素比较仍为平台advisory，不宣称像素发布门禁通过。最终golden原件逐字节保全在`.local/authoring-first-use-implementation/golden-{node,browser}.json`。上表没有借旧538/90结果为新候选验收。
+
+候选归档SHA256 `c96125e0a2095608d29ad7b09e6f1911572ed7162bf881b9b9d744e5235dc2d8`，**未发布**；package version仍为0.1.10，仅是私有候选身份，不替换正式0.1.10归档/标签。既有正式归档SHA `c7d4511c1e92808691ab98a89897f7a6f2d0ed0e64b77f70f9ab610500177e55`保持。consumer解包后仅在owned包目录链接本工作区现有锁定node_modules以提供运行依赖，未另装依赖；76个payload保持原字节。未注册到用户全局安装，也不把-e/--skill强载当正常包发现。
+
+## 独立代码GO、保全与范围
+
+独立[最终代码/合同GO](authoring-first-use-implementation/code-review-r1.md) SHA256 `3c677e695a92080297b1fa83bdb196dfa148c872f09f4fa568bf7e32aafee26b`，绑定上述精确source/tree，0项开放P0/P1/P2；初审prefix保持，不以初审pending冒称最终GO。reviewer只读源码、元数据、图片及22份原始验收产物SHA，核对helper只有notes插入及各完整检查/包/consumer/保全，无JS/SDK/模型/配置/网络操作。
+
+允许的7个生产路径改变：extension.ts、src/assistant-guidance.ts、SKILL.md、helper/summaries-and-feedback/syntax-and-errors三个既有reference及dist/assistant-cli.mjs。其他69个payload、85个运行输入和22份历史raw entries按原SHA保持；未改compiler/session/renderer/事件/权限/预算、tool参数schema、依赖/版本、manifest、32types/19templates/8patterns。不会把旧92项全部宣称未变。最新Spec023已消费grant/lock/terminal、旧停止批次和冻结profile/Check099/公开结果均保持，实际UI RED不改写。
+
+状态依次为Gate1→Gate2/TDD→in-progress→固定候选review-ready→独立代码GO→当前complete。这里的complete只指有限代码/参考合同完成：没有新的真实模型请求，不能推断GLM首次生成成功率提高、会遵循工作流或成本减少。旧Spec023的剩余2次额度不恢复。本地后续docs checkpoint只保存收据/状态，不替换实际测试来源0954590，也不声称docs提交重新跑过全CI。
+
+如后续要测效果，需另行收敛新的候选/场景/请求预算，获得明确新授权后只用Node24/glm-5.3-flash；本轮不做模型调用、PR合并/推送、发布、issue关闭或全局更新。回退可撤销本slice生产与必要测试修改并重建helper，保留全部原始失败和已消费锁，不恢复旧授权。

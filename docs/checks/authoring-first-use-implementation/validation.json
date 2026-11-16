@@ -1,0 +1,201 @@
+{
+  "schema": "spec024-candidate-validation-v1",
+  "source": "095459084f0bf8ab26c803c4b7e2f2dbb6b004ba",
+  "tree": "21b59f8f369e592de073de74ade2c5899391ba34",
+  "node": "v24.18.1",
+  "pi": "1.5.0",
+  "chromium": {
+    "version": "158.0.8127.18",
+    "revision": "1254"
+  },
+  "lockSHA256": "06611b1dc150fc0d2faf1e2aa1241d5fd59b05eb089a745236475337eab918fe",
+  "realModelRequests": 0,
+  "checks": {
+    "node": {
+      "exitCode": 0,
+      "pass": 540,
+      "fail": 0
+    },
+    "types": {
+      "exitCode": 0
+    },
+    "browser": {
+      "exitCode": 0,
+      "pass": 91
+    },
+    "golden": {
+      "source": "095459084f0bf8ab26c803c4b7e2f2dbb6b004ba",
+      "cases": 68,
+      "positive": 45,
+      "negative": 23,
+      "node": "v24.18.1",
+      "browser": "158.0.8127.18"
+    },
+    "build": {
+      "exitCode": 0
+    },
+    "pack": {
+      "source": "095459084f0bf8ab26c803c4b7e2f2dbb6b004ba",
+      "archive": "/Users/jakeliu/.codex/worktrees/pi-a2ui-bm4/pi-a2ui/.local/authoring-first-use-implementation/pack/pi-a2ui-0.1.10.tgz",
+      "sha256": "c96125e0a2095608d29ad7b09e6f1911572ed7162bf881b9b9d744e5235dc2d8",
+      "payloadFiles": 76,
+      "payloadMatchesSource": true,
+      "package": "/Users/jakeliu/.codex/worktrees/pi-a2ui-bm4/pi-a2ui/.local/authoring-first-use-implementation/consumer-jnn18y6k/package",
+      "version": "0.1.10",
+      "published": false
+    },
+    "ownedStartup": {
+      "passed": true,
+      "mode": "startup",
+      "node": "v24.18.1",
+      "hostPi": "1.5.0",
+      "observed": {
+        "normalRegistration": true,
+        "explicitPackageSkillProfile": false,
+        "suppliedDsl": false,
+        "skillForward": false,
+        "resolvedProvider": "volcengine-ark",
+        "resolvedModel": "glm-5.3-flash",
+        "agentPlanEndpointVerified": true,
+        "uniqueA2uiCommands": 3,
+        "uniqueSkill": true,
+        "statusCommandExecuted": true,
+        "agentRuns": 0,
+        "modelRequests": 0,
+        "externalFetchDenied": true,
+        "browserObserved": false,
+        "processExited": true,
+        "privateRegistrationRemoved": true,
+        "observedNodeProcesses": 5,
+        "allNode24": true,
+        "allCwdWithinOwnedRun": true,
+        "packagePayloadUnchanged": true,
+        "operatorFilesUnchanged": true
+      }
+    }
+  },
+  "preservation": {
+    "allowedChangedProduction": [
+      "dist/assistant-cli.mjs",
+      "extension.ts",
+      "skills/pi-a2ui/SKILL.md",
+      "skills/pi-a2ui/references/helper.md",
+      "skills/pi-a2ui/references/summaries-and-feedback.md",
+      "skills/pi-a2ui/references/syntax-and-errors.md",
+      "src/assistant-guidance.ts"
+    ],
+    "unchangedOtherPayload": 69,
+    "unchangedOtherRuntimeInputs": 85,
+    "unchangedHistoricalRawEntries": 22,
+    "browserAssets": {
+      "dist/client.js": "78922a871bf029c0c69362243596784149a04aa9888648f930a36197895de1c2",
+      "dist/client.css": "eb647f62a9394dc836512bbbdd06d03813e8dfa70b758ceb1ec3566d6f51e96e",
+      "dist/index.html": "5f221a3dff76a7ebde3a90738eacc4d0837d1cae42d66ad906ba37d680a51a28",
+      "THIRD_PARTY_LICENSES.txt": "c94590221d30fca31703fe208489df955301d09ecd489580c18f51281a06fbfd"
+    },
+    "frozenRealBaselineNotRerun": true,
+    "oldGrantsNotReused": true
+  },
+  "authorityFixture": {
+    "path": ".local/trigger-smoke-implementation/authority-ZtJlHW/.local/result.json",
+    "payload": "published-v0.1.10",
+    "negativeWitness": true,
+    "positiveWitness": true,
+    "rejectedVariants": 13,
+    "concurrentSpawnWinners": 1,
+    "configReads": 0,
+    "providerRequests": 0,
+    "replaySpawn": 0
+  },
+  "effectiveness": "No new model calls; instruction/recipe contracts only. Prior Check119 UI failure remains unchanged.",
+  "raw": [
+    {
+      "path": ".local/authoring-first-use-implementation/contract-and-fixture-red.log",
+      "sha256": "53968866a5598b89ca5fcb31a29526f232ac210255481aa3d53febf0cb1ba522"
+    },
+    {
+      "path": ".local/authoring-first-use-implementation/contract-and-fixture-green.log",
+      "sha256": "5c63aefad72ecb5ba6e89abfb78a47899f77b0ed1175784d7af77a214e34f07e"
+    },
+    {
+      "path": ".local/authoring-first-use-implementation/browser-narrow.log",
+      "sha256": "6a84fed952cc64be4c8e76ac64993eac2cc73876226957ae2c5c6e7ec05800ac"
+    },
+    {
+      "path": ".local/authoring-first-use-implementation/narrow-regression.log",
+      "sha256": "72914203c66936bfb25b03d7b48fa2bcaa270ef7953b4a9b5205a182196fd29d"
+    },
+    {
+      "path": ".local/authoring-first-use-implementation/build.log",
+      "sha256": "d16a2d3930937cb307d28a9de5d34060304b2ff49251d7c0ce0bb6b4f453c450"
+    },
+    {
+      "path": ".local/authoring-first-use-implementation/fixed-types.log",
+      "sha256": "b94e7c071db8114df2330bc5822d92b358f84cc2578c17c0ad0a84b0c1270745"
+    },
+    {
+      "path": ".local/authoring-first-use-implementation/full-node.log",
+      "sha256": "1f770aff1e4b5600fcfe10a9115dd45454054f623b1d2d2ad6a0a8f4ea5a69c7"
+    },
+    {
+      "path": ".local/authoring-first-use-implementation/full-browser.log",
+      "sha256": "4d9505af88b85ba119438636969fb8e8f1efd2c23c9d53be9eb630de198d52ca"
+    },
+    {
+      "path": ".local/authoring-first-use-implementation/golden-union.json",
+      "sha256": "5f05f2fe854fafcac38b37cbe9b2ce2bd7c41da4fb789ccc1cd9d8464e50fdee"
+    },
+    {
+      "path": ".local/authoring-first-use-implementation/golden-node.json",
+      "sha256": "f4731b26f749b5289c3d3f936ef7016173938f8df510a248406618adb036bb18"
+    },
+    {
+      "path": ".local/authoring-first-use-implementation/golden-browser.json",
+      "sha256": "eae0059a94ade2d142e623dd48e3adb0528c91e5fac0e28a5d95cc35f6628360"
+    },
+    {
+      "path": ".local/authoring-first-use-implementation/pack.json",
+      "sha256": "9ffb1c1633ed10f3b039719ad671ae7155624a89b134a23b48461adaecc049c0"
+    },
+    {
+      "path": ".local/authoring-first-use-implementation/pack-identity.json",
+      "sha256": "381034893b01d4397773a04d2b4d23bdb6e7de85accc3a15c718cb6b4fd42be2"
+    },
+    {
+      "path": ".local/authoring-first-use-implementation/startup.stdout.log",
+      "sha256": "cadb0362108dd3220ba128957978ccfda5ae0360965d31d59377707bcdce5659"
+    },
+    {
+      "path": ".local/authoring-first-use-implementation/startup.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".local/authoring-first-use-implementation/startup-exit.json",
+      "sha256": "3deb1de64dcd2524fe9642084f13b4ce344dc9cc296a5bc84af85b0477faacdc"
+    },
+    {
+      "path": ".local/authoring-first-use-implementation/registered-render-metadata.json",
+      "sha256": "46d81e82ad8492ebbfe96cff38a666415ba4d644b705971f41f181840a46e688"
+    },
+    {
+      "path": ".local/authoring-first-use-implementation/packed-component-form-validation.json",
+      "sha256": "65655c82446e601962f4d743b1e13f8fe9507fe0c0b7cd4c246d274d01702e69"
+    },
+    {
+      "path": ".local/authoring-first-use-implementation/af05-form.png",
+      "sha256": "a67fd12311285ca7e5cd677e9176eac3454e33a89136e7714f434fd5c7983943"
+    },
+    {
+      "path": ".local/authoring-first-use-implementation/preservation-before.json",
+      "sha256": "fcf5573d397c57c688fc38456ee6889391bd9c63a3ddfbfa53feaccf214f70a5"
+    },
+    {
+      "path": ".local/authoring-first-use-implementation/startup-evidence/pi-a2ui-accept-pgqF9e/result.json",
+      "sha256": "fba14bb31279264f8bd6f31df5785ab91180c13e6d416ba254591fd10f4782e5"
+    },
+    {
+      "path": ".local/trigger-smoke-implementation/authority-ZtJlHW/.local/result.json",
+      "sha256": "8d89f776d176d4c001c9822c779a7b6ff9b3fb0aadcfba92aeade0029a385bc9"
+    }
+  ]
+}

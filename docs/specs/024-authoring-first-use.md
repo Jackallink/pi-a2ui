@@ -1,8 +1,8 @@
 # Spec024：首次编写表单的模板与预检引导
 
-状态：in-progress（独立Gate1设计GO→用户续接→独立Gate2/TDD GO→测试先行实施；完整代码/效果验收未完成）。基点fc558daf252126ee91362f07bab7874d74684d69；受审设计稿af6d5593980a496140653c9e912d402b89e53228。用户同意继续聚焦skill模板和CLI预检，本轮完成设计与独立评审，见[Check120](../checks/120-authoring-first-use-design.md)。设计书面确认、Gate2/TDD准入后才改产品。真实模型预算0，不沿用Spec023未用的2请求。
+状态：complete（walkthrough-approved→tdd-approved→in-progress→review-ready→独立代码/合同GO→complete）。受测代码source095459084f0bf8ab26c803c4b7e2f2dbb6b004ba/tree21b59f8f369e592de073de74ade2c5899391ba34；Node24.18.1下540Node/91browser/strict68union和包/owned startup通过，见[Check121](../checks/121-authoring-first-use-implementation.md)。完成的是指引/文档/CLI合同，不是模型遵从或改善验收；真实模型预算仍0，没有发布/全局更新。设计历史由af6d559/Check120保留。
 
-推进续记：用户在具体设计交付后以“然后呢”要求继续，当前按继续推进这份有限设计处理，进入[Check121](../checks/121-authoring-first-use-implementation.md)的Gate2/TDD；没有新的模型/发布/权限授权。上述书面设计确认作为此续接上下文记录，Gate2仍须独立GO后才改生产代码。
+推进续记：用户在具体设计交付后以“然后呢”要求继续，当前按继续推进这份有限设计处理，进入[Check121](../checks/121-authoring-first-use-implementation.md)的Gate2/TDD；没有新的模型/发布/权限授权。上述设计确认作为续接上下文记录；之后Gate2独立GO后才改生产代码。以下设计/准入阶段的未来时态保留历史范围定义，当前实际状态以Check121为准。
 
 ## 问题与目标
 
@@ -82,4 +82,4 @@ root = Column(children=[appInput,envInput,versionInput,validation,submit])
 
 模型可能继续跳过提示；读取skill/helper可能增加准备请求与输入tokens，额外description≤1200bytes不等于总token上限或成本节省。模型改善仍未知；若后续需要真实验证，先设计新的候选/场景/请求预算，再申请明确新授权，只用Node24/glm-5.3-flash，不使用旧余量或重跑冻结基线。
 
-cli文字修改需由原build生成dist/assistant-cli.mjs，避免只改TS导致实际安装仍给旧notes。保留browser资产与其他功能；未知/通用编译错误不被归因为FormValidation。回退仅撤销本spec的引导/文档/notes及其生成资产，不变更用户配置、历史回执/锁，不恢复旧授权。实施范围仍按本设计，未扩公共API/运行时行为；实现/检查证据见Check121，后续任何扩张须先更新spec并重审。
+cli文字修改需由原build生成dist/assistant-cli.mjs，避免只改TS导致实际安装仍给旧notes。保留browser资产与其他功能；未知/通用编译错误不被归因为FormValidation。回退仅撤销本spec的引导/文档/notes及其生成资产，不变更用户配置、历史回执/锁，不恢复旧授权。实现按本设计完成，无公共API/运行时行为扩张；7个既有生产路径的允许范围内变化与必要测试fixture维护均有Check121证据。模型改善仍未知；后续扩张须先更新spec并重审。
