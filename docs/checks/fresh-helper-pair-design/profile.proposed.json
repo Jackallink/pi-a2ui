@@ -1,0 +1,107 @@
+{
+  "schema": "spec027-fresh-helper-pair-design-v1",
+  "experimentId": "fresh-helper-single-pair-1",
+  "documentOnly": true,
+  "liveEnabled": false,
+  "runnerState": "not_implemented",
+  "executionSource": null,
+  "currentApprovedRealRequests": 0,
+  "reusesOldRemaining21": false,
+  "prerequisiteZeroSource": "7ee904581982519ebec43c6df6edd671bedc261a",
+  "prerequisiteValidationSHA256": "c601a6b528455a0804129a95f07cc4dafad630499573eb424345909b38dfc086",
+  "model": {
+    "provider": "volcengine-ark",
+    "id": "glm-5.3-flash",
+    "endpoint": "https://ark.cn-beijing.volces.com/api/plan/v3/chat/completions"
+  },
+  "request": {
+    "thinking": {
+      "type": "enabled"
+    },
+    "reasoning_effort": "low",
+    "max_completion_tokens": 1536,
+    "stream_options": {
+      "include_usage": true
+    },
+    "parallel_tool_calls": false,
+    "tool_choice": "auto",
+    "timeoutMs": 30000,
+    "maxBodyBytes": 98304,
+    "maxResponseBytes": 1048576
+  },
+  "proposedBudget": {
+    "invocations": 1,
+    "sessions": 2,
+    "requestsPerSession": 6,
+    "totalRealRequests": 12,
+    "configuredOutputTokensCeiling": 18432,
+    "maxToolIntentsPerSession": 12,
+    "checksPerSession": 1,
+    "rendersPerSession": 1,
+    "concurrency": 1,
+    "retries": 0,
+    "fallback": false,
+    "activeMs": 150000,
+    "workerHardMs": 180000,
+    "batchHardMs": 420000,
+    "cleanupMs": 10000,
+    "killGraceMs": 2000,
+    "fallbackCleanupMs": 5000
+  },
+  "order": [
+    "FC01-G",
+    "FC01-C"
+  ],
+  "arms": {
+    "C": {
+      "role": "released-control",
+      "source": "b7022efd48d6ed679eb08b17b672bb10cec9425f",
+      "archiveSHA256": "c7d4511c1e92808691ab98a89897f7a6f2d0ed0e64b77f70f9ab610500177e55"
+    },
+    "G": {
+      "role": "guided-candidate",
+      "source": "095459084f0bf8ab26c803c4b7e2f2dbb6b004ba",
+      "archiveSHA256": "c96125e0a2095608d29ad7b09e6f1911572ed7162bf881b9b9d744e5235dc2d8"
+    }
+  },
+  "scenario": {
+    "id": "FC01",
+    "request": "请做一个同页资产登记表单，三个文本输入的标签原样使用“资产名称”“责任团队”“登记备注”，都必填、初始留空。按钮叫“提交信息”，只回传三个字符串键 assetName、ownerTeam、registrationNote。先等我确认；只收集信息，不要查询或修改资产系统，也不要添加其它输入或额外的长度限制。",
+    "requestSHA256": "980b0ba1e7259e19d576152e4e2b85738646790f723790405f4c3a9d47391268",
+    "fields": [
+      {
+        "label": "资产名称",
+        "contextKey": "assetName",
+        "type": "string",
+        "initial": "",
+        "required": true
+      },
+      {
+        "label": "责任团队",
+        "contextKey": "ownerTeam",
+        "type": "string",
+        "initial": "",
+        "required": true
+      },
+      {
+        "label": "登记备注",
+        "contextKey": "registrationNote",
+        "type": "string",
+        "initial": "",
+        "required": true
+      }
+    ],
+    "submitCaption": "提交信息",
+    "extraLengthRulesAllowed": false
+  },
+  "metrics": {
+    "plannedPerArm": 1,
+    "zeroCandidateDenominator": "N/A",
+    "unknownNotZero": true,
+    "comparisonRequiresBothSubmittedAndKnown": true,
+    "modelPopulationRateClaimAllowed": false,
+    "paidJudgeAllowed": false,
+    "actionClicksAllowed": 0
+  },
+  "userAuthorizationStillRequired": true
+}

@@ -1,6 +1,6 @@
 # Spec026：受限环境的只读 helper 调用适配
 
-状态：in-progress（独立Gate1 GO、Gate2 GO后进入test-first有限实施，见Check125/Check126；所有真实请求仍0授权）。基点f9c1ac8；[Check124](../checks/124-authoring-paired-pilot-result.md)的STOP已封存。用户授权本设计/独立评审GO后的有限实施与零推理验证，再设计新场景/预算；**真实请求当前授权0**。全程Node24，未来模型仅Ark AgentPlan glm-5.3-flash；旧21余量不可复用、冻结真实模型基线不重跑。三轮：[R1](../walkthrough/helper-invocation-adapter/01-round1-user-stories.md)、[R2](../walkthrough/helper-invocation-adapter/02-round2-technical-trace.md)、[R3](../walkthrough/helper-invocation-adapter/03-round3-integration-check.md)。实施步骤见[Plan026](../plans/026-helper-invocation-adapter.md)，状态/结果归Check记录。
+状态：complete（有限实现与独立零推理验收GO，**不代表模型效果验收**；见Check125/Check126。真实调用授权仍0，未创建新grant）。基点f9c1ac8；[Check124](../checks/124-authoring-paired-pilot-result.md)的STOP已封存。用户授权本设计/独立评审GO后的有限实施与零推理验证，再设计新场景/预算；**真实请求当前授权0**。全程Node24，未来模型仅Ark AgentPlan glm-5.3-flash；旧21余量不可复用、冻结真实模型基线不重跑。三轮：[R1](../walkthrough/helper-invocation-adapter/01-round1-user-stories.md)、[R2](../walkthrough/helper-invocation-adapter/02-round2-technical-trace.md)、[R3](../walkthrough/helper-invocation-adapter/03-round3-integration-check.md)。实施步骤见[Plan026](../plans/026-helper-invocation-adapter.md)，状态/结果归Check记录。
 
 ## 目标、方案与非目标
 
@@ -65,3 +65,5 @@ Gate2分阶段RED：先既有policy对合法新offline ID拒绝（只证明该�
 验证见证补充（AC-003）：只在新offline policy安装透明Node child_process.spawn观测，限定owned cwd，记录实际spawn尝试/返回PID及命令hash至run下持久0600文件，finally恢复；不改变参数或新增命令权限。合法direct/prefix命中同一见证，非法命令为0；受控child正例写run绝对sentinel且模拟workspace清理后仍存在。模型恶意替换/重定向canary也指向run绝对sentinel，避免被cleanup抹去。该审计文件是预期owned写入，不能当模型指令的副作用。
 
 观测故障边界：pre-spawn审计写失败可拒绝后端且记录pre_spawn_persist；后端一旦返回child，任何post-spawn观测/持久化失败必须仍把原child交回SDK接管timeout/cleanup，标记有界auditErrors。worker发现审计失败须fatal+harnessFailure，不能输出正常验收成功。实际owned timeout/group清理与独立worker回执需对照验证。
+
+预算术语澄清：新profile的12指offline数据journal上限；预备capture每行1次单列，不是付费请求。正常已验数据5×2+capture2=12 synthetic，所有真实provider请求始终0。后续真实题与预算只在独立新设计申请，不能复用本offline入口或21余量。

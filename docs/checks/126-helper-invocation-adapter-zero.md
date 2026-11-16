@@ -1,6 +1,6 @@
 # Check126：helper适配有限实施与零推理验证
 
-Canonical Spec026。状态in-progress；设计Gate1/Gate2独立GO后实施，实际代码GO/固定source完整CI待后续。本Check只记录新offline控制，不重评旧Spec025、不跑冻结真实模型、无新真实grant或费用授权。Node24.18.1；模型名称仅glm-5.3-flash的synthetic wire，无provider网络。
+Canonical Spec026。状态complete（仅有限工程/零推理）；固定source完整本地CI、代码R3与最终独立zero验收均GO，结论和identity见末节。以下开发记录按发生顺序保留，早期“待验收”均为历史状态。本Check只记录新offline控制，不重评旧Spec025、不跑冻结真实模型、无新真实grant或费用授权。Node24.18.1；模型名称仅glm-5.3-flash的synthetic wire，无provider网络。
 
 ## TDD与分层证据
 
@@ -37,3 +37,13 @@ observer-fault-red.log纯内存fake backend pre/post两RED（0实际子进程）
 observer-fault-final-green.log 4pass：fake pre/post、实际Pi timeout清理（owned group已退出）、实际offline worker预载仅对其run审计文件一次post-write失败→2 synthetic回合fatal/harnessFailure、0model/0operator config、workspace和helper组清理、auditErrors回执明确。新正常路径仍需完整固定source重验；原166保护不变，未来场景和实付预算尚未推进。
 
 R3故障fixture的env推断曾触发TS7053（type-r3.log）；显式NodeJS.ProcessEnv修复，仅类型层，不算行为RED。type-r3-corrected.log退出0。全部故障raw与失败类型记录保留，新固定source的完整检查另计。
+
+## 固定新source最终零推理验收 GO
+
+执行/测试source7ee904581982519ebec43c6df6edd671bedc261a/tree9dcb065a963076ac167eaa8ca5d12827f2a469f0：完整Node606/606（494331ms）、TypeScript0、四组browser91/91、strict golden union68（45正/23负），Node24.18.1/Chromium158.0.8127.18。Model测试transport全部synthetic，冻结真实基线没有重跑。
+
+normal新CLI run-AhdBKO：C/G两行各5数据回合，另capture各1；12 synthetic合计、0真实provider/0operator config。两行真实helper各2spawn/PID、执行shell commandSHA逐一等于accepted canonicalSHA，后续provider body保留raw assistant command hash；auditErrors为空、checked/render source exact、3fields/rules与真实DOM通过、actionPosts实测0、cleanup为空。独立105运行输入/原166unique保护/双档76x2/7diff保持；旧99仅允许3private改动。normal报告不计算模型效果，schema modelEffect=not_evaluated。
+
+验证包`.local/helper-adapter-implementation/validation-7ee9045.json` SHA c601a6b528455a0804129a95f07cc4dafad630499573eb424345909b38dfc086。R3 source review SHA56e65ca66218db5bc3dcf3694a2ccf5a04fbeb1a857bc641657a487c523c7f76保持不改；最终独立zero-final-review-r1.md SHA f77a7e1a989fa4103afcdb50a1718cae146e9e53fc8af3e0790795b2e2d5255e、zero-go.json SHA dfc9d5c49d052853067e5c182cb5088e35a596c821fc4c5ddcec3cbf769e7fc3（0600），0开放P0/P1/P2。GO仅本有限工程/zero；用户真实授权0、无新grant/paid入口实现/旧21/冻结重跑/发布或全局修改。
+
+Spec026 complete只指上述有限工程完成；受限helper是否改善真实模型firstCandidate尚未评估。进入独立Spec027的新题/预算设计申请阶段，不执行。最终docs checkpoint不改105运行输入，原Spec025 STOP全部封存。
