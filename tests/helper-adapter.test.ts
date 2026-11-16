@@ -2,12 +2,13 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {policyFor,SMOKE_ID,OLD_ID} from './trigger-smoke/policy.ts';
 import {PAIR_ID} from './authoring-pilot/profile.ts';
-import {mkdtempSync,mkdirSync,writeFileSync,existsSync,appendFileSync} from 'node:fs';
+import {mkdtempSync,mkdirSync,writeFileSync,existsSync,appendFileSync,readFileSync,rmSync} from 'node:fs';
 import {resolve,join,dirname} from 'node:path';
 import {createBashToolDefinition} from '../node_modules/@earendil-works/pi-coding-agent/dist/core/tools/bash.js';
 import {planHelperInvocation,HelperInvocationError} from './helper-adapter/invocation.ts';
 import {PilotBudget,NEW} from './trigger-pilot/contracts.ts';
 import {ADAPTER_ID,ADAPTER_SHA} from './helper-adapter/profile.ts';
+import {observeOwnedProcesses} from './helper-adapter/process-witness.ts';
 
 test('HAG00 a new offline policy admits owned helper control without changing legacy modes',()=>{
  const policy=policyFor('helper-invocation-offline-1');
@@ -55,4 +56,17 @@ test('HAX01 actual Node process receives exact cwd and argv with hostile charact
   assert.deepEqual(result,{node:process.execPath,version:process.version,cwd:project,args:['example','validated-form']});assert.match(result.version,/^v24\./);observed.push(result);
  }
  writeFileSync(join(run,'observations.json'),JSON.stringify(observed)+'\n',{mode:0o600});assert.equal(existsSync(join(run,'sentinel')),false);
+});
+test('HAX03 process detector positive canary survives workspace cleanup and counts a real child',async()=>{
+ const run=mkdtempSync(resolve('.local/helper-adapter-implementation/detector-')),project=join(run,'workspace/project'),helper=join(run,'package/a2ui.mjs'),sentinel=join(run,'persistent-sentinel'),file=join(run,'process-witness.json');
+ mkdirSync(project,{recursive:true});mkdirSync(dirname(helper),{recursive:true});
+ // Controlled test helper writes only this owned sentinel; no model supplied code.
+ writeFileSync(helper,`import{writeFileSync}from'node:fs';writeFileSync(${JSON.stringify(sentinel)},'detector-positive');console.log('ok');\n`);
+ const witness=observeOwnedProcesses(project,file);
+ try{
+  const plan=planHelperInvocation(`cd "${project}" && node "${helper}" catalog`,{cwd:project,helper,draft:join(project,'draft.express')});
+  const tool=createBashToolDefinition(run,{exposeSessionEnvironment:false});const result=await tool.execute('detector',{command:plan.command,timeout:5},undefined,undefined,{cwd:project} as any);assert.equal((result.structuredContent as any).exit_code,0);
+  rmSync(join(run,'workspace'),{recursive:true});assert.equal(readFileSync(sentinel,'utf8'),'detector-positive');
+  const proof=JSON.parse(readFileSync(file,'utf8'));assert.equal(proof.spawnAttempts,1);assert.equal(proof.childrenWithPid,1);assert.ok(proof.entries[0].pid>1);assert.deepEqual(witness.snapshot(),proof);
+ }finally{witness.restore();}
 });

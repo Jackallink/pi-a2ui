@@ -11,6 +11,6 @@ Canonical：[Spec026](../specs/026-helper-invocation-adapter.md)。本计划定�
 5. 固定实现source独立代码审查与完整本地Node/type/四组browser/strict golden union、正常新CLI offline、preservation/identity receipt；全部零真实推理，不生成实际grant。闭合Spec026的有限工程验收。
 6. 以上GO后才设计新真实场景与调用预算（建议从≤旧24的更小起点考虑），新profile只作document-only、模型glm-5.3-flash、当前approved0；独立预算/设计评审后向用户提交具体申请，本轮不调用。
 
-文件：新增tests/helper-adapter/{profile.ts,profile.json,fixtures.json,invocation.ts}、scripts/helper-adapter.mjs及聚焦Node测试；最小改tests/trigger-smoke/policy.ts、tests/trigger-pilot/episode.ts、tests/authoring-pilot/authority.ts。公开76payload与lock/版本不改。测试期望来自独立literal fixture、实际同臂helper/compiler/DOM，source/profile/archives/raw hash绑定Check。
+文件：新增tests/helper-adapter/{profile.ts,profile.json,fixtures.json,invocation.ts,process-witness.ts}、scripts/helper-adapter.mjs及聚焦Node测试；最小改tests/trigger-smoke/policy.ts、tests/trigger-pilot/episode.ts、tests/authoring-pilot/authority.ts。公开76payload与lock/版本不改。测试期望来自独立literal fixture、实际同臂helper/compiler/DOM，source/profile/archives/raw hash绑定Check。
 
 回退：移除新offline入口/新policy/parser及其条件接入；旧profiles/真实raw/锁不动，不复活21余量。未来paid runtime不在本计划实施范围。

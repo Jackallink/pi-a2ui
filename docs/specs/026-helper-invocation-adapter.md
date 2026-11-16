@@ -37,7 +37,7 @@ NODE只能字面`node`或当前process.execPath。ABS_HELPER须逐字等于该�
 
 新实验ID `helper-invocation-offline-1`、owned base `.local/helper-adapter/`、独立marker/日志；它永远不被现有pure live guards接受。CLI `scripts/helper-adapter.mjs`只有默认dry-run、--help、--offline和少量离线canary；--execute/--grant/导入式live API/直接worker live都须在Pi SDK/配置/workspace之前拒绝。不存在新真实grant格式或live开关。
 
-新policy继承paired的同包动态factory/skill/helper/compiler/validator、native wire与工具/worker限额，仅在该policy选择parser并使用同一条C/G安全说明，承认上述冗余cwd前缀；老PAIR/SMOKE/OLD仍选择原helperCall/原说明。不改旧profile、预算、oracle/报告/CLI语义。必要变更：policy.ts注册新ID/运行输入，episode.ts按policy选择及离线fixture，authority.ts的四个归档/capture只读函数增加默认PAIR的experiment参数（只允许PAIR与新offline policy），授权函数不放宽。新增tests/helper-adapter/{profile,invocation}.ts、profile/fixtures.json与独立CLI/测试；不扩为任意用户配置的实验平台。
+新policy继承paired的同包动态factory/skill/helper/compiler/validator、native wire与工具/worker限额，仅在该policy选择parser并使用同一条C/G安全说明，承认上述冗余cwd前缀；老PAIR/SMOKE/OLD仍选择原helperCall/原说明。不改旧profile、预算、oracle/报告/CLI语义。必要变更：policy.ts注册新ID/运行输入，episode.ts按policy选择及离线fixture，authority.ts的四个归档/capture只读函数增加默认PAIR的experiment参数（只允许PAIR与新offline policy），授权函数不放宽。新增tests/helper-adapter/{profile,invocation,process-witness}.ts、profile/fixtures.json与独立CLI/测试；不扩为任意用户配置的实验平台。
 
 独立synthetic fixture HX01（与实际新付费场景无关）：3空字符串必填text、精确keys offlineName/offlineZone/offlineTag、提交caption“提交信息”、FormValidation guarded IDs；C/G两个独立session，共用请求/路径/工具/安全说明，实际加载各自固定归档，metadata不强载SKILL。C/G归档沿用已固定c7d451.../c96125...与76path/7diff，初始context差异仍仅实际descriptor/snippet；原body不改写。
 
@@ -61,3 +61,5 @@ Gate2分阶段RED：先既有policy对合法新offline ID拒绝（只证明该�
 严格draft→walkthrough-approved→tdd-approved→in-progress→review-ready→complete；用户已明确独立设计GO后继续本有限实现/零推理，不再申请相同范围确认。Gate1与Gate2必须分别给结论（可以同份独立报告）；代码/零推理另审，任一NO-GO纠正并重新绑定新source。下一轮场景和预算只在zero验收后设计；真实调用仍0，另行用户授权且另立源/模型/上下文绑定，不继承旧grant。
 
 主要风险：quote语义错误导致注入或正常命令误拒；共享接入误改旧policy；synthetic被误当模型效果；重建argv与实际cwd不一致。分别用实际进程sentinel、旧policy回归/guard、分层报告和真实helper/cwd观测约束。回退只撤新policy/入口/parser及接入分支；保留所有失败raw和旧锁，不返额度、不回写旧grade。产品内核与两包无变更。
+
+验证见证补充（AC-003）：只在新offline policy安装透明Node child_process.spawn观测，限定owned cwd，记录实际spawn尝试/返回PID及命令hash至run下持久0600文件，finally恢复；不改变参数或新增命令权限。合法direct/prefix命中同一见证，非法命令为0；受控child正例写run绝对sentinel且模拟workspace清理后仍存在。模型恶意替换/重定向canary也指向run绝对sentinel，避免被cleanup抹去。该审计文件是预期owned写入，不能当模型指令的副作用。

@@ -21,3 +21,9 @@ parser先验证全串、quote-aware separator、固定cwd/Node/helper/op/args，
 追加分组运算符反例：grouping-red.log确认未执行的括号组合被过早归usage；lexer把引号外括号明确归policy，unit-final.log 6pass。所有166保护文件hash未变；实际代码仍未获最终GO，后续新source完整CI不可借历史值。
 
 已读锁定SDK的validateToolArguments：工具入参为原assistant arguments的structuredClone。history-green.log实际SDK正例再核对后续provider body中的bash原串hash等于helperAdmissions的rawCommandSHA256，不等于执行重建串；新增字段只投影命令hash，不存原生推理内容或完整续请求。
+
+## Code R1 NO-GO及见证纠正
+
+固定8c96fde4bf9feedea97a50696f3f85ac840c6b79/tree9a2d6d5da3a50508c069c8db143a5841fb498fcc代码R1 NO-GO（1P2、0P0/P1），报告SHA625f7b1020e502b09b54427b94db4f299796dd541de026c309303402485c1247。缺口：substitution sentinel相对project但断言run，workspace清理会抹掉可能副作用；AC003缺真实子进程执行见证。不是发现运行时注入漏洞，未因此放宽parser。
+
+先补witness-red.log两个真实SDK验证字段缺失的RED（证据缺口，不称漏洞复现）；所有有副作用的SDK canary改为run下绝对sentinel。新增process-witness.ts透明观察owned cwd的实际Node spawn调用/PID，持久文件在run外于workspace保留，正常helper两次先命中、非法command零次；finally恢复cp.spawn。独立受控真实child写绝对sentinel，模拟workspace清理后仍保留，证明detector有效。witness-green.log 17pass。追加exec-provenance-red.log记录规范命令与实际spawn命令尚缺闭合字段的RED；随后记录shellCommandSHA256，和accepted plan的commandSHA逐条独立相等，未经验证不写“真实执行”。本修正仍仅零推理observability，旧付费guard/产品/旧raw不改，待新source复审/完整验收。

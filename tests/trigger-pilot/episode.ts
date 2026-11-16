@@ -5,6 +5,7 @@ import {readFile,writeFile,mkdir,rm,symlink,lstat} from 'node:fs/promises';
 import {readFileSync,writeFileSync,appendFileSync} from 'node:fs';
 import {join,resolve,dirname} from 'node:path';
 import {homedir} from 'node:os';
+import {observeOwnedProcesses} from '../helper-adapter/process-witness.ts';
 import {planHelperInvocation,HelperInvocationError} from '../helper-adapter/invocation.ts';
 import {PAIR_ID} from '../authoring-pilot/profile.ts';
 import {validatePackages,validateActivePackage,verifyPairWorker,verifyPairRequest} from '../authoring-pilot/authority.ts';
@@ -54,6 +55,7 @@ export async function episode(id:string,run:string,kind:string,simulation='',exp
  const helper=join(pack,'skills/pi-a2ui/scripts/a2ui.mjs'),skill=join(pack,'skills/pi-a2ui/SKILL.md'),draft=join(project,'draft.express');
  const journal=join(run,kind==='live'?'live-requests.jsonl':`synthetic-${(policy.smoke||policy.paired)&&kind==='offline'?'offline':simulation||kind}-requests.jsonl`),budget=new PilotBudget(journal,kind==='live'?'live':'offline',experiment);
  const record:any={id,kind,experiment,simulation:simulation||null,node:process.version,started:false,requests:0,renderRequested:false,renderAttempted:false,renderCommitted:false,preparation:false,outcome:'setup',transcript:[],tools:[],usage:[],requestDiagnostics:[],cleanupErrors:[],modelCalls:0,...(policy.paired?{fatal:false,firstCandidate:{submitted:false},workflow:{skillRead:false,exampleRead:false,checkBeforeCandidate:false},preSubmissionWrites:0}:{} )};
+ let processWitness:ReturnType<typeof observeOwnedProcesses>|undefined;
  let session:any,runtime:any,browser:Browser|undefined,browserServer:BrowserServer|undefined,page:Page|undefined,opener:Promise<void>|undefined,origin:string|undefined;
  let stopped=false,toolCount=0,renderCount=0,checkAttempted=false,checkCallId:string|undefined,abortWait:Promise<void>|undefined,caseTimer:ReturnType<typeof setTimeout>|undefined,currentDiagnostic:any,checkedSource:string|undefined,renderedSource:string|undefined,armCompile:any,armValidate:any;
  const submitCandidate=(source:string,surfaceId:string,via:string)=>{if(!record.firstCandidate.submitted)record.firstCandidate={submitted:true,via,surfaceId,sourceSHA256:hash(source),grade:judgeSource(surfaceId,source,row,armCompile,armValidate),preSubmissionWrites:record.preSubmissionWrites,workflowBefore:{skillRead:record.workflow.skillRead,exampleRead:record.workflow.exampleRead}};};
@@ -65,6 +67,7 @@ export async function episode(id:string,run:string,kind:string,simulation='',exp
  const interrupt=()=>{if(simulation!=='hang'){error('episode',new Error('worker interrupted'));stop('provider_unknown',true);}};process.once('SIGTERM',interrupt);process.once('SIGINT',interrupt);
  globalThis.fetch=async(input,options)=>{const url=new URL(typeof input==='string'||input instanceof URL?String(input):input.url);assert.ok(url.protocol==='http:'&&url.hostname==='127.0.0.1','non-provider external network forbidden');return realFetch(input,options);};
  try{
+  if(policy.helperAdapter)processWitness=observeOwnedProcesses(project,join(run,id+'.'+kind+'.process-witness.json'));
   let actualFactory=a2ui;if(policy.paired){validateActivePackage(run,id,experiment);record.loadedArm=arm;record.loadedPayload=JSON.parse(await readFile(join(run,'packages.json'),'utf8'))[arm];actualFactory=(await import(pathToFileURL(join(pack,'extension.ts')).href)).default;armCompile=(await import(pathToFileURL(join(pack,'src/compiler.ts')).href)).compile;armValidate=(await import(pathToFileURL(join(pack,'src/interactions.ts')).href)).validateSubmission;}
   let config:{key:string;headers:Record<string,string>;model:Record<string,unknown>};
   if(simulation==='offline-config-read')await readFile(configPaths[1],'utf8');
@@ -148,7 +151,7 @@ export async function episode(id:string,run:string,kind:string,simulation='',exp
        if(simulation==='foreign-cwd')tool={name:'bash',arguments:{command:`cd "${workspace}" && ${query}`}};
        if(simulation==='extra-and')tool={name:'bash',arguments:{command:wrap(query)+` && node "${helper}" catalog`}};
        if(simulation==='redirect')tool={name:'bash',arguments:{command:wrap(query)+` > "${join(run,'forbidden-sentinel')}"`}};
-       if(simulation==='substitution')tool={name:'bash',arguments:{command:wrap(query)+' $(touch forbidden-sentinel)'}};
+       if(simulation==='substitution')tool={name:'bash',arguments:{command:wrap(query)+` $(touch "${join(run,'forbidden-sentinel')}")`}};
        if(simulation==='usage')tool={name:'bash',arguments:{command:wrap(`node "${helper}" check`)}};
        if(simulation==='missing-draft')tool={name:'bash',arguments:{command:wrap(check)}};
       }
@@ -220,7 +223,7 @@ export async function episode(id:string,run:string,kind:string,simulation='',exp
   if(browserServer)await clean('browser',()=>browserServer!.kill());if(browser?.isConnected())await clean('disconnect',()=>browser!.close());
   if(origin){try{await realFetch(origin,{signal:AbortSignal.timeout(1000)});record.cleanupErrors.push('server remains open');}catch{record.serverClosed=true;}}
   if(beforeConfig){try{assert.deepEqual(await configHashes(),beforeConfig);record.userConfigUnchanged=true;}catch{record.cleanupErrors.push('user config changed');}}
-  killTrackedDetachedChildren();globalThis.fetch=realFetch;process.removeListener('SIGTERM',interrupt);process.removeListener('SIGINT',interrupt);
+  killTrackedDetachedChildren();if(processWitness)await clean('process witness',async()=>{record.processWitness=processWitness!.snapshot();processWitness!.restore();});globalThis.fetch=realFetch;process.removeListener('SIGTERM',interrupt);process.removeListener('SIGINT',interrupt);
   await clean('workspace',()=>rm(workspace,{recursive:true,force:true}));if(policy.paired){record.sourceMatch=sourceMatch(checkedSource,renderedSource);if(record.firstCandidate.submitted){record.workflow.skillRead=record.firstCandidate.workflowBefore.skillRead;record.workflow.exampleRead=record.firstCandidate.workflowBefore.exampleRead;}}record.toolAttempts=toolCount;record.toolCount=record.tools.length;record.offlineConfigGuard=(globalThis as any).pilotReadGuard;record.usage=record.requestDiagnostics.map((d:any)=>d.usage);record.usageKnown=record.usage.length===record.requests&&record.usage.every(completeUsage);if(record.cleanupErrors.length){record.harnessFailure=true;record.fatal=true;}
   if(simulation==='torn-journal'&&kind==='offline')appendFileSync(journal,'{"index":2');
   writeFileSync(join(run,id+'.'+kind+(simulation?'-'+simulation:'')+'.json'),redact(record,secrets)+'\n',{mode:0o600});
