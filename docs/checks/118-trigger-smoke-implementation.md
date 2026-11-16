@@ -26,4 +26,12 @@ P0控制还包括：同grant重复/并发执行只一赢家、lock后首POST前�
 
 P0采用完整owned git fixture/假授权/真实guard入口与fs/fetch/spawn见证器：合法negative/positive均先证明能到达工作区前见证点，之后缺/伪造ticket、源码/profile/capture漂移、错误negative及cleanup失败等逐项拒绝。最初fixture缺payload索引文件是设置失败，不算RED；将该实际被读取的索引加入受保护input集合后，closed-receipt重放真正触达workspace见证点并RED，补入口已关闭回执检查后GREEN。并发两个真实CLI只一方到达被拦截的worker spawn，重放不再到达；整个fixture配置/网络计数0，永不生成真实授权。
 
-最终固定候选完整验证与R2仍待完成；本段只记录针对性纠正，尚无新付费请求。
+第二固定候选01fcd8a7完整536Node/typecheck通过，但独立[R2仍NO-GO](trigger-smoke-implementation/code-review-r2.md)：F-01隐私、F-03未知分类、F-04授权入口证据关闭；F-02还可能以无关可见输入和同caption按钮替代隐藏的目标字段/按钮。536通过不是执行豁免。R2原件SHA256为3053a65fecf434786a237d21227fe937d3f8951efe56bc33564bb4a22bb69f95。
+
+## R2残余F-02 / 组件身份绑定
+
+新增closed Details内正确三字段/绑定确认、外部static标签+三个无关输入+同caption取消按钮，以及三字段都使用共享歧义label的实际SDK/compiler/server/DOM控制。旧oracle均误报render_committed，两个断言RED保留于dom-binding-red.log；不是编译/设置故障。修正仅在private harness：候选保留各field及button组件ID；label须恰好命中应用/环境/版本其中一类，每个按钮context各类恰好一个唯一path字段；DOM按实际SDK host.context.componentModel.id跨shadowRoot定位，再分别核查所选host内的可见非禁用可填写控件及同一绑定按钮。隐藏/关闭Details、inert、disabled/readOnly、被活动modal排除的控件不通过；无关控件不参与计数，不点击、不POST。
+
+首轮修正遇到tsx给嵌套函数插入__name导致browser_error，是序列化设置错误，不算新的行为RED。改为自包含DOM对象方法使浏览器序列化不依赖模块closure；原dom-binding-green.log失败原样保留，后续针对性GREEN另录。没有修改产品host/控件、文案、预算、模型、endpoint或SDK历史。
+
+最终固定候选完整本地检查/新R3仍待完成，至本段尚无新付费请求。
