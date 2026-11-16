@@ -5,7 +5,7 @@
 **Architecture:** 新受限入口/profile，复用既有私有SDK worker、发送前durable预算、诊断/renderer/清理。所有边界按同一个已校验policy工作；旧pilot live仍禁用。
 **Tech:** Node24、Pi1.5.0、锁定Chromium；仅拟用Ark AgentPlan glm-5.3-flash。无新依赖或产品文件。
 
-本计划定义后续工作，不是执行授权。当前只有设计/独立评审获授权，预算0；用户授权新批次后仍需适配与离线代码门禁，不执行当前旧12会话CLI。
+设计阶段本计划不是执行授权；用户随后已明确授权最小适配和限定新批次，Gate2已GO。实际执行仍须固定源码离线检查/独立代码门禁，不执行旧12会话CLI。当前进度/证据只记Check118，本计划保留目标/门槛。
 
 ## 1. 设计关口（本轮）
 
@@ -13,7 +13,7 @@
 - 检查当前脚本与拟议行为差异、AC→测试意图；Node24仅静态检查JSON/身份，不加载SDK或凭据、不运行冻结入口。
 - 独立Gate1设计评审；若NO-GO，修文档并重审、保留原记录。GO后只向用户申请新预算，不将GO当成live-ready。
 
-## 2. 授权后最小适配（本轮不实施）
+## 2. 授权后最小适配
 
 预计新入口 `scripts/trigger-smoke.mjs`、政策/用例 `tests/trigger-smoke/`，必要私有适配位于 `tests/trigger-pilot/{contracts,control,worker,offline-read-guard}.ts`。R2 `diagnostics.ts`行为保持，除非必需缺陷修正；产品extension/src/skills/dist/package、tests/benchmark-model及其冻结证据不改。不引入通用实验平台或复制新的renderer内核。
 

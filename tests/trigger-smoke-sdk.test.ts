@@ -1,0 +1,21 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {readFileSync,writeFileSync,existsSync} from 'node:fs';
+import {join} from 'node:path';
+import {createRun,runWorker} from './trigger-pilot/control.ts';
+import {SMOKE_ID} from './trigger-smoke/policy.ts';
+
+async function run(id:string,simulation='',deadline?:number){
+ const dir=(createRun as any)(SMOKE_ID),capture=await (runWorker as any)(id,dir,'capture','',undefined,SMOKE_ID);assert.equal(capture.process.code,0);writeFileSync(join(dir,'contexts.json'),JSON.stringify({[id]:capture.firstBodySHA256}));
+ return{dir,r:await (runWorker as any)(id,dir,'offline',simulation,deadline,SMOKE_ID)};
+}
+for(const [simulation,outcome,requested]of [['','negative_pass',false],['text','negative_text',false],['prepare','negative_tool',false],['schema-missing','negative_tool',true],['usage-missing','negative_pass',false],['truncated','output_truncated',false],['rate-limit','provider_error',false]]as const)test('SMS02 negative actual SDK '+(simulation||'normal'),async()=>{
+ const{r}=await run('SM02-B',simulation);assert.equal(r.process.code,0);assert.equal(r.outcome,outcome);assert.equal(r.requests,1);assert.equal(r.renderRequested,requested);assert.equal(r.renderAttempted,false);assert.equal(r.renderCommitted,false);assert.equal(r.toolCount,0);assert.equal(r.modelCalls,0);assert.deepEqual(r.cleanupErrors,[]);assert.equal(r.offlineConfigGuard.denied,0);if(outcome==='negative_pass')assert.equal(r.fatal,false);else assert.equal(r.fatal,true);if(simulation==='schema-missing')assert.equal(r.stoppedByPolicy,true);if(simulation==='rate-limit'){assert.equal(r.requestDiagnostics[0].sdkStopReason,'error');assert.ok(r.requestDiagnostics[0].errors.some((e:any)=>e.source==='sdk'&&e.message!=='Request aborted'&&/^[a-f0-9]{64}$/.test(e.fingerprint)));}
+});
+for(const[simulation,outcome,requests,requested,attempted,committed]of [['prepare','preparation_limited',3,false,false,false],['schema-missing','render_schema',1,true,false,false],['compile','render_compile',1,true,true,false],['','render_committed',1,true,true,true],['invalid-content','ui_invalid',1,true,true,true]]as const)test('SMS03 positive actual SDK '+(simulation||'normal'),async()=>{
+ const{r,dir}=await run('SM01-B',simulation);assert.equal(r.process.code,0);assert.equal(r.outcome,outcome);assert.equal(r.requests,requests);assert.equal(r.renderRequested,requested);assert.equal(r.renderAttempted,attempted);assert.equal(r.renderCommitted,committed);assert.equal(r.modelCalls,0);assert.deepEqual(r.cleanupErrors,[]);assert.equal(existsSync(join(dir,'workspace')),false);if(committed){assert.equal(r.domObserved,true);assert.equal(r.actionPosts,0);assert.equal(r.serverClosed,true);assert.equal(r.contentValid,simulation!=='invalid-content');}if(simulation==='prepare'){assert.equal(r.requestDiagnostics.length,3);assert.equal(r.requestDiagnostics.at(-1).sdkStopReason,'toolUse');}
+ const body=JSON.parse(readFileSync(join(dir,'SM01-B.context.json'),'utf8'));assert.equal(body.reasoning_effort,'low');assert.equal(body.max_completion_tokens,1536);
+});
+test('SMS04 smoke hard deadline includes TERM and actual owned browser fallback',async()=>{
+ const started=Date.now(),{r,dir}=await run('SM01-B','hang',15000);assert.equal(r.harnessFailure,true);assert.equal(r.process.fallback,true);assert.equal(r.requests,null);assert.equal(r.knownAdmittedRequests,1);assert.equal(existsSync(join(dir,'SM01-B.hang-ready')),true);assert.equal(existsSync(join(dir,'workspace')),false);assert.ok(r.elapsedMs<=15000,'total worker deadline, not deadline+TERM');assert.ok(Date.now()-started<22000,'capture plus bounded live-shaped worker');const resource=JSON.parse(readFileSync(join(dir,'SM01-B.resources.json'),'utf8'));assert.throws(()=>process.kill(resource.browserPid,0),(e:any)=>e.code==='ESRCH');
+});
