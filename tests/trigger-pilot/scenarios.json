@@ -1,0 +1,32 @@
+[
+  {
+    "id": "T01",
+    "request": "我要准备一次发布，但应用名、目标环境、版本号还没填。请先把这三项信息收齐，再让我确认；现在不要执行发布。",
+    "positive": true
+  },
+  {
+    "id": "T02",
+    "request": "下面是演示用的核查结果，不用读取文件：R1，src/auth.ts 第18行，登录失败提示缺少错误原因，建议补充说明；R2，src/config.ts 第7行，超时值没有单位，建议明确单位。帮我整理成可逐项决定处理或暂缓的结果，先别改文件。",
+    "positive": true
+  },
+  {
+    "id": "T03",
+    "request": "我在选服务方案：A月费10元、延迟80毫秒；B月费2元、延迟120毫秒；C月费2元、延迟60毫秒；D月费6元、延迟90毫秒；E月费4元、延迟70毫秒。让我能按月费或延迟换个顺序比较，再决定选哪个；这些是演示数据。",
+    "positive": true
+  },
+  {
+    "id": "T04",
+    "request": "帮我核对这份演示配置改动的影响，我想逐项检查差异再决定是否接受，先别修改文件。config.json 原值：timeoutMs=2000，retries=1，mode=fast；新值：timeoutMs=5000，retries=3，mode=safe。",
+    "positive": true
+  },
+  {
+    "id": "N01",
+    "request": "用三句话解释 git fetch 和 git pull 的区别。",
+    "positive": false
+  },
+  {
+    "id": "N02",
+    "request": "已确认使用测试环境，版本0.1.10。只回复‘收到’。",
+    "positive": false
+  }
+]

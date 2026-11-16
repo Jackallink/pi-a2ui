@@ -1,0 +1,38 @@
+{
+  "id": "v0.1.10-trigger-pilot-1",
+  "source": "b7022efd48d6ed679eb08b17b672bb10cec9425f",
+  "archiveSHA256": "c7d4511c1e92808691ab98a89897f7a6f2d0ed0e64b77f70f9ab610500177e55",
+  "version": "0.1.10",
+  "nodeMajor": 24,
+  "pi": "1.5.0",
+  "model": {
+    "provider": "volcengine-ark",
+    "id": "glm-5.3-flash",
+    "baseUrl": "https://ark.cn-beijing.volces.com/api/plan/v3"
+  },
+  "caps": {
+    "episodeRequests": 3,
+    "batchRequests": 36,
+    "tools": 6,
+    "maxTokens": 1536,
+    "bodyBytes": 98304,
+    "requestMs": 30000,
+    "episodeMs": 90000,
+    "cleanupMs": 10000,
+    "batchMs": 1200000
+  },
+  "order": [
+    "T01-A",
+    "T01-B",
+    "T02-B",
+    "T02-A",
+    "T03-A",
+    "T03-B",
+    "T04-B",
+    "T04-A",
+    "N01-A",
+    "N01-B",
+    "N02-B",
+    "N02-A"
+  ]
+}
