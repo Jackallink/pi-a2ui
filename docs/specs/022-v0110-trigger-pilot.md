@@ -4,6 +4,25 @@
 
 后验偏差记录（不改写原批准协议）：上述一次授权批次已使用，在T01-A的第二次请求结果未知时停止；其余11episode未启动、完整配对0，效果验收未通过。实际首请求为`max_completion_tokens=1536`且没有关闭思考参数，响应中有非空推理块；原`thinking off`假设不成立。另有错误信息与usage持久化缺口。见[Check115](../checks/115-trigger-pilot-stopped-live.md)。本spec保留原预算/参数约定作为审计依据；这些偏差不是追溯豁免，也不是新批次授权。不得重启或续跑；任何后续模型策略/线级契约修订须独立走查评审，新的真实推理另需明确授权。
 
+## 当前修复切片：仅离线的 transport diagnostics v2
+
+用户已同意继续修正评测脚本；本切片状态 draft，按三轮增量走查及独立Gate1/Gate2评审后实施。下文旧pilot协议保留为历史；本节定义当前增量需求，不重新批准原付费批次。
+
+目标：让后续评测明确实际GLM参数，并在正常结束、SDK取消、流中断或超时时留下逐请求证据。非目标：追查已丢失的旧错误、补跑/重打分、证明主动触发有效、改动产品内核/依赖/安装、提交PR/发布。实际调用预算为0；`--execute`及直接live worker必须在读取真实配置或创建工作区之前拒绝。原36请求仅作为历史/潜在协议上限保留，不能当成本轮授权。profile使用新id并明确live禁用，旧run/回执/独占锁不变。
+
+GLM策略：SDK模型标记reasoning=true，session使用low；发往受保护transport的实际body固定`thinking:{type:'enabled'}`、`reasoning_effort:'low'`、`max_completion_tokens:1536`，禁止同时/替代使用max_tokens，保留stream_options.include_usage=true、tool_choice=auto、parallel_tool_calls=false。所有实际SDK上下文捕获和合成/真实分支均经过同一参数guard，不靠SDK off标签推断。官方[深度思考](https://docs.volcengine.com/docs/ark/deep-thinking?lang=en)列出的GLM-5.3-Flash版本始终启用思考、low可用；当前仅验证线级契约，不声称已确认AgentPlan alias映射或服务端实际执行策略。时限/输出/请求数量不增加。
+
+逐请求记录：durable journal准入后创建`requestDiagnostics`条目，关联episode内序号及journal index/bodySHA256；HTTP status、stream终止态(eof/cancelled/error)、finish_reason、DONE是否观察到、已收到字节、usage和SDK结束状态各自记录。usage初始null；每个已解析的usage立即保存，不依赖flush/EOF，不求和同请求重复usage。只采集非负安全整数的prompt/completion/total及可选reasoning_tokens；缺失/无效字段仍null，完整性单独算，不用部分usage宣称总费用。取消不继续排空、不主动追加请求；已有usage不能证明流或模型结果完整。
+
+错误记录：transport/SDK/episode中断在对应请求条目记录来源与有界脱敏错误文本；去掉已知凭据、Bearer、token/authorization以及URL，最多1024 UTF-8 bytes，禁止额外复制原始header、body或推理内容到diagnostics。错误文本若含嵌入header/body/messages/reasoning/推理payload标记，则整段省略，仅保存固定安全占位及原文SHA256；不能因为内容在error.message里就复制原始payload。多字节文本仍按UTF-8 byte限制。只读超时/错误类别不推断供应商根因；错误文本仅属私有回执，公开导出仍白名单。最外层/信号/硬杀的缺收据路径继续保守unknown，保留journal与主错，不能用错误/usage诊断洗成成功。旧`providerStatus`/`usage`兼容字段由请求条目派生；旧报告字节不修改。
+
+AC-007(P0)：native-thinking与严格总输出参数在实际SDK首请求A/B一致、未知模式/缺字段在journal前拒绝；新增profile及CLI/worker拒绝live、零真实配置/HTTP。
+AC-008(P1)：同一stream观察代码用于合成和live响应；usage在finish后取消、分块UTF8/CRLF、EOF、read error和超时前后不丢失；缺失/部分/非法usage保持unknown；1MiB响应边界不放宽。
+AC-009(P1)：实际SDK message_end error保留有界脱敏错误，逐请求状态不会把前一次HTTP200、usage或错误归给后一次；完成工具读取后第二请求中断的两请求控制可复核，无续请求/重试。
+AC-010(P0)：原五份live回执/冻结BM4/profile/产品76文件保持原指纹；完整本地CI、实际SDK合成控制、独立代码/隐私/成本评审通过。完成只代表离线修复，可将修复切片归档，不把旧效果验收Gate4改成通过。
+
+风险与回退：新收集器可能改变取消/流背压或泄露错误文本；测试实际ReadableStream取消和SDK错误传播、脱敏及响应上限。新增测试/diagnostics helper可独立回退，原包不变；回退不能重新赋予旧live授权。新真实批次须另外明确授权，并在新source/profile上重新准入，不续用旧journal。
+
 ## 目标与范围
 
 回答两个问题：自然任务中，新文案是否更常让模型自主选择 `a2ui_render`；纯文字和简单确认是否仍能跳过画布。把工具选择、UI 准备、编译成功和实际显示分开报告，不把语法错误或原生摘要卡误当作主动触发结果。

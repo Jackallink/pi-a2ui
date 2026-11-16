@@ -7,6 +7,15 @@
 **Tech stack:** Node24, Pi1.5.0, existing A2UI dependencies, locked Playwright. No new runtime dependency or product files.
 **Spec:** docs/specs/022-v0110-trigger-pilot.md ACs in its three walkthroughs.
 
+## Current bounded follow-through: offline diagnostics repair
+
+User approved repairing the pilot after Check115. Execute inline in this existing isolated worktree using Node24; independent design/TDD and final code/cost/privacy reviews remain required. Live budget0. Previous implementation tasks below describe the original consumed batch; they do not authorize execution again.
+
+1. Update Spec022 and three incremental walkthroughs for AC007–010; independently audit Gate1/Gate2. Keep original stopped receipts/frozen identities pinned in Check116.
+2. Write behavioral RED controls first: actualSDK request capture must contain enabled/low/max_completion_tokens and --execute/directlive must fail before configuration; a usage-bearing stream cancelled before EOF must retain usage; actualSDK stream failure must retain safe per-request diagnostics. Keep RED logs; setup/import failures do not count.
+3. Add `tests/trigger-pilot/diagnostics.ts` for bounded incremental SSE observation and sanitized errors. Integrate worker synthetic/live responses through that same observer; keep no retry, per-request journal and unknown outcome semantics. Update profile/strict admission and test fixtures, disable live entry in CLI/worker, update actualSDK controls. No product/BM4/package changes.
+4. Validate narrow controls then typecheck/full Node/complete browser/golden union serially, fixed clean source normal offline CLI and default-zero-inference. Verify all historical digests. Independent code/diagnostics/privacy review; fix findings and rebind evidence. Record actual results in Check116, checkpoint locally. No provider call, merge/push/release/global install in this slice.
+
 ## Constraints
 
 Only AgentPlan glm-5.3-flash;12episodes≤3requests each≤36batch;max_tokens1536;96KiBrequest;request30s/episode90s/cleanup10s/batch20min. One attempt, no model retry/fallback or paid judge, no post-render request or real business action. Frozen profiles/scenarios/reports and user installation/configuration remain unchanged. CLI defaults dry-run with zero credential reads; no hosted CI, merge, release or global upgrade is authorized by this pilot task.

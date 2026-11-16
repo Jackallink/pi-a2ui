@@ -39,3 +39,19 @@
 | OQ-003 | 真实AgentPlan身份与只读凭据admission、source/归档/scenario/guard冻结 | 实施者 | 仅live前执行；本次不读取真实凭据 |
 
 其余门槛未闭合不称implementation/live-ready；走查结构检查和设计审查都不替代预算或harness验收。
+
+## 增量 P-004 错误矩阵与准入
+
+| 条件 | 期望观察与边界 |
+| --- | --- |
+| --execute/直接live、无新预算 | 配置读取/工作区创建/HTTP前拒绝，原执行锁不变 |
+| SDK off/缺thinking/错effort/max_tokens混用 | journal前拒绝；合法body精确enabled/low/max_completion_tokens1536 |
+| finish与usage同chunk，随后消费端cancel | usage已保存、stream=cancelled；不排空/不续请求、不声称流完整 |
+| usage晚于最后消费chunk | null/unknown；不为补usage追加读取/调用 |
+| read error、AbortError、无finish、1MiB越界 | 源状态和有界脱敏错误保留，SDK error→provider_unknown，整批停 |
+| 重复/部分/非法usage | 单请求最后已观察快照，不累加；缺字段null，总用量未知 |
+| 第一请求read成功、第二请求中断 | 两个独立诊断条目、第二error，journal仍2，不追第三请求 |
+| SDK/error-message中嵌入header/body/messages/reasoning、URL/secret/token变体及多字节文本 | TPD07–08/脱敏控制断言diagnostics只留安全占位+指纹；普通错误保留脱敏信息且UTF-8≤1024 bytes |
+| 缺失/异常最终回执、硬杀 | 旧保守journal路径，actual=null，不保证恢复未落盘诊断 |
+
+增量Gate1/Gate2审查重点：官方版本能力不等于alias实测；low与1536是拟定线级策略，付费入口仍禁用；合成响应必须使用live相同observer。Gate4只验离线修复，旧pilot效果保持未验收。开放问题仅为下一个另行授权批次的实际服务端策略/错误原因，无需付费求证才能完成此修复。
