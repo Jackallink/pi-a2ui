@@ -13,7 +13,7 @@ No new real inference, npm publication, hosted workflow or unrelated plugin upgr
 
 ## Task1: admitted description and release metadata
 
-Files: extension.ts (PR63 only), package.json, package-lock.json, README.md, CHANGELOG.md, docs/releases/v0.1.10.md, Spec021 and Check112. The existing tests/benchmark-model/profile-v2.json changes only packageVersion and the actual packed archiveSHA256; no new policy/profile semantics.
+Files: extension.ts (PR63 only), package.json, package-lock.json, README.md, CHANGELOG.md, tests/package.test.ts current-version expectations, docs/releases/v0.1.10.md, Spec021 and Check112. The existing tests/benchmark-model/profile-v2.json changes only packageVersion and the actual packed archiveSHA256; no new policy/profile semantics.
 
 - [ ] Pin PR63 base/head and exact description delta; record independent Gate1/2/source GO and current Node24 regression evidence before merge. AC1 has instruction-content review, not a string-mirroring unit test or fabricated model RED.
 - [ ] Merge the exact reviewed PR63 head. Create an owned codex release branch from actual main; retain the admitted canonical spec and all history.

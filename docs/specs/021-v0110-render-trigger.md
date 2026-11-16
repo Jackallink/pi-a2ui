@@ -32,6 +32,8 @@ AC1 is a prompt-policy content change and has no deterministic model-compliance 
 
 ## Risk and rollback
 
+Release-check alignment: tests/package.test.ts pins each current release explicitly. The first0.1.10 candidate correctly failed its two obsolete0.1.9 version expectations; synchronize those expectations to0.1.10 and explicitly retain the0.1.9 changelog entry. This changes no product behavior or acceptance strength. A separate initial browser run failed at missing locked-browser setup; preserve it as setup failure, never as a behavioral RED or passing browser evidence.
+
 The recommendation may change model tool selection and increases description length; effectiveness and cost changes are unknown. No runtime permission is granted by the words. Revert the description in a successor change or choose the immutable v0.1.9 tag in the same installation scope while retaining configuration/session files. Never move an existing tag or overwrite assets.
 
 ## Required gates and sequence
