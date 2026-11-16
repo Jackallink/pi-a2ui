@@ -12,7 +12,7 @@ import {pairSummary} from '../tests/authoring-pilot/oracle.ts';
 
 export async function main(args=process.argv.slice(2)){
  assert.match(process.version,/^v24\./);const began=Date.now();
- const canaries=['ordinary','semantic','preparation','schema','rewrite','fatal','reasoning','dom-number'];
+ const canaries=['ordinary','semantic','preparation','schema','rewrite','fatal','reasoning','dom-number','helper-usage'];
  if(args.length===1&&args[0]==='--help'){console.log('Node24 authoring-pilot [--dry-run | --prepare | --offline [--canary '+canaries.join('|')+'] | --execute --grant ABS_GRANT]\nOnly Ark AgentPlan glm-5.3-flash, fixed4 sessions <=6 each/24 total; no retries. Default zero inference/config.');return;}
  const live=args[0]==='--execute',prepare=args[0]==='--prepare',offline=args[0]==='--offline',canary=offline&&args[1]==='--canary'?args[2]:'';
  assert.ok(!args.length||args.length===1&&['--dry-run','--prepare','--offline'].includes(args[0])||offline&&args.length===3&&args[1]==='--canary'&&canaries.includes(canary)||live&&args.length===3&&args[1]==='--grant','invalid arguments');
@@ -34,7 +34,7 @@ export async function main(args=process.argv.slice(2)){
   if(live)writeFileSync(join(run,'admission.json'),JSON.stringify({grantFile:args[2],grantSHA:grant.grantSHA,preflightSHA256:grant.preflightSHA256,lock,batchStartedAt:began})+'\n',{mode:0o600});
   for(const id of PAIR.order){
    if(stopped||780000-(Date.now()-began)<180000){stopped??='insufficient-full-worker-deadline';results.push({id,outcome:'not_run',notRun:stopped});continue;}
-   const first=id===PAIR.order[0],simulation=canary==='reasoning'?'reasoning':first?({ordinary:'failed-check',semantic:'semantic-check',preparation:'prepare',schema:'schema-missing',rewrite:'rewrite',fatal:'rate-limit','dom-number':'dom-number'}[canary]??'workflow'):'workflow';
+   const first=id===PAIR.order[0],simulation=canary==='reasoning'?'reasoning':first?({ordinary:'failed-check',semantic:'semantic-check',preparation:'prepare',schema:'schema-missing',rewrite:'rewrite',fatal:'rate-limit','dom-number':'dom-number','helper-usage':'safe-usage'}[canary]??'workflow'):'workflow';
    let row;try{row=await runWorker(id,run,live?'live':'offline',live?'':simulation,undefined,PAIR_ID);}catch{row={id,outcome:'provider_unknown',requests:null,requestAccounting:'unknown',harnessFailure:true,fatal:true};}
    results.push(row);console.log(JSON.stringify({id,outcome:row.outcome,requests:row.requests}));
    if(live&&row.requestAccounting==='known')writeFileSync(join(run,id+'.completed.json'),JSON.stringify({rawSHA256:digest(readFileSync(join(run,id+'.live.json'))),result:row},null,2)+'\n',{mode:0o600});

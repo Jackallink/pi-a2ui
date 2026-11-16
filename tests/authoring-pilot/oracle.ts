@@ -6,11 +6,12 @@ export function pairCandidates(surface:any,scenario:any):FormCandidate[]{
  if(inputs.length!==3||inputs.some(n=>n.component!=='TextField'||![undefined,'shortText','longText'].includes(n.variant)))return[];
  const at=(p:string)=>p.slice(1).split('/').map(k=>k.replaceAll('~1','/').replaceAll('~0','~')).reduce((v,k)=>v?.[k],surface.dataModel);
  const string=(v:any)=>typeof v==='string'?v:typeof v?.['@path']==='string'?at(v['@path']):undefined;
+ const caption=(id:string):string=>{const node=nodes.find(n=>n.id===id);if(!node)return'';if(node.component==='Text')return string(node.text)??'';return[node.child,...(Array.isArray(node.children)?node.children:[])].filter(v=>typeof v==='string').map(caption).join('');};
  const candidates:FormCandidate[]=[];
  for(const button of nodes.filter(n=>n.component==='Button')){
   if(/cancel|取消|dismiss|close|返回|关闭/i.test(button.action?.event?.name??''))continue;
-  const child=nodes.find(n=>n.id===button.child),ctx=button.action?.event?.context;
-  if(child?.component!=='Text'||string(child.text)!=='提交信息'||!ctx||Object.keys(ctx).sort().join('|')!==scenario.fields.map((f:any)=>f.contextKey).sort().join('|'))continue;
+  const ctx=button.action?.event?.context;
+  if(caption(button.child).replace(/\s+/g,' ').trim()!=='提交信息'||!ctx||Object.keys(ctx).sort().join('|')!==scenario.fields.map((f:any)=>f.contextKey).sort().join('|'))continue;
   const selected=scenario.fields.map((f:any)=>{
    const p=ctx[f.contextKey]?.['@path'];if(typeof p!=='string'||!p.startsWith('/')||Object.keys(ctx[f.contextKey]).length!==1||at(p)!=='')return;
    const matches=inputs.filter(n=>n.value?.['@path']===p&&string(n.label)===f.label);return matches.length===1?matches[0]:undefined;

@@ -55,3 +55,13 @@ F1第6响应内合法write/check/render被tool_result过早stop；F2方向信号
 方向信号需4个实际候选+known grades+完整journal/diagnostics、无fatal/harness/cleanup/unknown；G至少一个usable UI还需成功preflight、exact/严格single-terminal-lf及首次candidate之前成功skill/example观察。单LF只在较短源末尾不含CR/LF时允许。静态grade、首UI、流程与provider终态分别保留。
 
 `r2-pure-green.log`8pass，`r2-sdk-green.log`3pass（含6响应8意图实际UI，无第7请求，以及实际末行缺DONE→unknown），`r2-unknown-green.log`4pass；当前这些仍是开发定向证据，新source完整验收及独立R2仍待。无新实际grant/config/provider请求。原两包、79文件与历史冻结材料保全要求不变。
+
+## R2 NO-GO与最后边界纠正
+
+0b4fc336a3ee326b8745da2a9cc0bcf0f70a0d6e/tree0d73af196de74e21a9d229f13fc1bf1d90052362完整Node574/574通过（397s，`node-full-0b4fc33.log`），但独立R2仍NO-GO，报告SHA `272cb8d71208a0cdafe2bbacdab31cdf904e25d07890c22e19f573158b168fc5`：R1四项closed，新1P1 helper只读参数错误被误判fatal、新1P2合法Row包装按钮caption被误判。仍无paid准入；未用通过覆盖NO-GO。
+
+已先补真实SDK的safe-usage、bad-surface和FP01/FP02 wrapped-caption四条RED（`r3-red.log`4fail），以及pure compiler caption RED。纠正只在确认固定Node/helper路径、无shell/外部文件、已知read-only opcode后，将USAGE参数形状/ID错误标为preparation_error普通关case；未知程序/op/越权文件仍fatal。完整check遇实际CLI INPUT也不计为提交DSL失败；实际超源文件INPUT canary确认3请求、noCandidate、ordinary。真正helper timeout无正常exit_code继续fatal（`helper-stages.log`先RED、`helper-stages-green.log`GREEN），不将未知工具结果混成可继续的CLI参数错误。
+
+caption从编译后可达child/children树的Text文字汇总、与实际DOM同样空白规范化后精确匹配；额外Text文案仍拒绝。两个包任务的Row包装均通过真实SDK/DOM，目标Button仍按实际component ID与原生可用性核对，不替代为其它按钮。
+
+`r3-green.log`5pass（safe CLI ordinary后剩余固定3行完成、两个wrapped实际UI等），`r3-pure-green.log`9pass，`helper-stages-green.log`4pass。上述为定向开发证据；接下来新固定candidate完整本地CI/独立R3，不借用574结果。新grant/真实配置/provider请求仍0。

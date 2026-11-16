@@ -33,6 +33,8 @@ test('APO02 compiler plus exact case contract rejects wrong keys labels variants
   assert.equal(judge(source).correct,true);
   for(const bad of [source.replace('value=$/a','value=$/a,variant="number"'),source.replace('value=$/a','value=$/a,variant="obscured"'),source.replace(scenario.fields[0].label,'Wrong label'),source.replace(scenario.fields[0].contextKey+':','wrongKey:'),source.replace('required:true','required:false'),source.replace('Event("submit"','Event("cancel"'),source.replace('root = Column(children=[','$/extra = ""\nroot = Column(children=[TextField(label="Extra",value=$/extra),')])assert.equal(judge(bad).correct,false,bad);
   assert.equal(judge(source.replace('value=$/a','value=$/a,variant="longText"')).correct,true);
+  assert.equal(judge(source.replace('child=Text(text="提交信息")','child=Row(children=[Text(text="提交信息")])')).correct,true);
+  assert.equal(judge(source.replace('child=Text(text="提交信息")','child=Row(children=[Text(text="提交信息"),Text(text="Other")])')).correct,false);
   const invalid=judge('root = Missing()');assert.equal(invalid.compile,false);assert.equal(invalid.semantic,null);assert.equal(invalid.correct,false);
  }
 });

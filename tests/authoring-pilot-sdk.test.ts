@@ -36,7 +36,7 @@ test('APS02 actual browser TERM/fallback is within total worker bound and unknow
  const {r,dir}=await run('hang','FP01-G',15000);assert.equal(r.requests,null);assert.equal(r.knownAdmittedRequests,1);assert.equal(r.fatal,true);assert.equal(r.process.fallback,true);assert.ok(r.elapsedMs<=15000);assert.equal(existsSync(join(dir,'FP01-G.hang-ready')),true);assert.equal(existsSync(join(dir,'workspace')),false);
  const resource=JSON.parse(readFileSync(join(dir,'FP01-G.resources.json'),'utf8'));assert.throws(()=>process.kill(resource.browserPid,0),(e:any)=>e.code==='ESRCH');
 });
-for(const canary of ['ordinary','semantic','preparation','fatal','reasoning'])test('APS03 actual public paired CLI '+canary,()=>{
+for(const canary of ['ordinary','semantic','preparation','fatal','reasoning','helper-usage'])test('APS03 actual public paired CLI '+canary,()=>{
  const r=spawnSync(process.execPath,[join(ROOT,'scripts/authoring-pilot.mjs'),'--offline','--canary',canary],{cwd:ROOT,encoding:'utf8',timeout:90000,maxBuffer:1024*1024});
  assert.equal(r.status,canary==='fatal'?1:0,r.stderr);const lines=r.stdout.trim().split('\n').map(s=>JSON.parse(s)),report=JSON.parse(readFileSync(lines.at(-1).report,'utf8'));
  assert.deepEqual(report.results.map((v:any)=>v.id),['FP01-C','FP01-G','FP02-G','FP02-C']);assert.equal(report.actualModelRequests,0);
@@ -53,3 +53,13 @@ test('R2F3 actual SDK missing DONE cannot become known success on the last row',
  const {r,dir}=await run('missing-done','FP02-C');const raw=JSON.parse(readFileSync(join(dir,'FP02-C.offline-missing-done.json'),'utf8'));
  assert.equal(raw.requestDiagnostics[0].doneObserved,false);assert.equal(r.requestAccounting,'unknown');assert.equal(r.requests,null);assert.equal(r.knownAdmittedRequests,1);assert.equal(r.fatal,true);
 });
+
+for(const simulation of ['safe-usage','bad-surface'])test('R3F1 safe helper argument error ends only this case '+simulation,async()=>{
+ const {r}=await run(simulation);assert.equal(r.outcome,'preparation_error');assert.equal(r.fatal,false);assert.equal(r.requests,1);assert.equal(r.firstCandidate.submitted,false);assert.equal(r.requestAccounting,'known');
+});
+for(const id of ['FP01-G','FP02-C'])test('R3F2 wrapped exact submit caption has the same task semantics and actual DOM '+id,async()=>{
+ const {r}=await run('wrapped-caption',id);assert.equal(r.firstCandidate.grade.correct,true);assert.equal(r.contentValid,true);assert.equal(r.outcome,'render_committed');assert.equal(r.actionPosts,0);
+});
+
+test('R3F1 actual CLI source INPUT is preparation, not a failed submitted DSL candidate',async()=>{const {r}=await run('input-limit');assert.equal(r.outcome,'preparation_error');assert.equal(r.requests,3);assert.equal(r.firstCandidate.submitted,false);assert.equal(r.fatal,false);});
+test('R3F1 actual helper timeout is fatal rather than a safe CLI usage failure',async()=>{const {r}=await run('helper-timeout');assert.equal(r.requests,1);assert.equal(r.fatal,true);assert.equal(r.outcome,'helper_unknown');});

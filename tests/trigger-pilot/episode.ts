@@ -24,14 +24,15 @@ for(const key of ['FORCE_COLOR','BASH_ENV','ENV','NODE_OPTIONS','LD_PRELOAD','DY
 const timeout=async<T>(work:Promise<T>,ms:number,label:string):Promise<T>=>{
  let timer:ReturnType<typeof setTimeout>;return Promise.race([work,new Promise<never>((_,reject)=>{timer=setTimeout(()=>reject(new Error(label)),ms);})]).finally(()=>clearTimeout(timer));
 };
+class HelperInputError extends Error {}
 function helperCall(command:string,helper:string,draft:string,cwd:string):{command:string;check:boolean;surfaceId?:string}{
  assert.equal(typeof command,'string');assert.ok(!/[\r\n$`;&|<>\\]/.test(command),'shell syntax');
  const tokens=command.match(/"[^"\r\n]*"|'[^'\r\n]*'|[^\s"']+/g)?.map(t=>/^['"]/.test(t)?t.slice(1,-1):t)??[];
  assert.equal(command.replace(/"[^"\r\n]*"|'[^'\r\n]*'|[^\s"']+/g,'').trim(),'','shell quoting');
  assert.ok(tokens[0]==='node'||tokens[0]===process.execPath);assert.equal(resolve(cwd,tokens[1]??''),helper);
- const op=tokens[2];if(['catalog','patterns','examples'].includes(op))assert.equal(tokens.length,3);
- else if(['component','pattern','example'].includes(op)){assert.equal(tokens.length,4);assert.match(tokens[3],/^[A-Za-z0-9_-]+$/);}
- else{assert.equal(op,'check');assert.equal(tokens.length,6);assert.equal(tokens[3],'--surface-id');assert.match(tokens[4],/^[A-Za-z0-9_-]{1,64}$/);assert.equal(resolve(cwd,tokens[5]),draft);}
+ const op=tokens[2];if(['catalog','patterns','examples'].includes(op)){if(tokens.length!==3)throw new HelperInputError('read-only helper usage');}
+ else if(['component','pattern','example'].includes(op)){if(tokens.length!==4||!/^[A-Za-z0-9_-]+$/.test(tokens[3]))throw new HelperInputError('read-only helper usage');}
+ else{assert.equal(op,'check');if(tokens[5]!==undefined)assert.equal(resolve(cwd,tokens[5]),draft,'owned draft only');if(tokens.length!==6||tokens[3]!=='--surface-id'||!/^[A-Za-z0-9_-]{1,64}$/.test(tokens[4]))throw new HelperInputError('read-only helper usage');}
  const quote=(s:string)=>"'"+s.replaceAll("'","'\\''")+"'";
  return{command:[process.execPath,helper,...tokens.slice(2)].map(quote).join(' '),check:op==='check',surfaceId:op==='check'?tokens[4]:undefined};
 }
@@ -129,6 +130,11 @@ export async function episode(id:string,run:string,kind:string,simulation='',exp
      }
      if(policy.paired&&simulation==='last-bundle')tool=turn<6?{name:'read',arguments:{path:skill}}:{name:'write',arguments:{path:draft,content:JSON.parse(await readFile(join(ROOT,'tests/authoring-pilot/fixtures.json'),'utf8'))[scenarioId]}};
      if(policy.paired&&simulation==='missing-done')tool={name:'a2ui_render',arguments:{surfaceId:'pilot',source:JSON.parse(await readFile(join(ROOT,'tests/authoring-pilot/fixtures.json'),'utf8'))[scenarioId]}};
+     if(policy.paired&&simulation==='helper-timeout')tool={name:'bash',arguments:{command:`node "${helper}" catalog`}};
+     if(policy.paired&&simulation==='input-limit')tool=[{name:'write',arguments:{path:draft,content:'root = Text(text="'+'A'.repeat(5000)+'UNIQUE_SENTINEL'+'B'.repeat(5000)+'")'}},{name:'edit',arguments:{path:draft,edits:[{oldText:'UNIQUE_SENTINEL',newText:'C'.repeat(30000)}]}},{name:'bash',arguments:{command:`node "${helper}" check --surface-id pilot "${draft}"`}}][Math.min(turn-1,2)];
+     if(policy.paired&&simulation==='safe-usage')tool={name:'bash',arguments:{command:`node "${helper}" check`}};
+     if(policy.paired&&simulation==='bad-surface')tool={name:'bash',arguments:{command:`node "${helper}" check --surface-id "bad id" "${draft}"`}};
+     if(policy.paired&&simulation==='wrapped-caption')tool={name:'a2ui_render',arguments:{surfaceId:'pilot',source:JSON.parse(await readFile(join(ROOT,'tests/authoring-pilot/fixtures.json'),'utf8'))[scenarioId].replace('child=Text(text="提交信息")','child=Row(children=[Text(text="提交信息")])')}};
      if(policy.paired&&simulation==='missing-draft')tool={name:'bash',arguments:{command:`node "${helper}" check --surface-id pilot "${draft}"`}};
      if(policy.paired&&simulation==='unknown-tool')tool={name:'forbidden_execute',arguments:{}};
      const delta=tool?{role:'assistant',tool_calls:[{index:0,id:'call-'+turn,type:'function',function:{name:tool.name,arguments:JSON.stringify(tool.arguments)}}]}:{role:'assistant',content:text};
@@ -163,16 +169,17 @@ export async function episode(id:string,run:string,kind:string,simulation='',exp
      if(event.toolName==='a2ui_render'){assert.equal(renderCount++,0,'one render');record.renderAttempted=true;record.surfaceId=args.surfaceId;if(policy.paired){renderedSource=args.source;record.renderSourceSHA256=hash(renderedSource!);record.renderedSource=renderedSource;submitCandidate(args.source,args.surfaceId,'render');}}
      else{record.preparation=true;if(event.toolName==='read'){ordinaryPath(args.path,[pack,project],project);if(policy.paired&&resolve(project,args.path)===skill)record.skillReadCall=event.toolCallId;}
       else if(event.toolName==='write'||event.toolName==='edit'){if(policy.paired&&checkAttempted){stop('candidate_rewrite_attempt');return{block:true,terminate:true,reason:'first candidate already submitted'};}assert.equal(checkAttempted,false);assert.equal(resolve(project,args.path),draft);if(policy.paired)record.preSubmissionWrites++;if(event.toolName==='write')assert.ok(Buffer.byteLength(args.content)<=32768);}
-      else{assert.equal(event.toolName,'bash');const command=helperCall(args.command,helper,draft,project);args.command=command.command;args.timeout=10;if(policy.paired&&/\bexample\b/.test(command.command))record.exampleReadCall=event.toolCallId;if(command.check){if(policy.paired&&checkAttempted){stop('check_limited');return{block:true,terminate:true,reason:'one preflight check only'};}assert.equal(checkAttempted,false);ordinaryPath(draft,[project],project);checkAttempted=true;checkCallId=event.toolCallId;if(policy.paired){checkedSource=readFileSync(draft,'utf8');record.checkedSourceSHA256=hash(checkedSource);record.checkedSource=checkedSource;record.workflow.checkBeforeCandidate=!record.firstCandidate.submitted;submitCandidate(checkedSource,command.surfaceId!,'check');}}}}
+      else{assert.equal(event.toolName,'bash');const command=helperCall(args.command,helper,draft,project);args.command=command.command;args.timeout=policy.paired&&simulation==='helper-timeout'?0.001:10;if(policy.paired&&/\bexample\b/.test(command.command))record.exampleReadCall=event.toolCallId;if(command.check){if(policy.paired&&checkAttempted){stop('check_limited');return{block:true,terminate:true,reason:'one preflight check only'};}assert.equal(checkAttempted,false);ordinaryPath(draft,[project],project);checkAttempted=true;checkCallId=event.toolCallId;if(policy.paired){checkedSource=readFileSync(draft,'utf8');record.checkedSourceSHA256=hash(checkedSource);record.checkedSource=checkedSource;record.workflow.checkBeforeCandidate=!record.firstCandidate.submitted;submitCandidate(checkedSource,command.surfaceId!,'check');}}}}
      record.tools.push({name:event.toolName,input:structuredClone(args)});
-    }catch(cause){if(policy.paired&&(cause as NodeJS.ErrnoException).code==='ENOENT'){stop('preparation_error');return{block:true,terminate:true,reason:'draft or helper input unavailable'};}stop('tool_policy',policy.paired);return{block:true,terminate:true,reason:'pilot sandbox rejected tool; episode stopped'};}
+    }catch(cause){if(policy.paired&&(cause instanceof HelperInputError||(cause as NodeJS.ErrnoException).code==='ENOENT')){stop('preparation_error');return{block:true,terminate:true,reason:'draft or helper input unavailable'};}stop('tool_policy',policy.paired);return{block:true,terminate:true,reason:'pilot sandbox rejected tool; episode stopped'};}
    });
    pi.on('tool_execution_end',event=>{if(event.toolName==='a2ui_render'&&!record.renderAttempted&&event.isError)stop('render_schema',policy.smoke);});
    pi.on('tool_result',async event=>{
     record.transcript.push({role:'tool',tool:event.toolName,isError:event.isError,content:event.content});
     if(stopped)return;
     if(policy.paired&&!event.isError){if(event.toolCallId===record.skillReadCall)record.workflow.skillRead=true;if(event.toolCallId===record.exampleReadCall)record.workflow.exampleRead=true;}
-    if(event.toolCallId===checkCallId){record.preflightPassed=!event.isError;if(event.isError){stop('preflight_error',policy.smoke);return;}if(policy.paired&&!record.firstCandidate.grade.correct){stop('preflight_semantic');return;}}
+    if(policy.paired&&event.toolName==='bash'&&event.isError&&!Number.isInteger((event.structuredContent as any)?.exit_code)){stop('helper_unknown',true);return;}
+    if(event.toolCallId===checkCallId){if(policy.paired&&event.isError&&event.content.some(c=>c.type==='text'&&/\"code\"\s*:\s*\"(?:INPUT|USAGE)\"/.test(c.text))){record.firstCandidate={submitted:false,preparationDiagnostic:'INPUT/USAGE'};record.preflightPassed=false;stop('preparation_error');return;}record.preflightPassed=!event.isError;if(event.isError){stop('preflight_error',policy.smoke);return;}if(policy.paired&&!record.firstCandidate.grade.correct){stop('preflight_semantic');return;}}
     if(policy.paired&&event.isError&&event.toolName!=='a2ui_render'){stop('preparation_error');return;}
     if(policy.smoke&&event.isError){stop(event.toolName==='a2ui_render'?'render_compile':'tool_error',true);return;}
     if(event.toolName==='a2ui_render'){
