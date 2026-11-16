@@ -1,6 +1,6 @@
 # 双场景smoke · Round1 · 2026-11-16
 
-Canonical：Spec023。当前draft；用户授权设计/独立审查，不授权真实请求或适配实现。
+Canonical：Spec023。设计稿3abed7e获独立R2 Gate1 GO，状态walkthrough-approved；用户当前授权仍只含设计/独立审查，不授权真实请求或适配实现。
 
 ## 用户故事
 
