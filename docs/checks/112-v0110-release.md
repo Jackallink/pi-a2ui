@@ -1,0 +1,7 @@
+# v0.1.10 release evidence
+
+User explicitly authorized merge of PR63, v0.1.10 publication, published-consumer verification and local-machine update on2026-11-16. No additional real-model budget was granted; the slice uses zero inference and local Node24 CI. Workflow418909498 remains disabled.
+
+PR63 base `dadbdedd17d885073dae4334e660bb64d8e3132c`, reviewed head `756bf9cad7d35422cce6eaeab0c77156e0ed19cd`, merged as `f5bd3979cd7bf22d4b13ad56e0599b5689f91364`. The complete source delta is one tool-description prefix, +362 UTF-8 bytes; all appended tool contracts, schemas, handlers and native summaries are unchanged. Current exact-head Node24.18.1 run passed472 tests, zero fail/skip/cancel; logSHA256 `8836ace70ddcac9c4937ef232a0ba9972eae126030177f0b5937aa9990a6e25e`. Independent exact-head typecheck also passed; this is not evidence of improved model triggering.
+
+[Independent PR63/Spec021 review](v0110-release-evidence/pr63-independent-review.md) accepted Gate1/2 and exact source with0 P0/P1/P2, SHA256 `fdc9ba86bed8400d7279196f56367ac9925ba8c96b30c366dacb27b8fcaa56fd`. The review prospectively admitted release preparation; it does not claim the external PR was originally spec-first or approve an unbuilt artifact. [Spec021](../specs/021-v0110-render-trigger.md) separately admits the prompt work historically excluded from Spec020. Actual release-candidate, publication and deployment results will be appended from their own receipts, with exact source attribution.

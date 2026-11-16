@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.10 - 2026-11-16
+
+- Give `a2ui_render` concrete model-side trigger examples for structured input, review results, comparisons and inspectable artifacts, gated on whether inspection or interaction materially helps the next action. Skip pure prose and trivial confirmations.
+- Preserve native automatic run summaries, tool input schemas, rendering/event handlers, resource limits and permissions. The description is 362 UTF-8 bytes longer; no measured trigger-rate or cost improvement is claimed, and release validation adds no model inference.
+- Refresh release/install metadata and the existing v2 benchmark package/archive binding; keep its policy/caps and frozen real-v1 evidence unchanged. Node24 local CI and Git/local distribution only.
+
 ## 0.1.9
 
 - Add #57 automatic native-run summaries for an enabled, already-connected canvas: observed termination badge, actual tool counters and bounded timeline, without opening a browser or making a model request. Preserve all public surface IDs; only replace the extension's matching owned revision, and skip collisions or full budgets. Synchronous native flush plus official non-LLM custom history restores validated branch snapshots and ownership; render/chart tool details carry optional ownership metadata. Recovered tool errors remain separate from normal agent termination.
