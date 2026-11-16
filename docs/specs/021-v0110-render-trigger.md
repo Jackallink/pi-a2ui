@@ -1,6 +1,6 @@
 # Spec021: v0.1.10 materiality-guided render description
 
-State: in-progress. Gate1/2: independent review accepted the pinned draft before release metadata implementation. Historical admission sequence: draft -> walkthrough-approved -> tdd-approved -> in-progress. Evidence: Check112 and docs/checks/v0110-release-evidence/pr63-independent-review.md.
+State: review-ready. Gate1/2: independent review accepted the pinned draft before release metadata implementation. Historical admission sequence: draft -> walkthrough-approved -> tdd-approved -> in-progress. Evidence: Check112 and docs/checks/v0110-release-evidence/pr63-independent-review.md.
 
 ## Goal and authorization
 
