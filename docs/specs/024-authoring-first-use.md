@@ -1,6 +1,6 @@
 # Spec024：首次编写表单的模板与预检引导
 
-状态：draft。基点fc558daf252126ee91362f07bab7874d74684d69；用户同意继续聚焦skill模板和CLI预检，本轮交付设计与独立评审。Gate1未通过前不实施；设计书面确认、Gate2/TDD准入后才改产品。真实模型预算0，不沿用Spec023未用的2请求。
+状态：walkthrough-approved（独立Gate1设计GO，0项开放P0/P1/P2；不是实施或效果验收）。基点fc558daf252126ee91362f07bab7874d74684d69；受审设计稿af6d5593980a496140653c9e912d402b89e53228。用户同意继续聚焦skill模板和CLI预检，本轮完成设计与独立评审，见[Check120](../checks/120-authoring-first-use-design.md)。设计书面确认、Gate2/TDD准入后才改产品。真实模型预算0，不沿用Spec023未用的2请求。
 
 ## 问题与目标
 
