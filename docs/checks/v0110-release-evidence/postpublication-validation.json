@@ -1,0 +1,39 @@
+{
+  "passed": true,
+  "node": "v24.18.1",
+  "releaseId": 446514681,
+  "target": "b7022efd48d6ed679eb08b17b672bb10cec9425f",
+  "normalDownloadedPackage": true,
+  "normalGitTag": true,
+  "uniqueSkillAndCommands": true,
+  "actualNode24": true,
+  "newAgentRuns": 0,
+  "newModelCalls": 0,
+  "oldTagsAndReleaseAssetsUnchanged": true,
+  "raw": [
+    {
+      "path": "main-readback.json",
+      "sha256": "5e83c0cad9626f734917ea0a2c971082c627d96b38888e5dc43bf97fac31046c"
+    },
+    {
+      "path": "download-verification.json",
+      "sha256": "806af41168066f7d0220a2a1241160bbc302855f2d97e53b22bb51045fbb6149"
+    },
+    {
+      "path": "published-git-startup.json",
+      "sha256": "d595aa5723b9eab1267b772c4ac592c2b8f692478863d7abd34ad64309a18ccb"
+    },
+    {
+      "path": "pi-a2ui-accept-d0iDc2/result.json",
+      "sha256": "d58bbcb43c5adb4401817ac7044a3bb6f7e80ee2dcd556debbf6c050509724cf"
+    },
+    {
+      "path": "published-local-startup.log",
+      "sha256": "7f8f0ecea6b7157583e4256f7d7a394bcbd117dfdae7d349c3fa17a9542fe440"
+    },
+    {
+      "path": "published-git-startup.log",
+      "sha256": "808d7b5094bf38580103514683074544ceccec8447216d74112ebcc00e387a29"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "target": "b7022efd48d6ed679eb08b17b672bb10cec9425f",
+  "acceptedTestSource": "bdda63ab3d8e202af2ca837022cd13ff4a9c9076",
+  "acceptedPRHead": "c73d1bf21128c6caf81ec109b1cb06b298e9c95f",
+  "node": "v24.18.1",
+  "deltaFromTestSource": "docs-only",
+  "prHeadAndMainTreeEqual": true,
+  "allPayloadFilesMatch": 76,
+  "actualMainPrepackSHA256": "c7d4511c1e92808691ab98a89897f7a6f2d0ed0e64b77f70f9ab610500177e55",
+  "archiveBytes": 275811,
+  "noFullSuiteRelabel": true,
+  "realModelCalls": 0
+}

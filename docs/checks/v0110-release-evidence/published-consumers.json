@@ -1,0 +1,48 @@
+{
+  "node": "v24.18.1",
+  "local": {
+    "version": "0.1.10",
+    "passed": true,
+    "observed": {
+      "normalRegistration": true,
+      "explicitPackageSkillProfile": false,
+      "suppliedDsl": false,
+      "skillForward": false,
+      "resolvedProvider": "volcengine-ark",
+      "resolvedModel": "glm-5.3-flash",
+      "agentPlanEndpointVerified": true,
+      "uniqueA2uiCommands": 3,
+      "uniqueSkill": true,
+      "statusCommandExecuted": true,
+      "agentRuns": 0,
+      "modelRequests": 0,
+      "externalFetchDenied": true,
+      "browserObserved": false,
+      "processExited": true,
+      "privateRegistrationRemoved": true,
+      "observedNodeProcesses": 5,
+      "allNode24": true,
+      "allCwdWithinOwnedRun": true,
+      "packagePayloadUnchanged": true,
+      "operatorFilesUnchanged": true
+    }
+  },
+  "git": {
+    "source": "git:github.com/Jackallink/pi-a2ui@v0.1.10",
+    "sourceCommit": "b7022efd48d6ed679eb08b17b672bb10cec9425f",
+    "passed": true,
+    "normalRegistration": true,
+    "oneSkill": true,
+    "uniqueCommands": true,
+    "enabledStatus": true,
+    "agentRuns": 0,
+    "modelRequests": 0,
+    "allPayloadFilesMatch": 76,
+    "runtime": {
+      "observedNodeProcesses": 3,
+      "allNode24": true,
+      "allCwdWithinOwnedRun": true
+    },
+    "piClosed": true
+  }
+}

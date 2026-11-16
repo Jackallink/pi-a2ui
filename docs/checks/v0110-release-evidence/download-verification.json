@@ -1,0 +1,29 @@
+{
+  "passed": true,
+  "releaseId": 446514681,
+  "url": "https://github.com/Jackallink/pi-a2ui/releases/tag/v0.1.10",
+  "publishedAt": "2026-11-16T01:38:02Z",
+  "tag": "v0.1.10",
+  "tagObject": "fafed48e257eeabc484dfce4518efdb2ed3aef31",
+  "target": "b7022efd48d6ed679eb08b17b672bb10cec9425f",
+  "node": "v24.18.1",
+  "archiveSHA256": "c7d4511c1e92808691ab98a89897f7a6f2d0ed0e64b77f70f9ab610500177e55",
+  "archiveBytes": 275811,
+  "allDownloadedFilesMatch": 76,
+  "assetDigests": [
+    {
+      "id": 753021232,
+      "name": "pi-a2ui-0.1.10.tgz",
+      "size": 275811,
+      "digest": "sha256:c7d4511c1e92808691ab98a89897f7a6f2d0ed0e64b77f70f9ab610500177e55"
+    },
+    {
+      "id": 753021230,
+      "name": "SHA256SUMS",
+      "size": 85,
+      "digest": "sha256:924b97330c6495c072eeac26b3d0f70de4fda15bf94a1c99678b09785ef10c54"
+    }
+  ],
+  "oldTagsPreserved": 9,
+  "oldReleasesAndAssetMetadataPreserved": 9
+}
