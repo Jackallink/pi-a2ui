@@ -1,6 +1,6 @@
 # Spec027：helper适配后的全新任务单对试运行
 
-状态：draft，**设计提案，不可执行**。前置Spec026独立zero GO已完成（source7ee9045、Node606/browser91/type0/strict68，Check126）；模型效果仍未评估。用户只授权此时确定新场景/预算，**当前真实请求授权0**，不存在本Spec的paid runner/实际grant。机器定义[proposed profile](../checks/fresh-helper-pair-design/profile.proposed.json)为documentOnly/live=false，不是执行配置。
+状态：walkthrough-approved，**独立Gate1设计/拟成本与预算申请GO，仍不可执行**（Check127；Gate2未开，非paid实施/代码GO/真实授权）。前置Spec026独立zero GO已完成（source7ee9045、Node606/browser91/type0/strict68，Check126）；模型效果仍未评估。用户只授权此时确定新场景/预算，**当前真实请求授权0**，不存在本Spec的paid runner/实际grant。机器定义[proposed profile](../checks/fresh-helper-pair-design/profile.proposed.json)为documentOnly/live=false，不是执行配置。
 
 三轮：[R1](../walkthrough/fresh-helper-pair/01-round1-user-stories.md)、[R2](../walkthrough/fresh-helper-pair/02-round2-technical-trace.md)、[R3](../walkthrough/fresh-helper-pair/03-round3-integration-check.md)。设计证据归Check127。
 
