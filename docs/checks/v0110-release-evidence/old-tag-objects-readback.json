@@ -1,0 +1,42 @@
+{
+  "passed": true,
+  "localHistoricalRefsUnchanged": true,
+  "remoteObjectsMatch": [
+    {
+      "name": "v0.1.9",
+      "tagObjectOrLightweightTarget": "5643f0a49d4980b4bba44a1ff26fcdeaf42f020a"
+    },
+    {
+      "name": "v0.1.8",
+      "tagObjectOrLightweightTarget": "3a8311af1178681d9669f4ddba140a5d30648004"
+    },
+    {
+      "name": "v0.1.7",
+      "tagObjectOrLightweightTarget": "4250466a40f0f696109f1e52cd5f5772a0dc0aa5"
+    },
+    {
+      "name": "v0.1.6",
+      "tagObjectOrLightweightTarget": "c8cc04203631b0659cce70863258f755c00436b1"
+    },
+    {
+      "name": "v0.1.5",
+      "tagObjectOrLightweightTarget": "41e3f024f51d1e20648b4cc7155d291e45787261"
+    },
+    {
+      "name": "v0.1.4",
+      "tagObjectOrLightweightTarget": "ae663526b0b7eaea06c1f637a34e6a9944e378fc"
+    },
+    {
+      "name": "v0.1.3",
+      "tagObjectOrLightweightTarget": "acf5a26abce74de661b38c4bb535ecfb571fdeaa"
+    },
+    {
+      "name": "v0.1.1",
+      "tagObjectOrLightweightTarget": "4f65f67f467461815a57368411a7d7eae18acce3"
+    },
+    {
+      "name": "v0.1.0",
+      "tagObjectOrLightweightTarget": "5ba2db3ef27184989f974514c0420a303a269697"
+    }
+  ]
+}

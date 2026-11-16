@@ -1,0 +1,68 @@
+{
+  "passed": true,
+  "node": "v24.18.1",
+  "from": "git:github.com/Jackallink/pi-a2ui@v0.1.9",
+  "to": "git:github.com/Jackallink/pi-a2ui@v0.1.10",
+  "target": "b7022efd48d6ed679eb08b17b672bb10cec9425f",
+  "scope": "user",
+  "globalSettingsOnlyTargetRegistrationChanged": true,
+  "mainProjectSettingsUnchanged": true,
+  "allInstalledFilesMatch": 76,
+  "installedCheckoutClean": true,
+  "helperCatalog": true,
+  "consumers": [
+    {
+      "name": "global",
+      "passed": true,
+      "uniqueCommands": true,
+      "skillScope": "user",
+      "status": "A2UI enabled; not listening; 0 surface(s); 0 browser(s)",
+      "agentRuns": 0,
+      "node24Processes": 1
+    },
+    {
+      "name": "main-project",
+      "passed": true,
+      "uniqueCommands": true,
+      "skillScope": "user",
+      "status": "A2UI enabled; not listening; 0 surface(s); 0 browser(s)",
+      "agentRuns": 0,
+      "node24Processes": 1
+    }
+  ],
+  "modelCalls": 0,
+  "priorHttpsAttemptsTimedOut": 2,
+  "prematureProbeExcluded": true,
+  "transport": "official Pi using process-only verified local Git mirror",
+  "gitConfigUnchanged": true,
+  "raw": [
+    {
+      "path": "install-result.json",
+      "sha256": "925c9b6fb728bb47ccbb0f4e2bab4c1919f9a183475c31894e32cb9ac1551880"
+    },
+    {
+      "path": "install-local-mirror.log",
+      "sha256": "65eaf311131fd4856721d725c900f11b5e3ef43831395a7689b06febff450e4a"
+    },
+    {
+      "path": "transport.json",
+      "sha256": "c9a09097e7a8c0579fab0f7eba6715f497ee5993f23c10c1cadedc7875c47737"
+    },
+    {
+      "path": "verification.json",
+      "sha256": "90801db02efe041cafa9d6ff8da36d877e8577423b7cd612bdbb71ec68a3c2e0"
+    },
+    {
+      "path": "install-timeout.json",
+      "sha256": "4c67b2d03b371060132ab4959b57bf88f90234b922bcf6fbf810c99b23b964ec"
+    },
+    {
+      "path": "install-r2-failed.json",
+      "sha256": "60cd60e430a0ed04f2b0f4d3775c77e30719a532b52bf5730ca4003fde817a9d"
+    },
+    {
+      "path": "premature-probe-note.json",
+      "sha256": "c461f3ab9b2867cf5a71e655db4aa64ea6ae0d7b497c1a45ddb0fb73fd2fd066"
+    }
+  ]
+}
