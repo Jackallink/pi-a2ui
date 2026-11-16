@@ -11,6 +11,18 @@ test('SMG07 real early guards reject forged drifted replayed and bad-negative au
  const fixture=fs.mkdtempSync(join(ROOT,'.local/trigger-smoke-implementation/authority-'));
  const run=join(fixture,'.local/trigger-smoke/run-fixture'),base=dirname(run),grantFile=join(base,'grant.json'),lock=join(base,'grant-fixture.lock'),counter=join(fixture,'.local/access.json'),guard=join(fixture,'.local/witness.mjs');
  const original=identity();for(const p of Object.keys(original.files)){fs.mkdirSync(dirname(join(fixture,p)),{recursive:true});fs.copyFileSync(join(ROOT,p),join(fixture,p));}
+ // Exercise a future changed candidate without modifying the production checkout.
+ fs.appendFileSync(join(fixture,'extension.ts'),'\n// synthetic next-candidate guidance\n');
+ // This authority fixture tests current guards against the immutable released payload,
+ // not a future candidate's product behavior. Never relax the real archive validator.
+ const archive=join(ROOT,'.local/v0110-release-evidence/download/pi-a2ui-0.1.10.tgz');
+ const published=JSON.parse(fs.readFileSync(join(ROOT,'tests/trigger-smoke/profile.json'),'utf8'));
+ assert.equal(digest(fs.readFileSync(archive)),published.release.archiveSHA256,'fixed published archive required');
+ const payload=JSON.parse(fs.readFileSync(join(ROOT,'tests/benchmark-model/payload.json'),'utf8')) as string[];
+ assert.equal(payload.length,76);assert.equal(new Set(payload).size,76);
+ assert.deepEqual(execFileSync('tar',['-tzf',archive],{encoding:'utf8'}).trim().split('\n').sort(),payload.map(p=>'package/'+p).sort());
+ for(const p of payload){assert.ok(!p.startsWith('/')&&!p.split('/').includes('..'));fs.writeFileSync(join(fixture,p),execFileSync('tar',['-xOzf',archive,'package/'+p],{maxBuffer:8*1024*1024}));}
+ for(const p of Object.keys(original.files).filter(p=>!payload.includes(p)))assert.equal(digest(fs.readFileSync(join(fixture,p))),original.files[p as keyof typeof original.files],'current guard input preserved');
  fs.symlinkSync(join(ROOT,'node_modules'),join(fixture,'node_modules'),'dir');fs.writeFileSync(join(fixture,'.gitignore'),'node_modules\n.local\n');
  const git=(args:string[])=>execFileSync('git',['-c','commit.gpgSign=false','-c','core.hooksPath=/dev/null','-c','user.name=Smoke fixture','-c','user.email=fixture@example.invalid',...args],{cwd:fixture,encoding:'utf8',timeout:15000,stdio:['ignore','pipe','pipe']}).trim();
  git(['init','-q']);git(['add','.']);git(['commit','-qm','synthetic authority fixture']);
@@ -40,7 +52,7 @@ test('SMG07 real early guards reject forged drifted replayed and bad-negative au
  for(const path of ['tests/trigger-smoke/profile.json','tests/trigger-pilot/worker.ts']){reset();const full=join(fixture,path),bytes=fs.readFileSync(full);fs.appendFileSync(full,'\n');try{const result=invoke();assert.equal(result.r.status,1,path);assert.equal(result.access.config,0);assert.equal(result.access.workspace,0);assert.equal(result.access.network,0);}finally{fs.writeFileSync(full,bytes);}}
  reset();write(grantFile,{...grant,maxRequests:5});const cli=invoke('SM02-B',true);assert.equal(cli.r.status,1);assert.deepEqual(cli.access,{config:0,network:0,workspace:0,spawn:0,claim:0});
  reset();fs.rmSync(lock,{recursive:true});
- const race=()=>new Promise<any>(resolve=>{const c=spawn(process.execPath,['--import',guard,join(fixture,'scripts/trigger-smoke.mjs'),'--execute','--archive',join(ROOT,'.local/v0110-release-evidence/download/pi-a2ui-0.1.10.tgz'),'--grant',grantFile],{cwd:fixture,stdio:['ignore','pipe','pipe']});c.stdout.resume();c.stderr.resume();c.on('close',code=>resolve({code,access:JSON.parse(fs.readFileSync(counter+'.'+c.pid,'utf8'))}));});
- return (async()=>{const raced=await Promise.all([race(),race()]);assert.equal(raced.filter(r=>r.access.spawn===1).length,1,'one real CLI winner reaches the intercepted worker');for(const r of raced){assert.equal(r.access.config,0);assert.equal(r.access.network,0);assert.equal(r.access.workspace,0);}const replay=invoke('SM02-B',true);assert.equal(replay.r.status,1);assert.equal(replay.access.spawn,0);assert.equal(replay.access.config,0);assert.equal(replay.access.network,0);fs.writeFileSync(join(fixture,'.local/result.json'),JSON.stringify({source:pre.identity.source,negativeWitness:true,positiveWitness:true,rejected:observations,concurrentExecute:raced,replay:replay.access,configReads:0,providerRequests:0})+'\n');})();
+ const race=()=>new Promise<any>(resolve=>{const c=spawn(process.execPath,['--import',guard,join(fixture,'scripts/trigger-smoke.mjs'),'--execute','--archive',archive,'--grant',grantFile],{cwd:fixture,stdio:['ignore','pipe','pipe']});c.stdout.resume();c.stderr.resume();c.on('close',code=>resolve({code,access:JSON.parse(fs.readFileSync(counter+'.'+c.pid,'utf8'))}));});
+ return (async()=>{const raced=await Promise.all([race(),race()]);assert.equal(raced.filter(r=>r.access.spawn===1).length,1,'one real CLI winner reaches the intercepted worker');for(const r of raced){assert.equal(r.access.config,0);assert.equal(r.access.network,0);assert.equal(r.access.workspace,0);}const replay=invoke('SM02-B',true);assert.equal(replay.r.status,1);assert.equal(replay.access.spawn,0);assert.equal(replay.access.config,0);assert.equal(replay.access.network,0);fs.writeFileSync(join(fixture,'.local/result.json'),JSON.stringify({source:pre.identity.source,fixturePayloadSource:'published-v0.1.10',negativeWitness:true,positiveWitness:true,rejected:observations,concurrentExecute:raced,replay:replay.access,configReads:0,providerRequests:0})+'\n');})();
  // Preserve this fully owned synthetic fixture as failed/accepted authority evidence.
 });

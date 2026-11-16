@@ -22,6 +22,38 @@ An empty/invalid business draft is allowed to render; syntax/types/options/range
 
 `check` proves structural source/schema/guard coverage, not that a future user draft passes business checks or fits live session aggregate/resource budgets. Use the emitted tool args with a2ui_render, then continue the Pi reply; user interaction arrives later as typed data.
 
+## Collect three required values
+
+Start with `example validated-form` for the named input/Button/validator pattern. Replace its example fields and rules with the values the task needs; a multi-field form does not inherently need an Accept checkbox. This adapted example collects release information only: it does not deploy or authorize a release. Empty strings are a valid initial business draft.
+
+```text
+$/form/appName = ""
+$/form/targetEnvironment = ""
+$/form/version = ""
+appInput = TextField(label="应用名",value=$/form/appName)
+envInput = TextField(label="目标环境",value=$/form/targetEnvironment)
+versionInput = TextField(label="版本号",value=$/form/version)
+submit = Button(child=Text(text="提交信息，等待确认"),action=Event("collect_release_info",{appName:$/form/appName,targetEnvironment:$/form/targetEnvironment,version:$/form/version}))
+validation = FormValidation(buttons=["submit"],rules=[{fieldId:"appInput",message:"请填写应用名",required:true},{fieldId:"envInput",message:"请填写目标环境",required:true},{fieldId:"versionInput",message:"请填写版本号",required:true}])
+root = Column(children=[appInput,envInput,versionInput,validation,submit])
+```
+
+| Meaning | Component ID (`fieldId`) | Input value path | Submitted Event key |
+| --- | --- | --- | --- |
+| Application name | `appInput` | `$/form/appName` | `appName` |
+| Target environment | `envInput` | `$/form/targetEnvironment` | `targetEnvironment` |
+| Version | `versionInput` | `$/form/version` | `version` |
+
+`buttons=["submit"]` references the separately declared Button. Both it and all three inputs, plus the validator, occur in `root.children`. Each ruled value path is directly bound in that Button's Event. The labels, component IDs, binding paths and submitted keys have different roles; compare the keys/types with the actual request before publishing.
+
+With Node24 selected, save the adapted source in a **new owned file**, and set `source_file` to its path. Use an allowed write/edit tool when shell file creation is restricted. Replace the absolute skill path supplied by Pi; keep quotes for spaces. Preflight that final file:
+
+```sh
+node "<absolute-skill-path>/scripts/a2ui.mjs" check --surface-id release-info "$source_file"
+```
+
+Pass the returned `{surfaceId,source}` unchanged to `a2ui_render`; the helper displays nothing. A successful check validates the structure, not live capacity, future submitted data or permission to deploy. If check fails, inspect the first error before publishing; see [guarded form reference mistakes](syntax-and-errors.md#repair-guarded-form-references). Do not infer that every orphan is a FormValidation issue.
+
 ## Callout / EmptyState / Skeleton — composition
 
 Use [feedback-states](../examples/feedback-states.express) with existing Card/Column/Text/Icon/StatusBadge/Button, not `Callout()`, `EmptyState()` or `Skeleton()`. The example shows four fixture states side by side; for an actual task, render the one supported by known request/tool evidence and include a short reason and declared next intent. A skeleton is explicitly labelled placeholder text, not fabricated records, success or a percentage.

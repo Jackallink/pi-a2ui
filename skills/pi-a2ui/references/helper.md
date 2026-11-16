@@ -18,6 +18,10 @@ node "/absolute/path/to/pi-a2ui/skills/pi-a2ui/scripts/a2ui.mjs" check --surface
 - `example NAME`: complete raw source of a supported, compiled template. No file writes or publication; change fixture records/provenance before using them for real work.
 - `check --surface-id ID FILE`: reads one regular source file, bounded32KiB and valid UTF8, then compiles it. Use `-` for piped stdin. Output is exactly JSON `{surfaceId,source}` for `a2ui_render`; not the generated JSON rendering protocol. The model must actually call that tool to publish.
 
+After choosing to use a canvas, load the skill body if it is not already in context. For a known form use `example validated-form` or `example user-form`, adapt the requested fields and submitted keys, then check the **final** source. Do not expand the whole catalog for a known task. `component FormValidation` explains that `buttons` uses reachable Button ID strings and `rules.fieldId` names input components, not data paths; the [three-field example](summaries-and-feedback.md#collect-three-required-values) shows all four names side by side.
+
+If reading the skill or executing this helper is unavailable, explain that limit instead of inventing a successful preflight. Guidance is not a runtime receipt requirement: the actual tool still accepts its existing `{surfaceId,source}` contract. Shell restrictions remain in force; an allowed write/edit tool may create a new source file before an independent check command. The helper never creates that file or publishes a surface.
+
 Pipe a built-in template into preflight:
 
 ```sh

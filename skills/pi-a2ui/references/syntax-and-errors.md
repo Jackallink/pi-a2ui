@@ -35,6 +35,22 @@ For repeated failures, stop blind retries: load the relevant reference, use an u
 
 Current helper errors may include `diagnostic.surfaceId`, `componentId`, `componentType`, `propertyPath`, `forbiddenKey` or `workspaceRoot`, and the error text includes known context. `propertyPath` is a JSON pointer (relative to the component when one is known). Follow that actual location. Parse/global/unknown SDK errors may only have surface scope; absence of a component ID is not evidence that a guessed component is responsible. SDK line/column/name evidence remains useful.
 
+## Repair guarded form references
+
+An orphan/not-reachable message means a declared component is outside the root tree. Locate the actual reported component and its intended parent; the message alone does not establish a FormValidation cause or a declaration-order problem.
+
+**Invalid example — do not publish:** the inline Button in `buttons` is not a structural child. That property contains Button ID strings, not nested components:
+
+```invalid-express
+$/name = ""
+name = TextField(label="Name",value=$/name)
+root = Column(children=[name,FormValidation(buttons=[Button(child=Text(text="Save"),action=Event("save",{name:$/name}))],rules=[{fieldId:"name",message:"Required",required:true}])])
+```
+
+Declare the Button separately, use `buttons=["submit"]`, and include `submit`, the inputs and the validator in `root.children`. Changing only the reference without adding the Button to the root tree is still invalid. `rules.fieldId` must name the input component (such as `appInput`), not its value path (such as `$/form/appName`). Every guarded Button's Event context must directly cover each ruled input path.
+
+Use [the complete three-field positive example](summaries-and-feedback.md#collect-three-required-values) and check the final source again. Fixing the first reported orphan does not prove there are no other schema/binding/guard errors. The compiler already rejects these mistakes; these instructions do not add auto-repair, retries or a new validator. Empty business values may render as a draft and are validated when the user submits.
+
 ## Repair a literal filename
 
 <!-- benchmark-diagnostic:reserved-event-key -->

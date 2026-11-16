@@ -1,6 +1,6 @@
 # Check121：首次表单编写引导的实施
 
-用户已同意聚焦skill/CLI，在完整Spec024设计及独立Gate1 GO交付后以“然后呢”要求继续。本轮按继续推进已收敛的有限设计处理，明确继续Gate2/TDD后实施；不是扩大模型/权限/发布范围的授权。基点b569203acb84575fdfecd5fbf2a503f62b37a46d，既有隔离worktree/branch codex/authoring-first-use-design，初始clean。当前Gate2待独立准入，生产代码尚未改动；真实模型预算0。
+用户已同意聚焦skill/CLI，在完整Spec024设计及独立Gate1 GO交付后以“然后呢”要求继续。本轮按继续推进已收敛的有限设计处理，明确继续Gate2/TDD后实施；不是扩大模型/权限/发布范围的授权。基点b569203acb84575fdfecd5fbf2a503f62b37a46d，既有隔离worktree/branch codex/authoring-first-use-design，初始clean。当时Gate2待准入；随后独立Gate2 GO后开始测试先行实施，真实模型预算仍0。
 
 ## Gate2：测试意图与RED口径
 
@@ -21,3 +21,18 @@ SMG07必要维护的先RED：仅在owned fixture复制出的extension.ts添加�
 独立Gate2 GO→先记录文档合同/fixture RED→最小修改入口文字/现有notes/既有子文档→原build→对应GREEN→固定候选全本地验证/pack/startup与独立代码GO→本地checkpoint。root实施，reviewer只读。不将写skill的通用压力测试建议当成新模型预算，效果仍未知。没有合并/推送/发布/本机安装授权。
 
 原始RED/错误/产物置于.local/authoring-first-use-implementation，原始模型收据和历史设计稿保持。当前仅Gate2测试意图，没有新增实际测试结果；后续记录会固定source/tree/Node/SDK/lock/assets并保留所有失败。
+
+
+## Gate2 GO与首轮RED→GREEN
+
+独立[Gate2/TDD kickoff GO](authoring-first-use-implementation/gate2-review.md)绑定aa0c2c2ef23f13a4a61fb5f678664b6c516187ba/treee865e64e549fb19ec8fe1c2b24b38ea9645ba4c0，报告SHA b0a0a6695b844268a2d48336b4b3a1d1284833dca8d432ffc5ea41525cc652a0，0项开放P0/P1/P2技术问题。保留既有方向续接的上下文说明，不将其写成模型/权限/发布的新授权；root实施、reviewer只读。
+
+原始contract-and-fixture-red.log：两个用例因缺三字段可执行文档而断言失败；AF03为文档合同RED，AF04在缺文档处先失败、未触达其四个拒绝边界，不冒称这些边界已RED。SMG07先通过合法negative/positive工作区witness和拒绝矩阵，再因future-candidate comment造成archive mismatch，race实际worker-spawn0而非预期单赢家1。这是测试归档耦合RED，不是运行时授权bug或模型行为RED。
+
+仅修改工具描述/promptSnippet、现有FormValidation notes、SKILL和三份子文档，原build生成dist/assistant-cli.mjs；没有新命令/模板/JSON字段或execute/schema/内核变化。旧授权owned fixture仅按固定受检归档hash+76路径逐文件恢复发布payload，保留当前guard并签实际fixture字节。contract-and-fixture-green.log三项通过，合法witness/单racewinner/重放拒绝仍在，配置/provider0；四个DSL负例实际均拒绝/no stdout。原失败fixture和日志保留。
+
+新增AF05合成consumer通过：真实prebuilt helper输出原字节参数，实际extension.execute→controller/session/server→认证浏览器，按所选componentModel.id核查appInput/envInput/versionInput和submit，POST/forwarded消息均0，page/shutdown释放owned服务。不是模型遵从或主动生成证据。Node24类型检查通过。
+
+此时仅相关GREEN；固定候选完整本地检查、pack/owned正常加载与独立代码门禁尚待完成。生产allowlist7文件按spec改变，另69payload/85受保护输入及22历史raw entries保持；不冒称全部旧92输入仍原SHA。完整计数和source-bound原始指纹后续补录。
+
+相关authoring-cli/skill-docs/skill/skill-patterns/extension回归34/34通过；AF03/04+SMG07三项和AF05浏览器一项另有独立日志。浏览器warning仅为继承的NO_COLOR/FORCE_COLOR环境提示，不是页内错误。下一候选将以全量检查替代此窄范围结论。
