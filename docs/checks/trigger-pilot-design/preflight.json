@@ -1,0 +1,63 @@
+{
+  "stage": "design-only",
+  "node": "v24.18.1",
+  "repositoryHead": "77715bfa097d706cae9a1c95b0589fb481d2b818",
+  "targetRelease": "v0.1.10",
+  "targetSource": "b7022efd48d6ed679eb08b17b672bb10cec9425f",
+  "targetArchiveSHA256": "c7d4511c1e92808691ab98a89897f7a6f2d0ed0e64b77f70f9ab610500177e55",
+  "drafts": [
+    {
+      "path": "docs/specs/022-v0110-trigger-pilot.md",
+      "sha256": "f9f0b7ac366882422c30609a0420adeeec5f969a90d2e276735dd27a812e6373"
+    },
+    {
+      "path": "docs/walkthrough/trigger-pilot/01-round1-user-stories.md",
+      "sha256": "32945d60aa2a1ff4d5020f9ce048fafda7d6211a7a95a0e618c1fe69565c048d"
+    },
+    {
+      "path": "docs/walkthrough/trigger-pilot/02-round2-technical-trace.md",
+      "sha256": "0edcc74868be1ef65098ae401f6ae9beacd132bbb1a2ff943106a821cf49de3e"
+    },
+    {
+      "path": "docs/walkthrough/trigger-pilot/03-round3-integration-check.md",
+      "sha256": "6c3a74dc5467853c110b85b91b2cdfa1b2dda1d085cf9ea0b8253cd546bc1747"
+    }
+  ],
+  "baselineUnchanged": [
+    {
+      "path": "tests/benchmark-model/profile.json",
+      "sha256": "dc177a215e129b2c00735b126aca2a78c1db321ceceb9cb863d4de3ad0836685"
+    },
+    {
+      "path": "docs/checks/099-bm4-first-glm-baseline.md",
+      "sha256": "015de150cee7c5c53bff89a2dc8f36dbf4f6c99bd5426be10cacd29d3c895539"
+    }
+  ],
+  "reviewReports": [
+    {
+      "path": "docs/checks/trigger-pilot-design/independent-review-r1.md",
+      "sha256": "104017eaafe7f534e1b6f8b7f3dfebcf3c4229834fa516d4b0f9df153b9db33c"
+    },
+    {
+      "path": "docs/checks/trigger-pilot-design/independent-review-r2.md",
+      "sha256": "ef8cbc82744321b3f5d30e68e82dc25bd76ab67f71d109b5b93edf735e6c8d44"
+    }
+  ],
+  "designVerdict": "Gate1 scoped GO; draft pending user scenario/budget approval",
+  "proposedBudget": {
+    "scenarios": 6,
+    "arms": 2,
+    "episodes": 12,
+    "requestsPerEpisode": 3,
+    "requestsBatch": 36,
+    "maxTokensPerRequest": 1536,
+    "configuredOutputOptionsCeiling": 55296,
+    "retries": 0,
+    "concurrency": 1
+  },
+  "actualModelRequests": 0,
+  "realCredentialsRead": false,
+  "liveHarnessImplemented": false,
+  "liveReady": false,
+  "baselineRerun": false
+}

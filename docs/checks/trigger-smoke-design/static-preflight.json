@@ -1,0 +1,66 @@
+{
+  "kind": "design-static-check-not-runtime-test",
+  "node": "v24.18.1",
+  "workspaceBase": "c8224a3361c99a0f8ebadfdaaee45bdb19aab5e1",
+  "designFiles": {
+    "docs/specs/023-v0110-trigger-smoke.md": "6c2060b6b409d5658e530d134aa69e44f3d5a44f6092998b5788554c575f2eea",
+    "docs/plans/023-v0110-trigger-smoke.md": "bfbb9e40aa180ce6d4c4f1e5302d665a2f3fbd135a8cea90fffbcb4d826eb967",
+    "docs/walkthrough/trigger-smoke/01-round1-user-stories.md": "ab8032b249bf97e66225c0729e3dd523bf0ab5e1f76813648d09b1954ba7deb8",
+    "docs/walkthrough/trigger-smoke/02-round2-technical-trace.md": "7442d8cae1d1c6bc27efb6b592710998edd03087ca496078d41316e551a062db",
+    "docs/walkthrough/trigger-smoke/03-round3-integration-check.md": "bd1a1a82a1abc7d0c1eea8a793cc12fb4f561fee3cfe15f764021310f37ccf16",
+    "docs/checks/trigger-smoke-design/profile.proposed.json": "79a0c76770ae09915329083d92218ba1b13f804b5bd50a09dff641224009f869"
+  },
+  "currentProviderRequests": 0,
+  "currentCredentialReads": 0,
+  "runtimeProfileStillLiveDisabled": true,
+  "runtimeSupportsProposed3Plus1": false,
+  "proposedLimits": {
+    "order": [
+      "SM02-B",
+      "SM01-B"
+    ],
+    "episodeCaps": [
+      1,
+      3
+    ],
+    "batch": 4,
+    "totalConfiguredCompletionTokens": 6144
+  },
+  "preservedGuardedInputCount": 87,
+  "preservedPayloadFiles": 76,
+  "preservedRawLive": [
+    {
+      "path": ".local/trigger-pilot/run-LUrFUb/report.json",
+      "sha256": "d4029dd1a7019512e7ae21f95d4196eb4986bb5b5b485682853d399a77489596"
+    },
+    {
+      "path": ".local/trigger-pilot/run-LUrFUb/T01-A.live.json",
+      "sha256": "627b35d7f25d37e113103eeaf8c7579049e997ce9b8e0f29c979c2d64a90d5a2"
+    },
+    {
+      "path": ".local/trigger-pilot/run-LUrFUb/live-requests.jsonl",
+      "sha256": "66ae13f39c805d9ece05b96a4056e9c01c9a864078755bf8f2381b3b85dca7f1"
+    },
+    {
+      "path": ".local/trigger-pilot/run-LUrFUb/admission.json",
+      "sha256": "181d01aed8f9eb0effe4167ccd3c21efca29f6842c425feab45a97a765e1f7e4"
+    },
+    {
+      "path": ".local/trigger-pilot/run-LUrFUb/contexts.json",
+      "sha256": "165fea79bde0c6026f610c9004e3d447ccae3f034c25677800e626fd7a6141fd"
+    }
+  ],
+  "preservedFrozen": [
+    {
+      "path": "tests/benchmark-model/profile.json",
+      "sha256": "dc177a215e129b2c00735b126aca2a78c1db321ceceb9cb863d4de3ad0836685"
+    },
+    {
+      "path": "docs/checks/099-bm4-first-glm-baseline.md",
+      "sha256": "015de150cee7c5c53bff89a2dc8f36dbf4f6c99bd5426be10cacd29d3c895539"
+    }
+  ],
+  "archiveSHA256": "c7d4511c1e92808691ab98a89897f7a6f2d0ed0e64b77f70f9ab610500177e55",
+  "walkthroughStructure": "passed",
+  "validationScope": "JSON, prose identity and file hashes only; no SDK, execution or model calls"
+}

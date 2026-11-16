@@ -1,0 +1,27 @@
+# Check117：双场景3+1冒烟设计准入
+
+用户2026-11-16授权先完成两个场景/最多4请求的设计与独立评审，GO后再申请真实调用授权。当前真实预算0；没有读取真实配置、运行模型或实施适配。原Spec022停止结果/冻结BM4不变。
+
+## 设计与静态检查
+
+[Spec023](../specs/023-v0110-trigger-smoke.md)、[Plan023](../plans/023-v0110-trigger-smoke.md)、三轮walkthrough和文档profile为本轮设计交付。先SM02-B确认≤1，通过后SM01-B表单≤3，合计≤4，均用0.1.10新文案，无A/B改善比较。任何额外provider请求（warming、摘要、probe、retry、judge）均不得绕过上限或另行发生。
+
+沿用既有隔离worktree，开始时源码c8224a3干净；运行实现仍为已验收的1984c328及文档收口。检查了当前入口/预算/worker/capture/汇总：它们固定12会话/3/36并禁用live，未实现本设计。单独翻转旧flag或截断旧报告都不合规。后续1/3/4政策、B原样签名、两行汇总、负例tool前停止、授权guard及deadline适配是实际执行的前置门槛。
+
+本轮Node24.18.1只做JSON预算/消息/参数与文件哈希静态断言，未加载SDK、无真实配置读取/HTTP。[首稿静态回执](trigger-smoke-design/static-preflight.json)与[修订稿静态回执](trigger-smoke-design/static-preflight-r2.json)分别保留原稿/修订稿检查身份，核对两例自然消息与原T01/N02一致、拟定4上限/6144配置输出上限、现有live=false；87个既有guarded输入（含76产品文件）、旧五份live回执/公开结果/冻结profile及Check099、正式归档均匹配原指纹。三轮walkthrough结构检查通过；git diff whitespace检查通过。状态元数据最终更新不冒称为原始静态检查稿；原稿可从各提交恢复。
+
+这些不是新适配的行为测试，也不是本批次live结果；Check116的505Node/90browser/68union只能作为历史基点，不能替代未来适配完整验收。本轮是纯新增设计文档，不重复运行该完整CI或冻结入口。
+
+## 独立审查
+
+设计稿7369027经独立[R1 NO-GO](trigger-smoke-design/design-review-r1.md)，只有F-01/P2：AC001未限定LIVE，字面会把无付费grant的合法synthetic offline也拒绝。已修正文档为LIVE三入口须先获新grant；未来适配实施另获允许后，dry-run/offline无付费grant可用，但真实配置/provider仍拒绝。当前设计依然不授权实施或运行SDK。没有运行时缺陷修复或预算扩大。
+
+原始R1稿、指纹及静态回执保持不改；修订后的[R2 Gate1 GO](trigger-smoke-design/design-review-r2.md)绑定提交 `3abed7e4d0d4a916ea08647c7cdd9b534f7c310c`、tree `1b059294d4f328987d55f4fe187aa02f50e37f6d`，F-01闭合、无剩余设计修改项。审查覆盖3+1/总4不可互借、先负后正/失败停止、完整意图先计数、usage与结果未知分开、准备瓶颈、旧normalize不能签B及尚未完成适配等边界；独立重算8份文档绑定及历史/运行输入指纹，未运行SDK、行为测试、浏览器或模型。
+
+## 设计收口与待申请授权
+
+设计交付完成，Spec023为walkthrough-approved；Gate2、3+1适配、固定候选完整本地CI/actualSDK synthetic及独立代码/隐私/成本GO尚未进行。原505Node等旧证据不替代这些门槛；旧代码仍禁用live，不能直接执行本设计。当前真实调用预算仍0。
+
+可申请的明确范围：按Spec023先完成必要最小适配和零推理门槛，在独立代码GO后，绑定实际source/命令/profile/capture/授权回执执行**一次**新批次，SM02-B最多1、通过后SM01-B最多3、总最多4请求，仅Node24/Ark AgentPlan glm-5.3-flash；失败即停、不重试/续跑、不互借/返还额度，不跑冻结基线。用户授权该未来范围后，最终source-bound一次性grant只能记录该明确授权，不能另造预算；任何偏离须重新审查，不扩大模型、请求、输出或实际行为范围。
+
+本轮没有实施或真实推理、没有合并/推送/发布/全局安装；只提交设计文档的本地checkpoint。最终元数据与报告另由独立审查绑定，不改写原R1/R2设计稿。

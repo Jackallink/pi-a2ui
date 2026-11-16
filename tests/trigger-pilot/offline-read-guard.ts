@@ -1,0 +1,21 @@
+// Evaluate before Pi SDK modules. Synthetic workers cannot read the operator's config.
+import fs from 'node:fs';
+import promises from 'node:fs/promises';
+import {syncBuiltinESMExports} from 'node:module';
+import {homedir} from 'node:os';
+import {resolve,join} from 'node:path';
+import {fileURLToPath} from 'node:url';
+import {SMOKE_ID,verifyLiveWorker} from '../trigger-smoke/policy.ts';
+import {PAIR_ID} from '../authoring-pilot/profile.ts';
+import {verifyPairWorker} from '../authoring-pilot/authority.ts';
+// This consumed pilot has no new live authorization. Refuse before SDK evaluation.
+if(process.argv[4]==='live'){if(process.argv[6]===PAIR_ID)verifyPairWorker(process.argv[3],process.argv[2]);else{if(process.argv[6]!==SMOKE_ID)throw new Error('live execution disabled; new explicit authorization required');verifyLiveWorker(process.argv[3],process.argv[2],process.argv[6]);}}
+const state={active:process.argv[4]!=='live',denied:0};
+(globalThis as any).pilotReadGuard=state;
+if(state.active){
+ const root=join(homedir(),'.pi/agent');
+ const check=(path:any)=>{if(typeof path==='number')return;const p=resolve(path instanceof URL?fileURLToPath(path):String(path));if(p===root||p.startsWith(root+'/')){state.denied++;throw new Error('synthetic worker operator configuration access denied');}};
+ for(const name of ['readFileSync','openSync','readFile','open']as const){const original=fs[name]as any;(fs as any)[name]=function(path:any,...args:any[]){check(path);return original.call(fs,path,...args);};}
+ for(const name of ['readFile','open']as const){const original=promises[name]as any;(promises as any)[name]=function(path:any,...args:any[]){check(path);return original.call(promises,path,...args);};}
+ syncBuiltinESMExports();
+}

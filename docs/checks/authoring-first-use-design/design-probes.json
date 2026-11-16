@@ -1,0 +1,35 @@
+{
+  "schema": "authoring-first-use-design-probe-v1",
+  "baseSource": "fc558daf252126ee91362f07bab7874d74684d69",
+  "node": "v24.18.1",
+  "realModelRequests": 0,
+  "realConfigReads": 0,
+  "scope": "Existing compiler/helper design probes, no production changes or model compliance claim",
+  "currentDocSHA256": {
+    "docs/specs/024-authoring-first-use.md": "142e89636d54285fc2048796b1b4b91829162ae0ebf020f431350f81a8395650",
+    "docs/plans/024-authoring-first-use.md": "d9890aa951389614a5de2db39cb4c2b04e8e0a0664a3c1a63c3ae5bdfcc652c3",
+    "docs/checks/120-authoring-first-use-design.md": "34768b5e4560324a95c955e6b0d3d4efb67cf25cb73399bdcaaf5fec3c09ea9b",
+    "docs/walkthrough/authoring-first-use/01-round1-user-stories.md": "d3162f1c6b052bd437ea0ab975634262534f19751a7fc421ad4a8d837df6b086",
+    "docs/walkthrough/authoring-first-use/02-round2-technical-trace.md": "027353a9f28bc3ff6f4f694098395215bdbf5c433397cf36bdf333e2aaf31015",
+    "docs/walkthrough/authoring-first-use/03-round3-integration-check.md": "5aed82b1ee630d14ae5597cc23d9c0ae2e5246128770ca2993277f2decc90419"
+  },
+  "probes": [
+    {
+      "name": "proposed-three-field",
+      "sourceSHA256": "e0a54c4322d7da6d218b934fb2c43a299dd741e584136714b1927e5c733021ab",
+      "exitCode": 0,
+      "stdout": "{\"surfaceId\":\"design-form\",\"source\":\"$/form/appName = \\\"\\\"\\n$/form/targetEnvironment = \\\"\\\"\\n$/form/version = \\\"\\\"\\nappInput = TextField(label=\\\"应用名\\\",value=$/form/appName)\\nenvInput = TextField(label=\\\"目标环境\\\",value=$/form/targetEnvironment)\\nversionInput = TextField(label=\\\"版本号\\\",value=$/form/version)\\nsubmit = Button(child=Text(text=\\\"提交信息，等待确认\\\"),action=Event(\\\"collect_release_info\\\",{appName:$/form/appName,targetEnvironment:$/form/targetEnvironment,version:$/form/version}))\\nvalidation = FormValidation(buttons=[\\\"submit\\\"],rules=[{fieldId:\\\"appInput\\\",message:\\\"请填写应用名\\\",required:true},{fieldId:\\\"envInput\\\",message:\\\"请填写目标环境\\\",required:true},{fieldId:\\\"versionInput\\\",message:\\\"请填写版本号\\\",required:true}])\\nroot = Column(children=[appInput,envInput,versionInput,validation,submit])\"}\n",
+      "stderr": ""
+    },
+    {
+      "name": "synthetic-nested-button",
+      "sourceSHA256": "2295909273d2ddd2767c5a26dda2b26ea91e11fef3a1445293e517123a6a90d5",
+      "exitCode": 1,
+      "stdout": "",
+      "stderr": "{\"error\":\"Invalid Express source: Component 'root_children_1_buttons_0' is not reachable from 'root' (Orphaned component 'root_children_1_buttons_0' is not reachable from root) [surface \\\"design-form\\\"]\",\"code\":\"COMPILE\",\"hint\":\"Use an unmodified matching example, adapt named arguments, then check the complete source again. No automatic repair or retry.\",\"reference\":\"references/syntax-and-errors.md\",\"diagnostic\":{\"surfaceId\":\"design-form\"}}\n"
+    }
+  ],
+  "preservedRuntimeInputs": 92,
+  "preservedLiveRawFiles": 14,
+  "preservedOldFrozenFiles": 8
+}

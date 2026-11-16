@@ -1,0 +1,58 @@
+// Valid local identities, fake grants and a pre-config witness. No real credentials.
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import {join,dirname,relative} from 'node:path';
+import {execFileSync,spawnSync,spawn} from 'node:child_process';
+import {ROOT,identity} from './trigger-pilot/control.ts';
+import {SMOKE_ID,PROFILE_SHA,digest} from './trigger-smoke/policy.ts';
+
+test('SMG07 real early guards reject forged drifted replayed and bad-negative authority with zero access',()=>{
+ const fixture=fs.mkdtempSync(join(ROOT,'.local/trigger-smoke-implementation/authority-'));
+ const run=join(fixture,'.local/trigger-smoke/run-fixture'),base=dirname(run),grantFile=join(base,'grant.json'),lock=join(base,'grant-fixture.lock'),counter=join(fixture,'.local/access.json'),guard=join(fixture,'.local/witness.mjs');
+ const original=identity();for(const p of Object.keys(original.files)){fs.mkdirSync(dirname(join(fixture,p)),{recursive:true});fs.copyFileSync(join(ROOT,p),join(fixture,p));}
+ // Exercise a future changed candidate without modifying the production checkout.
+ fs.appendFileSync(join(fixture,'extension.ts'),'\n// synthetic next-candidate guidance\n');
+ // This authority fixture tests current guards against the immutable released payload,
+ // not a future candidate's product behavior. Never relax the real archive validator.
+ const archive=join(ROOT,'.local/v0110-release-evidence/download/pi-a2ui-0.1.10.tgz');
+ const published=JSON.parse(fs.readFileSync(join(ROOT,'tests/trigger-smoke/profile.json'),'utf8'));
+ assert.equal(digest(fs.readFileSync(archive)),published.release.archiveSHA256,'fixed published archive required');
+ const payload=JSON.parse(fs.readFileSync(join(ROOT,'tests/benchmark-model/payload.json'),'utf8')) as string[];
+ assert.equal(payload.length,76);assert.equal(new Set(payload).size,76);
+ assert.deepEqual(execFileSync('tar',['-tzf',archive],{encoding:'utf8'}).trim().split('\n').sort(),payload.map(p=>'package/'+p).sort());
+ for(const p of payload){assert.ok(!p.startsWith('/')&&!p.split('/').includes('..'));fs.writeFileSync(join(fixture,p),execFileSync('tar',['-xOzf',archive,'package/'+p],{maxBuffer:8*1024*1024}));}
+ for(const p of Object.keys(original.files).filter(p=>!payload.includes(p)))assert.equal(digest(fs.readFileSync(join(fixture,p))),original.files[p as keyof typeof original.files],'current guard input preserved');
+ fs.symlinkSync(join(ROOT,'node_modules'),join(fixture,'node_modules'),'dir');fs.writeFileSync(join(fixture,'.gitignore'),'node_modules\n.local\n');
+ const git=(args:string[])=>execFileSync('git',['-c','commit.gpgSign=false','-c','core.hooksPath=/dev/null','-c','user.name=Smoke fixture','-c','user.email=fixture@example.invalid',...args],{cwd:fixture,encoding:'utf8',timeout:15000,stdio:['ignore','pipe','pipe']}).trim();
+ git(['init','-q']);git(['add','.']);git(['commit','-qm','synthetic authority fixture']);
+ fs.mkdirSync(run,{recursive:true});fs.writeFileSync(join(run,'.owned'),SMOKE_ID+'\n');
+ const contexts:any={'SM02-B':'a'.repeat(64),'SM01-B':'b'.repeat(64)},captureFiles:any={};
+ for(const id of Object.keys(contexts))for(const kind of ['context','capture']){const p=id+'.'+kind+'.json';fs.writeFileSync(join(run,p),'{}\n');captureFiles[p]=digest(fs.readFileSync(join(run,p)));}
+ fs.writeFileSync(join(run,'contexts.json'),JSON.stringify(contexts));
+ const pre:any={experiment:SMOKE_ID,profileSHA256:PROFILE_SHA,identity:{...original,source:git(['rev-parse','HEAD']),tree:git(['rev-parse','HEAD^{tree}']),dirty:false,files:Object.fromEntries(Object.keys(original.files).map(p=>[p,digest(fs.readFileSync(join(fixture,p)))]))},contexts,captureFiles,archiveSHA256:JSON.parse(fs.readFileSync('tests/trigger-smoke/profile.json','utf8')).release.archiveSHA256};
+ fs.writeFileSync(join(run,'preflight.json'),JSON.stringify(pre));
+ const grant:any={schema:'smoke-user-grant-v1',spec:'Spec023',userMessage:'授权',id:'fixture',maxRequests:4,perEpisode:{'SM02-B':1,'SM01-B':3},model:'glm-5.3-flash',invocations:1,profileSHA256:PROFILE_SHA,preflightSHA256:digest(JSON.stringify(pre)),source:pre.identity.source,tree:pre.identity.tree,run};
+ const negative:any={id:'SM02-B',kind:'live',experiment:SMOKE_ID,outcome:'negative_pass',requests:1,modelCalls:1,renderRequested:false,renderAttempted:false,renderCommitted:false,toolCount:0,tools:[],cleanupErrors:[],fatal:false,firstBodySHA256:contexts['SM02-B'],requestDiagnostics:[{sdkStopReason:'stop',bodySHA256:contexts['SM02-B'],status:200}],transcript:[{role:'assistant',stopReason:'stop',content:[{type:'text',text:'收到'}]}]};
+ const row={index:1,episode:'SM02-B',mode:'live',experiment:SMOKE_ID,profileSHA256:PROFILE_SHA,model:'glm-5.3-flash',endpoint:'https://ark.cn-beijing.volces.com/api/plan/v3/chat/completions',bodySHA256:contexts['SM02-B']};
+ const write=(p:string,v:unknown)=>fs.writeFileSync(p,JSON.stringify(v));
+ const reset=(withNegative=false)=>{for(const id of Object.keys(contexts))fs.rmSync(join(run,id+'.live-started'),{force:true,recursive:true});write(grantFile,grant);fs.mkdirSync(lock,{recursive:true});const grantSHA=digest(fs.readFileSync(grantFile));write(join(lock,'owner.json'),{run,grantSHA});write(join(run,'admission.json'),{grantFile,grantSHA,preflightSHA256:grant.preflightSHA256,lock,batchStartedAt:Date.now()});if(withNegative)write(join(run,'SM02-B.live.json'),negative);else fs.rmSync(join(run,'SM02-B.live.json'),{force:true});fs.writeFileSync(join(run,'live-requests.jsonl'),withNegative?JSON.stringify(row)+'\n':'');write(join(run,'contexts.json'),contexts);for(const p of Object.keys(captureFiles))fs.writeFileSync(join(run,p),'{}\n');};
+ fs.writeFileSync(guard,`import fs from'node:fs';import promises from'node:fs/promises';import cp from'node:child_process';import{syncBuiltinESMExports}from'node:module';const put=fs.writeFileSync,s={config:0,network:0,workspace:0,spawn:0,claim:0},save=()=>{put(${JSON.stringify(counter)},JSON.stringify(s));put(${JSON.stringify(counter)}+'.'+process.pid,JSON.stringify(s));};save();const read=p=>{if(String(p).includes('/.pi/agent')){s.config++;save();throw Error('real config denied');}};const workspace=p=>{if(String(p).includes('/workspace')){s.workspace++;save();throw Error('valid authority workspace witness');}};for(const k of ['readFileSync','readFile','openSync','open']){const f=fs[k];fs[k]=function(p,...a){read(p);return f.call(fs,p,...a);};}for(const k of ['readFile','open']){const f=promises[k];promises[k]=function(p,...a){read(p);return f.call(promises,p,...a);};}for(const k of ['rm','mkdir']){const f=promises[k];promises[k]=function(p,...a){workspace(p);return f.call(promises,p,...a);};}const mkdir=fs.mkdirSync;fs.mkdirSync=function(p,...a){if(String(p).endsWith('grant-fixture.lock')){s.claim++;save();}workspace(p);return mkdir.call(fs,p,...a);};cp.spawn=()=>{s.spawn++;save();throw Error('valid authority spawn witness');};syncBuiltinESMExports();globalThis.fetch=()=>{s.network++;save();throw Error('provider denied');};`);
+ const invoke=(id='SM02-B',cli=false)=>{const args=cli?[join(fixture,'scripts/trigger-smoke.mjs'),'--execute','--archive','/missing-public-archive','--grant',grantFile]:['--import','tsx',join(fixture,'tests/trigger-pilot/worker.ts'),id,run,'live','',SMOKE_ID];const r=spawnSync(process.execPath,['--import',guard,...args],{cwd:fixture,encoding:'utf8',timeout:15000,maxBuffer:65536});return{r,access:JSON.parse(fs.readFileSync(counter,'utf8'))};};
+ // Witnesses prove this fixture can get through the actual guard, not fail at setup.
+ reset();let witness=invoke();assert.equal(witness.access.workspace,1);assert.equal(witness.access.config,0);assert.equal(witness.access.network,0);
+ reset(true);witness=invoke('SM01-B');assert.equal(witness.access.workspace,1);assert.equal(witness.access.config,0);assert.equal(witness.access.network,0);
+ const observations:any[]=[];
+ const mutations:Array<[string,(id:string)=>void,string?]>=[
+  ['missing-ticket',()=>fs.rmSync(join(run,'admission.json'))],['malformed-ticket',()=>fs.writeFileSync(join(run,'admission.json'),'{')],['forged-parent-hash',()=>{const t=JSON.parse(fs.readFileSync(join(run,'admission.json'),'utf8'));write(join(run,'admission.json'),{...t,grantSHA:'bad'});}],
+  ['source-drift',()=>write(grantFile,{...grant,source:'bad'})],['grant-over-budget',()=>write(grantFile,{...grant,maxRequests:5})],['capture-drift',()=>fs.writeFileSync(join(run,'SM02-B.context.json'),'changed')],['context-map-drift',()=>write(join(run,'contexts.json'),{'SM02-B':'bad'})],
+  ['episode-replay',id=>fs.mkdirSync(join(run,id+'.live-started'))],['closed-receipt-replay',()=>write(join(run,'SM02-B.live.json'),negative)],['missing-negative',()=>fs.rmSync(join(run,'SM02-B.live.json')),'SM01-B'],['malformed-negative',()=>fs.writeFileSync(join(run,'SM02-B.live.json'),'{'),'SM01-B'],['non-pass-negative',()=>write(join(run,'SM02-B.live.json'),{...negative,outcome:'negative_tool'}),'SM01-B'],['failed-negative-cleanup',()=>write(join(run,'SM02-B.live.json'),{...negative,cleanupErrors:['browser']}),'SM01-B'],
+ ];
+ for(const[name,mutate,id='SM02-B']of mutations){reset(id==='SM01-B');mutate(id);const result=invoke(id);assert.equal(result.r.status,1,name);assert.deepEqual(result.access,{config:0,network:0,workspace:0,spawn:0,claim:0},name);assert.equal(fs.existsSync(join(run,'workspace')),false,name);observations.push({name,status:result.r.status,access:result.access});}
+ for(const path of ['tests/trigger-smoke/profile.json','tests/trigger-pilot/worker.ts']){reset();const full=join(fixture,path),bytes=fs.readFileSync(full);fs.appendFileSync(full,'\n');try{const result=invoke();assert.equal(result.r.status,1,path);assert.equal(result.access.config,0);assert.equal(result.access.workspace,0);assert.equal(result.access.network,0);}finally{fs.writeFileSync(full,bytes);}}
+ reset();write(grantFile,{...grant,maxRequests:5});const cli=invoke('SM02-B',true);assert.equal(cli.r.status,1);assert.deepEqual(cli.access,{config:0,network:0,workspace:0,spawn:0,claim:0});
+ reset();fs.rmSync(lock,{recursive:true});
+ const race=()=>new Promise<any>(resolve=>{const c=spawn(process.execPath,['--import',guard,join(fixture,'scripts/trigger-smoke.mjs'),'--execute','--archive',archive,'--grant',grantFile],{cwd:fixture,stdio:['ignore','pipe','pipe']});c.stdout.resume();c.stderr.resume();c.on('close',code=>resolve({code,access:JSON.parse(fs.readFileSync(counter+'.'+c.pid,'utf8'))}));});
+ return (async()=>{const raced=await Promise.all([race(),race()]);assert.equal(raced.filter(r=>r.access.spawn===1).length,1,'one real CLI winner reaches the intercepted worker');for(const r of raced){assert.equal(r.access.config,0);assert.equal(r.access.network,0);assert.equal(r.access.workspace,0);}const replay=invoke('SM02-B',true);assert.equal(replay.r.status,1);assert.equal(replay.access.spawn,0);assert.equal(replay.access.config,0);assert.equal(replay.access.network,0);fs.writeFileSync(join(fixture,'.local/result.json'),JSON.stringify({source:pre.identity.source,fixturePayloadSource:'published-v0.1.10',negativeWitness:true,positiveWitness:true,rejected:observations,concurrentExecute:raced,replay:replay.access,configReads:0,providerRequests:0})+'\n');})();
+ // Preserve this fully owned synthetic fixture as failed/accepted authority evidence.
+});

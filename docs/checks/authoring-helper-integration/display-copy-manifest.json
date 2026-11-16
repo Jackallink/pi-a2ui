@@ -1,0 +1,14 @@
+[
+  {
+    "file": "docs/checks/helper-invocation-adapter-implementation/zero-final-review-r1.md",
+    "sealedSourceSHA256": "f77a7e1a989fa4103afcdb50a1718cae146e9e53fc8af3e0790795b2e2d5255e",
+    "displayCopySHA256": "72a7569c3fd6c76feecf7705069d2171f4dcda90ab8a153e305a687327748a6e",
+    "transformation": "Remove ASCII spaces at line ends only; preserve other bytes and line order"
+  },
+  {
+    "file": "docs/checks/helper-invocation-adapter-implementation/fresh-design-final-bind.md",
+    "sealedSourceSHA256": "df4178a44625f275a35aa31507082309ffd2598cf4858953810099e30d1c3b9c",
+    "displayCopySHA256": "d4fb400661a8130189987b0e7adb575575612f5bc059eca9c44b1d41a8c07f51",
+    "transformation": "Remove ASCII spaces at line ends only; preserve other bytes and line order"
+  }
+]

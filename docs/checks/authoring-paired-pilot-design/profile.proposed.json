@@ -1,0 +1,185 @@
+{
+  "schema": "spec025-authoring-paired-design-v1",
+  "experimentId": "authoring-first-source-pilot-1",
+  "documentOnly": true,
+  "liveEnabled": false,
+  "currentApprovedRealRequests": 0,
+  "runnerState": "not_implemented",
+  "executionSource": null,
+  "arms": {
+    "C": {
+      "role": "released-control",
+      "packageVersion": "0.1.10",
+      "source": "b7022efd48d6ed679eb08b17b672bb10cec9425f",
+      "archiveSHA256": "c7d4511c1e92808691ab98a89897f7a6f2d0ed0e64b77f70f9ab610500177e55"
+    },
+    "G": {
+      "role": "guided-candidate",
+      "packageVersion": "0.1.10",
+      "source": "095459084f0bf8ab26c803c4b7e2f2dbb6b004ba",
+      "archiveSHA256": "c96125e0a2095608d29ad7b09e6f1911572ed7162bf881b9b9d744e5235dc2d8"
+    }
+  },
+  "runtime": {
+    "nodeMajor": 24,
+    "referenceNode": "v24.18.1",
+    "pi": "1.5.0",
+    "chromiumVersion": "158.0.8127.18",
+    "chromiumRevision": "1254"
+  },
+  "model": {
+    "provider": "volcengine-ark",
+    "id": "glm-5.3-flash",
+    "endpoint": "https://ark.cn-beijing.volces.com/api/plan/v3/chat/completions"
+  },
+  "request": {
+    "thinking": {
+      "type": "enabled"
+    },
+    "reasoning_effort": "low",
+    "max_completion_tokens": 1536,
+    "stream_options": {
+      "include_usage": true
+    },
+    "tool_choice": "auto",
+    "parallel_tool_calls": false,
+    "timeoutMs": 30000,
+    "maxBodyBytes": 98304,
+    "maxResponseBytes": 1048576
+  },
+  "proposedBudget": {
+    "invocations": 1,
+    "sessions": 4,
+    "requestsPerSession": 6,
+    "totalRequests": 24,
+    "configuredOutputTokensCeiling": 36864,
+    "maxToolCallsPerSession": 12,
+    "maxPreflightChecksPerSession": 1,
+    "maxRenderCallsPerSession": 1,
+    "episodeActiveMs": 150000,
+    "workerHardMs": 180000,
+    "batchHardMs": 780000,
+    "cleanupMs": 10000,
+    "killGraceMs": 2000,
+    "ownedFallbackMs": 5000,
+    "concurrency": 1,
+    "retries": 0,
+    "fallback": false,
+    "redirect": "error"
+  },
+  "order": [
+    "FP01-C",
+    "FP01-G",
+    "FP02-G",
+    "FP02-C"
+  ],
+  "visibleTools": [
+    "read",
+    "bash",
+    "write",
+    "edit",
+    "a2ui_render"
+  ],
+  "scenarios": [
+    {
+      "id": "FP01",
+      "request": "请做一个同页任务登记表单，三个文本输入的标签原样使用“任务名称”“运行环境”“构建版本”，都必填、初始留空。按钮叫“提交信息”，只回传三个字符串键 taskName、environment、buildVersion，先等我确认；不要运行任务，也不要添加其他输入。",
+      "fields": [
+        {
+          "label": "任务名称",
+          "contextKey": "taskName",
+          "type": "string",
+          "initial": "",
+          "required": true
+        },
+        {
+          "label": "运行环境",
+          "contextKey": "environment",
+          "type": "string",
+          "initial": "",
+          "required": true
+        },
+        {
+          "label": "构建版本",
+          "contextKey": "buildVersion",
+          "type": "string",
+          "initial": "",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "FP02",
+      "request": "请做一个同页归档信息表单，三个文本输入的标签原样使用“归档名称”“源目录”“批次标签”，都必填、初始留空；归档名称长度为2到40个字符。按钮叫“提交信息”，只回传三个字符串键 archiveName、sourceFolder、batchLabel。只收集信息，先等我确认；不要读取源目录、创建归档或添加其他输入。",
+      "fields": [
+        {
+          "label": "归档名称",
+          "contextKey": "archiveName",
+          "type": "string",
+          "initial": "",
+          "required": true,
+          "minLength": 2,
+          "maxLength": 40
+        },
+        {
+          "label": "源目录",
+          "contextKey": "sourceFolder",
+          "type": "string",
+          "initial": "",
+          "required": true
+        },
+        {
+          "label": "批次标签",
+          "contextKey": "batchLabel",
+          "type": "string",
+          "initial": "",
+          "required": true
+        }
+      ]
+    }
+  ],
+  "oracle": {
+    "editableFields": 3,
+    "inputComponent": "TextField",
+    "submitCaption": "提交信息",
+    "samePageVisible": true,
+    "exactContextKeys": true,
+    "initialValuesEmpty": true,
+    "guardedRequiredFields": true,
+    "actionPostsAllowed": 0,
+    "renderedUiNeedsRealDom": true,
+    "allowedTextFieldVariants": [
+      "shortText",
+      "longText"
+    ],
+    "omittedVariantUsesShortText": true,
+    "allowedNativeControls": [
+      {
+        "tag": "input",
+        "type": "text"
+      },
+      {
+        "tag": "textarea"
+      }
+    ]
+  },
+  "reporting": {
+    "firstCandidate": "first complete check source; otherwise first complete render source",
+    "firstCandidateCorrectness": "compiler and case static semantics; never equate preflight with displayed UI",
+    "uiUsable": "first render compile/commit plus identity-bound actual visible usable DOM",
+    "sourceMatchKinds": [
+      "exact",
+      "single-terminal-lf",
+      "mismatch",
+      "unchecked",
+      "no-render"
+    ],
+    "unknownNeverZero": true,
+    "frozenBaselineRerun": false,
+    "correctnessComparisonRequiresFourObservedCandidates": true,
+    "correctnessComparisonRequiresFourKnownGrades": true,
+    "zeroObservedCandidateDenominator": "not_applicable",
+    "closedLocalEmptyAbortDoesNotOverrideDiagnostics": true,
+    "inFlightAbortIsFatalUnknown": true
+  }
+}

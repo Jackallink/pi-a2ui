@@ -1,0 +1,30 @@
+{
+  "schema": "spec025-design-static-r2-v1",
+  "baseDraft": "6e80e3f00501793b0c396db6c378bf4553623488",
+  "node": "v24.18.1",
+  "scope": "JSON/identity only; no SDK/provider/real config or inference",
+  "realModelRequests": 0,
+  "currentApprovedRealRequests": 0,
+  "proposedRequests": 24,
+  "profileCoreUnchanged": true,
+  "scenariosAndBudgetUnchanged": true,
+  "corrections": [
+    "four observed and known candidate grades before correctness comparison; denominator zero N/A",
+    "closed local empty aborted preserves known terminal; in-flight cancellation fatal",
+    "plain-text variants and actual DOM input type; numeric/password negative cases",
+    "98304 bytes = 96 KiB"
+  ],
+  "parentStaticSHA256": "05e82a8458b71790c0ab3aa48fc56e00f0ff5175a44546b501eadc93450a23da",
+  "preservedRuntimeInputs": 92,
+  "preservedHistorical": 22,
+  "designInputs": {
+    "docs/specs/025-authoring-paired-pilot.md": "9a61c86c6446b042295338151d9580205d620074248b54612b4a8c2a37ea9aa6",
+    "docs/plans/025-authoring-paired-pilot.md": "74293175c9ab72d0e9abc72561746c19681d95b642b8533dcaff396005afdbdc",
+    "docs/checks/122-authoring-paired-pilot-design.md": "71f120bf395941c5f9ebe0f3d0f1c9f5b7e405a8062be22bc049e432fca7a5bb",
+    "docs/walkthrough/authoring-paired-pilot/01-round1-user-stories.md": "3235ae15bf6d4d164eb21f4131ecef8195ce2c04d885f3feab434dbe6c4b115b",
+    "docs/walkthrough/authoring-paired-pilot/02-round2-technical-trace.md": "9669552458c19643e4ee119198141b6481778bd339bb7b170a36107e853c2cf6",
+    "docs/walkthrough/authoring-paired-pilot/03-round3-integration-check.md": "33bf91ef4aa7fd7cce2412e9fd45ed8a253f3b547b6969b18fe4ed75a195e1a5",
+    "docs/checks/authoring-paired-pilot-design/profile.proposed.json": "6fedabf516a78090abbf822730f371095894a976c683c340362620e5fafa7d16",
+    "docs/checks/authoring-paired-pilot-design/design-review-r1.md": "1e1bd09cab0cb4e1f71546439c3f1caf59159ef5bb6a0e0aca52fd0c37a6edd2"
+  }
+}

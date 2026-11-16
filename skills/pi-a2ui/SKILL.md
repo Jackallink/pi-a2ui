@@ -9,6 +9,8 @@ metadata:
 
 Use Pi's `a2ui_render` tool to publish. The helper only prepares/checks source; it does not display UI. Paths below are relative to this skill directory. Use the absolute skill path Pi supplies when running scripts; quote paths containing spaces.
 
+After deciding a canvas helps, read this skill before composing new Express unless its body is already in context. For new or changed source, use a matching example, adapt it, check the final source, then pass the returned arguments unchanged to `a2ui_render`. If skill reading or helper execution is unavailable, explain the limitation in prose; do not claim preflight ran. Plain replies and trivial confirmations do not need this workflow.
+
 ## Known task: example → adapt → check → render
 
 If the task already names a template, start there. For a guarded form use `validated-form`; for a basic form use `user-form`. With Node24 selected, use the absolute skill directory supplied by Pi, keep your current project cwd, and create a new unique temporary source there (never inside the installed package or over an existing project file):
@@ -22,6 +24,10 @@ node "<absolute-skill-path>/scripts/a2ui.mjs" check --surface-id form "$source_f
 ```
 
 Adapt **submitted keys as well as labels and validation**. A display label, its `value` binding path and an `Event.context` key are independent: the template's Accept checkbox uses `$/ok`, but a request for a submitted key `accept` needs `accept:$/ok`, not `ok:$/ok`. Before rendering, compare the exact requested context keys/types with the declared Event. `check` verifies structure; it cannot know the user's requested names. See [adapting a template](references/adapting-templates.md) for an executable example.
+
+For several required text values, adapt the named-ID pattern rather than adding an unrequested checkbox; see [the three-field example](references/summaries-and-feedback.md#collect-three-required-values). `FormValidation.buttons` takes reachable Button **ID strings**, and `rules.fieldId` names an input component, not its value path. The validator does not contain those controls; put them in the root tree.
+
+If shell redirection or `mktemp` is disallowed, use an allowed write/edit tool to create a new owned source file, then invoke the same helper check separately. Keep sandbox restrictions and existing project files intact.
 
 Use the new file path shown above to adapt the template before the final check; stdin is also supported. Do not redirect over existing files. Pass the successful check output **unchanged as the arguments** to `a2ui_render`. Only that tool displays UI. A known template does not need a preceding `patterns`/`pattern`/`catalog` tour or a second `read` of the example already returned by the helper. Model transport errors and missing tools/skills need loading/configuration diagnosis, not another DSL rewrite.
 

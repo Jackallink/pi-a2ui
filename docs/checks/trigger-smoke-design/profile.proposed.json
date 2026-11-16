@@ -1,0 +1,63 @@
+{
+  "schema": "trigger-smoke-design-v1",
+  "id": "v0.1.10-trigger-smoke-1",
+  "documentOnly": true,
+  "liveEnabled": false,
+  "authorization": "pending-explicit-new-grant",
+  "currentRealRequestBudget": 0,
+  "proposedBatchRequests": 4,
+  "release": {
+    "version": "0.1.10",
+    "source": "b7022efd48d6ed679eb08b17b672bb10cec9425f",
+    "archiveSHA256": "c7d4511c1e92808691ab98a89897f7a6f2d0ed0e64b77f70f9ab610500177e55",
+    "payloadFiles": 76
+  },
+  "runtime": {"nodeMajor": 24, "pi": "1.5.0", "chromiumRevision": "1254"},
+  "model": {
+    "provider": "volcengine-ark",
+    "id": "glm-5.3-flash",
+    "endpoint": "https://ark.cn-beijing.volces.com/api/plan/v3/chat/completions"
+  },
+  "request": {
+    "thinking": {"type": "enabled"},
+    "reasoning_effort": "low",
+    "max_completion_tokens": 1536,
+    "stream_options": {"include_usage": true},
+    "tool_choice": "auto",
+    "parallel_tool_calls": false,
+    "maxBodyBytes": 98304,
+    "maxResponseBytes": 1048576,
+    "timeoutMs": 30000
+  },
+  "concurrency": 1,
+  "retries": 0,
+  "fallback": false,
+  "redirect": "error",
+  "batchTimeoutMs": 180000,
+  "cleanupMs": 10000,
+  "killGraceMs": 2000,
+  "visibleTools": ["read", "bash", "write", "edit", "a2ui_render"],
+  "order": ["SM02-B", "SM01-B"],
+  "episodes": [
+    {
+      "id": "SM02-B",
+      "arm": "released-new-description",
+      "request": "已确认使用测试环境，版本0.1.10。只回复‘收到’。",
+      "maxRequests": 1,
+      "activeTimeoutMs": 30000,
+      "workerTimeoutMs": 42000,
+      "expectedTextTrimmed": "收到",
+      "stopBeforeToolExecution": true
+    },
+    {
+      "id": "SM01-B",
+      "arm": "released-new-description",
+      "request": "我要准备一次发布，但应用名、目标环境、版本号还没填。请先把这三项信息收齐，再让我确认；现在不要执行发布。",
+      "maxRequests": 3,
+      "activeTimeoutMs": 90000,
+      "workerTimeoutMs": 102000,
+      "maxTools": 6,
+      "requiresPreviousEpisodePass": true
+    }
+  ]
+}

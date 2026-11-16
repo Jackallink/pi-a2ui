@@ -558,3 +558,33 @@ test("R08 real Chromium composition Enter confirms text rather than executing an
  await cdp.send('Input.insertText',{text:'Submit'});await query.evaluate(node=>node.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter',keyCode:229,bubbles:true})));await expect(palette).toBeVisible();expect(canvas.sent).toHaveLength(0);
  await query.press('Enter');await expect(palette).not.toBeVisible();await expect(page.locator('#notice')).toHaveText('Sent to Pi');expect(canvas.sent).toHaveLength(1);await cdp.detach();
 });
+
+test('AF05 documented preflight arguments reach the actual extension and bound owned DOM',async({page})=>{
+ const {readFileSync,mkdirSync}=await import('node:fs');
+ const {spawnSync}=await import('node:child_process');
+ const {resolve}=await import('node:path');
+ const {default:install}=await import('../extension.ts');
+ const {formCandidates,domFormBinding}=await import('./trigger-smoke/observations.ts');
+ const reference=readFileSync('skills/pi-a2ui/references/summaries-and-feedback.md','utf8');
+ const source=reference.split('## Collect three required values\n')[1]?.split('\n## ')[0].match(/```text\n([\s\S]*?)\n```/)?.[1];
+ expect(source,'documented three-field source').toBeTruthy();
+ const checked=spawnSync(process.execPath,[resolve('skills/pi-a2ui/scripts/a2ui.mjs'),'check','--surface-id','release-info','-'],{input:source,encoding:'utf8',timeout:10000});
+ expect(checked.status,checked.stderr).toBe(0);const args=JSON.parse(checked.stdout);expect(args).toEqual({surfaceId:'release-info',source});
+ const tools=new Map<string,any>(),handlers=new Map<string,any>();let opened='',messages=0,posts=0;
+ install({registerTool(t:any){tools.set(t.name,t);},registerCommand(){},on(n:string,h:any){handlers.set(n,h);},sendUserMessage(){messages++;},getActiveTools:()=>['a2ui_render'],setActiveTools(){},exec:async(_program:string,values:string[])=>{opened=values.at(-1)!;return{code:0,stdout:'',stderr:''};}}as any);
+ const ctx={cwd:process.cwd(),sessionManager:{getBranch:()=>[]},ui:{notify(){}}};await handlers.get('session_start')({},ctx);
+ try{
+  const result=await tools.get('a2ui_render').execute('documented',args,undefined,undefined,ctx);
+  const url=new URL(opened),origin=url.origin,token=new URLSearchParams(url.hash.slice(1)).get('token');
+  await page.context().route('**/*',route=>new URL(route.request().url()).origin===origin?route.continue():route.abort());
+  expect((await page.request.post(origin+'/api/connect',{headers:{origin},data:{token}})).status()).toBe(200);
+  page.on('request',request=>{if(request.url()===origin+'/api/actions'&&request.method()==='POST')posts++;});
+  await page.goto(origin);const canvas=page.getByRole('region',{name:'Canvas release-info',exact:true});await expect(canvas).toBeVisible();
+  const candidates=formCandidates(result.details.a2uiSnapshot,'release-info');expect(candidates).toHaveLength(1);
+  const binding=await canvas.evaluate(domFormBinding,candidates);expect(binding.matched).toBe(true);
+  expect(binding.candidates[0].fields.map(f=>({id:f.id,available:f.available}))).toEqual([{id:'appInput',available:true},{id:'envInput',available:true},{id:'versionInput',available:true}]);
+  expect(binding.candidates[0].buttonId).toBe('submit');expect(binding.candidates[0].buttonAvailable).toBe(true);
+  mkdirSync('.local/authoring-first-use-implementation',{recursive:true});await canvas.screenshot({path:'.local/authoring-first-use-implementation/af05-form.png'});
+  expect(posts).toBe(0);expect(messages).toBe(0);
+ }finally{await page.close();await handlers.get('session_shutdown')({});}
+});
