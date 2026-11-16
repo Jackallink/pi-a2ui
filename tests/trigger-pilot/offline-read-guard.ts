@@ -6,8 +6,10 @@ import {homedir} from 'node:os';
 import {resolve,join} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {SMOKE_ID,verifyLiveWorker} from '../trigger-smoke/policy.ts';
+import {PAIR_ID} from '../authoring-pilot/profile.ts';
+import {verifyPairWorker} from '../authoring-pilot/authority.ts';
 // This consumed pilot has no new live authorization. Refuse before SDK evaluation.
-if(process.argv[4]==='live'){if(process.argv[6]!==SMOKE_ID)throw new Error('live execution disabled; new explicit authorization required');verifyLiveWorker(process.argv[3],process.argv[2],process.argv[6]);}
+if(process.argv[4]==='live'){if(process.argv[6]===PAIR_ID)verifyPairWorker(process.argv[3],process.argv[2]);else{if(process.argv[6]!==SMOKE_ID)throw new Error('live execution disabled; new explicit authorization required');verifyLiveWorker(process.argv[3],process.argv[2],process.argv[6]);}}
 const state={active:process.argv[4]!=='live',denied:0};
 (globalThis as any).pilotReadGuard=state;
 if(state.active){

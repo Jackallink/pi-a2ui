@@ -30,3 +30,16 @@ worker对新policy从run内本臂归档payload复制到同一workspace/package�
 Gate2独立GO→先有意义RED→最小实现及synthetic GREEN→固定source完整本地checks/公开offline/prepare→独立代码GO→操作人创建只反映这次用户授权的唯一source-bound grant与精确命令→一次live≤24→原始四行/费用/缺失保留→独立执行后收口。不重试、不替换grant补样本；正常失败继续只是既定其它case，不是重做当前case。
 
 当前只有测试意图，无新增实际测试或模型结果。后续所有结果按source/tree/runtime/两档/profile/oracle/contexts/hash分别记录于本Check或后续Check，原始日志在.local/authoring-pilot-implementation；计划文件不维护进度。回退只撤销本private适配，不复活旧grant。
+
+## Gate2与实施中的实际证据
+
+Gate2独立报告`.local/authoring-pilot-implementation/gate2-review.md` SHA256 `6ebd3890d49d5608e7e39372aab8017a2386096d45cef86cecd9933b4907df05`，固定539ce7e/treefe86ab9c，0项开放P0/P1/P2，明确仅test-first有限实施准入。状态由tdd-approved进入in-progress。
+
+- 首批真实行为RED：现有policy拒绝合法新实验身份、旧app oracle忽略新case返回0；`red.log`保留2 fail。最小适配`first-green.log`2 pass；未声称首RED到达第7/第25断言。
+- Oracle补充cancel Event反例，`cancel-red.log`显示true≠false，修正后`oracle-green.log`5 pass。非法变体/keys/labels/多输入/rules、FP02 Unicode边界、分母/N/A和单LF来源比较均覆盖。
+- 导入式live API的SDK evaluation计数从1的RED降至0的GREEN（`api-red.log`/`api-green.log`）。复用heavy implementation移到episode.ts，worker.ts成为先pure authority后dynamic import的薄入口；非CLI live API在SDK前拒绝。
+- 开发中`paired-r2.log`24/24 synthetic checks通过（含真实双包四capture/只允许真实descriptor+system snippet差异、实际SDK/DOM/普通继续/致命停批/owned browser TERM fallback）；这些属于开发诊断，不代替后续固定candidate完整验收。增加tool12/第二check/缺draft/真实inflight abort反例的`additional.log`4 pass。
+- SDK收到DONE及有效finish后会cancel读取器；不得把该已知终止误作未完成。保留原始cancelled，仅在DONE+有效SDK stop/toolUse+finish+errors为空时接受；真的inflight abort仍fatal unknown。Ark系统消息在实际body映射为developer，比较器同时处理system/developer且只替换精确一处实际短snippet，原body不改。
+- 私有driver12工具意图在完整assistant消息中、SDK schema前计数；实际tool execution另计。首次check保存实际source/surfaceId与hash，schema/INPUT/ordinary与fatal严格分开。POST前重验物化两包及实际workspace拷贝76文件，实际active factory/compiler/validator从该臂import；新C/G不走NEW→OLD。
+
+保全快照`.local/authoring-pilot-implementation/preservation-before.json`：原产品76+锁+冻结profile/Check099共79文件未变。历史22回执/旧grant/锁与两归档另按原static-preflight核对。没有provider/model请求或真实配置读取；无grant。当前还不声称完整CI、代码GO或执行准入完成；准入继续按上节顺序。

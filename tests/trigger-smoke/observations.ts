@@ -1,11 +1,13 @@
+import {pairCandidates} from '../authoring-pilot/oracle.ts';
 // Persist observations, never SDK reasoning blocks/signatures. Do not mutate SDK history.
 export function assistantReceipt(message:any):any{
  return{role:'assistant',stopReason:message.stopReason,content:(message.content??[]).flatMap((c:any)=>c.type==='text'?[{type:'text',text:c.text}]:c.type==='toolCall'?[{type:'toolCall',id:c.id,name:c.name,arguments:structuredClone(c.arguments)}]:[])};
 }
 const fieldLabels=[/应用(?:名|名称)?|app(?:lication)?(?:\s*name)?/i,/目标环境|环境|environment/i,/版本(?:号)?|version/i];
 function paths(value:any,found=new Set<string>()):Set<string>{if(value&&typeof value==='object'){if(typeof value['@path']==='string')found.add(value['@path']);for(const item of Object.values(value))paths(item,found);}return found;}
-export interface FormCandidate{fields:Array<{id:string;path:string;kind:string}>;buttonId:string;caption:string}
-export function formCandidates(snapshot:any,surfaceId:string):FormCandidate[]{
+export interface FormCandidate{fields:Array<{id:string;path:string;kind:string}>;buttonId:string;caption:string;plainTextOnly?:boolean}
+export function formCandidates(snapshot:any,surfaceId:string,scenario?:any):FormCandidate[]{
+ if(scenario)return pairCandidates(snapshot.surfaces.find((s:any)=>s.surfaceId===surfaceId)?.message.createSurface,scenario);
  const surface=snapshot.surfaces.find((s:any)=>s.surfaceId===surfaceId)?.message.createSurface;if(!surface)return[];const nodes=surface.components,byId=new Map<string,any>(nodes.map((n:any)=>[n.id,n]));
  const string=(value:any):string=>{if(typeof value==='string')return value;const path=value?.['@path'];if(typeof path!=='string')return'';let current=surface.dataModel;for(const key of path.slice(1).split('/').map((k:string)=>k.replaceAll('~1','/').replaceAll('~0','~')))current=current?.[key];return typeof current==='string'?current:'';};
  const caption=(id:string):string=>{const n=byId.get(id);if(!n)return'';if(n.component==='Text')return string(n.text);return[n.child,...(Array.isArray(n.children)?n.children:[])].filter(v=>typeof v==='string').map(caption).join(' ').replace(/\s+/g,' ').trim();};
@@ -39,7 +41,7 @@ export function domFormBinding(root:HTMLElement,candidates:FormCandidate[]){
  };
  const all=dom.elements(root),dialogs=Array.from(root.ownerDocument.querySelectorAll<HTMLDialogElement>('dialog:modal'));
  const observations=candidates.map(candidate=>{
-  const fields=candidate.fields.map(field=>{const owner=dom.host(field.id);const selector='input:not([type=hidden]),textarea,select,[role=combobox],[role=checkbox],[role=radio]'+(field.kind==='ChoicePicker'?',button':'');return{id:field.id,path:field.path,available:!!owner&&dom.elements(owner).some(element=>element.matches(selector)&&dom.available(element))};});
+  const fields=candidate.fields.map(field=>{const owner=dom.host(field.id);const selector='input:not([type=hidden]),textarea,select,[role=combobox],[role=checkbox],[role=radio]'+(field.kind==='ChoicePicker'?',button':'');return{id:field.id,path:field.path,available:!!owner&&dom.elements(owner).some(element=>element.matches(selector)&&(!candidate.plainTextOnly||element instanceof HTMLTextAreaElement||element instanceof HTMLInputElement&&element.type==='text')&&dom.available(element))};});
   const buttonHost=dom.host(candidate.buttonId);const buttonAvailable=!!buttonHost&&dom.elements(buttonHost).some(element=>element.matches('button')&&dom.available(element)&&element.textContent?.replace(/\s+/g,' ').trim()===candidate.caption);
   return{fields,buttonId:candidate.buttonId,buttonAvailable,matched:fields.length===3&&fields.every(field=>field.available)&&buttonAvailable};
  });

@@ -1,8 +1,8 @@
 # Spec025：GLM首次候选正确性的双任务配对验证
 
-状态：walkthrough-approved（独立R2 Gate1设计/拟成本边界/可比性GO，0项开放P0/P1/P2；受审设计稿9156b34be57d2daaf84d722ff406f55deef188e7，见[Check122](../checks/122-authoring-paired-pilot-design.md)）；本轮仅场景/预算设计与独立评审，实际模型预算仍0，不实施驱动、不读真实模型配置、不创建live grant。用户明确要求GO后再申请真实调用授权。完整机器定义见[proposed profile](../checks/authoring-paired-pilot-design/profile.proposed.json)，其documentOnly/live=false不能作为执行配置。
+状态：in-progress（Gate1独立R2 GO后获用户条件授权；Gate2独立GO固定539ce7e/treefe86ab9c，见[Check123](../checks/123-authoring-paired-pilot-implementation.md)）。依次经过walkthrough-approved、tdd-approved，当前实施有限private适配；完整零推理/独立代码GO前不读真实模型配置、不创建live grant或发真实请求。原设计零预算状态仍在历史9156b34保留。[proposed profile](../checks/authoring-paired-pilot-design/profile.proposed.json)为不变设计收据；独立runtime profile位于tests/authoring-pilot/profile.json，默认dry-run/live禁用。
 
-授权续记：用户在上述独立设计GO及明确条件申请后回复“授权”，已批准必要最小适配、完整零推理/独立代码GO之后一次新4session/总≤24批次。当前进入[Check123](../checks/123-authoring-paired-pilot-implementation.md) Gate2，尚未建立live grant或调用。原设计阶段“预算0/不实施/未授权”等为当时状态，由历史9156b34保留；新执行仍严格受代码门槛和一次性源绑定约束，不复用旧余量。
+授权续记：用户在上述独立设计GO及明确条件申请后回复“授权”，已批准必要最小适配、完整零推理/独立代码GO之后一次新4session/总≤24批次。当前进入[Check123](../checks/123-authoring-paired-pilot-implementation.md)有限实施与零推理验收，尚未建立live grant或调用。原设计阶段“预算0/不实施/未授权”等为当时状态，由历史9156b34保留；新执行仍严格受代码门槛和一次性源绑定约束，不复用旧余量。
 
 ## 目标与证据边界
 
