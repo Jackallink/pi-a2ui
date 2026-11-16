@@ -2,6 +2,8 @@
 
 状态：walkthrough-approved（独立Gate1设计GO，0项开放P0/P1/P2；不是实施或效果验收）。基点fc558daf252126ee91362f07bab7874d74684d69；受审设计稿af6d5593980a496140653c9e912d402b89e53228。用户同意继续聚焦skill模板和CLI预检，本轮完成设计与独立评审，见[Check120](../checks/120-authoring-first-use-design.md)。设计书面确认、Gate2/TDD准入后才改产品。真实模型预算0，不沿用Spec023未用的2请求。
 
+推进续记：用户在具体设计交付后以“然后呢”要求继续，当前按继续推进这份有限设计处理，进入[Check121](../checks/121-authoring-first-use-implementation.md)的Gate2/TDD；没有新的模型/发布/权限授权。上述书面设计确认作为此续接上下文记录，Gate2仍须独立GO后才改生产代码。
+
 ## 问题与目标
 
 [Check119](../checks/119-trigger-smoke-live-result.md)在0.1.10观察到：负例正确；正例直接调用a2ui_render，未read skill或helper check，生成FormValidation.buttons内嵌Button导致orphan编译错误。这里只能证明一次选择和一次首次生成失败，不能证明模型总不会读skill或插件编译器有缺陷。
