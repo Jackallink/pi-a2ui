@@ -28,25 +28,33 @@ export function normalizedBody(body:any):any{
 export class PilotBudget{
  readonly path:string;readonly mode:string;
  constructor(path:string,mode:string){this.path=path;this.mode=mode;assert.ok(['offline','live'].includes(mode));}
- rows():any[]{
-  if(!existsSync(this.path))return [];assert.ok(lstatSync(this.path).isFile()&&!lstatSync(this.path).isSymbolicLink(),'ordinary journal');
-  const rows=readFileSync(this.path,'utf8').trim().split('\n').filter(Boolean).map(line=>JSON.parse(line));assert.ok(rows.length<=36,'batch budget');
-  rows.forEach((r,i)=>{assert.equal(r.index,i+1);assert.ok(PROFILE.order.includes(r.episode));assert.equal(r.mode,this.mode);assert.equal(r.model,PROFILE.model.id);assert.equal(r.endpoint,PROFILE.model.baseUrl+'/chat/completions');});
-  for(const id of PROFILE.order)assert.ok(rows.filter(r=>r.episode===id).length<=3,'episode budget');return rows;
+ evidence():any{
+  const rows:any[]=[];if(!existsSync(this.path))return{rows,complete:true,exists:false};
+  try{
+   assert.ok(lstatSync(this.path).isFile()&&!lstatSync(this.path).isSymbolicLink(),'ordinary journal');const bytes=readFileSync(this.path);assert.ok(bytes.length<=65536);const text=bytes.toString('utf8'),lines=text.split('\n');
+   for(let i=0;i<lines.length-1;i++){
+    const r=JSON.parse(lines[i]);assert.equal(r.index,rows.length+1);assert.ok(PROFILE.order.includes(r.episode));assert.equal(r.mode,this.mode);assert.equal(r.model,PROFILE.model.id);assert.equal(r.endpoint,PROFILE.model.baseUrl+'/chat/completions');assert.match(r.bodySHA256,/^[a-f0-9]{64}$/);assert.ok(rows.length<36&&rows.filter(x=>x.episode===r.episode).length<3);rows.push(r);
+   }
+   assert.equal(lines.at(-1),'','torn journal tail');return{rows,complete:true,exists:true};
+  }catch{return{rows,complete:false,exists:true,error:'journal unreadable, invalid or torn; original bytes retained'};}
  }
+ rows():any[]{const proof=this.evidence();assert.equal(proof.complete,true,'journal invalid; admission stopped');return proof.rows;}
  admit(id:string,url:string,model:any,body:any):void{
   assert.ok(PROFILE.order.includes(id),'episode identity');assert.equal(url,PROFILE.model.baseUrl+'/chat/completions','endpoint identity');
   for(const key of ['provider','id','baseUrl'])assert.equal(model[key],PROFILE.model[key],'model identity');
   assert.equal(body.model,PROFILE.model.id,'body model identity');assert.equal(body.max_tokens??body.max_completion_tokens,1536,'output cap');assert.equal(body.parallel_tool_calls,false,'sequential tools');assert.equal(body.tool_choice,'auto','auto choice');assert.ok(Buffer.byteLength(JSON.stringify(body))<=98304,'input body budget');
   const rows=this.rows();assert.ok(rows.length<36&&rows.filter(r=>r.episode===id).length<3,'request budget');
   const entry={index:rows.length+1,episode:id,mode:this.mode,model:PROFILE.model.id,endpoint:url,bodySHA256:hash(canonical(body))};
-  const fd=openSync(this.path,'a',0o600);try{writeSync(fd,JSON.stringify(entry)+'\n');fsyncSync(fd);}finally{closeSync(fd);}
+  const bytes=Buffer.from(JSON.stringify(entry)+'\n'),fd=openSync(this.path,'a',0o600);try{assert.equal(writeSync(fd,bytes),bytes.length,'journal write incomplete; no dispatch');fsyncSync(fd);}finally{closeSync(fd);}
  }
 }
-export function summarize(results:any[]):any{
+export function summarize(results:any[],accounting?:{live:boolean;journal:any}):any{
  const positive:any={A:{requested:0,attempted:0,committed:0},B:{requested:0,attempted:0,committed:0}},falsePositives:any={A:0,B:0};
  for(const r of results){const [id,arm]=r.id.split('-');if(!['A','B'].includes(arm))continue;if(id.startsWith('T')){for(const [field,key]of [['renderRequested','requested'],['renderAttempted','attempted'],['renderCommitted','committed']])positive[arm][key]+=r[field]===true?1:0;}if(id.startsWith('N')&&r.renderRequested===true)falsePositives[arm]++;}
  const closed=(r:any)=>r&&['text_only','render_schema','render_compile','render_committed'].includes(r.outcome)&&!r.harnessFailure;
  let completePairs=0,improvementPairs=0,reversePairs=0;for(const s of SCENARIOS){const a=results.find(r=>r.id===s.id+'-A'),b=results.find(r=>r.id===s.id+'-B');if(closed(a)&&closed(b)){completePairs++;if(s.positive){if(!a.renderRequested&&b.renderRequested)improvementPairs++;if(a.renderRequested&&!b.renderRequested)reversePairs++;}}}
- return{plannedEpisodes:12,positive,falsePositives,completePairs,improvementPairs,reversePairs,conclusion:completePairs<6?'incomplete-pairs':improvementPairs>=2&&reversePairs===0&&falsePositives.B<=falsePositives.A?'direction-only':'no-clear-gain',results};
+ const journal=accounting?.journal,requestAccountingKnown=!!journal?.complete&&results.every(r=>r.notRun||Number.isSafeInteger(r.requests)&&r.requestAccounting!=='unknown'),requestOutcomesKnown=results.every(r=>r.notRun||r.outcome!=='provider_unknown'&&r.requestAccounting!=='unknown');
+ const receiptAdmissions=results.reduce((n,r)=>n+(Number.isSafeInteger(r.requests)?r.requests:(r.knownAdmittedRequests??0)),0),knownAdmittedRequests=Math.max(journal?.rows?.length??0,receiptAdmissions);
+ const confirmedProviderRequests=accounting?.live?results.reduce((n,r)=>n+(Number.isSafeInteger(r.requests)&&r.requestAccounting!=='unknown'&&r.outcome!=='provider_unknown'?r.requests:0),0):0;
+ return{plannedEpisodes:12,positive,falsePositives,completePairs,improvementPairs,reversePairs,conclusion:completePairs<6?'incomplete-pairs':improvementPairs>=2&&reversePairs===0&&falsePositives.B<=falsePositives.A?'direction-only':'no-clear-gain',knownAdmittedRequests,requestAccountingKnown,requestOutcomesKnown,confirmedProviderRequests,actualModelRequests:accounting?.live?(requestAccountingKnown&&requestOutcomesKnown?knownAdmittedRequests:null):0,results};
 }

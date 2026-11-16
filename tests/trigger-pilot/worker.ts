@@ -2,10 +2,11 @@
 import './offline-read-guard.ts';
 import assert from 'node:assert/strict';
 import {readFile,writeFile,mkdir,rm,symlink,lstat} from 'node:fs/promises';
-import {readFileSync,writeFileSync} from 'node:fs';
-import {join,resolve,dirname,relative} from 'node:path';
+import {writeFileSync,appendFileSync} from 'node:fs';
+import {join,resolve,dirname} from 'node:path';
 import {homedir} from 'node:os';
 import {fileURLToPath} from 'node:url';
+import {execFileSync} from 'node:child_process';
 import {ModelRuntime,SettingsManager,SessionManager,DefaultResourceLoader,createAgentSession,type ExtensionAPI} from '@earendil-works/pi-coding-agent';
 import {chromium,type Browser,type BrowserServer,type Page} from '@playwright/test';
 import a2ui from '../../extension.ts';
@@ -55,6 +56,7 @@ export async function episode(id:string,run:string,kind:string,simulation=''){
   let config:{key:string;headers:Record<string,string>;model:Record<string,unknown>};
   if(simulation==='offline-config-read')await readFile(configPaths[1],'utf8');
   if(kind==='live'){
+   const ticket=JSON.parse(await readFile(join(run,'admission.json'),'utf8'));assert.equal(ticket.userAuthorizedRequests,36);assert.equal(ticket.canary,null);assert.deepEqual(ticket.profile,PROFILE);assert.equal(ticket.identity.dirty,false);assert.equal(execFileSync('git',['rev-parse','HEAD'],{cwd:ROOT,encoding:'utf8'}).trim(),ticket.identity.source);for(const [path,digest]of Object.entries(ticket.identity.files)){assert.ok(!path.startsWith('/')&&!path.includes('..'));assert.equal(hash(await readFile(join(ROOT,path))),digest,'reviewed input drift');}assert.equal(Object.keys(ticket.contexts).length,6);
    beforeConfig=await configHashes();
    try{config=configAdmission(await readFile(configPaths[2],'utf8'),await readFile(configPaths[1],'utf8').catch(e=>{if(e.code==='ENOENT')return '{}';throw e;}),process.env);}catch{throw new Error('trusted live config admission failed');}
   }else config={key:'synthetic-pilot-unused',headers:{},model:{}};
@@ -80,7 +82,7 @@ export async function episode(id:string,run:string,kind:string,simulation=''){
     }catch(e){const isBudget=e instanceof Error&&e.message.includes('request budget');stop(isBudget?(record.preparation?'ui_preparation_only':'budget_limited'):'admission_error',!isBudget);throw new Error('pilot request admission stopped');}
     if(kind!=='live'){
      const turn=record.requests;let tool:any,text:string|undefined;
-     if(kind==='capture'||simulation==='text')text='synthetic text only';
+     if(kind==='capture'||simulation==='text'||simulation==='torn-journal')text='synthetic text only';
      else if(simulation==='schema-missing')tool={name:'a2ui_render',arguments:{surfaceId:'pilot'}};
      else if(simulation==='schema-type')tool={name:'a2ui_render',arguments:{surfaceId:{invalid:true},source:'root = Text("x")'}};
      else if(simulation==='prepare'||simulation==='budget')tool={name:'read',arguments:{path:skill}};
@@ -103,7 +105,7 @@ export async function episode(id:string,run:string,kind:string,simulation=''){
   const factory=(pi:ExtensionAPI)=>{
    const host:ExtensionAPI={...pi,registerTool:(tool:any)=>pi.registerTool(tool.name==='a2ui_render'?{...tool,description:descriptionForArm(tool.description,arm)}:tool),exec:async(command,args)=>{
     assert.ok(['open','xdg-open','rundll32'].includes(command));const url=new URL(args.at(-1)!);assert.equal(url.hostname,'127.0.0.1');origin=url.origin;secrets.push(url.href);const token=new URLSearchParams(url.hash.slice(1)).get('token');if(token)secrets.push(token);
-    opener=(async()=>{browserServer=await chromium.launchServer({headless:true,handleSIGTERM:false,handleSIGINT:false,handleSIGHUP:false});const p=browserServer.process(),profileArg=p.spawnargs.find(a=>a.startsWith('--user-data-dir='));assert.ok(profileArg);await writeFile(join(run,id+'.resources.json'),JSON.stringify({workerPid:process.pid,browserPid:p.pid,profileArg,origin}),{mode:0o600});browser=await chromium.connect(browserServer.wsEndpoint());const context=await browser.newContext({viewport:{width:1280,height:900},locale:'en-US',timezoneId:'UTC',reducedMotion:'reduce'});await context.route('**/*',route=>new URL(route.request().url()).origin===origin?route.continue():route.abort());const response=await context.request.post(origin+'/api/connect',{headers:{origin},data:{token},timeout:5000});assert.equal(response.status(),200);page=await context.newPage();await page.goto(origin!,{timeout:5000});})();
+    opener=(async()=>{browserServer=await chromium.launchServer({headless:true,handleSIGTERM:false,handleSIGINT:false,handleSIGHUP:false});const p=browserServer.process(),profileArg=p.spawnargs.find(a=>a.startsWith('--user-data-dir='));assert.ok(profileArg);await writeFile(join(run,id+'.resources.json'),JSON.stringify({workerPid:process.pid,browserPid:p.pid,profileArg,origin}),{mode:0o600});browser=await chromium.connect(browserServer.wsEndpoint());const context=await browser.newContext({viewport:{width:1280,height:900},locale:'en-US',timezoneId:'UTC',reducedMotion:'reduce'});record.actionPosts=0;context.on('request',r=>{if(r.url()===origin+'/api/actions'&&r.method()==='POST')record.actionPosts++;});await context.route('**/*',route=>new URL(route.request().url()).origin===origin?route.continue():route.abort());const response=await context.request.post(origin+'/api/connect',{headers:{origin},data:{token},timeout:5000});assert.equal(response.status(),200);page=await context.newPage();await page.goto(origin!,{timeout:5000});})();
     await opener;return{stdout:'',stderr:'',code:0,killed:false,truncated:false};
    }};
    a2ui(host);
@@ -126,7 +128,7 @@ export async function episode(id:string,run:string,kind:string,simulation=''){
     if(event.toolName==='a2ui_render'){
      if(event.isError){stop('render_compile');return;}
      record.renderCommitted=true;record.snapshot=(event.details as any)?.a2uiSnapshot;
-     try{await timeout(opener??Promise.reject(new Error('missing opener')),10000,'browser opener');assert.ok(page);const canvas=page.getByRole('region',{name:'Canvas '+record.surfaceId,exact:true});await canvas.waitFor({timeout:5000});record.domText=await canvas.innerText();record.browserVersion=browser!.version();record.actionPosts=0;page.on('request',r=>{if(r.url()===origin+'/api/actions')record.actionPosts++;});await page.screenshot({path:join(run,id+'.png')});record.domObserved=true;if(simulation==='hang'){await writeFile(join(run,id+'.hang-ready'),'actual DOM observed\n');await new Promise(()=>{});}stop('render_committed');}catch(error){record.browserError=error instanceof Error?error.message.slice(0,4096):'browser error';record.harnessFailure=true;stop('browser_error',true);}
+     try{await timeout(opener??Promise.reject(new Error('missing opener')),10000,'browser opener');assert.ok(page);const canvas=page.getByRole('region',{name:'Canvas '+record.surfaceId,exact:true});await canvas.waitFor({timeout:5000});record.domText=await canvas.innerText();record.browserVersion=browser!.version();assert.equal(record.actionPosts,0,'no action dispatch authorized');await page.screenshot({path:join(run,id+'.png')});record.domObserved=true;if(simulation==='hang'){await writeFile(join(run,id+'.hang-ready'),'actual DOM observed\n');await new Promise(()=>{});}stop('render_committed');}catch(error){record.browserError=error instanceof Error?error.message.slice(0,4096):'browser error';record.harnessFailure=true;stop('browser_error',true);}
     }
    });
   };
@@ -143,7 +145,8 @@ export async function episode(id:string,run:string,kind:string,simulation=''){
   if(origin){try{await realFetch(origin,{signal:AbortSignal.timeout(1000)});record.cleanupErrors.push('server remains open');}catch{record.serverClosed=true;}}
   if(beforeConfig){try{assert.deepEqual(await configHashes(),beforeConfig);record.userConfigUnchanged=true;}catch{record.cleanupErrors.push('user config changed');}}
   killTrackedDetachedChildren();globalThis.fetch=realFetch;process.removeListener('SIGTERM',interrupt);process.removeListener('SIGINT',interrupt);
-  await clean('workspace',()=>rm(workspace,{recursive:true,force:true}));record.toolCount=toolCount;record.offlineConfigGuard=(globalThis as any).pilotReadGuard;record.usageKnown=record.usage.length===record.requests&&record.usage.every((u:any)=>u&&['prompt_tokens','completion_tokens','total_tokens'].every(k=>typeof u[k]==='number'));if(record.cleanupErrors.length){record.harnessFailure=true;record.fatal=true;}
+  await clean('workspace',()=>rm(workspace,{recursive:true,force:true}));record.toolAttempts=toolCount;record.toolCount=record.tools.length;record.offlineConfigGuard=(globalThis as any).pilotReadGuard;record.usageKnown=record.usage.length===record.requests&&record.usage.every((u:any)=>u&&['prompt_tokens','completion_tokens','total_tokens'].every(k=>typeof u[k]==='number'));if(record.cleanupErrors.length){record.harnessFailure=true;record.fatal=true;}
+  if(simulation==='torn-journal'&&kind==='offline')appendFileSync(journal,'{"index":2');
   writeFileSync(join(run,id+'.'+kind+(simulation?'-'+simulation:'')+'.json'),redact(record,secrets)+'\n',{mode:0o600});
  }
  return record;

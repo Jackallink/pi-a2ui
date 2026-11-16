@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync,writeFileSync,existsSync,mkdirSync} from 'node:fs';
+import {readFileSync,writeFileSync,existsSync} from 'node:fs';
 import {join} from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {createRun,runWorker,captureContexts,ROOT} from './trigger-pilot/control.ts';
@@ -22,6 +22,7 @@ test('TPS03 actual hung browser worker is killed, lower-bound journal retained, 
  const run=createRun(),capture=await runWorker('T01-A',run,'capture');writeFileSync(join(run,'contexts.json'),JSON.stringify({T01:capture.firstBodySHA256}));
  const r=await runWorker('T01-A',run,'offline','hang',12000);assert.equal(r.harnessFailure,true);assert.equal(r.requests,null);assert.equal(r.knownAdmittedRequests,1);assert.equal(r.process.fallback,true);assert.equal(existsSync(join(run,'T01-A.hang-ready')),true);assert.equal(existsSync(join(run,'workspace')),false);
  const resource=JSON.parse(readFileSync(join(run,'T01-A.resources.json'),'utf8'));await assert.rejects(fetch(resource.origin,{signal:AbortSignal.timeout(1000)}));
+ assert.throws(()=>process.kill(resource.browserPid,0),(e:any)=>e.code==='ESRCH');
 });
 test('TPS04 default and invalid CLI do not import credentials or start fetch',()=>{
  const run=createRun(),guard=join(run,'guard.mjs');writeFileSync(guard,`import fs from 'node:fs';import {syncBuiltinESMExports} from 'node:module';const original=fs.readFileSync;fs.readFileSync=function(path,...args){if(String(path).includes('/.pi/agent/'))throw Error('real credential read denied');return original.call(this,path,...args);};syncBuiltinESMExports();globalThis.fetch=()=>{throw Error('fetch denied');};`);
