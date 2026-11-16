@@ -63,3 +63,5 @@ Gate2分阶段RED：先既有policy对合法新offline ID拒绝（只证明该�
 主要风险：quote语义错误导致注入或正常命令误拒；共享接入误改旧policy；synthetic被误当模型效果；重建argv与实际cwd不一致。分别用实际进程sentinel、旧policy回归/guard、分层报告和真实helper/cwd观测约束。回退只撤新policy/入口/parser及接入分支；保留所有失败raw和旧锁，不返额度、不回写旧grade。产品内核与两包无变更。
 
 验证见证补充（AC-003）：只在新offline policy安装透明Node child_process.spawn观测，限定owned cwd，记录实际spawn尝试/返回PID及命令hash至run下持久0600文件，finally恢复；不改变参数或新增命令权限。合法direct/prefix命中同一见证，非法命令为0；受控child正例写run绝对sentinel且模拟workspace清理后仍存在。模型恶意替换/重定向canary也指向run绝对sentinel，避免被cleanup抹去。该审计文件是预期owned写入，不能当模型指令的副作用。
+
+观测故障边界：pre-spawn审计写失败可拒绝后端且记录pre_spawn_persist；后端一旦返回child，任何post-spawn观测/持久化失败必须仍把原child交回SDK接管timeout/cleanup，标记有界auditErrors。worker发现审计失败须fatal+harnessFailure，不能输出正常验收成功。实际owned timeout/group清理与独立worker回执需对照验证。

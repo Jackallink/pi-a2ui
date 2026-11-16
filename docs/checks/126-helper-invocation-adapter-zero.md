@@ -27,3 +27,11 @@ parser先验证全串、quote-aware separator、固定cwd/Node/helper/op/args，
 固定8c96fde4bf9feedea97a50696f3f85ac840c6b79/tree9a2d6d5da3a50508c069c8db143a5841fb498fcc代码R1 NO-GO（1P2、0P0/P1），报告SHA625f7b1020e502b09b54427b94db4f299796dd541de026c309303402485c1247。缺口：substitution sentinel相对project但断言run，workspace清理会抹掉可能副作用；AC003缺真实子进程执行见证。不是发现运行时注入漏洞，未因此放宽parser。
 
 先补witness-red.log两个真实SDK验证字段缺失的RED（证据缺口，不称漏洞复现）；所有有副作用的SDK canary改为run下绝对sentinel。新增process-witness.ts透明观察owned cwd的实际Node spawn调用/PID，持久文件在run外于workspace保留，正常helper两次先命中、非法command零次；finally恢复cp.spawn。独立受控真实child写绝对sentinel，模拟workspace清理后仍保留，证明detector有效。witness-green.log 17pass。追加exec-provenance-red.log记录规范命令与实际spawn命令尚缺闭合字段的RED；随后记录shellCommandSHA256，和accepted plan的commandSHA逐条独立相等，未经验证不写“真实执行”。本修正仍仅零推理observability，旧付费guard/产品/旧raw不改，待新source复审/完整验收。
+
+## Code R2 NO-GO与观测故障边界
+
+40cc4d3fb99800d6a28bc16384e80dca1a55bed1/treecda5d8be2f849637eb130e2169e1d10bd52e56fb完整Node602/602通过（node-full-40cc4d3.log，490527ms），但R2仍NO-GO：原P2已closed，新1P2是observer在spawn成功后的save抛错会丢child句柄。报告SHA f3b9416d63723a442d9352d308fcabdafad6a13f5aadc41ac257bc7d37bfc49b；未用通过覆盖NO-GO，未继续browser/最终zero GO。
+
+observer-fault-red.log纯内存fake backend pre/post两RED（0实际子进程），observer-cleanup-red.log实际owned长驻fixture helper，审计错误取代了应发生的SDK timeout（test finally显式清除owned组，未泄漏）。纠正：pre-save失败标pre_spawn_persist且不调用backend；backend已返回child后整段观测catch、标post_spawn_persist，始终归还原child，不吞审计错误为成功。worker tool_result/cleanup看到auditErrors即fatal+harnessFailure/process_witness_error，保留原provider诊断与实际helper结果。
+
+observer-fault-final-green.log 4pass：fake pre/post、实际Pi timeout清理（owned group已退出）、实际offline worker预载仅对其run审计文件一次post-write失败→2 synthetic回合fatal/harnessFailure、0model/0operator config、workspace和helper组清理、auditErrors回执明确。新正常路径仍需完整固定source重验；原166保护不变，未来场景和实付预算尚未推进。

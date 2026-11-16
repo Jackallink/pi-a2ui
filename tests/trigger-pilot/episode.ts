@@ -197,6 +197,7 @@ export async function episode(id:string,run:string,kind:string,simulation='',exp
    pi.on('tool_result',async event=>{
     record.transcript.push({role:'tool',tool:event.toolName,isError:event.isError,content:event.content});
     if(policy.helperAdapter&&event.toolName==='bash'){const planned=record.helperAdmissions?.find((p:any)=>p.toolCallId===event.toolCallId);if(planned?.status==='planned'){planned.status=event.isError?'failed':'executed';planned.exitCode=(event.structuredContent as any)?.exit_code??null;}}
+    if(policy.helperAdapter&&processWitness?.snapshot().auditErrors.length){record.harnessFailure=true;if(event.toolCallId===checkCallId)record.preflightPassed=!event.isError;stop('process_witness_error',true);return;}
     if(stopped)return;
     if(policy.paired&&!event.isError){if(event.toolCallId===record.skillReadCall)record.workflow.skillRead=true;if(event.toolCallId===record.exampleReadCall)record.workflow.exampleRead=true;}
     if(policy.paired&&event.toolName==='bash'&&event.isError&&!Number.isInteger((event.structuredContent as any)?.exit_code)){stop('helper_unknown',true);return;}
@@ -223,7 +224,7 @@ export async function episode(id:string,run:string,kind:string,simulation='',exp
   if(browserServer)await clean('browser',()=>browserServer!.kill());if(browser?.isConnected())await clean('disconnect',()=>browser!.close());
   if(origin){try{await realFetch(origin,{signal:AbortSignal.timeout(1000)});record.cleanupErrors.push('server remains open');}catch{record.serverClosed=true;}}
   if(beforeConfig){try{assert.deepEqual(await configHashes(),beforeConfig);record.userConfigUnchanged=true;}catch{record.cleanupErrors.push('user config changed');}}
-  killTrackedDetachedChildren();if(processWitness)await clean('process witness',async()=>{record.processWitness=processWitness!.snapshot();processWitness!.restore();});globalThis.fetch=realFetch;process.removeListener('SIGTERM',interrupt);process.removeListener('SIGINT',interrupt);
+  killTrackedDetachedChildren();if(processWitness)await clean('process witness',async()=>{record.processWitness=processWitness!.snapshot();processWitness!.restore();if(record.processWitness.auditErrors.length){record.harnessFailure=true;record.fatal=true;record.outcome='process_witness_error';}});globalThis.fetch=realFetch;process.removeListener('SIGTERM',interrupt);process.removeListener('SIGINT',interrupt);
   await clean('workspace',()=>rm(workspace,{recursive:true,force:true}));if(policy.paired){record.sourceMatch=sourceMatch(checkedSource,renderedSource);if(record.firstCandidate.submitted){record.workflow.skillRead=record.firstCandidate.workflowBefore.skillRead;record.workflow.exampleRead=record.firstCandidate.workflowBefore.exampleRead;}}record.toolAttempts=toolCount;record.toolCount=record.tools.length;record.offlineConfigGuard=(globalThis as any).pilotReadGuard;record.usage=record.requestDiagnostics.map((d:any)=>d.usage);record.usageKnown=record.usage.length===record.requests&&record.usage.every(completeUsage);if(record.cleanupErrors.length){record.harnessFailure=true;record.fatal=true;}
   if(simulation==='torn-journal'&&kind==='offline')appendFileSync(journal,'{"index":2');
   writeFileSync(join(run,id+'.'+kind+(simulation?'-'+simulation:'')+'.json'),redact(record,secrets)+'\n',{mode:0o600});
