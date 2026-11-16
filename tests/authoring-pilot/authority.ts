@@ -3,15 +3,17 @@ import assert from 'node:assert/strict';
 import {readFileSync,writeFileSync,mkdirSync,lstatSync,existsSync,realpathSync} from 'node:fs';
 import {join,dirname,resolve} from 'node:path';
 import {execFileSync} from 'node:child_process';
-import {ROOT,digest,assertOwned,jsonFile,identityInputs} from '../trigger-smoke/policy.ts';
+import {ROOT,digest,assertOwned,jsonFile,identityInputs,policyFor} from '../trigger-smoke/policy.ts';
 import {PilotBudget} from '../trigger-pilot/contracts.ts';
 import {diagnosticsClosed} from './oracle.ts';
+import {ADAPTER_ID} from '../helper-adapter/profile.ts';
 import {PAIR,PAIR_ID,PAIR_SHA,ARCHIVES,DIFFERENT} from './profile.ts';
 
+function packagePolicy(experiment:string){assert.ok(experiment===PAIR_ID||experiment===ADAPTER_ID,'known package policy');return policyFor(experiment);}
 const payload=()=>jsonFile(join(ROOT,'tests/benchmark-model/payload.json')) as string[];
 function ordinary(path:string){assert.equal(realpathSync(path),path,'symlink path');assert.ok(lstatSync(path).isFile()&&!lstatSync(path).isSymbolicLink(),'ordinary input');return readFileSync(path);}
-export function validatePackages(run:string):any{
- assertOwned(run,PAIR_ID);const rows=jsonFile(join(run,'packages.json'));assert.deepEqual(Object.keys(rows).sort(),['C','G']);
+export function validatePackages(run:string,experiment=PAIR_ID):any{
+ packagePolicy(experiment);assertOwned(run,experiment);const rows=jsonFile(join(run,'packages.json'));assert.deepEqual(Object.keys(rows).sort(),['C','G']);
  const paths=payload();assert.equal(paths.length,76);
  for(const arm of ['C','G'] as const){
   assert.equal(digest(ordinary(join(ROOT,ARCHIVES[arm]))),PAIR.arms[arm].archiveSHA256,'archive identity');
@@ -20,13 +22,13 @@ export function validatePackages(run:string):any{
  }
  assert.deepEqual(paths.filter(p=>rows.C[p]!==rows.G[p]).sort(),DIFFERENT.slice().sort(),'exact seven treatment paths');return rows;
 }
-export function validateActivePackage(run:string,id:string):void{
- assertOwned(run,PAIR_ID);assert.ok(PAIR.order.includes(id));const arm=id.split('-')[1],expected=jsonFile(join(run,'packages.json'))[arm];
+export function validateActivePackage(run:string,id:string,experiment=PAIR_ID):void{
+ const policy=packagePolicy(experiment);assertOwned(run,experiment);assert.ok(policy.order.includes(id));const arm=id.split('-')[1],expected=jsonFile(join(run,'packages.json'))[arm];
  for(const p of payload())assert.equal(digest(ordinary(join(run,'workspace/package',p))),expected[p],'active copied payload drift');
  assert.equal(realpathSync(join(run,'workspace/package/node_modules')),realpathSync(join(ROOT,'node_modules')),'locked dependencies only');
 }
-export function materializePackages(run:string):any{
- assertOwned(run,PAIR_ID);const paths=payload();assert.equal(paths.length,76);const rows:any={};
+export function materializePackages(run:string,experiment=PAIR_ID):any{
+ packagePolicy(experiment);assertOwned(run,experiment);const paths=payload();assert.equal(paths.length,76);const rows:any={};
  for(const arm of ['C','G'] as const){
   const archive=join(ROOT,ARCHIVES[arm]);assert.equal(digest(ordinary(archive)),PAIR.arms[arm].archiveSHA256);
   const list=execFileSync('tar',['-tzf',archive],{encoding:'utf8',timeout:5000}).trim().split('\n');assert.deepEqual(list.slice().sort(),paths.map(p=>'package/'+p).sort());
@@ -34,14 +36,15 @@ export function materializePackages(run:string):any{
   const dest=join(run,'arms',arm);mkdirSync(dest,{recursive:true,mode:0o700});execFileSync('tar',['-xzf',archive,'-C',dest],{timeout:5000});
   rows[arm]=Object.fromEntries(paths.map(p=>[p,digest(ordinary(join(dest,'package',p)))]));
  }
- writeFileSync(join(run,'packages.json'),JSON.stringify(rows,null,2)+'\n',{mode:0o600});return validatePackages(run);
+ writeFileSync(join(run,'packages.json'),JSON.stringify(rows,null,2)+'\n',{mode:0o600});return validatePackages(run,experiment);
 }
-export function validateContextPairs(run:string):void{
- const metadata:any={};for(const arm of ['C','G'])metadata[arm]=jsonFile(join(run,'FP01-'+arm+'.capture.json')).registeredRender;
+export function validateContextPairs(run:string,experiment=PAIR_ID):void{
+ const scenarios=packagePolicy(experiment).scenarios.map((s:any)=>s.id);assertOwned(run,experiment);
+ const metadata:any={};for(const arm of ['C','G'])metadata[arm]=jsonFile(join(run,scenarios[0]+'-'+arm+'.capture.json')).registeredRender;
  assert.ok(metadata.C&&metadata.G);assert.notEqual(metadata.C.description,metadata.G.description);assert.notEqual(metadata.C.promptSnippet,metadata.G.promptSnippet);
  // Replace only the actual arm's registered descriptor/snippet to compare the rest.
  // Captured and dispatched bodies remain untouched and independently hashed.
- for(const scenario of ['FP01','FP02']){
+ for(const scenario of scenarios){
   const bodies=['C','G'].map(arm=>{
    const body=jsonFile(join(run,scenario+'-'+arm+'.context.json')),capture=jsonFile(join(run,scenario+'-'+arm+'.capture.json'));assert.deepEqual(capture.registeredRender,metadata[arm]);
    const render=body.tools.filter((t:any)=>t.function?.name==='a2ui_render');assert.equal(render.length,1);assert.equal(render[0].function.description,metadata[arm].description);render[0].function.description='[actual arm description]';

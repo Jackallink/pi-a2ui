@@ -1,0 +1,3 @@
+{
+  "HX01": "$/name = \"\"\n$/zone = \"\"\n$/tag = \"\"\nname = TextField(label=\"离线名称\",value=$/name)\nzone = TextField(label=\"离线区域\",value=$/zone)\ntag = TextField(label=\"离线标签\",value=$/tag)\nsubmit = Button(child=Text(text=\"提交信息\"),action=Event(\"submit\",{offlineName:$/name,offlineZone:$/zone,offlineTag:$/tag}))\nvalidation = FormValidation(buttons=[\"submit\"],rules=[{fieldId:\"name\",message:\"Required\",required:true},{fieldId:\"zone\",message:\"Required\",required:true},{fieldId:\"tag\",message:\"Required\",required:true}])\nroot = Column(children=[name,zone,tag,validation,submit])\n"
+}

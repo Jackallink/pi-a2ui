@@ -1,0 +1,23 @@
+{
+  "schema": "spec026-offline-helper-control-v1",
+  "id": "helper-invocation-offline-1",
+  "liveEnabled": false,
+  "realRequestsAuthorized": 0,
+  "helperAdapter": "owned-cwd-v1",
+  "order": ["HX01-C", "HX01-G"],
+  "batchSyntheticRequests": 12,
+  "requestsPerSession": 6,
+  "maxToolIntents": 12,
+  "workerHardMs": 180000,
+  "activeMs": 150000,
+  "batchHardMs": 420000,
+  "scenarios": [{
+    "id": "HX01",
+    "request": "Synthetic offline helper control: collect three empty required text fields 离线名称、离线区域、离线标签; return offlineName, offlineZone, offlineTag using 提交信息. No business operation.",
+    "fields": [
+      {"label": "离线名称", "contextKey": "offlineName", "initial": "", "required": true},
+      {"label": "离线区域", "contextKey": "offlineZone", "initial": "", "required": true},
+      {"label": "离线标签", "contextKey": "offlineTag", "initial": "", "required": true}
+    ]
+  }]
+}

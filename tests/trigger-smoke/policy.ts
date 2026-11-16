@@ -5,6 +5,7 @@ import {fileURLToPath} from 'node:url';
 import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
 
+import {ADAPTER_ID,ADAPTER,ADAPTER_SHA} from '../helper-adapter/profile.ts';
 import {PAIR_ID,PAIR,PAIR_SHA} from '../authoring-pilot/profile.ts';
 export const ROOT=resolve(dirname(fileURLToPath(import.meta.url)),'../..');
 export const digest=(value:string|Buffer)=>createHash('sha256').update(value).digest('hex');
@@ -15,10 +16,11 @@ export const OLD_ID=old.id;
 export const PROFILE_SHA=digest(readFileSync(join(ROOT,'tests/trigger-smoke/profile.json')));
 export function identityInputs():string[]{
  const payload=JSON.parse(readFileSync(join(ROOT,'tests/benchmark-model/payload.json'),'utf8'));
- return [...new Set<string>(['scripts/trigger-pilot.mjs','scripts/trigger-smoke.mjs','scripts/authoring-pilot.mjs',...['trigger-pilot','trigger-smoke','authoring-pilot'].flatMap(dir=>readdirSync(join(ROOT,'tests',dir)).filter(p=>/\.(ts|json)$/.test(p)).map(p=>'tests/'+dir+'/'+p)),'package-lock.json','tests/benchmark-model/guards.ts','tests/benchmark-model/profile-v2.json','tests/benchmark-model/payload.json',...payload])];
+ return [...new Set<string>(['scripts/trigger-pilot.mjs','scripts/trigger-smoke.mjs','scripts/authoring-pilot.mjs','scripts/helper-adapter.mjs',...['trigger-pilot','trigger-smoke','authoring-pilot','helper-adapter'].flatMap(dir=>readdirSync(join(ROOT,'tests',dir)).filter(p=>/\.(ts|json)$/.test(p)).map(p=>'tests/'+dir+'/'+p)),'package-lock.json','tests/benchmark-model/guards.ts','tests/benchmark-model/profile-v2.json','tests/benchmark-model/payload.json',...payload])];
 }
 export function policyFor(experiment=OLD_ID):any{
- assert.ok(experiment===OLD_ID||experiment===SMOKE_ID||experiment===PAIR_ID,'known experiment only');
+ assert.ok(experiment===OLD_ID||experiment===SMOKE_ID||experiment===PAIR_ID||experiment===ADAPTER_ID,'known experiment only');
+ if(experiment===ADAPTER_ID)return{experiment,smoke:false,paired:true,helperAdapter:ADAPTER.helperAdapter,profileSHA:ADAPTER_SHA,profile:{...old,id:ADAPTER_ID,liveEnabled:false,order:ADAPTER.order,caps:{...old.caps,tools:12,batchRequests:12,batchMs:420000}},order:ADAPTER.order,batchRequests:12,limit:()=>6,active:()=>150000,deadline:()=>180000,scenarios:ADAPTER.scenarios,base:'helper-adapter',marker:ADAPTER_ID+'\n'};
  if(experiment===PAIR_ID)return{experiment,smoke:false,paired:true,profileSHA:PAIR_SHA,profile:{...old,id:PAIR_ID,order:PAIR.order,caps:{...old.caps,tools:12,batchRequests:24,batchMs:780000}},order:PAIR.order,batchRequests:24,limit:()=>6,active:()=>150000,deadline:()=>180000,scenarios:PAIR.scenarios,base:'authoring-pilot',marker:PAIR_ID+'\n'};
  if(experiment===OLD_ID)return{experiment,smoke:false,profile:old,order:old.order,batchRequests:36,limit:()=>3,active:()=>90000,deadline:()=>102000,scenarios:JSON.parse(readFileSync(join(ROOT,'tests/trigger-pilot/scenarios.json'),'utf8')),base:'trigger-pilot',marker:'trigger-pilot-owned\n'};
  assert.equal(SMOKE.id,SMOKE_ID);assert.equal(SMOKE.batchRequests,4);assert.deepEqual(SMOKE.order,['SM02-B','SM01-B']);assert.deepEqual(SMOKE.episodes.map((e:any)=>e.maxRequests),[1,3]);

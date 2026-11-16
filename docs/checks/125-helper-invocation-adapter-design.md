@@ -9,3 +9,5 @@ Canonical Spec026及Plan026/三轮walkthrough已落文档draft。本阶段无代
 目前没有新模型场景/预算执行profile、没有真实grant，没有真实配置或provider读取。一次正常失败的预期是可观察结果，不能为了拿GO放宽设计或重评旧样本。用户已明确独立GO后按序推进，未要求重复人工确认同范围。
 
 三轮结构校验：skill-bundled validate_walkthrough.py通过（仅文档结构，不代替独立Gate1/Gate2）。推荐有限parser，明确沿用Pi bash做可信单命令执行，不宣称shell:false；否定开放通用shell和为本轮更改受试skill包。
+
+独立Gate1 GO、Gate2 GO：固定3fe670cf64ac273d4565d454bc3716c07a875425/treef2a6b9ea7b25dee0c52108f590d22ecdc487bc7b，报告.local/helper-adapter-implementation/design-review-r1.md SHA e2f195519afd0136ad057611684acfdeda5d63ffe818d5ac60ad80036d08b077。0开放P0/P1/P2；仅准有限实施+zero，非code GO或模型授权。验收意图仍是prospective；实际结果进Check126。

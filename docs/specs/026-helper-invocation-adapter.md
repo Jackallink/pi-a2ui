@@ -1,6 +1,6 @@
 # Spec026：受限环境的只读 helper 调用适配
 
-状态：draft。基点f9c1ac8；[Check124](../checks/124-authoring-paired-pilot-result.md)的STOP已封存。用户授权本设计/独立评审GO后的有限实施与零推理验证，再设计新场景/预算；**真实请求当前授权0**。全程Node24，未来模型仅Ark AgentPlan glm-5.3-flash；旧21余量不可复用、冻结真实模型基线不重跑。三轮：[R1](../walkthrough/helper-invocation-adapter/01-round1-user-stories.md)、[R2](../walkthrough/helper-invocation-adapter/02-round2-technical-trace.md)、[R3](../walkthrough/helper-invocation-adapter/03-round3-integration-check.md)。实施步骤见[Plan026](../plans/026-helper-invocation-adapter.md)，状态/结果归Check记录。
+状态：in-progress（独立Gate1 GO、Gate2 GO后进入test-first有限实施，见Check125/Check126；所有真实请求仍0授权）。基点f9c1ac8；[Check124](../checks/124-authoring-paired-pilot-result.md)的STOP已封存。用户授权本设计/独立评审GO后的有限实施与零推理验证，再设计新场景/预算；**真实请求当前授权0**。全程Node24，未来模型仅Ark AgentPlan glm-5.3-flash；旧21余量不可复用、冻结真实模型基线不重跑。三轮：[R1](../walkthrough/helper-invocation-adapter/01-round1-user-stories.md)、[R2](../walkthrough/helper-invocation-adapter/02-round2-technical-trace.md)、[R3](../walkthrough/helper-invocation-adapter/03-round3-integration-check.md)。实施步骤见[Plan026](../plans/026-helper-invocation-adapter.md)，状态/结果归Check记录。
 
 ## 目标、方案与非目标
 
@@ -21,7 +21,7 @@ NODE ABS_HELPER OP ARGS
 cd ABS_OWNED_PROJECT && NODE ABS_HELPER OP ARGS
 ```
 
-NODE只能字面`node`或当前process.execPath。ABS_HELPER须逐字等于该包helper；prefix目录逐字等于当前owned cwd，不做realpath/`..`别名猜测，不允许其它cwd、cd --、多次cd或后续组合。允许前后ASCII空格/tab、单/双引号包裹的字面词；引号不拼接，反斜线/美元符/反引号/换行/控制字节拒绝。`&&`只能是引号外、上述prefix的一处token；引号内的`&&`不是separator。`; | < > &`等引号外运算符全拒绝；引号内仅可作为逐字匹配的固定路径字符，不能成为新命令。相邻运算符也须识别，不能靠空白split漏掉`a&&b`。`${...}`、`$(...)`、反引号、env赋值、env/npx/npm/其它解释器、Node flags、重定向、管道和命令后缀均拒绝。
+NODE只能字面`node`或当前process.execPath。ABS_HELPER须逐字等于该包helper；prefix目录逐字等于当前owned cwd，不做realpath/`..`别名猜测，不允许其它cwd、cd --、多次cd或后续组合。允许前后ASCII空格/tab、单/双引号包裹的字面词；引号不拼接，反斜线/美元符/反引号/换行/控制字节拒绝。`&&`只能是引号外、上述prefix的一处token；引号内的`&&`不是separator。`; | < > & ( )`等引号外运算符全拒绝；引号内仅可作为逐字匹配的固定路径字符，不能成为新命令。相邻运算符也须识别，不能靠空白split漏掉`a&&b`。`${...}`、`$(...)`、反引号、env赋值、env/npx/npm/其它解释器、Node flags、重定向、管道和命令后缀均拒绝。
 
 | OP | 合法尾参数 | 输入边界 |
 | --- | --- | --- |

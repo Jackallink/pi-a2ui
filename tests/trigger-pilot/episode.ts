@@ -5,6 +5,7 @@ import {readFile,writeFile,mkdir,rm,symlink,lstat} from 'node:fs/promises';
 import {readFileSync,writeFileSync,appendFileSync} from 'node:fs';
 import {join,resolve,dirname} from 'node:path';
 import {homedir} from 'node:os';
+import {planHelperInvocation,HelperInvocationError} from '../helper-adapter/invocation.ts';
 import {PAIR_ID} from '../authoring-pilot/profile.ts';
 import {validatePackages,validateActivePackage,verifyPairWorker,verifyPairRequest} from '../authoring-pilot/authority.ts';
 import {judgeSource,sourceMatch} from '../authoring-pilot/oracle.ts';
@@ -47,7 +48,7 @@ export async function episode(id:string,run:string,kind:string,simulation='',exp
  // Parent owns this fixed path and runs workers serially. No user path is eligible.
  await rm(workspace,{recursive:true,force:true});for(const p of [project,agent,pack])await mkdir(p,{recursive:true,mode:0o700});
  const payload=JSON.parse(await readFile(join(ROOT,'tests/benchmark-model/payload.json'),'utf8')) as string[];
- if(policy.paired)validatePackages(run);const payloadRoot=policy.paired?join(run,'arms',arm,'package'):ROOT;
+ if(policy.paired)validatePackages(run,experiment);const payloadRoot=policy.paired?join(run,'arms',arm,'package'):ROOT;
  for(const p of payload){assert.ok(!p.includes('..')&&!p.startsWith('/'));assert.equal((await lstat(join(payloadRoot,p))).isSymbolicLink(),false);await mkdir(dirname(join(pack,p)),{recursive:true});await writeFile(join(pack,p),await readFile(join(payloadRoot,p)));}
  await symlink(join(ROOT,'node_modules'),join(pack,'node_modules'),'dir');
  const helper=join(pack,'skills/pi-a2ui/scripts/a2ui.mjs'),skill=join(pack,'skills/pi-a2ui/SKILL.md'),draft=join(project,'draft.express');
@@ -64,7 +65,7 @@ export async function episode(id:string,run:string,kind:string,simulation='',exp
  const interrupt=()=>{if(simulation!=='hang'){error('episode',new Error('worker interrupted'));stop('provider_unknown',true);}};process.once('SIGTERM',interrupt);process.once('SIGINT',interrupt);
  globalThis.fetch=async(input,options)=>{const url=new URL(typeof input==='string'||input instanceof URL?String(input):input.url);assert.ok(url.protocol==='http:'&&url.hostname==='127.0.0.1','non-provider external network forbidden');return realFetch(input,options);};
  try{
-  let actualFactory=a2ui;if(policy.paired){validateActivePackage(run,id);record.loadedArm=arm;record.loadedPayload=JSON.parse(await readFile(join(run,'packages.json'),'utf8'))[arm];actualFactory=(await import(pathToFileURL(join(pack,'extension.ts')).href)).default;armCompile=(await import(pathToFileURL(join(pack,'src/compiler.ts')).href)).compile;armValidate=(await import(pathToFileURL(join(pack,'src/interactions.ts')).href)).validateSubmission;}
+  let actualFactory=a2ui;if(policy.paired){validateActivePackage(run,id,experiment);record.loadedArm=arm;record.loadedPayload=JSON.parse(await readFile(join(run,'packages.json'),'utf8'))[arm];actualFactory=(await import(pathToFileURL(join(pack,'extension.ts')).href)).default;armCompile=(await import(pathToFileURL(join(pack,'src/compiler.ts')).href)).compile;armValidate=(await import(pathToFileURL(join(pack,'src/interactions.ts')).href)).validateSubmission;}
   let config:{key:string;headers:Record<string,string>;model:Record<string,unknown>};
   if(simulation==='offline-config-read')await readFile(configPaths[1],'utf8');
   if(kind==='live'){
@@ -89,6 +90,7 @@ export async function episode(id:string,run:string,kind:string,simulation='',exp
       else{const approved=JSON.parse(await readFile(join(run,'contexts.json'),'utf8'));assert.equal(hash(normalized),approved[policy.paired?id:scenarioId],'actual initial context drift');}
       record.skillMetadataPresent=JSON.stringify(body.messages).includes('pi-a2ui');record.skillBodyPreloaded=JSON.stringify(body.messages).includes('# Pi A2UI');assert.equal(record.skillBodyPreloaded,false,'skill must not be forced');
      }
+     if(policy.helperAdapter)record.helperHistoryHashes=(body.messages??[]).flatMap((m:any)=>m.role==='assistant'?(m.tool_calls??[]).flatMap((c:any)=>{if(c.function?.name!=='bash')return[];try{const args=JSON.parse(c.function.arguments);return typeof args.command==='string'?[hash(args.command)]:[];}catch{return[];}}):[]);
      if(simulation==='wrong-model')body.model='forbidden-model';
      if(kind==='live'){if(policy.paired)verifyPairRequest(run,id);else verifyLiveRequest(run,id);assert.equal(headers.get('authorization'),'Bearer '+config.key,'credential transport identity');for(const [k,v]of Object.entries(config.headers))headers.set(k,v);}
      budget.admit(id,url,selected,body);record.requests++;record.modelCalls=kind==='live'?record.requests:0;
@@ -112,7 +114,7 @@ export async function episode(id:string,run:string,kind:string,simulation='',exp
       if(simulation==='ambiguous-labels')for(const name of ['应用名','目标环境','版本号'])tool.arguments.source=tool.arguments.source.replace('label="'+name+'"','label="应用名 目标环境 版本号"');
       if(simulation==='hidden-selected')tool.arguments.source='$/x = ""\n$/y = ""\n$/z = ""\n'+tool.arguments.source.replace('root =','hidden =')+'\nroot = Column(children=[Details(title="Hidden form",child=hidden),Text(text="应用名 目标环境 版本号"),TextField(label="X",value=$/x),TextField(label="Y",value=$/y),TextField(label="Z",value=$/z),Button(child=Text(text="确认"),action=Event("cancel",{}))])';
      }
-     if(policy.paired&&kind!=='capture'){
+     if(policy.paired&&!policy.helperAdapter&&kind!=='capture'){
       const fixtures=JSON.parse(await readFile(join(ROOT,'tests/authoring-pilot/fixtures.json'),'utf8'));let source=fixtures[scenarioId];
       if(simulation==='compile'||simulation==='failed-check')source='root = BadComponent()';
       if(simulation==='semantic-check'||simulation==='numeric')source=source.replace('value=$/a','value=$/a,variant="number"');
@@ -137,6 +139,21 @@ export async function episode(id:string,run:string,kind:string,simulation='',exp
      if(policy.paired&&simulation==='wrapped-caption')tool={name:'a2ui_render',arguments:{surfaceId:'pilot',source:JSON.parse(await readFile(join(ROOT,'tests/authoring-pilot/fixtures.json'),'utf8'))[scenarioId].replace('child=Text(text="提交信息")','child=Row(children=[Text(text="提交信息")])')}};
      if(policy.paired&&simulation==='missing-draft')tool={name:'bash',arguments:{command:`node "${helper}" check --surface-id pilot "${draft}"`}};
      if(policy.paired&&simulation==='unknown-tool')tool={name:'forbidden_execute',arguments:{}};
+     if(policy.helperAdapter&&kind!=='capture'){
+      const source=JSON.parse(await readFile(join(ROOT,'tests/helper-adapter/fixtures.json'),'utf8'))[scenarioId];
+      const query=`node "${helper}" example validated-form`,check=`node "${helper}" check --surface-id pilot "${draft}"`;
+      const wrap=(command:string)=>simulation==='direct'?command:`cd "${project}" && ${command}`;
+      tool=[{name:'read',arguments:{path:skill}},{name:'bash',arguments:{command:wrap(query)}},{name:'write',arguments:{path:draft,content:source}},{name:'bash',arguments:{command:wrap(check)}},{name:'a2ui_render',arguments:{surfaceId:'pilot',source}}][Math.min(turn-1,4)];
+      if(turn===2){
+       if(simulation==='foreign-cwd')tool={name:'bash',arguments:{command:`cd "${workspace}" && ${query}`}};
+       if(simulation==='extra-and')tool={name:'bash',arguments:{command:wrap(query)+` && node "${helper}" catalog`}};
+       if(simulation==='redirect')tool={name:'bash',arguments:{command:wrap(query)+` > "${join(run,'forbidden-sentinel')}"`}};
+       if(simulation==='substitution')tool={name:'bash',arguments:{command:wrap(query)+' $(touch forbidden-sentinel)'}};
+       if(simulation==='usage')tool={name:'bash',arguments:{command:wrap(`node "${helper}" check`)}};
+       if(simulation==='missing-draft')tool={name:'bash',arguments:{command:wrap(check)}};
+      }
+      if(simulation==='prepare')tool={name:'read',arguments:{path:skill}};
+     }
      const delta=tool?{role:'assistant',tool_calls:[{index:0,id:'call-'+turn,type:'function',function:{name:tool.name,arguments:JSON.stringify(tool.arguments)}}]}:{role:'assistant',content:text};
      if(policy.paired&&simulation==='last-bundle'&&turn===6)(delta as any).tool_calls=[tool,{name:'bash',arguments:{command:`node "${helper}" check --surface-id pilot "${draft}"`}},{name:'a2ui_render',arguments:{surfaceId:'pilot',source:tool.arguments.content}}].map((t:any,i:number)=>({index:i,id:'call-bundle-'+i,type:'function',function:{name:t.name,arguments:JSON.stringify(t.arguments)}}));
      if(policy.paired&&simulation==='tool-cap')(delta as any).tool_calls=Array.from({length:13},(_,i)=>({index:i,id:'call-many-'+i,type:'function',function:{name:'read',arguments:JSON.stringify({path:skill})}}));
@@ -169,13 +186,14 @@ export async function episode(id:string,run:string,kind:string,simulation='',exp
      if(event.toolName==='a2ui_render'){assert.equal(renderCount++,0,'one render');record.renderAttempted=true;record.surfaceId=args.surfaceId;if(policy.paired){renderedSource=args.source;record.renderSourceSHA256=hash(renderedSource!);record.renderedSource=renderedSource;submitCandidate(args.source,args.surfaceId,'render');}}
      else{record.preparation=true;if(event.toolName==='read'){ordinaryPath(args.path,[pack,project],project);if(policy.paired&&resolve(project,args.path)===skill)record.skillReadCall=event.toolCallId;}
       else if(event.toolName==='write'||event.toolName==='edit'){if(policy.paired&&checkAttempted){stop('candidate_rewrite_attempt');return{block:true,terminate:true,reason:'first candidate already submitted'};}assert.equal(checkAttempted,false);assert.equal(resolve(project,args.path),draft);if(policy.paired)record.preSubmissionWrites++;if(event.toolName==='write')assert.ok(Buffer.byteLength(args.content)<=32768);}
-      else{assert.equal(event.toolName,'bash');const command=helperCall(args.command,helper,draft,project);args.command=command.command;args.timeout=policy.paired&&simulation==='helper-timeout'?0.001:10;if(policy.paired&&/\bexample\b/.test(command.command))record.exampleReadCall=event.toolCallId;if(command.check){if(policy.paired&&checkAttempted){stop('check_limited');return{block:true,terminate:true,reason:'one preflight check only'};}assert.equal(checkAttempted,false);ordinaryPath(draft,[project],project);checkAttempted=true;checkCallId=event.toolCallId;if(policy.paired){checkedSource=readFileSync(draft,'utf8');record.checkedSourceSHA256=hash(checkedSource);record.checkedSource=checkedSource;record.workflow.checkBeforeCandidate=!record.firstCandidate.submitted;submitCandidate(checkedSource,command.surfaceId!,'check');}}}}
+      else{assert.equal(event.toolName,'bash');const rawCommand=args.command,command=policy.helperAdapter?planHelperInvocation(rawCommand,{helper,draft,cwd:project}):helperCall(rawCommand,helper,draft,project);if(policy.helperAdapter){(record.helperAdmissions??=[]).push({toolCallId:event.toolCallId,version:(command as any).version,variant:(command as any).variant,cwd:project,argv:(command as any).argv,rawCommandSHA256:hash(rawCommand),commandSHA256:hash(command.command),status:'planned'});}args.command=command.command;args.timeout=policy.paired&&simulation==='helper-timeout'?0.001:10;if(policy.paired&&(policy.helperAdapter?(command as any).operation==='example':/\bexample\b/.test(command.command)))record.exampleReadCall=event.toolCallId;if(command.check){if(policy.paired&&checkAttempted){stop('check_limited');return{block:true,terminate:true,reason:'one preflight check only'};}assert.equal(checkAttempted,false);ordinaryPath(draft,[project],project);checkAttempted=true;checkCallId=event.toolCallId;if(policy.paired){checkedSource=readFileSync(draft,'utf8');record.checkedSourceSHA256=hash(checkedSource);record.checkedSource=checkedSource;record.workflow.checkBeforeCandidate=!record.firstCandidate.submitted;submitCandidate(checkedSource,command.surfaceId!,'check');}}}}
      record.tools.push({name:event.toolName,input:structuredClone(args)});
-    }catch(cause){if(policy.paired&&(cause instanceof HelperInputError||(cause as NodeJS.ErrnoException).code==='ENOENT')){stop('preparation_error');return{block:true,terminate:true,reason:'draft or helper input unavailable'};}stop('tool_policy',policy.paired);return{block:true,terminate:true,reason:'pilot sandbox rejected tool; episode stopped'};}
+    }catch(cause){if(policy.helperAdapter){const planned=record.helperAdmissions?.find((p:any)=>p.toolCallId===event.toolCallId);if(planned)planned.status='blocked';if(cause instanceof HelperInvocationError)(record.helperRejections??=[]).push({toolCallId:event.toolCallId,kind:cause.kind,code:cause.code,rawCommandSHA256:hash(String((event.input as any).command))});}if(policy.paired&&(cause instanceof HelperInputError||cause instanceof HelperInvocationError&&cause.kind==='usage'||(cause as NodeJS.ErrnoException).code==='ENOENT')){stop('preparation_error');return{block:true,terminate:true,reason:'draft or helper input unavailable'};}stop('tool_policy',policy.paired);return{block:true,terminate:true,reason:'pilot sandbox rejected tool; episode stopped'};}
    });
    pi.on('tool_execution_end',event=>{if(event.toolName==='a2ui_render'&&!record.renderAttempted&&event.isError)stop('render_schema',policy.smoke);});
    pi.on('tool_result',async event=>{
     record.transcript.push({role:'tool',tool:event.toolName,isError:event.isError,content:event.content});
+    if(policy.helperAdapter&&event.toolName==='bash'){const planned=record.helperAdmissions?.find((p:any)=>p.toolCallId===event.toolCallId);if(planned?.status==='planned'){planned.status=event.isError?'failed':'executed';planned.exitCode=(event.structuredContent as any)?.exit_code??null;}}
     if(stopped)return;
     if(policy.paired&&!event.isError){if(event.toolCallId===record.skillReadCall)record.workflow.skillRead=true;if(event.toolCallId===record.exampleReadCall)record.workflow.exampleRead=true;}
     if(policy.paired&&event.toolName==='bash'&&event.isError&&!Number.isInteger((event.structuredContent as any)?.exit_code)){stop('helper_unknown',true);return;}
@@ -190,7 +208,8 @@ export async function episode(id:string,run:string,kind:string,simulation='',exp
    });
   };
   const safety=`Sandbox file writes are limited to ${draft}; use write/edit to create this file. Reads are limited to the shipped package and this workspace. Shell permits only a direct Node invocation of the shipped helper's read-only queries/check, without shell operators or redirection. Do not execute other programs. Follow the user's task; no real business operation is authorized.`;
-  const loader=new DefaultResourceLoader({cwd:project,agentDir:agent,settingsManager:settings,noExtensions:true,noSkills:true,noThemes:true,noPromptTemplates:true,noContextFiles:true,additionalSkillPaths:[skill],extensionFactories:[factory],appendSystemPrompt:[safety]});await loader.reload();assert.equal(loader.getSkills().skills.length,1);
+  const adapterSafety=policy.helperAdapter?` The exact redundant prefix cd \"${project}\" && before that single helper is also accepted. Other shell combinations remain forbidden.`:'';
+  const loader=new DefaultResourceLoader({cwd:project,agentDir:agent,settingsManager:settings,noExtensions:true,noSkills:true,noThemes:true,noPromptTemplates:true,noContextFiles:true,additionalSkillPaths:[skill],extensionFactories:[factory],appendSystemPrompt:[safety+adapterSafety]});await loader.reload();assert.equal(loader.getSkills().skills.length,1);
   const tools=['read','bash','write','edit','a2ui_render'];const created=await createAgentSession({cwd:project,agentDir:agent,modelRuntime:runtime,model,thinkingLevel:'low',settingsManager:settings,sessionManager:SessionManager.inMemory(project),resourceLoader:loader,tools});session=created.session;session.agent.toolExecution='sequential';assert.equal(created.modelFallbackMessage,undefined);await session.bindExtensions({mode:'rpc'});assert.deepEqual(session.getActiveToolNames().sort(),tools.sort());
   record.started=true;caseTimer=setTimeout(()=>{error('episode',new Error('episode deadline'));stop('provider_unknown',true);},policy.active(id));await session.prompt(row.request);await abortWait;if(!stopped)stop(record.outcome==='setup'?(record.preparation?'ui_preparation_only':'text_only'):record.outcome);
  }catch(cause){error('episode',cause);if(!stopped){record.harnessFailure=!record.started;stop(record.started?'provider_unknown':'setup_error',true);}}
