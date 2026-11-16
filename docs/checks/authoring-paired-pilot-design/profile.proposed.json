@@ -147,7 +147,21 @@
     "initialValuesEmpty": true,
     "guardedRequiredFields": true,
     "actionPostsAllowed": 0,
-    "renderedUiNeedsRealDom": true
+    "renderedUiNeedsRealDom": true,
+    "allowedTextFieldVariants": [
+      "shortText",
+      "longText"
+    ],
+    "omittedVariantUsesShortText": true,
+    "allowedNativeControls": [
+      {
+        "tag": "input",
+        "type": "text"
+      },
+      {
+        "tag": "textarea"
+      }
+    ]
   },
   "reporting": {
     "firstCandidate": "first complete check source; otherwise first complete render source",
@@ -161,6 +175,11 @@
       "no-render"
     ],
     "unknownNeverZero": true,
-    "frozenBaselineRerun": false
+    "frozenBaselineRerun": false,
+    "correctnessComparisonRequiresFourObservedCandidates": true,
+    "correctnessComparisonRequiresFourKnownGrades": true,
+    "zeroObservedCandidateDenominator": "not_applicable",
+    "closedLocalEmptyAbortDoesNotOverrideDiagnostics": true,
+    "inFlightAbortIsFatalUnknown": true
   }
 }

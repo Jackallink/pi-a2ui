@@ -20,9 +20,9 @@ IN：2fresh任务×C/G两个固定包、4独立session，≤6/24的新一次性�
 | AC-002 | 两任务与C/G | 会话准备 | 实际加载各臂包、相同路径/消息/工具，metadata非强载skill，原触发句不改写 | P1 |
 | AC-003 | 6/24/12限额 | 每次工具/provider准入 | durable计数一致，不借额/退款/重试，max1536/native/model唯一 | P0 |
 | AC-004 | 先check或直接render | 首份候选提交 | 编译/静态语义记录；首check失败停会话，准备/无候选/unknown各自分开 | P1 |
-| AC-005 | render或流程匹配 | 提交/DOM观察 | 身份绑定字段/button+独立任务规则；真实UI才成功，exact与单LF兼容/mismatch不混 | P1 |
-| AC-006 | 普通authoring失败或致命/unknown | 停止 | 前者闭合case继续固定剩余行，后者整批停且not_run；硬180/780含清理 | P0 |
-| AC-007 | 4行报告 | 比较与费用 | 双分母/2对小样本、方向条件、tokens/feeunknown，不虚构提升或成功UI | P1 |
+| AC-005 | render或流程匹配 | 提交/DOM观察 | 身份绑定字段/button+plain-text variant/DOM类型及任务规则；真实UI才成功，exact与单LF兼容/mismatch不混 | P1 |
+| AC-006 | 普通authoring失败或致命/unknown | 停止 | 前者闭合case继续固定剩余行，空本地aborted不反写终态；in-flight取消等停整批/not_run；硬180/780含清理 | P0 |
+| AC-007 | 4行报告 | 比较与费用 | 双分母/0分母N/A，4实际候选known才比较；2对小样本方向与费用unknown，不虚构提升/UI | P1 |
 | AC-008 | 后续最小适配 | 请求真实调用前 | 新固定候选完整本地checks+代码GO、两包和旧raw/冻结hash保持；本轮只是设计 | P0 |
 
 边界：同页3文本/空草稿/必填，无目录或业务操作；不点击表单。每臂每任务一次，普通失败是对照数据不是重试。旧2请求余量不可用。

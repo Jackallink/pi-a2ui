@@ -13,3 +13,16 @@
 场景fresh：FP01任务登记、FP02归档信息，均不是M01–12、T01–04/N01–02或SM01/02旧消息；不复用旧seed/轮次或评价分数。没有新negative实测，不宣称误触发率或总体首次成功率提高。
 
 独立设计评审待完成；本轮不能执行任何旧live入口。预算申请必须在设计GO后，且仍以未来实际代码/隐私/成本GO为执行门槛。不推送、合并、发布或本机更新。
+
+
+## R1与限定纠正
+
+独立[R1 NO-GO](authoring-paired-pilot-design/design-review-r1.md)绑定6e80e3f/tree6eae939，SHA256 `1e1bd09cab0cb4e1f71546439c3f1caf59159ef5bb6a0e0aca52fd0c37a6edd2`；仅3个P2，没有P0/P1。原设计/静态回执由6e80e3f及原文件保留。
+
+F-01：正确性方向比较必须4行各自确已提交候选且合取判分known；编译失败可确定false而不伪造静态执行。known noCandidate只描述预算内交付/准备，保留全部4行/双分母，0候选分母为N/A，不伪称正确率改善。
+
+F-02：case闭合且已有请求终态known之后，无新admission/diagnostic的local空aborted不能覆盖stop/toolUse/usage/UI或升fatal；in-flight取消/timeout仍fatal unknown。测试意图必须actualSDK对照验证两类。
+
+F-03：TextField的string绑定不证明可输入任意文字。已只读核对安装SDK basic v1 schema variant包括shortText/longText/number/obscured，默认shortText；universal TextField.js将number→input number、obscured→password、longText→textarea；项目validateInput只验string。本设计固定omitted/shortText/longText，DOM只text input/textarea；未请求的number/password判语义invalid并列反例。未运行SDK组件或浏览器。
+
+同步将Round3的98KiB笔误更正为98304bytes=96KiB。精确任务消息、顺序、两个包、6/24/12与180/780预算、原产品和当前授权0均不变；只澄清判分/停止。修订静态校验与R2审查待补，本轮仍不实施/调用。

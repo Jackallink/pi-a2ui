@@ -51,17 +51,17 @@ source匹配记exact / single-terminal-lf / mismatch / unchecked / no-render。�
 
 ### 静态与DOM oracle
 
-以profile的3个标签/字符串keys为任务定义，从一个非取消“提交信息”Button的**直接Event.context**精确3键回溯3条不同的绝对input value路径，再定位唯一3个TextField组件；ID由实际snapshot导出，不猜变量名/DOM位置。标签须匹配请求原文、dataModel初始值为string空串，不能加未请求的可编辑输入。
+以profile的3个标签/字符串keys为任务定义，从一个非取消“提交信息”Button的**直接Event.context**精确3键回溯3条不同的绝对input value路径，再定位唯一3个TextField组件；ID由实际snapshot导出，不猜变量名/DOM位置。标签须匹配请求原文、dataModel初始值为string空串，不能加未请求的可编辑输入。TextField.variant只允许省略（SDK默认shortText）、shortText或longText；number/obscured不是任务要求的任意可读文本，即使value仍是string也判任务语义invalid。
 
 FormValidation的按钮引用、root可达性、fieldId和直接绑定覆盖先由该臂compiler检查。任务oracle另外确认3条required规则精确绑定选定输入；FP01不附加未要求的长度约束，FP02仅归档名称minLength2/maxLength40，其余仅required。用同臂纯validateSubmission核查空草稿三项无效、满足任务的合成值有效，FP02名称1/2/40/41个Unicode字符边界（单独synthetic数据，不发事件或模型请求）。不增加新正确性模型/LLM裁判。
 
-render后按实际SDK host.context.componentModel.id跨shadowRoot核对所选字段和Button本身，拒绝隐藏/关闭Details/inert/disabled/readOnly或被modal隔离的控件；不允许别处三个无关输入/同caption按钮替代。profile要求同页，所以必须在初始目标form可见可用；不点tab/按钮来补满足。布局和任意自动组件ID不做字节比对。只要求caption/字段标签是用户明确指定的文字。
+render后按实际SDK host.context.componentModel.id跨shadowRoot核对所选字段和Button本身，所选原生编辑控件须是input.type=text或textarea，拒绝number/password等未请求类型；拒绝隐藏/关闭Details/inert/disabled/readOnly或被modal隔离的控件；不允许别处三个无关输入/同caption按钮替代。profile要求同页，所以必须在初始目标form可见可用；不点tab/按钮来补满足。布局和任意自动组件ID不做字节比对。只要求caption/字段标签是用户明确指定的文字。
 
 ### 报告与方向口径
 
-固定4行、每臂2个计划任务：分别给首次候选observed/correct/invalid/not_observed/unknown，首个render requested/schema/compile/commit/UI，流程证据和费用。报`已确认正确首次候选/2计划任务`及`正确/实际提交候选数`两个分母；不能隐藏未提交样本来提高比率。未知不当普通fail或零请求；任一基础设施/unknown导致不完整时不输出改善结论。
+固定4行、每臂2个计划任务：分别给首次候选observed/correct/invalid/not_observed/unknown，首个render requested/schema/compile/commit/UI，流程证据和费用。报`已确认正确首次候选/2计划任务`及`正确/实际提交候选数`两个分母；不能隐藏未提交样本来提高比率，实际候选分母为0时记N/A（not_applicable），不计算0/0或0%。未知不当普通fail或零请求；任一基础设施/unknown导致不完整时不输出改善结论。
 
-仅全部4行结果已知、2对完整时比较：每对候选正确性的G胜/C胜/持平、各臂可用UI数和准备开销。若G至少一对更好且无反向对、G可用UI数不低于C、G至少一个可用UI具备skill/example/成功预检及source兼容匹配证据，可称**本小批次方向支持**；否则无方向改善/混合，分阶段如实解释。即使2/2对0/2也不推断总体提升或统计显著性。预检变好但没有形成UI只叫阶段改善，不叫实用效果通过。
+首次候选正确性比较中的“2对完整”明确要求：4行均实际提交了首候选，且编译/静态语义的合取判分已知。编译已失败可确定该合取为false，不假称未执行的静态阶段也执行过。只要有known noCandidate/text_only/preparation_limited而未提交候选，就不触发正确性direction_support；仍保留全部4行及双分母，只描述预算内交付/准备开销，不声称候选正确率改善。unknown/fatal仍为批次证据不完整。仅满足上述4候选完整条件时比较：每对候选正确性的G胜/C胜/持平、各臂可用UI数和准备开销。若G至少一对更好且无反向对、G可用UI数不低于C、G至少一个可用UI具备skill/example/成功预检及source兼容匹配证据，可称**本小批次方向支持**；否则无方向改善/混合，分阶段如实解释。即使2/2对0/2也不推断总体提升或统计显著性。预检变好但没有形成UI只叫阶段改善，不叫实用效果通过。
 
 ## 拟申请预算与停止
 
@@ -77,6 +77,8 @@ render后按实际SDK host.context.componentModel.id跨shadowRoot核对所选字
 worker总180s必须包含清理/kill/fallback，不能实现成180+cleanup。每会话同样的完整上限；剩余批次时间不足180s时不再开下一会话，记not_run，不缩短最后一臂制造不公平。batch时钟包括live准入/包校验/切换/收据，整个批次不越780s。cap或时间不足不保证能走完6请求，结果如实有限。
 
 普通authoring失败（首次check编译/语义、schema/compile/内容失败、准备错误/无render/准备耗尽、第二候选尝试）停**该会话**，仍按固定顺序做剩余会话；这是新对照必须看到两臂的正常结局，不是重试。认证/HTTP非成功/transport/SDK或流未知/截断、源码/包/context漂移、durable账本失败、跨沙箱/工具权限违规、timeout/取消/清理异常等停**整批**，后续not_run。区分12工具调用正常耗尽与越权：正常限额停该会话，未知记账或绕过边界停整批。
+
+正常case已经闭合、已有provider请求终态可知以后，SDK本地stop留下的空assistant/aborted且无新admission/请求diagnostic，是本地停止产物：不得覆盖既有stop/toolUse、usage和UI判定，也不升级fatal/provider_unknown。不能把所有aborted都如此处理；尚有in-flight请求时的真实传输中断、timeout/取消仍fatal unknown并停止整批。未来APS控制必须分别复现这两类。
 
 任何已准入请求先fsync记账再POST；未知不能回额度，报告knownAdmitted与confirmed HTTP/SDK结果及missing receipt差别。usage逐请求保留prompt/completion/total/reasoning（subset不重复加）；缺usage或货币fee就是unknown，不写0/免费。当前不估算或保证金额。无额外ACK、health probe、付费评分/修复请求。一次性grant/锁保留，任何失败不另起替代batch来补齐配对。
 
