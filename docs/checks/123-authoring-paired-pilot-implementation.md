@@ -65,3 +65,9 @@ F1第6响应内合法write/check/render被tool_result过早stop；F2方向信号
 caption从编译后可达child/children树的Text文字汇总、与实际DOM同样空白规范化后精确匹配；额外Text文案仍拒绝。两个包任务的Row包装均通过真实SDK/DOM，目标Button仍按实际component ID与原生可用性核对，不替代为其它按钮。
 
 `r3-green.log`5pass（safe CLI ordinary后剩余固定3行完成、两个wrapped实际UI等），`r3-pure-green.log`9pass，`helper-stages-green.log`4pass。上述为定向开发证据；接下来新固定candidate完整本地CI/独立R3，不借用574结果。新grant/真实配置/provider请求仍0。
+
+## 固定候选最终验收与执行收口
+
+最终执行source7c88a9fd9731e029ee5e8b9241ef84f4f11e0613/tree8c9cbb5c1e8c9b472ebdf68be549f1c4d5825cc0，完整Node581/581、type0、四组browser91/91、strictunion68；normaloffline四行完成、fourcapture/preflight公平性及103保全通过。验证包SHA7a30d03cddc520acdfbd110166f6344dcf58ba78f8339472198e835741e9a063，R3代码/隐私/成本最终GO SHA43be5af49ec70fc472effba1956b7d09bdb3c0f6094cb884568497e842ce5de9，精确单次命令GO SHAe1ee6cbbb762f858fd40ffbcb19b36ef40a8c3652afb782b59fad446f27c89d5。
+
+原命令仅一次、实际3请求后按tool_policy停批。执行后独立GO仅回执收口（SHA9f2074a34fe49cd15354bc7771b4e22cce7df40c7490b931fac08cdb32e3b2af），不是效果/UI通过；完整事实、usage、N/A/not_run与后续决策见[Check124](124-authoring-paired-pilot-result.md)。canonical Spec025 complete仅有限实施与执行闭环，配对比较incomplete；无补跑/替代grant/旧余量/冻结重算/发布或全局变更。R1/R2及所有失败证据保持原样。
