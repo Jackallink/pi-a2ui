@@ -1,0 +1,59 @@
+{
+  "releaseId": 446483432,
+  "tag": "v0.1.9",
+  "target": "0e905ee3b8dcd1ac476b03ac99c3dd3869ab503f",
+  "acceptedImplementation": "5903b64fead029a6f2556d90530f1549d6fa29f6",
+  "node": "v24.18.1",
+  "actualModelRequests": 0,
+  "actions": "disabled_manually",
+  "raw": [
+    {
+      "path": ".local/v019-publication-evidence/release.json",
+      "sha256": "e71d885668dd53a28086b81e19b9de704c520b377fc1b962bfc0d3fbd95d3bf2"
+    },
+    {
+      "path": ".local/v019-publication-evidence/tag-ref.json",
+      "sha256": "0510babf05c88186eee276b813e0ed9abeaa35f682ee1c49bb71de6a2f7b85dd"
+    },
+    {
+      "path": ".local/v019-publication-evidence/tag-object.json",
+      "sha256": "1f945f567516d22530c032c317402e80c3390c5d45b0bf705e47bf47927aaecc"
+    },
+    {
+      "path": ".local/v019-publication-evidence/download-verification.json",
+      "sha256": "61c7097b3265025e39a4619f06db547b964141dfc3ea2bee3a57026f89b2f01a"
+    },
+    {
+      "path": ".local/v019-publication-evidence/download-startup.log",
+      "sha256": "2d1a14795eeb81a1f4840cf8263ffaf5e811abe3493b7d539d90699a5fe74b72"
+    },
+    {
+      "path": ".local/v019-publication-evidence/git-startup.json",
+      "sha256": "a5d6a9cfd2eb6e6b57936cf3b41a6e577694f13afd7f908bd993a03d3dc40a70"
+    },
+    {
+      "path": ".local/v019-publication-evidence/git-startup.log",
+      "sha256": "33ed1d08d5696e39c4b078d44b4399f113b108ee4b529eeabef711316aa34634"
+    },
+    {
+      "path": ".local/v019-publication-evidence/postpublication-review-r1.md",
+      "sha256": "9170f675f29a47a09475e4a5d1ce0eb23c2027c5546e158d66f9f7fbf2abe48b"
+    },
+    {
+      "path": ".local/v019-publication-evidence/preservation.json",
+      "sha256": "a08126378787e5491b6ff2c8cae363c0918aabeea90d3f562cad7e4d275dfe61"
+    },
+    {
+      "path": ".local/v019-publication-evidence/git-cleanup.json",
+      "sha256": "b79daf13bca349cec19643946ff1f1809cc53a7d89486eadf814ab160029c96e"
+    },
+    {
+      "path": ".local/v019-publication-evidence/milestone-final.json",
+      "sha256": "5002aab6af64422efe93017827c002f1c229e8ae39dfd5d242db758a7a646d71"
+    },
+    {
+      "path": ".local/v019-publication-evidence/issues-final.json",
+      "sha256": "b42fa43402f6337721032dc3fd728789f147372e3bda71e56b3d0ab4d961a6de"
+    }
+  ]
+}
