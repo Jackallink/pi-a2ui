@@ -1,0 +1,14 @@
+{
+  "authorization": "user explicitly authorized publishing0.1.9",
+  "clientDate": "2026-11-16 Asia/Shanghai",
+  "target": "0e905ee3b8dcd1ac476b03ac99c3dd3869ab503f",
+  "acceptedImplementation": "5903b64fead029a6f2556d90530f1549d6fa29f6",
+  "archiveSHA256": "34e522c97202c6f1379fd8efcd7cc52ea707aa8857f99afe13d6e3a9c6c58812",
+  "archiveBytes": 275205,
+  "fileCount": 76,
+  "mainReviewSHA256": "c984fb6fe5619904a753f127c7f553a365b2971792f6189479d484311b7c6393",
+  "all76PayloadBytesMatch": true,
+  "actions": "disabled_manually",
+  "newModelBudget": false,
+  "originalReadyReceiptPreserved": true
+}

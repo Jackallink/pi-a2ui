@@ -1,0 +1,67 @@
+{
+  "historicalTagsVerified": [
+    {
+      "ref": "refs/tags/v0.1.0",
+      "object": "5ba2db3ef27184989f974514c0420a303a269697",
+      "matchesExistingLocalRef": true
+    },
+    {
+      "ref": "refs/tags/v0.1.1",
+      "object": "4f65f67f467461815a57368411a7d7eae18acce3",
+      "matchesExistingLocalRef": true
+    },
+    {
+      "ref": "refs/tags/v0.1.3",
+      "object": "acf5a26abce74de661b38c4bb535ecfb571fdeaa",
+      "matchesExistingLocalRef": true
+    },
+    {
+      "ref": "refs/tags/v0.1.4",
+      "object": "ae663526b0b7eaea06c1f637a34e6a9944e378fc",
+      "matchesExistingLocalRef": true
+    },
+    {
+      "ref": "refs/tags/v0.1.5",
+      "object": "41e3f024f51d1e20648b4cc7155d291e45787261",
+      "matchesExistingLocalRef": true
+    },
+    {
+      "ref": "refs/tags/v0.1.6",
+      "object": "c8cc04203631b0659cce70863258f755c00436b1",
+      "matchesExistingLocalRef": true
+    },
+    {
+      "ref": "refs/tags/v0.1.7",
+      "object": "4250466a40f0f696109f1e52cd5f5772a0dc0aa5",
+      "matchesExistingLocalRef": true
+    },
+    {
+      "ref": "refs/tags/v0.1.8",
+      "object": "3a8311af1178681d9669f4ddba140a5d30648004",
+      "matchesExistingLocalRef": true
+    }
+  ],
+  "v018AssetIdentitiesMatchPriorPublishedReceipt": true,
+  "v018Assets": [
+    {
+      "id": 750145673,
+      "name": "pi-a2ui-0.1.8.tgz",
+      "size": 270783,
+      "digest": "sha256:29df29e48ac69cfe22b6b2f2b2491d92dea5b74a3338a4e9f89c294c62f3a0d6",
+      "created_at": "2026-11-15T07:02:00Z",
+      "updated_at": "2026-11-15T07:02:01Z"
+    },
+    {
+      "id": 750145674,
+      "name": "SHA256SUMS",
+      "size": 84,
+      "digest": "sha256:d0637294f4a5cce74198d3b68bb06ee69774437fc99e4889c798380bbfec3244",
+      "created_at": "2026-11-15T07:02:00Z",
+      "updated_at": "2026-11-15T07:02:00Z"
+    }
+  ],
+  "scope": "Created new019tag/release only; no edits/deletion of existing tags/assets; no new claim of downloading every older asset",
+  "downloadConsumerExited": true,
+  "gitConsumerExited": true,
+  "userGlobalUpgrade": false
+}

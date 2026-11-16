@@ -1,0 +1,32 @@
+{
+  "html_url": "https://github.com/Jackallink/pi-a2ui/releases/tag/v0.1.9",
+  "id": 446483432,
+  "tag_name": "v0.1.9",
+  "target_commitish": "main",
+  "draft": false,
+  "prerelease": false,
+  "created_at": "2026-11-16T00:38:34Z",
+  "published_at": "2026-11-16T00:38:49Z",
+  "assets": [
+    {
+      "id": 752879005,
+      "name": "pi-a2ui-0.1.9.tgz",
+      "state": "uploaded",
+      "size": 275205,
+      "digest": "sha256:34e522c97202c6f1379fd8efcd7cc52ea707aa8857f99afe13d6e3a9c6c58812",
+      "created_at": "2026-11-16T00:38:46Z",
+      "updated_at": "2026-11-16T00:38:48Z",
+      "browser_download_url": "https://github.com/Jackallink/pi-a2ui/releases/download/v0.1.9/pi-a2ui-0.1.9.tgz"
+    },
+    {
+      "id": 752879006,
+      "name": "SHA256SUMS",
+      "state": "uploaded",
+      "size": 84,
+      "digest": "sha256:9751b0b1476d9e56a5ac35b02439e124e633ba256ed48f39d5560f7c202f3725",
+      "created_at": "2026-11-16T00:38:46Z",
+      "updated_at": "2026-11-16T00:38:47Z",
+      "browser_download_url": "https://github.com/Jackallink/pi-a2ui/releases/download/v0.1.9/SHA256SUMS"
+    }
+  ]
+}
