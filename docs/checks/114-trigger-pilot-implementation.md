@@ -8,7 +8,7 @@ Baseline Node24.18.1 before implementation:472/472 Node checks passed. New pure 
 
 Initial actualSDK run preserved10pass/3fail: numeric surfaceId is legitimately coerced by Pi before extension dispatch, so the invalid-type canary now uses a non-convertible object. A CSS selector incorrectly required an explicit role attribute on the renderer's implicitly labelled section; the harness now uses actual accessible-region semantics and the exact model surfaceId, excluding native summaries. The first hang control exited gracefully on TERM and was not hard-kill evidence; its offline-only fault now ignores TERM after a recorded actual DOM-ready marker. Four targeted schema/browser/hang/no-auth controls subsequently passed. These are fixture/harness corrections, not changes to the release or model retries. All original receipts remain private under .local/trigger-pilot-implementation and .local/trigger-pilot.
 
-No real credentials or model calls have been used at this stage. Future live admission requires fixed-source full offline results and independent code/cost/isolation GO. Actual outcomes, request journals and preserved failures will be recorded from their own source-bound receipts, without modifying old BM4 data/profile/score.
+At this historical implementation checkpoint no real credentials or model calls had been used. Later offline admission, the consumed one-batch GO and stopped live outcome are recorded below and in Check115; this paragraph is not current request accounting. Original receipts and old BM4 data/profile/score remain unchanged.
 
 ## First fixed candidate and accounting correction
 
@@ -19,3 +19,9 @@ Independent code R1 [NO-GO](trigger-pilot-implementation/code-review-r1.md) iden
 An explicit offline-only torn-journal CLI canary now proves a twelve-row terminal report with eleven not-run rows, a retained admission prefix and an unmodified corrupt tail. This negative control may run on dirty source for TDD and always fails acceptance; normal offline/live evaluation still requires clean source. Pure accounting8 checks, receipt/terminal-report2 checks and typecheck passed before freezing the corrected candidate. The controlled hard-hang path additionally verifies the exact owned browser PID has exited.
 
 Live workers require the parent's source/profile/context admission ticket before reading real configuration, and verify all guarded/support/76payload input hashes. The parent ticket is created only after actual zero-inference SDK context capture. No new budget, scenarios or model were added. Actual real evaluation remains blocked until corrected fixed-source offline checks and independent GO.
+
+## Fixed-source admission and stopped live follow-through
+
+Exact candidate6832b06b passed496 Node tests with file concurrency1, typecheck,90 browser cases and68 strict golden-union cases, plus the public12episode zero-inference SDK CLI. The unchanged A02 case first failed under concurrent load, passed in isolation and then passed the complete serial suite without changing its limits; retain all receipts. Independent [R2](trigger-pilot-implementation/code-review-r2.md) admitted exactly one user-authorized batch.
+
+That batch has now run once and stopped at T01-A:2persisted admissions, skill read succeeded, next assistant response ended in error,11episodes not-run,0complete pairs. A later read-only audit identified an invalid thinking-off assumption and error/usage observation gaps that R2 had missed. See [Check115](115-trigger-pilot-stopped-live.md) and its sanitized manifest for the exact boundaries, identities and unknowns. No efficacy claim, retry, resume, frozen-baseline rerun or release follows from the offline pass or mechanical harnessAccepted flag.

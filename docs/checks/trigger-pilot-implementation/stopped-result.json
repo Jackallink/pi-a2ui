@@ -1,0 +1,187 @@
+{
+  "format": "trigger-pilot-stopped-evidence-v1",
+  "source": "6832b06b6ee3278da885aa6f6d823b0efd94b3b3",
+  "tree": "504976526a724c82e64dec36ae050b47e7558393",
+  "node": "v24.18.1",
+  "pi": "1.5.0",
+  "model": {
+    "provider": "volcengine-ark",
+    "id": "glm-5.3-flash",
+    "baseUrl": "https://ark.cn-beijing.volces.com/api/plan/v3"
+  },
+  "release": {
+    "version": "0.1.10",
+    "source": "b7022efd48d6ed679eb08b17b672bb10cec9425f",
+    "archiveSHA256": "c7d4511c1e92808691ab98a89897f7a6f2d0ed0e64b77f70f9ab610500177e55"
+  },
+  "run": ".local/trigger-pilot/run-LUrFUb",
+  "batchCompleted": false,
+  "mechanicalHarnessAccepted": true,
+  "effectivenessAccepted": false,
+  "conclusion": "inconclusive-stopped-no-complete-pair",
+  "stopReason": "provider_unknown",
+  "plannedEpisodes": 12,
+  "completePairs": 0,
+  "knownAdmittedRequests": 2,
+  "requestAccountingKnown": true,
+  "requestOutcomesKnown": false,
+  "actualModelRequests": null,
+  "actualCost": null,
+  "usageKnown": false,
+  "requestJournal": [
+    {
+      "index": 1,
+      "episode": "T01-A",
+      "mode": "live",
+      "model": "glm-5.3-flash",
+      "endpoint": "https://ark.cn-beijing.volces.com/api/plan/v3/chat/completions",
+      "bodySHA256": "9d27e6bcdc0352c1805e8fe002af6eefaabe2e444ff43bd78adeacf2d1107894"
+    },
+    {
+      "index": 2,
+      "episode": "T01-A",
+      "mode": "live",
+      "model": "glm-5.3-flash",
+      "endpoint": "https://ark.cn-beijing.volces.com/api/plan/v3/chat/completions",
+      "bodySHA256": "4ca21ae4d97e91f10feb16a5775f0116e553c4cbded78d6427c5d33d04ed7273"
+    }
+  ],
+  "observation": {
+    "completeAssistantToolUse": true,
+    "successfulTool": "read-packaged-skill",
+    "nextAssistantStopReason": "error",
+    "errorMessagePersisted": false,
+    "thinkingParameterInFirstRequest": false,
+    "nonemptyReasoningBlocksObserved": true,
+    "wireOutputLimit": {
+      "field": "max_completion_tokens",
+      "value": 1536
+    },
+    "usageCollectorFlushOnly": true
+  },
+  "userConfigUnchanged": true,
+  "cleanupErrors": [],
+  "ownedWorkspaceRemoved": true,
+  "episodes": [
+    {
+      "id": "T01-A",
+      "outcome": "provider_unknown",
+      "knownAdmittedRequests": 2,
+      "renderRequested": false,
+      "renderAttempted": false,
+      "renderCommitted": false,
+      "preparation": true,
+      "uiContentAndDomAssessment": "not-applicable-no-model-render"
+    },
+    {
+      "id": "T01-B",
+      "outcome": "not_run",
+      "knownAdmittedRequests": 0,
+      "renderRequested": null,
+      "renderAttempted": null,
+      "renderCommitted": null,
+      "preparation": null,
+      "uiContentAndDomAssessment": "not-applicable-no-model-render"
+    },
+    {
+      "id": "T02-B",
+      "outcome": "not_run",
+      "knownAdmittedRequests": 0,
+      "renderRequested": null,
+      "renderAttempted": null,
+      "renderCommitted": null,
+      "preparation": null,
+      "uiContentAndDomAssessment": "not-applicable-no-model-render"
+    },
+    {
+      "id": "T02-A",
+      "outcome": "not_run",
+      "knownAdmittedRequests": 0,
+      "renderRequested": null,
+      "renderAttempted": null,
+      "renderCommitted": null,
+      "preparation": null,
+      "uiContentAndDomAssessment": "not-applicable-no-model-render"
+    },
+    {
+      "id": "T03-A",
+      "outcome": "not_run",
+      "knownAdmittedRequests": 0,
+      "renderRequested": null,
+      "renderAttempted": null,
+      "renderCommitted": null,
+      "preparation": null,
+      "uiContentAndDomAssessment": "not-applicable-no-model-render"
+    },
+    {
+      "id": "T03-B",
+      "outcome": "not_run",
+      "knownAdmittedRequests": 0,
+      "renderRequested": null,
+      "renderAttempted": null,
+      "renderCommitted": null,
+      "preparation": null,
+      "uiContentAndDomAssessment": "not-applicable-no-model-render"
+    },
+    {
+      "id": "T04-B",
+      "outcome": "not_run",
+      "knownAdmittedRequests": 0,
+      "renderRequested": null,
+      "renderAttempted": null,
+      "renderCommitted": null,
+      "preparation": null,
+      "uiContentAndDomAssessment": "not-applicable-no-model-render"
+    },
+    {
+      "id": "T04-A",
+      "outcome": "not_run",
+      "knownAdmittedRequests": 0,
+      "renderRequested": null,
+      "renderAttempted": null,
+      "renderCommitted": null,
+      "preparation": null,
+      "uiContentAndDomAssessment": "not-applicable-no-model-render"
+    },
+    {
+      "id": "N01-A",
+      "outcome": "not_run",
+      "knownAdmittedRequests": 0,
+      "renderRequested": null,
+      "renderAttempted": null,
+      "renderCommitted": null,
+      "preparation": null,
+      "uiContentAndDomAssessment": "not-applicable-no-model-render"
+    },
+    {
+      "id": "N01-B",
+      "outcome": "not_run",
+      "knownAdmittedRequests": 0,
+      "renderRequested": null,
+      "renderAttempted": null,
+      "renderCommitted": null,
+      "preparation": null,
+      "uiContentAndDomAssessment": "not-applicable-no-model-render"
+    },
+    {
+      "id": "N02-B",
+      "outcome": "not_run",
+      "knownAdmittedRequests": 0,
+      "renderRequested": null,
+      "renderAttempted": null,
+      "renderCommitted": null,
+      "preparation": null,
+      "uiContentAndDomAssessment": "not-applicable-no-model-render"
+    },
+    {
+      "id": "N02-A",
+      "outcome": "not_run",
+      "knownAdmittedRequests": 0,
+      "renderRequested": null,
+      "renderAttempted": null,
+      "renderCommitted": null,
+      "preparation": null,
+      "uiContentAndDomAssessment": "not-applicable-no-model-render"
+    }
+  ]
+}
