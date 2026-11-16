@@ -1,0 +1,76 @@
+{
+  "schema": "spec023-fixed-source-offline-evidence-v1",
+  "source": "05e1517fd266238d4f062aab5bb9cd152f6a50aa",
+  "tree": "51cc4016e09adf13ea8c3738161581a0b33c6205",
+  "node": "v24.18.1",
+  "pi": "1.5.0",
+  "realProviderRequests": 0,
+  "checks": {
+    "node": {
+      "exitCode": 0,
+      "pass": 538,
+      "fail": 0
+    },
+    "types": {
+      "exitCode": 0
+    },
+    "browser": {
+      "exitCode": 0,
+      "pass": 90
+    },
+    "union": {
+      "source": "05e1517fd266238d4f062aab5bb9cd152f6a50aa",
+      "cases": 68,
+      "positive": 45,
+      "negative": 23,
+      "node": "v24.18.1",
+      "browser": "158.0.8127.18"
+    },
+    "default": {
+      "providerRequests": 0,
+      "credentialReads": 0
+    },
+    "offline": {
+      "exitCode": 0,
+      "report": "/Users/jakeliu/.codex/worktrees/pi-a2ui-bm4/pi-a2ui/.local/trigger-smoke/run-pWmoeQ/report.json",
+      "sha256": "a99b955b2d0c641b1acec1baea9f94b481b84024acea4aa63b3d08a8f77a8a94",
+      "uiVerdict": "ui_smoke_pass",
+      "actualModelRequests": 0
+    }
+  },
+  "prepare": {
+    "run": "/Users/jakeliu/.codex/worktrees/pi-a2ui-bm4/pi-a2ui/.local/trigger-smoke/run-wdo9bd",
+    "preflightSHA256": "3c537bf94453f416679ba58e23212c84fa3464387483d4dce9557d2c57063fdd",
+    "preflightFileSHA256": "000b624e6873422504219c7b710b6e7839039336dcca30f3e482a1caaff51dd8",
+    "captureFiles": {
+      "SM02-B.context.json": "24a466de882423e3f0d396efc2169f55678db538593f0270e0c8bb5311eefec9",
+      "SM02-B.capture.json": "8d85082afbd5a9629936cb359ab3b5cdee2a3cc5eafce3ea953f1f3f13d964dd",
+      "SM01-B.context.json": "b302d8867148d4f183e9f611bf18882c4e7628d158ac1e99e313c4de94c0770d",
+      "SM01-B.capture.json": "d8b3b65a365ef37ec37db3d80c3ed5d0ef0718ad341b06d4936bdf5a468381c5"
+    },
+    "guardedInputs": 92,
+    "providerRequests": 0,
+    "credentialReads": 0
+  },
+  "authority": {
+    "path": ".local/trigger-smoke-implementation/authority-1QtWrs/.local/result.json",
+    "sha256": "ecd1c5aa8967fdc3a7a3ce7472d3511965e20d7a22c7750cd5083ca06d999417",
+    "configReads": 0,
+    "providerRequests": 0,
+    "negativeWitness": true,
+    "positiveWitness": true,
+    "rejections": 13
+  },
+  "logs": {
+    ".local/trigger-smoke-implementation/r3-full-node.log": "6a44dbe865871c939ee6b036f148796d5528d959552667452c82ebd9b1bf11b6",
+    ".local/trigger-smoke-implementation/r3-fixed-types.log": "b94e7c071db8114df2330bc5822d92b358f84cc2578c17c0ad0a84b0c1270745",
+    ".local/trigger-smoke-implementation/r3-browser.log": "508d33d9ed15fa9a8678da3f6da381846fda1d824b8c00471a76b38cf263caae",
+    ".local/trigger-smoke-implementation/r3-union.json": "c9f910a2c68fd1da6d7e494673f4c2966280670ca035d6b711dfa47e074749ab",
+    ".local/trigger-smoke-implementation/r3-dry-run.json": "cd86444068132482ab03db118bdca6e96e2ab3021a644d29cf534f7022bf5712",
+    ".local/trigger-smoke-implementation/r3-offline.log": "9886bbd6640ac54e15aa7f7fe912b445372a062367bc755e119c538d2f919a8e",
+    ".local/trigger-smoke-implementation/r3-prepare.log": "7f107eae1babae8925af7b6145d3992ed760bda0e6e6e69ce8d16760d9caf4b6",
+    ".local/trigger-smoke-implementation/r3-preservation.json": "35f0e4d46920f2270357a3add495ae8c2acaf1fe76e646bf59da2a878165ebfe",
+    ".local/trigger-smoke-implementation/dom-binding-red.log": "36877026cac32882dd574bd8ebd45e8feb3c8872c7521ff10cd88a0c8c674ba7",
+    ".local/trigger-smoke-implementation/dom-binding-green-r2.log": "2ea9e07eb51b9d72b2800399c4abc7d0e997cf95f81e25072a3b96cb88265d14"
+  }
+}

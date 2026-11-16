@@ -1,6 +1,8 @@
 # Spec023：0.1.10 主动触发双场景冒烟设计
 
-状态：in-progress（draft→独立R1 NO-GO→修正→独立R2 Gate1 GO→用户授权→Gate2/TDD GO→in-progress）。设计稿提交3abed7e，设计收口见[Check117](../checks/117-trigger-smoke-design.md)；后续用户已授权一次新批次≤4，尚待固定源码检查/独立代码GO，不代表已执行。原设计阶段仅文档、预算0的身份由历史提交保存；旧Spec022停止结果与冻结BM4不改。
+状态：complete（draft→walkthrough-approved / Gate1→tdd-approved / Gate2→in-progress→固定source独立R3代码GO→单次执行→review-ready→独立post-run协议/证据GO→complete）。用户授权的新批次已经结束，实际2/4请求：SM02通过，SM01主动render但编译拒绝，正例UI效果未通过；剩余额度不续跑。实现/审查证据见[Check118](../checks/118-trigger-smoke-implementation.md)，真实结局/用量见[Check119](../checks/119-trigger-smoke-live-result.md)。协议与证据收口已获独立GO，不等于正例UI效果通过；不存在下一批模型授权。
+
+历史边界：以下原设计阶段的“尚待/尚无真实调用/本轮不实施”等保留用于说明当时权限；当前事实以上述状态、Check118/119为准，不可将历史文字当成新的或未消费授权。
 
 授权续记：用户在Check117设计GO及明确条件申请后回复“授权”，已批准最小适配、零推理验收/独立代码GO后一次新批次≤4请求（SM02≤1通过才SM01≤3）。下文“尚未授权/设计阶段预算0/本轮不实施”保留为原设计阶段历史边界；当前Gate2已GO并实施，固定源码检查/代码GO仍须先完成，尚无真实调用。见[Check118](../checks/118-trigger-smoke-implementation.md)。旧批次/冻结基线不续跑、不重算，任何NO-GO先修正复审。
 

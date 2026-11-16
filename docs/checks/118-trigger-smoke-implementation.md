@@ -35,3 +35,15 @@ P0采用完整owned git fixture/假授权/真实guard入口与fs/fetch/spawn见�
 首轮修正遇到tsx给嵌套函数插入__name导致browser_error，是序列化设置错误，不算新的行为RED。改为自包含DOM对象方法使浏览器序列化不依赖模块closure；原dom-binding-green.log失败原样保留，后续针对性GREEN另录。没有修改产品host/控件、文案、预算、模型、endpoint或SDK历史。
 
 最终固定候选完整本地检查/新R3仍待完成，至本段尚无新付费请求。
+
+
+## 固定候选收口与真实批次
+
+固定候选05e1517fd266238d4f062aab5bb9cd152f6a50aa（tree51cc4016e09adf13ea8c3738161581a0b33c6205）在Node24.18.1/Pi1.5.0上完整538Node、typecheck、四组90browser、同身份strict golden68（45正/23负）、默认dry-run、正常公开offline和2capture prepare均通过。原始报告/日志SHA见[r3-offline-evidence.json](trigger-smoke-implementation/r3-offline-evidence.json)。Chromium158.0.8127.18/revision1254；BM3平台pixel仍为advisory，不宣称像素发布门禁通过。
+
+独立[R3代码/隐私/成本GO](trigger-smoke-implementation/code-review-r3.md) SHA628ac61b73ef7b9358f96126a819a36711d852392b30e6fce16f9a12c1f8d634，开放P0/P1/P2为0；随后才记录既有用户授权，创建精确source/tree/profile/preflight/capture/归档绑定的一次性grant。独立[精确命令GO](trigger-smoke-implementation/live-command-binding-r1.md) SHA53b474650e4e31e8fdf3a63edcd381deeb50a502796329eed35423da6947b925后原命令只执行一次。既有0字节0600日志是私有权限占位，不是先前调用，未删票/换票/补额度。
+
+真实结果：SM02-B 1请求pass；SM01-B 1请求主动选择并实际尝试render，但FormValidation内按钮为orphan、编译拒绝，未提交/未产生DOM。实际2/4请求、剩余2不再使用，无重试/续跑。完整结论、usage、保护/保全检查见[Check119](119-trigger-smoke-live-result.md)；协议验收与正例UI效果分开。这里的代码GO不替代效果成功；发布包/用户安装/旧失败与冻结基线不改。本段后的文档checkpoint不替换真实运行来源05e1517。
+
+
+独立[post-run协议/预算/隐私/证据收口GO](trigger-smoke-implementation/post-run-review-r1.md) SHA b42110ba06950ad2ab4df12aafc116952502b4ef21cc50cb64c9acb3b8d4f012，确认实际2请求、负例pass/正例compile RED、用量known/货币费unknown、清理/保护/保全边界均成立。Spec023以该限定协议范围complete，正例UI效果仍未通过；没有新调用、修复实施、合并或发布授权。

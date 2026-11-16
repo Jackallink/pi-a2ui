@@ -1,0 +1,138 @@
+{
+  "schema": "spec023-live-result-v1",
+  "source": "05e1517fd266238d4f062aab5bb9cd152f6a50aa",
+  "tree": "51cc4016e09adf13ea8c3738161581a0b33c6205",
+  "node": "v24.18.1",
+  "pi": "1.5.0",
+  "experiment": "v0.1.10-trigger-smoke-1",
+  "profileSHA256": "a2746ccc5af09c397737b0f9f5fea334627500b48fa4bf2daf2558b9d38200a0",
+  "releaseVersion": "0.1.10",
+  "releaseSource": "b7022efd48d6ed679eb08b17b672bb10cec9425f",
+  "archiveSHA256": "c7d4511c1e92808691ab98a89897f7a6f2d0ed0e64b77f70f9ab610500177e55",
+  "model": "glm-5.3-flash",
+  "provider": "volcengine-ark",
+  "batchLimit": 4,
+  "invocations": 1,
+  "actualModelRequests": 2,
+  "unusedRequests": 2,
+  "retries": 0,
+  "requestAccountingKnown": true,
+  "requestOutcomesKnown": true,
+  "harnessAccepted": true,
+  "negative": "pass",
+  "positiveChoice": "observed",
+  "uiVerdict": "incomplete_or_invalid",
+  "stopped": "render_compile",
+  "elapsedMs": 19053,
+  "usage": {
+    "prompt_tokens": 14653,
+    "completion_tokens": 280,
+    "total_tokens": 14933,
+    "reasoning_tokens": 16
+  },
+  "monetaryCost": null,
+  "monetaryCostReason": "Provider usage has no authoritative monetary fee; reasoning_tokens is a subset of completion_tokens.",
+  "compileError": "Invalid Express source: Component 'root_child_children_5_buttons_0' is not reachable from 'root' (Orphaned component 'root_child_children_5_buttons_0' is not reachable from root) [surface \"release-info-form\"]",
+  "episodes": [
+    {
+      "id": "SM02-B",
+      "outcome": "negative_pass",
+      "requests": 1,
+      "toolCount": 0,
+      "renderRequested": false,
+      "renderAttempted": false,
+      "renderCommitted": false,
+      "domObserved": null,
+      "usageKnown": true,
+      "cleanupErrors": [],
+      "userConfigUnchanged": true
+    },
+    {
+      "id": "SM01-B",
+      "outcome": "render_compile",
+      "requests": 1,
+      "toolCount": 1,
+      "renderRequested": true,
+      "renderAttempted": true,
+      "renderCommitted": false,
+      "domObserved": null,
+      "usageKnown": true,
+      "cleanupErrors": [],
+      "userConfigUnchanged": true
+    }
+  ],
+  "guards": {
+    "journalOrder": [
+      "SM02-B",
+      "SM01-B"
+    ],
+    "oneUseLockRetained": true,
+    "terminalRetained": true,
+    "workspaceRemoved": true,
+    "ownedBrowserNeverOpened": true,
+    "actionPosts": 0,
+    "assistantReasoningBlocksPersisted": false,
+    "protectedInputsUnchanged": 92,
+    "capturesUnchanged": 4,
+    "releasePayloadUnchanged": 76,
+    "historicalRawFrozenExportUnchanged": 8
+  },
+  "raw": [
+    {
+      "path": ".local/trigger-smoke/run-wdo9bd/report.json",
+      "sha256": "e42c8658ddae80dad5059f4414cfdb13e78a9437a7c3ada22f85d420779855e7"
+    },
+    {
+      "path": ".local/trigger-smoke/run-wdo9bd/progress.json",
+      "sha256": "81680e7f6fe19dc07382afe9233bfef4cbde36f548d029bd63b9f50c86a2a1f5"
+    },
+    {
+      "path": ".local/trigger-smoke/run-wdo9bd/terminal.json",
+      "sha256": "58988d7648d3170b343b6f80feceee77f2231fa386221eff145e94321427be56"
+    },
+    {
+      "path": ".local/trigger-smoke/run-wdo9bd/admission.json",
+      "sha256": "27e3adc8f68304225e0bf340e97e4adfeb86adbc33fdbd525a6b2bf50e1a1ef5"
+    },
+    {
+      "path": ".local/trigger-smoke/run-wdo9bd/contexts.json",
+      "sha256": "d94de1d863ad3872fa27d7f34df6e5cc08d439b09579b45d45231337ac5351db"
+    },
+    {
+      "path": ".local/trigger-smoke/run-wdo9bd/preflight.json",
+      "sha256": "000b624e6873422504219c7b710b6e7839039336dcca30f3e482a1caaff51dd8"
+    },
+    {
+      "path": ".local/trigger-smoke/run-wdo9bd/SM02-B.live.json",
+      "sha256": "6d9c54e0a9e3c789e3eb64772fe72a370ace7ffc1a55b504c2fa39c2ac700203"
+    },
+    {
+      "path": ".local/trigger-smoke/run-wdo9bd/SM01-B.live.json",
+      "sha256": "4b787576fbcd4f2831e41c25c9665e1b0bd8a36147820ac767a88bef2c22fb86"
+    },
+    {
+      "path": ".local/trigger-smoke/run-wdo9bd/live-requests.jsonl",
+      "sha256": "61be6b5704491acf807908851ffefb0e36f228e47163a58af29a474618590a93"
+    },
+    {
+      "path": ".local/trigger-smoke/spec023-20261116-wdo9bd-grant.json",
+      "sha256": "42569e6c3cc6b69647ae05ea2a31cbed3247156e262401279e39227b806319f4"
+    },
+    {
+      "path": ".local/trigger-smoke/grant-spec023-20261116-wdo9bd.lock/owner.json",
+      "sha256": "dc971ec2f24aca3925196ad182a6fa2fb8e2876caced36d26046f8ab0e6b55c0"
+    },
+    {
+      "path": ".local/trigger-smoke-implementation/live-once.log",
+      "sha256": "df3b7a64a6544af4b37fa7683dd6cf31a1a75921559a38bf1cbc38750dd93e35"
+    },
+    {
+      "path": ".local/trigger-smoke-implementation/code-review-r3.md",
+      "sha256": "628ac61b73ef7b9358f96126a819a36711d852392b30e6fce16f9a12c1f8d634"
+    },
+    {
+      "path": ".local/trigger-smoke-implementation/live-command-binding-r1.md",
+      "sha256": "53b474650e4e31e8fdf3a63edcd381deeb50a502796329eed35423da6947b925"
+    }
+  ]
+}
