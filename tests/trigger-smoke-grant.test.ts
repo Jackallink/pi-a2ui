@@ -32,5 +32,5 @@ test('SMG05 positive requires a complete real negative receipt bound to its jour
  for(const invalid of [null,{}, {...r,outcome:'negative_text'},{...r,cleanupErrors:['browser']},{...r,transcript:[]},{...r,requestDiagnostics:[{sdkStopReason:'error',bodySHA256:h,status:200}]}])assert.equal(negativeReceiptPassed(invalid,rows,h),false);assert.equal(negativeReceiptPassed(r,[],h),false);assert.equal(negativeReceiptPassed(r,rows,'b'.repeat(64)),false);
 });
 test('SMG06 two-row smoke summary never converts unknown or not-run into comparisons or zero live calls',()=>{
- const s=smokeSummary([{id:'SM02-B',outcome:'provider_unknown',requests:null,knownAdmittedRequests:1},{id:'SM01-B',outcome:'not_run',notRun:'unknown'}],{complete:true,rows:[{}]},true);assert.equal(s.actualModelRequests,null);assert.equal(s.knownAdmittedRequests,1);assert.equal(s.plannedEpisodes,2);assert.equal(s.positiveChoice,'not_run');assert.equal('improvementPairs'in s,false);
+ const s=smokeSummary([{id:'SM02-B',outcome:'provider_unknown',requests:null,knownAdmittedRequests:1},{id:'SM01-B',outcome:'not_run',notRun:'unknown'}],{complete:true,rows:[{}]},true);assert.equal(s.actualModelRequests,null);assert.equal(s.knownAdmittedRequests,1);assert.equal(s.plannedEpisodes,2);assert.equal(s.positiveChoice,'not_run');assert.equal(s.negative,'unknown');assert.equal('improvementPairs'in s,false);
 });

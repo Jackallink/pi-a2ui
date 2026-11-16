@@ -17,3 +17,13 @@ P0控制还包括：同grant重复/并发执行只一赢家、lock后首POST前�
 59项窄范围控制通过，包含旧pilot回归。另一个429控制暴露过早abort只留下Request aborted：现在先停止所有后续发送，但允许当前SDK完成错误解析。错误JSON依既有隐私规则可能整段省略，测试要求SDK error/fingerprint而非原始供应商文本；原始失败、测试口径修正与GREEN均保留。没有放宽diagnostics脱敏规则或对真实故障根因作推断。
 
 当前只做synthetic，尚未读取真实配置/发模型请求。固定源码完整检查、独立代码/隐私/成本评审、实际新批次及原始结局将在后续各自补录；历史505Node/90browser不替代新适配验收。一次性grant由操作人依据用户授权在代码GO后写入，CLI不会自动自批；旧pilot live仍禁用。
+
+## 代码R1与纠正
+
+第一固定候选2b76e516完整531Node和typecheck通过，但独立代码[R1 NO-GO](trigger-smoke-implementation/code-review-r1.md)指出3P1/1P2：原始SDK thinking被写入新回执；表单oracle只看任意按钮，取消或无context也会误判；P0真实入口拒绝证据不足；negative未知被聚合为普通fail。该通过记录不能豁免四项。
+
+新增实际SDK反例先RED：thinking/signature回执泄漏、三字段取消-only/无绑定确认误判、unknown汇总。纠正为只投影assistant text/toolCall（不变更SDK内存历史）、独立三个field/path匹配与承载全部三path的非取消提交/确认按钮且真实DOM可见、未知/协议错误单列。旧原始回执保持原字节；不删除或“修复”旧思考内容。
+
+P0采用完整owned git fixture/假授权/真实guard入口与fs/fetch/spawn见证器：合法negative/positive均先证明能到达工作区前见证点，之后缺/伪造ticket、源码/profile/capture漂移、错误negative及cleanup失败等逐项拒绝。最初fixture缺payload索引文件是设置失败，不算RED；将该实际被读取的索引加入受保护input集合后，closed-receipt重放真正触达workspace见证点并RED，补入口已关闭回执检查后GREEN。并发两个真实CLI只一方到达被拦截的worker spawn，重放不再到达；整个fixture配置/网络计数0，永不生成真实授权。
+
+最终固定候选完整验证与R2仍待完成；本段只记录针对性纠正，尚无新付费请求。

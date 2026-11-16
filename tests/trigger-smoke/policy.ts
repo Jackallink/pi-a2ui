@@ -14,7 +14,7 @@ export const OLD_ID=old.id;
 export const PROFILE_SHA=digest(readFileSync(join(ROOT,'tests/trigger-smoke/profile.json')));
 export function identityInputs():string[]{
  const payload=JSON.parse(readFileSync(join(ROOT,'tests/benchmark-model/payload.json'),'utf8'));
- return [...new Set<string>(['scripts/trigger-pilot.mjs','scripts/trigger-smoke.mjs',...['trigger-pilot','trigger-smoke'].flatMap(dir=>readdirSync(join(ROOT,'tests',dir)).filter(p=>/\.(ts|json)$/.test(p)).map(p=>'tests/'+dir+'/'+p)),'package-lock.json','tests/benchmark-model/guards.ts','tests/benchmark-model/profile-v2.json',...payload])];
+ return [...new Set<string>(['scripts/trigger-pilot.mjs','scripts/trigger-smoke.mjs',...['trigger-pilot','trigger-smoke'].flatMap(dir=>readdirSync(join(ROOT,'tests',dir)).filter(p=>/\.(ts|json)$/.test(p)).map(p=>'tests/'+dir+'/'+p)),'package-lock.json','tests/benchmark-model/guards.ts','tests/benchmark-model/profile-v2.json','tests/benchmark-model/payload.json',...payload])];
 }
 export function policyFor(experiment=OLD_ID):any{
  assert.ok(experiment===OLD_ID||experiment===SMOKE_ID,'known experiment only');
@@ -55,12 +55,12 @@ export function verifyLiveWorker(run:string,id:string,experiment=OLD_ID,claim=fa
  assert.equal(experiment,SMOKE_ID,'live execution disabled for old pilot');
  assert.equal(process.argv[1],join(ROOT,'tests/trigger-pilot/worker.ts'),'live execution disabled outside reviewed worker');assert.equal(process.argv[2],id);assert.equal(process.argv[3],run);assert.equal(process.argv[4],'live');assert.equal(process.argv[5],'');assert.equal(process.argv[6],SMOKE_ID);
  assert.ok(SMOKE.order.includes(id));const g=liveAuthority(run);
- const started=join(run,id+'.live-started');assert.ok(!existsSync(started),'episode replay');
+ const started=join(run,id+'.live-started');assert.ok(!existsSync(started)&&!existsSync(join(run,id+'.live.json')),'episode replay');
  if(id==='SM01-B'){const bytes=readFileSync(join(run,'live-requests.jsonl'),'utf8');assert.ok(bytes.endsWith('\n'));const rows=bytes.trim().split('\n').map(line=>JSON.parse(line));assert.ok(negativeReceiptPassed(jsonFile(join(run,'SM02-B.live.json')),rows,g.preflight.contexts['SM02-B']),'verified negative pass required');}
  if(claim)claimEpisode(run,id);return g;
 }
 export function smokeSummary(results:any[],journal:any,live:boolean):any{
  assert.deepEqual(results.map(r=>r.id),SMOKE.order);const accountingKnown=journal.complete&&results.every(r=>r.notRun||Number.isSafeInteger(r.requests)&&r.requestAccounting==='known'),outcomesKnown=results.every(r=>r.notRun||r.outcome!=='provider_unknown'&&r.requestAccounting==='known');
  const knownAdmittedRequests=Math.max(journal.rows.length,results.reduce((n,r)=>n+(r.requests??r.knownAdmittedRequests??0),0));const positive=results[1],negative=results[0];
- return{plannedEpisodes:2,knownAdmittedRequests,requestAccountingKnown:accountingKnown,requestOutcomesKnown:outcomesKnown,actualModelRequests:live?(accountingKnown&&outcomesKnown?knownAdmittedRequests:null):0,negative:negative.outcome==='negative_pass'?'pass':negative.notRun?'not_run':'fail',positiveChoice:positive.notRun?'not_run':positive.renderRequested===true?'observed':positive.outcome==='provider_unknown'||positive.outcome==='output_truncated'?'unknown':'not_observed',uiVerdict:negative.outcome==='negative_pass'&&positive.outcome==='render_committed'&&positive.contentValid===true&&!positive.harnessFailure?'ui_smoke_pass':positive.notRun?'not_run':positive.outcome==='preparation_limited'||positive.outcome==='text_only'?'ui_not_observed':'incomplete_or_invalid',results};
+ return{plannedEpisodes:2,knownAdmittedRequests,requestAccountingKnown:accountingKnown,requestOutcomesKnown:outcomesKnown,actualModelRequests:live?(accountingKnown&&outcomesKnown?knownAdmittedRequests:null):0,negative:negative.outcome==='negative_pass'?'pass':negative.notRun?'not_run':['negative_text','negative_tool'].includes(negative.outcome)?'fail':['provider_unknown','output_truncated'].includes(negative.outcome)?'unknown':'protocol_error',positiveChoice:positive.notRun?'not_run':positive.renderRequested===true?'observed':positive.outcome==='provider_unknown'||positive.outcome==='output_truncated'?'unknown':'not_observed',uiVerdict:negative.outcome==='negative_pass'&&positive.outcome==='render_committed'&&positive.contentValid===true&&!positive.harnessFailure?'ui_smoke_pass':positive.notRun?'not_run':positive.outcome==='preparation_limited'||positive.outcome==='text_only'?'ui_not_observed':'incomplete_or_invalid',results};
 }
