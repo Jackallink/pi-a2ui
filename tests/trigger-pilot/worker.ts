@@ -33,6 +33,7 @@ function helperCall(command:string,helper:string,draft:string,cwd:string):{comma
 }
 
 export async function episode(id:string,run:string,kind:string,simulation=''){
+ assert.ok(kind!=='live'||PROFILE.liveEnabled,'live execution disabled; new explicit authorization required');
  assert.equal(process.versions.node.split('.')[0],'24');assert.ok(['capture','offline','live'].includes(kind));assert.ok(!simulation||kind==='offline');
  assert.ok(run.startsWith(join(ROOT,'.local/trigger-pilot/')));assert.equal(await readFile(join(run,'.owned'),'utf8'),'trigger-pilot-owned\n');
  assert.ok(PROFILE.order.includes(id));const [scenarioId,arm]=id.split('-'),row=SCENARIOS.find(r=>r.id===scenarioId)!;

@@ -7,7 +7,7 @@ export function safeError(source:string,error:unknown,secrets:string[]):any{
  const name=error instanceof Error&&['Error','TypeError','AbortError','TimeoutError'].includes(error.name)?error.name:'Error';
  const fingerprint=createHash('sha256').update(raw).digest('hex');
  const embedded=/(?:headers?|body|messages?|reasoning(?:_content)?|thinking|推理内容|(?:access_)?token|authorization|api[_-]?key)["'\s]*[:=]/i.test(raw);
- const scrubbed=embedded?'[embedded payload omitted]':redact(raw,secrets).replace(/https?:\/\/[^\s<>"']+/gi,'[URL omitted]');
+ const scrubbed=embedded?'[embedded payload omitted]':redact(raw,secrets).replace(/\b[a-z][a-z0-9+.-]*:[^\s<>"']+/gi,'[URL omitted]');
  let message='';for(const char of scrubbed){if(Buffer.byteLength(message+char)>1024)break;message+=char;}
  return{source,name,message,fingerprint};
 }

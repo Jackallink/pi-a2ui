@@ -19,3 +19,7 @@
 SDK reasoning=true/low，受保护body明确enabled/low/max_completion_tokens1536；guard禁止max_tokens混用及缺少usage请求。新profile为offline id、liveEnabled=false；CLI和直接worker在真实配置/工作区创建前拒绝。这里验证的是线级契约，不是AgentPlan alias映射、服务端实际策略或触发效果。原预算/超时不增大。
 
 回退只涉及新脚本/测试/设计切片，不改正式0.1.10包；即使回退也不能重新使用旧授权。原run-LUrFUb五份live回执、公开脱敏结果、冻结profile/Check099和76生产文件已在实施阶段重算匹配；完整结束时再次校验并记录清单。
+
+## 独立代码审查纠正
+
+第一候选74948d5完整505项Node测试通过，但独立审查发现两个未覆盖缺口：exported episode API可绕过argv层的live禁用，在配置读取前仍会创建工作区；错误脱敏只覆盖HTTP(S)，不满足所有URL的约定。新增动态导入调用控制先出现status0而非拒绝的行为RED；ws/wss/file/ftp/mailto/data/custom URI控制同样先RED。函数最前端补同一liveEnabled guard，错误文本按URI scheme遮盖；这些修正仍是原AC007/009，不扩大预算/产品范围。74948d5的通过记录保留为中间证据；最终检查须绑定修正后的source。
