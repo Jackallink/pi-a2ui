@@ -1,6 +1,6 @@
 # Spec025：GLM首次候选正确性的双任务配对验证
 
-状态：draft；本轮仅场景/预算设计与独立评审，实际模型预算0，不实施驱动、不读真实模型配置、不创建live grant。用户明确要求GO后再申请真实调用授权。完整机器定义见[proposed profile](../checks/authoring-paired-pilot-design/profile.proposed.json)，其documentOnly/live=false不能作为执行配置。
+状态：walkthrough-approved（独立R2 Gate1设计/拟成本边界/可比性GO，0项开放P0/P1/P2；受审设计稿9156b34be57d2daaf84d722ff406f55deef188e7，见[Check122](../checks/122-authoring-paired-pilot-design.md)）；本轮仅场景/预算设计与独立评审，实际模型预算仍0，不实施驱动、不读真实模型配置、不创建live grant。用户明确要求GO后再申请真实调用授权。完整机器定义见[proposed profile](../checks/authoring-paired-pilot-design/profile.proposed.json)，其documentOnly/live=false不能作为执行配置。
 
 ## 目标与证据边界
 
