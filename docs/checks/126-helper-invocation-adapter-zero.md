@@ -35,3 +35,5 @@ parser先验证全串、quote-aware separator、固定cwd/Node/helper/op/args，
 observer-fault-red.log纯内存fake backend pre/post两RED（0实际子进程），observer-cleanup-red.log实际owned长驻fixture helper，审计错误取代了应发生的SDK timeout（test finally显式清除owned组，未泄漏）。纠正：pre-save失败标pre_spawn_persist且不调用backend；backend已返回child后整段观测catch、标post_spawn_persist，始终归还原child，不吞审计错误为成功。worker tool_result/cleanup看到auditErrors即fatal+harnessFailure/process_witness_error，保留原provider诊断与实际helper结果。
 
 observer-fault-final-green.log 4pass：fake pre/post、实际Pi timeout清理（owned group已退出）、实际offline worker预载仅对其run审计文件一次post-write失败→2 synthetic回合fatal/harnessFailure、0model/0operator config、workspace和helper组清理、auditErrors回执明确。新正常路径仍需完整固定source重验；原166保护不变，未来场景和实付预算尚未推进。
+
+R3故障fixture的env推断曾触发TS7053（type-r3.log）；显式NodeJS.ProcessEnv修复，仅类型层，不算行为RED。type-r3-corrected.log退出0。全部故障raw与失败类型记录保留，新固定source的完整检查另计。
