@@ -12,7 +12,7 @@ Canonical：Spec027。未来paid driver未实施；本轮无配置/model。以�
 
 | 用户动作 | Handler/组件 | 状态 | API | 后端 | UI/响应后 UI |
 | --- | --- | --- | --- | --- | --- |
-| FC01-G→FC01-C；读取准备资料、生成首source | 各自actual factory/metadata、受审finite adapter、同臂compiler | 同题/路径/工具；包引导不同；plan接纳与actual spawn独立 | 唯一glm原生12cap；read/owned write/edit、helper、check、a2ui_render | canonical单Node参数、实际cwd/PID/退出码持久见证；raw历史不改；首check或首render判分 | 首check/首render单列；实际commit+目标DOM才算UI，不修原候选 |
+| FC01-G→FC01-C；读取准备资料、生成首source | 各自actual factory/metadata、受审finite adapter、同臂compiler | 同题/路径/工具；包引导不同；plan接纳与actual spawn独立 | 唯一glm原生12cap；read/owned write/edit、helper、check、a2ui_render | canonical单Node参数、实际cwd/PID/退出码持久见证；raw历史不改；首check或首render判分 | 首check/首render单列；完整链路还须skill+example在首候选前成功，check在首render前成功且sourceMatch仅exact/single-terminal-lf，首候选正确/DOM通过/证据known；不修原候选 |
 
 ## P-003
 

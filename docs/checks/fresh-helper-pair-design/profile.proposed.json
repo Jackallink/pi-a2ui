@@ -101,7 +101,21 @@
     "comparisonRequiresBothSubmittedAndKnown": true,
     "modelPopulationRateClaimAllowed": false,
     "paidJudgeAllowed": false,
-    "actionClicksAllowed": 0
+    "actionClicksAllowed": 0,
+    "completeGuidedChainRequires": {
+      "successfulSkillAndExampleReadsBeforeFirstCandidate": true,
+      "readOrderEvidence": "event-sequence/toolCallId/firstCandidate.workflowBefore",
+      "firstCandidateCompileAndStaticCorrect": true,
+      "successfulCheckBeforeFirstRenderCall": true,
+      "checkRenderSourceMatch": [
+        "exact",
+        "single-terminal-lf"
+      ],
+      "singleTerminalLfRule": "Only one terminal LF difference; shorter source must not end in CR or LF",
+      "firstRenderCommittedAndTargetDOMPassed": true,
+      "journalDiagnosticsAuditCleanupKnown": true,
+      "fatalOrHarnessFailureAllowed": false
+    }
   },
   "userAuthorizationStillRequired": true
 }

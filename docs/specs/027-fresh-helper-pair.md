@@ -30,7 +30,7 @@ FC01必须3个空字符串绑定的可读TextField，精确labels/keys、不同�
 
 必须分层报告：读skill/示例意图→parser接纳/规范argv→独立actual spawn/PID/commandSHA→CLI exit/check→firstCandidate grade→首UI。provider continuation保留raw command，执行canonical单列；audit error会fatal/harnessFailure，不能把“接纳”写成“已查询”或将prepare/check写成UI成功。原生thinking/signature不落raw。
 
-两行报告计划分母各1、实际提交分母0/1/unknown；已知0候选N/A、未知不填0；独立保留compile/static/UI/sourceMatch（exact/严格单LF/mismatch/unchecked/no-render）与费用。只有两行均实际提交、grade和journal/diagnostics/cleanup全known、无fatal/harness/audit错，才报告**此题两臂观察差异**；若G无UI或未成功check/skill/example，不能称完整引导链路成功。即使G正确/C错误，也不称总体成功率提升/因果改善。不要复用Spec025固定4行/分母2的summary。
+两行报告计划分母各1、实际提交分母0/1/unknown；已知0候选N/A、未知不填0；独立保留compile/static/UI/sourceMatch（exact/严格单LF/mismatch/unchecked/no-render）与费用。只有两行均实际提交、grade和journal/diagnostics/cleanup全known、无fatal/harness/audit错，才报告**此题两臂观察差异**；“完整引导链路成功”必须同时满足：G的skill和示例读取均实际返回成功，且均发生在首候选提交前（以事件序列/call ID及首候选workflowBefore快照证明，不能只看意图、plan接纳或事后读取）；首候选compile/static正确；check实际成功且完成在首render调用前；checkedSource与首render source的sourceMatch仅允许exact或single-terminal-lf；首render已commit且目标DOM通过，journal/diagnostics/audit/cleanup全部known且无fatal/harness错误。single-terminal-lf严格指两源码仅差末尾一个LF、较短源码末尾本无CR/LF；mismatch/unchecked/no-render一律不能称完整链路成功。即使G正确/C错误，也不称总体成功率提升/因果改善。不要复用Spec025固定4行/分母2的summary。
 
 ## 拟成本和停止约束（当前未获授权）
 
@@ -56,7 +56,7 @@ FC01必须3个空字符串绑定的可读TextField，精确labels/keys、不同�
 | AC-003 | 两会话预算→POST/tool准入→每6/总12/12工具，先fsync再POST，无其它模型/fallback | native wire、torn/丢receipt不退款、最后response bundle、180/420 |
 | AC-004 | 第一check或render→分层oracle→compile/static/UI/无candidate分别可证伪 | FC01正负/额外长度/隐藏目标/变体、named-ID/rules、sourceMatch |
 | AC-005 | helper规划/实际执行/拒绝或审计故障→请求/清理→持久witness、普通继续/fatal停止不混 | 复用Spec026证明并对新paid ID验证raw/canonical/actual路径、故障与cleanup |
-| AC-006 | 固定2行→报告→分母1/actual、N/A/unknown、单题而非总体结论，usage未知保留 | 新两行summary truth table，不复用四行统计 |
+| AC-006 | 固定2行→报告→分母1/actual、N/A/unknown、单题而非总体结论，usage未知保留 | 新两行summary truth table：完整链路全条件正例；迟读/读取失败、仅plan接纳、check未成功或晚于render、mismatch/unchecked/no-render、隐藏DOM、fatal/unknown各为反例，不复用四行统计 |
 
 这份设计GO只允许向用户提交清晰的新预算申请。只有用户另行明确条件授权后，才实施必要新known paid profile/guard/两行统计和完整Node24零推理验收、独立代码/隐私/成本GO，绑定新source/runtime/两包/105+后续输入/新captures及唯一实际grant/精确命令，再执行一次。不能把当前7ee9045的零推理代码GO当作本Spec已可付费运行；本轮没有假可执行命令。
 

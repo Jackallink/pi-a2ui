@@ -17,4 +17,4 @@ IN：P-001新授权与对照、P-002两session原生模型/helper/首source/UI�
 | AC-003 | 每6总12与工具12 | 准入 | durable先记账、原生参数唯一、超限无dispatch | P0 |
 | AC-004 | 首source/UI | 判分 | 同臂compile/static与实际DOM分别；INPUT不算DSL错 | P1 |
 | AC-005 | 准备/进程/普通或致命错误 | 响应/清理 | raw/canonical/actual分层、普通继续/fatal stop | P0 |
-| AC-006 | 2行及缺失 | 统计 | 每臂计划1、无candidate N/A/unknown，不称总体率或因果 | P1 |
+| AC-006 | 2行及缺失 | 统计 | 每臂计划1、无candidate N/A/unknown；完整链路须首候选前成功读skill+example、首render前check成功且源码exact/严格单LF、首候选正确/DOM通过/证据known，不称总体率或因果 | P1 |
