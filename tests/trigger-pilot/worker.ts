@@ -13,6 +13,7 @@ import a2ui from '../../extension.ts';
 import {configAdmission,literalCredentials,ordinaryPath,redact} from '../benchmark-model/guards.ts';
 import {killTrackedDetachedChildren} from '../../node_modules/@earendil-works/pi-coding-agent/dist/utils/shell.js';
 import {PROFILE,SCENARIOS,PilotBudget,observeAssistant,descriptionForArm,normalizedBody,canonical,hash} from './contracts.ts';
+import {observeResponse,recordError,completeUsage} from './diagnostics.ts';
 
 const ROOT=resolve(dirname(fileURLToPath(import.meta.url)),'../..');
 for(const key of ['FORCE_COLOR','BASH_ENV','ENV','NODE_OPTIONS','LD_PRELOAD','DYLD_INSERT_LIBRARIES'])delete process.env[key];
@@ -43,14 +44,15 @@ export async function episode(id:string,run:string,kind:string,simulation=''){
  await symlink(join(ROOT,'node_modules'),join(pack,'node_modules'),'dir');
  const helper=join(pack,'skills/pi-a2ui/scripts/a2ui.mjs'),skill=join(pack,'skills/pi-a2ui/SKILL.md'),draft=join(project,'draft.express');
  const journal=join(run,kind==='live'?'live-requests.jsonl':`synthetic-${simulation||kind}-requests.jsonl`),budget=new PilotBudget(journal,kind==='live'?'live':'offline');
- const record:any={id,kind,simulation:simulation||null,node:process.version,started:false,requests:0,renderRequested:false,renderAttempted:false,renderCommitted:false,preparation:false,outcome:'setup',transcript:[],tools:[],usage:[],cleanupErrors:[],modelCalls:0};
+ const record:any={id,kind,simulation:simulation||null,node:process.version,started:false,requests:0,renderRequested:false,renderAttempted:false,renderCommitted:false,preparation:false,outcome:'setup',transcript:[],tools:[],usage:[],requestDiagnostics:[],cleanupErrors:[],modelCalls:0};
  let session:any,runtime:any,browser:Browser|undefined,browserServer:BrowserServer|undefined,page:Page|undefined,opener:Promise<void>|undefined,origin:string|undefined;
- let stopped=false,toolCount=0,renderCount=0,checkAttempted=false,checkCallId:string|undefined,abortWait:Promise<void>|undefined,caseTimer:ReturnType<typeof setTimeout>|undefined;
+ let stopped=false,toolCount=0,renderCount=0,checkAttempted=false,checkCallId:string|undefined,abortWait:Promise<void>|undefined,caseTimer:ReturnType<typeof setTimeout>|undefined,currentDiagnostic:any;
  const secrets:string[]=[];const realFetch=globalThis.fetch;let beforeConfig:(string|null)[]|undefined;
  const configPaths=['settings.json','auth.json','models.json','models-store.json'].map(p=>join(homedir(),'.pi/agent',p));
  const configHashes=async()=>Promise.all(configPaths.map(async p=>{try{return hash(await readFile(p));}catch(e){if((e as NodeJS.ErrnoException).code==='ENOENT')return null;throw e;}}));
  const stop=(reason:string,fatal=false)=>{if(!stopped){stopped=true;record.outcome=reason;record.fatal=fatal;abortWait=session?.abort();}};
- const interrupt=()=>{if(simulation!=='hang')stop('provider_unknown',true);};process.once('SIGTERM',interrupt);process.once('SIGINT',interrupt);
+ const error=(source:string,cause:unknown)=>{if(currentDiagnostic)recordError(currentDiagnostic,source,cause,secrets);};
+ const interrupt=()=>{if(simulation!=='hang'){error('episode',new Error('worker interrupted'));stop('provider_unknown',true);}};process.once('SIGTERM',interrupt);process.once('SIGINT',interrupt);
  globalThis.fetch=async(input,options)=>{const url=new URL(typeof input==='string'||input instanceof URL?String(input):input.url);assert.ok(url.protocol==='http:'&&url.hostname==='127.0.0.1','non-provider external network forbidden');return realFetch(input,options);};
  try{
   let config:{key:string;headers:Record<string,string>;model:Record<string,unknown>};
@@ -61,14 +63,15 @@ export async function episode(id:string,run:string,kind:string,simulation=''){
    try{config=configAdmission(await readFile(configPaths[2],'utf8'),await readFile(configPaths[1],'utf8').catch(e=>{if(e.code==='ENOENT')return '{}';throw e;}),process.env);}catch{throw new Error('trusted live config admission failed');}
   }else config={key:'synthetic-pilot-unused',headers:{},model:{}};
   secrets.push(config.key,...Object.values(config.headers));
-  const models=join(agent,'models.json');await writeFile(models,JSON.stringify({providers:{[PROFILE.model.provider]:{baseUrl:PROFILE.model.baseUrl,api:'openai-completions',models:[{id:PROFILE.model.id,name:PROFILE.model.id,reasoning:false,input:['text'],contextWindow:65536,maxTokens:4096}]}}}),{mode:0o600});
+  const models=join(agent,'models.json');await writeFile(models,JSON.stringify({providers:{[PROFILE.model.provider]:{baseUrl:PROFILE.model.baseUrl,api:'openai-completions',models:[{id:PROFILE.model.id,name:PROFILE.model.id,reasoning:true,input:['text'],contextWindow:65536,maxTokens:4096}]}}}),{mode:0o600});
   runtime=await ModelRuntime.create({credentials:literalCredentials(config.key),modelsPath:models,modelsStorePath:join(agent,'models-store.json'),allowModelNetwork:false,refreshOnCreate:false});
   const model=runtime.getModel(PROFILE.model.provider,PROFILE.model.id);assert.ok(model);const stream=runtime.streamSimple.bind(runtime);
   runtime.streamSimple=(selected:any,context:any,options:any)=>{
+   currentDiagnostic=undefined;
    if(stopped)throw new Error('episode stopped before provider continuation');
    return stream(selected,context,{...options,maxTokens:1536,maxRetries:0,timeoutMs:30000,fetch:async(input:any,init:any)=>{
     if(stopped)throw new Error('episode stopped before transport');
-    const url=typeof input==='string'||input instanceof URL?String(input):input.url;const body=JSON.parse(String(init?.body));body.parallel_tool_calls=false;body.tool_choice='auto';const headers=new Headers(init?.headers);
+    const url=typeof input==='string'||input instanceof URL?String(input):input.url;const body=JSON.parse(String(init?.body));body.parallel_tool_calls=false;body.tool_choice='auto';body.thinking={type:PROFILE.thinkingPolicy.type};body.reasoning_effort=PROFILE.thinkingPolicy.effort;const headers=new Headers(init?.headers);let diagnostic:any;
     try{
      const first=budget.rows().filter(r=>r.episode===id).length===0;
      if(first){const normalized=canonical(normalizedBody(body));record.firstBodySHA256=hash(normalized);record.inputBytes=Buffer.byteLength(JSON.stringify(body));
@@ -79,26 +82,27 @@ export async function episode(id:string,run:string,kind:string,simulation=''){
      if(simulation==='wrong-model')body.model='forbidden-model';
      if(kind==='live'){assert.equal(headers.get('authorization'),'Bearer '+config.key,'credential transport identity');for(const [k,v]of Object.entries(config.headers))headers.set(k,v);}
      budget.admit(id,url,selected,body);record.requests++;record.modelCalls=kind==='live'?record.requests:0;
+     const row=budget.rows().at(-1)!;diagnostic={request:record.requests,journalIndex:row.index,bodySHA256:row.bodySHA256,status:null,usage:null,streamState:'pending',bytes:0,finishReasons:[],doneObserved:false,errors:[]};currentDiagnostic=diagnostic;record.requestDiagnostics.push(diagnostic);
     }catch(e){const isBudget=e instanceof Error&&e.message.includes('request budget');stop(isBudget?(record.preparation?'ui_preparation_only':'budget_limited'):'admission_error',!isBudget);throw new Error('pilot request admission stopped');}
+    let response:Response;
     if(kind!=='live'){
      const turn=record.requests;let tool:any,text:string|undefined;
      if(kind==='capture'||simulation==='text'||simulation==='torn-journal')text='synthetic text only';
      else if(simulation==='schema-missing')tool={name:'a2ui_render',arguments:{surfaceId:'pilot'}};
      else if(simulation==='schema-type')tool={name:'a2ui_render',arguments:{surfaceId:{invalid:true},source:'root = Text("x")'}};
-     else if(simulation==='prepare'||simulation==='budget')tool={name:'read',arguments:{path:skill}};
+     else if(simulation==='prepare'||simulation==='budget'||simulation==='read-then-stream-error')tool={name:'read',arguments:{path:skill}};
      else if(simulation==='unsafe-shell')tool={name:'bash',arguments:{command:'touch forbidden'}};
      else if(simulation==='failed-check')tool=turn===1?{name:'write',arguments:{path:draft,content:'root = BadComponent()'}}:{name:'bash',arguments:{command:`node "${helper}" check --surface-id pilot "${draft}"`}};
      else tool={name:'a2ui_render',arguments:{surfaceId:'pilot',source:simulation==='compile'?'root = BadComponent()':'root = Text("Synthetic pilot control")'}};
-     if(simulation==='rate-limit'){record.providerStatus=429;stop('provider_error',true);return new Response('{"error":{"message":"synthetic rate limit"}}',{status:429});}
      const delta=tool?{role:'assistant',tool_calls:[{index:0,id:'call-'+turn,type:'function',function:{name:tool.name,arguments:JSON.stringify(tool.arguments)}}]}:{role:'assistant',content:text};
      const common={id:'pilot-synthetic',object:'chat.completion.chunk',created:1,model:PROFILE.model.id};const usage=simulation==='usage-missing'?{}:{usage:{prompt_tokens:10,completion_tokens:2,total_tokens:12}};
      const chunks=[{...common,choices:[{index:0,delta,finish_reason:null}]},{...common,choices:[{index:0,delta:{},finish_reason:simulation==='truncated'?'length':tool?'tool_calls':'stop'}],...usage}];
-     record.usage.push('usage'in usage?usage.usage:null);return new Response(chunks.map(c=>'data: '+JSON.stringify(c)+'\n\n').join('')+'data: [DONE]\n\n',{headers:{'content-type':'text/event-stream'}});
-    }
-    let response:Response;try{response=await realFetch(url,{...init,headers,body:JSON.stringify(body),redirect:'error',signal:AbortSignal.any([...(init?.signal?[init.signal]:[]),AbortSignal.timeout(30000)])});}catch{stop('provider_unknown',true);throw new Error('pilot provider transport outcome unknown');}
-    record.providerStatus=response.status;if(!response.ok){stop('provider_error',[401,403,429].includes(response.status));return response;}
-    let pending='',seen:any=null,total=0;const decoder=new TextDecoder();assert.ok(response.body);
-    const observed=response.body.pipeThrough(new TransformStream<Uint8Array,Uint8Array>({transform(chunk,controller){total+=chunk.byteLength;pending+=decoder.decode(chunk,{stream:true});if(total>1024*1024){stop('provider_unknown',true);throw new Error('SSE bound');}const lines=pending.split('\n');pending=lines.pop()!;for(const line of lines)if(line.startsWith('data: ')){try{const data=JSON.parse(line.slice(6));if(data.usage)seen={prompt_tokens:data.usage.prompt_tokens??null,completion_tokens:data.usage.completion_tokens??null,total_tokens:data.usage.total_tokens??null};}catch{}}controller.enqueue(chunk);},flush(){record.usage.push(seen);}}));return new Response(observed,{status:response.status,headers:response.headers});
+     response=new Response(chunks.map(c=>'data: '+JSON.stringify(c)+'\n\n').join('')+'data: [DONE]\n\n',{headers:{'content-type':'text/event-stream'}});
+     if(simulation==='rate-limit')response=new Response('{"error":{"message":"synthetic rate limit"}}',{status:429});
+     if(simulation==='read-then-stream-error'&&turn===2)response=new Response(new ReadableStream({pull(c){c.error(new Error('synthetic interruption headers: {Authorization: "Bearer synthetic-hidden"}; body: {reasoning_content:"private-canary"}'));}}));
+    }else try{response=await realFetch(url,{...init,headers,body:JSON.stringify(body),redirect:'error',signal:AbortSignal.any([...(init?.signal?[init.signal]:[]),AbortSignal.timeout(30000)])});}catch(cause){recordError(diagnostic,'transport',cause,secrets);stop('provider_unknown',true);throw new Error('pilot provider transport outcome unknown');}
+    record.providerStatus=response.status;if(!response.ok)stop('provider_error',[401,403,429].includes(response.status));
+    return observeResponse(response,diagnostic,secrets);
    }});
   };
   const settings=SettingsManager.inMemory({retry:{enabled:false,maxRetries:0,provider:{maxRetries:0,timeoutMs:30000}},compaction:{enabled:false},cacheWarming:'off',transport:'sse'});
@@ -109,7 +113,7 @@ export async function episode(id:string,run:string,kind:string,simulation=''){
     await opener;return{stdout:'',stderr:'',code:0,killed:false,truncated:false};
    }};
    a2ui(host);
-   pi.on('message_end',event=>{const message=event.message as any;if(message.role!=='assistant')return;record.transcript.push({role:'assistant',content:message.content,stopReason:message.stopReason});if(!stopped){observeAssistant(record,message);if(message.stopReason==='length')stop('output_truncated');if(message.stopReason==='error')stop('provider_unknown',true);}});
+   pi.on('message_end',event=>{const message=event.message as any;if(message.role!=='assistant')return;record.transcript.push({role:'assistant',content:message.content,stopReason:message.stopReason});const d=currentDiagnostic;if(d){d.sdkStopReason=message.stopReason;if(message.errorMessage)recordError(d,'sdk',message.errorMessage,secrets);}if(!stopped){observeAssistant(record,message);if(message.stopReason==='length')stop('output_truncated');if(message.stopReason==='error'||message.stopReason==='aborted')stop('provider_unknown',true);}});
    pi.on('tool_call',event=>{
     try{
      assert.equal(stopped,false);assert.ok(++toolCount<=6,'tool budget');assert.ok(!event.parentToolCallId,'nested tool');const args=event.input as any;
@@ -134,9 +138,9 @@ export async function episode(id:string,run:string,kind:string,simulation=''){
   };
   const safety=`Sandbox file writes are limited to ${draft}; use write/edit to create this file. Reads are limited to the shipped package and this workspace. Shell permits only a direct Node invocation of the shipped helper's read-only queries/check, without shell operators or redirection. Do not execute other programs. Follow the user's task; no real business operation is authorized.`;
   const loader=new DefaultResourceLoader({cwd:project,agentDir:agent,settingsManager:settings,noExtensions:true,noSkills:true,noThemes:true,noPromptTemplates:true,noContextFiles:true,additionalSkillPaths:[skill],extensionFactories:[factory],appendSystemPrompt:[safety]});await loader.reload();assert.equal(loader.getSkills().skills.length,1);
-  const tools=['read','bash','write','edit','a2ui_render'];const created=await createAgentSession({cwd:project,agentDir:agent,modelRuntime:runtime,model,thinkingLevel:'off',settingsManager:settings,sessionManager:SessionManager.inMemory(project),resourceLoader:loader,tools});session=created.session;session.agent.toolExecution='sequential';assert.equal(created.modelFallbackMessage,undefined);await session.bindExtensions({mode:'rpc'});assert.deepEqual(session.getActiveToolNames().sort(),tools.sort());
-  record.started=true;caseTimer=setTimeout(()=>stop('provider_unknown',true),90000);await session.prompt(row.request);await abortWait;if(!stopped)stop(record.outcome==='setup'?(record.preparation?'ui_preparation_only':'text_only'):record.outcome);
- }catch{if(!stopped){record.harnessFailure=!record.started;stop(record.started?'provider_unknown':'setup_error',true);}}
+  const tools=['read','bash','write','edit','a2ui_render'];const created=await createAgentSession({cwd:project,agentDir:agent,modelRuntime:runtime,model,thinkingLevel:'low',settingsManager:settings,sessionManager:SessionManager.inMemory(project),resourceLoader:loader,tools});session=created.session;session.agent.toolExecution='sequential';assert.equal(created.modelFallbackMessage,undefined);await session.bindExtensions({mode:'rpc'});assert.deepEqual(session.getActiveToolNames().sort(),tools.sort());
+  record.started=true;caseTimer=setTimeout(()=>{error('episode',new Error('episode deadline'));stop('provider_unknown',true);},90000);await session.prompt(row.request);await abortWait;if(!stopped)stop(record.outcome==='setup'?(record.preparation?'ui_preparation_only':'text_only'):record.outcome);
+ }catch(cause){error('episode',cause);if(!stopped){record.harnessFailure=!record.started;stop(record.started?'provider_unknown':'setup_error',true);}}
  finally{
   if(caseTimer)clearTimeout(caseTimer);stopped=true;
   const until=Date.now()+10000;const clean=async(name:string,work:()=>Promise<unknown>)=>{try{await timeout(work(),Math.max(1,until-Date.now()),name);}catch{record.cleanupErrors.push(name);}};
@@ -145,7 +149,7 @@ export async function episode(id:string,run:string,kind:string,simulation=''){
   if(origin){try{await realFetch(origin,{signal:AbortSignal.timeout(1000)});record.cleanupErrors.push('server remains open');}catch{record.serverClosed=true;}}
   if(beforeConfig){try{assert.deepEqual(await configHashes(),beforeConfig);record.userConfigUnchanged=true;}catch{record.cleanupErrors.push('user config changed');}}
   killTrackedDetachedChildren();globalThis.fetch=realFetch;process.removeListener('SIGTERM',interrupt);process.removeListener('SIGINT',interrupt);
-  await clean('workspace',()=>rm(workspace,{recursive:true,force:true}));record.toolAttempts=toolCount;record.toolCount=record.tools.length;record.offlineConfigGuard=(globalThis as any).pilotReadGuard;record.usageKnown=record.usage.length===record.requests&&record.usage.every((u:any)=>u&&['prompt_tokens','completion_tokens','total_tokens'].every(k=>typeof u[k]==='number'));if(record.cleanupErrors.length){record.harnessFailure=true;record.fatal=true;}
+  await clean('workspace',()=>rm(workspace,{recursive:true,force:true}));record.toolAttempts=toolCount;record.toolCount=record.tools.length;record.offlineConfigGuard=(globalThis as any).pilotReadGuard;record.usage=record.requestDiagnostics.map((d:any)=>d.usage);record.usageKnown=record.usage.length===record.requests&&record.usage.every(completeUsage);if(record.cleanupErrors.length){record.harnessFailure=true;record.fatal=true;}
   if(simulation==='torn-journal'&&kind==='offline')appendFileSync(journal,'{"index":2');
   writeFileSync(join(run,id+'.'+kind+(simulation?'-'+simulation:'')+'.json'),redact(record,secrets)+'\n',{mode:0o600});
  }

@@ -6,7 +6,7 @@
 
 ## 当前修复切片：仅离线的 transport diagnostics v2
 
-用户已同意继续修正评测脚本；本切片状态 draft，按三轮增量走查及独立Gate1/Gate2评审后实施。下文旧pilot协议保留为历史；本节定义当前增量需求，不重新批准原付费批次。
+用户已同意继续修正评测脚本；本切片状态 in-progress（draft→walkthrough-approved→tdd-approved→in-progress）。三轮增量走查结构校验与独立Gate1/Gate2已GO，设计稿固定在提交a27fb6b；证据见[Check116](../checks/116-trigger-pilot-offline-repair.md)。下文旧pilot协议保留为历史；本节定义当前增量需求，不重新批准原付费批次。
 
 目标：让后续评测明确实际GLM参数，并在正常结束、SDK取消、流中断或超时时留下逐请求证据。非目标：追查已丢失的旧错误、补跑/重打分、证明主动触发有效、改动产品内核/依赖/安装、提交PR/发布。实际调用预算为0；`--execute`及直接live worker必须在读取真实配置或创建工作区之前拒绝。原36请求仅作为历史/潜在协议上限保留，不能当成本轮授权。profile使用新id并明确live禁用，旧run/回执/独占锁不变。
 

@@ -42,7 +42,7 @@ export class PilotBudget{
  admit(id:string,url:string,model:any,body:any):void{
   assert.ok(PROFILE.order.includes(id),'episode identity');assert.equal(url,PROFILE.model.baseUrl+'/chat/completions','endpoint identity');
   for(const key of ['provider','id','baseUrl'])assert.equal(model[key],PROFILE.model[key],'model identity');
-  assert.equal(body.model,PROFILE.model.id,'body model identity');assert.equal(body.max_tokens??body.max_completion_tokens,1536,'output cap');assert.equal(body.parallel_tool_calls,false,'sequential tools');assert.equal(body.tool_choice,'auto','auto choice');assert.ok(Buffer.byteLength(JSON.stringify(body))<=98304,'input body budget');
+  assert.equal(body.model,PROFILE.model.id,'body model identity');assert.equal(body.max_completion_tokens,1536,'total output cap');assert.equal(body.max_tokens,undefined,'max_tokens is not the total output contract');assert.deepEqual(body.thinking,{type:'enabled'},'native thinking');assert.equal(body.reasoning_effort,'low','native effort');assert.equal(body.stream_options?.include_usage,true,'request usage');assert.equal(body.parallel_tool_calls,false,'sequential tools');assert.equal(body.tool_choice,'auto','auto choice');assert.ok(Buffer.byteLength(JSON.stringify(body))<=98304,'input body budget');
   const rows=this.rows();assert.ok(rows.length<36&&rows.filter(r=>r.episode===id).length<3,'request budget');
   const entry={index:rows.length+1,episode:id,mode:this.mode,model:PROFILE.model.id,endpoint:url,bodySHA256:hash(canonical(body))};
   const bytes=Buffer.from(JSON.stringify(entry)+'\n'),fd=openSync(this.path,'a',0o600);try{assert.equal(writeSync(fd,bytes),bytes.length,'journal write incomplete; no dispatch');fsyncSync(fd);}finally{closeSync(fd);}

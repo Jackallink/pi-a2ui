@@ -5,7 +5,7 @@ import {syncBuiltinESMExports} from 'node:module';
 import {resolve,join} from 'node:path';
 import {PilotBudget,observeAssistant,descriptionForArm,normalizedBody,PROFILE,OLD,NEW,summarize} from './trigger-pilot/contracts.ts';
 
-const body=()=>({model:PROFILE.model.id,max_tokens:1536,parallel_tool_calls:false,tool_choice:'auto',messages:[{role:'user',content:'hello'}]});
+const body=()=>({model:PROFILE.model.id,max_completion_tokens:1536,thinking:{type:'enabled'},reasoning_effort:'low',stream_options:{include_usage:true},parallel_tool_calls:false,tool_choice:'auto',messages:[{role:'user',content:'hello'}]});
 const endpoint=PROFILE.model.baseUrl+'/chat/completions';
 const call=(args:unknown)=>({role:'assistant',stopReason:'toolUse',content:[{type:'toolCall',id:'x',name:'a2ui_render',arguments:args}]});
 test('TP01 a complete model render choice survives missing arguments before schema',()=>{

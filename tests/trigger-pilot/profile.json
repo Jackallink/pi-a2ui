@@ -1,5 +1,7 @@
 {
-  "id": "v0.1.10-trigger-pilot-1",
+  "id": "v0.1.10-trigger-pilot-2-offline",
+  "liveEnabled": false,
+  "thinkingPolicy": {"type": "enabled", "effort": "low", "outputField": "max_completion_tokens"},
   "source": "b7022efd48d6ed679eb08b17b672bb10cec9425f",
   "archiveSHA256": "c7d4511c1e92808691ab98a89897f7a6f2d0ed0e64b77f70f9ab610500177e55",
   "version": "0.1.10",

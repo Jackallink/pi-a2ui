@@ -8,8 +8,9 @@ import {identity,createRun,validateArchive,captureContexts,runWorker} from '../t
 
 export async function main(args=process.argv.slice(2)){
  assert.equal(process.versions.node.split('.')[0],'24','Node24 only');
- if(args.length===1&&args[0]==='--help'){console.log('Node24: node scripts/trigger-pilot.mjs [--dry-run | --offline [--canary torn-journal] | --execute --archive ABS_TGZ]\nDefault zero inference/auth reads. Manual one12episode batch, at most36GLM requests, no retries.');return;}
+ if(args.length===1&&args[0]==='--help'){console.log('Node24: node scripts/trigger-pilot.mjs [--dry-run | --offline [--canary torn-journal]]\nDefault zero inference/auth reads. Live execution disabled; historical budget consumed.');return;}
  const live=args[0]==='--execute',canary=args.length===3&&args[0]==='--offline'&&args[1]==='--canary'&&args[2]==='torn-journal'?'torn-journal':'',offline=args.length===1&&args[0]==='--offline'||!!canary;assert.ok(args.length===0||args.length===1&&args[0]==='--dry-run'||offline||live&&args.length===3&&args[1]==='--archive','invalid pilot arguments');
+ if(live&&!PROFILE.liveEnabled){console.error('live execution disabled; new explicit authorization required');process.exitCode=1;return;}
  const stamp=identity();assert.equal(stamp.pi,'1.5.0');assert.equal(SCENARIOS.length,6);
  if(!live&&!offline){console.log(JSON.stringify({mode:'dry-run',providerRequests:0,credentialReads:0,profile:PROFILE,scenarios:SCENARIOS,identity:stamp},null,2));return;}
  assert.ok(['darwin','linux'].includes(process.platform));if(!canary)assert.equal(stamp.dirty,false,'clean reviewed source required');assert.ok(!live||!process.env.CI,'no CI inference');if(live)validateArchive(args[2]);

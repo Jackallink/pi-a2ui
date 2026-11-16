@@ -7,7 +7,7 @@ import {createRun,receiptEvidence,ROOT} from './trigger-pilot/control.ts';
 import {PilotBudget,PROFILE,summarize} from './trigger-pilot/contracts.ts';
 test('TPJ01 absent malformed mismatched receipts preserve journal admissions and report unknown',()=>{
  for(const variant of ['missing','malformed','mismatch']){
-  const run=createRun(),budget=new PilotBudget(join(run,'live-requests.jsonl'),'live');budget.admit('T01-A',PROFILE.model.baseUrl+'/chat/completions',PROFILE.model,{model:PROFILE.model.id,max_tokens:1536,parallel_tool_calls:false,tool_choice:'auto'});
+  const run=createRun(),budget=new PilotBudget(join(run,'live-requests.jsonl'),'live');budget.admit('T01-A',PROFILE.model.baseUrl+'/chat/completions',PROFILE.model,{model:PROFILE.model.id,max_completion_tokens:1536,thinking:{type:'enabled'},reasoning_effort:'low',stream_options:{include_usage:true},parallel_tool_calls:false,tool_choice:'auto'});
   if(variant!=='missing')writeFileSync(join(run,'T01-A.live.json'),variant==='malformed'?'{':JSON.stringify({id:'T01-A',kind:'live',requests:0,modelCalls:0,outcome:'text_only'}));
   const r=receiptEvidence('T01-A',run,'live');assert.equal(r.requests,null);assert.equal(r.requestAccounting,'unknown');assert.equal(r.knownAdmittedRequests,1);const s=summarize([r],{live:true,journal:budget.evidence()});assert.equal(s.actualModelRequests,null);assert.equal(s.knownAdmittedRequests,1);
  }

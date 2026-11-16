@@ -5,6 +5,9 @@ import {syncBuiltinESMExports} from 'node:module';
 import {homedir} from 'node:os';
 import {resolve,join} from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {PROFILE} from './contracts.ts';
+// This consumed pilot has no new live authorization. Refuse before SDK evaluation.
+if(process.argv[4]==='live'&&!PROFILE.liveEnabled)throw new Error('live execution disabled; new explicit authorization required');
 const state={active:process.argv[4]!=='live',denied:0};
 (globalThis as any).pilotReadGuard=state;
 if(state.active){

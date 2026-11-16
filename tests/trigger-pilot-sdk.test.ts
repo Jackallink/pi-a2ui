@@ -8,7 +8,7 @@ import {PROFILE,hash,canonical,normalizedBody} from './trigger-pilot/contracts.t
 
 test('TPS01 actual SDK initial A/B contexts differ only by clause for all six tasks',async()=>{
  const run=createRun(),contexts=await captureContexts(run);assert.equal(Object.keys(contexts).length,6);
- for(const id of PROFILE.order){const body=JSON.parse(readFileSync(join(run,id+'.context.json'),'utf8'));assert.equal(hash(canonical(normalizedBody(body))),contexts[id.split('-')[0]]);assert.equal(body.tool_choice,'auto');assert.ok(JSON.stringify(body).includes('pi-a2ui'));assert.ok(!JSON.stringify(body).includes('# Pi A2UI'));assert.ok(!JSON.stringify(body).includes('Guarded benchmark profile'));}
+ for(const id of PROFILE.order){const body=JSON.parse(readFileSync(join(run,id+'.context.json'),'utf8'));assert.equal(hash(canonical(normalizedBody(body))),contexts[id.split('-')[0]]);assert.equal(body.tool_choice,'auto');assert.deepEqual(body.thinking,{type:'enabled'});assert.equal(body.reasoning_effort,'low');assert.equal(body.max_completion_tokens,1536);assert.equal(body.max_tokens,undefined);assert.ok(JSON.stringify(body).includes('pi-a2ui'));assert.ok(!JSON.stringify(body).includes('# Pi A2UI'));assert.ok(!JSON.stringify(body).includes('Guarded benchmark profile'));}
  writeFileSync('.local/trigger-pilot-implementation/latest-context-run',run+'\n');
 });
 for(const [simulation,outcome,requested,attempted,committed,requests]of [
@@ -17,6 +17,7 @@ for(const [simulation,outcome,requested,attempted,committed,requests]of [
  const run=createRun();const capture=await runWorker('T01-A',run,'capture');assert.equal(capture.process.code,0);writeFileSync(join(run,'contexts.json'),JSON.stringify({T01:capture.firstBodySHA256}));
  const r=await runWorker('T01-A',run,'offline',simulation);assert.equal(r.process.code,0);assert.equal(r.outcome,outcome);assert.equal(r.renderRequested,requested);assert.equal(r.renderAttempted,attempted);assert.equal(r.renderCommitted,committed);assert.equal(r.requests,requests);assert.equal(r.modelCalls,0);assert.deepEqual(r.cleanupErrors,[]);
  if(committed){assert.equal(r.domObserved,true);assert.equal(r.actionPosts,0);assert.equal(r.serverClosed,true);assert.equal(r.usageKnown,false);}
+ if(simulation==='budget'){assert.equal(r.requestDiagnostics.length,3);assert.equal(r.requestDiagnostics.at(-1).sdkStopReason,'toolUse');assert.deepEqual(r.requestDiagnostics.at(-1).errors,[]);}
 });
 test('TPS03 actual hung browser worker is killed, lower-bound journal retained, owned workspace closed',async()=>{
  const run=createRun(),capture=await runWorker('T01-A',run,'capture');writeFileSync(join(run,'contexts.json'),JSON.stringify({T01:capture.firstBodySHA256}));
