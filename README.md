@@ -4,9 +4,9 @@ A local interactive canvas for the Pi coding agent. Pi keeps the conversation an
 
 Requires **Node 24.x** and Pi >=1.5.0. A2UI protocol 1.0, pinned Agent SDK 0.1.0 and Web Core/Lit 0.15.0.
 
-Version **0.1.9** adds automatic summaries for an already-connected canvas and completes the development-side BM1–BM4 benchmark suite plus the sort/event skill contracts. The v2 evaluator records source-byte fidelity separately and admits unchanged complete compiled surfaces across harmless formatting differences. The original GLM v1 result remains frozen; v2 real-model evaluation has not run. Validation runs locally on Node24 while GitHub Actions is disabled. The catalog remains32component types/19templates/8pattern routes with existing tool inputs/permissions; the new adapter renders observed native-run summaries and persists their validated branch snapshots. Native live updates/local controls need no extra inference; declared Button actions can start the next model turn. Project model acceptance uses only Ark Agent Plan `glm-5.3-flash`.
+Version **0.1.10** gives the model concrete reasons to use `a2ui_render` when inspection or interaction materially improves your next action, while skipping prose-only answers and trivial confirmations. Trigger-rate improvement has not been measured. It retains v0.1.9 automatic summaries for an already-connected canvas, the development-side BM1–BM4 benchmark suite and sort/event skill contracts. The v2 evaluator records source-byte fidelity separately and admits unchanged complete compiled surfaces across harmless formatting differences. The original GLM v1 result remains frozen; v2 real-model evaluation has not run. Validation runs locally on Node24 while GitHub Actions is disabled. The catalog remains32component types/19templates/8pattern routes with existing tool inputs/permissions; the new adapter renders observed native-run summaries and persists their validated branch snapshots. Native live updates/local controls need no extra inference; declared Button actions can start the next model turn. Project model acceptance uses only Ark Agent Plan `glm-5.3-flash`.
 
-See the [v0.1.9 guide](docs/releases/v0.1.9.md), [BM2 spec](docs/specs/016-bm2-golden-scenarios.md), [BM3 spec](docs/specs/017-bm3-layout-regression.md) and [handoff v2 spec](docs/specs/019-v019-issue56-handoff.md). The [v0.1.8 guide](docs/releases/v0.1.8.md) retains published BM1 scope; [Check099](docs/checks/099-bm4-first-glm-baseline.md) retains the frozen GLM v1 result. BM1 covers exactly two diagnostic families, not all errors or model quality.
+See the [v0.1.10 guide](docs/releases/v0.1.10.md), [v0.1.9 guide](docs/releases/v0.1.9.md), [BM2 spec](docs/specs/016-bm2-golden-scenarios.md), [BM3 spec](docs/specs/017-bm3-layout-regression.md) and [handoff v2 spec](docs/specs/019-v019-issue56-handoff.md). The [v0.1.8 guide](docs/releases/v0.1.8.md) retains published BM1 scope; [Check099](docs/checks/099-bm4-first-glm-baseline.md) retains the frozen GLM v1 result. BM1 covers exactly two diagnostic families, not all errors or model quality.
 
 Project source is MIT licensed. The bundled browser libraries retain their own licenses; complete third-party license/notice texts are included in `THIRD_PARTY_LICENSES.txt` in the distribution.
 
@@ -20,7 +20,7 @@ From the Pi project where you want this package enabled:
 
 ```sh
 nvm use 24
-pi install -l --approve git:github.com/Jackallink/pi-a2ui@v0.1.9
+pi install -l --approve git:github.com/Jackallink/pi-a2ui@v0.1.10
 ```
 
 Pi clones the pinned ref and installs production dependencies. Ready browser assets and full third-party licenses are committed in the repository; no browser build is required. Tags/commits are pinned: `pi update --extensions` does not advance a configured tag to the next release. To upgrade, select the new release ref.
@@ -137,21 +137,21 @@ Developer acceptance requires an **explicit package path and exact expected vers
 
 ```sh
 nvm use 24
-node scripts/live-acceptance.mjs --package /absolute/path/to/installed/pi-a2ui --expected-version 0.1.9
+node scripts/live-acceptance.mjs --package /absolute/path/to/installed/pi-a2ui --expected-version 0.1.10
 # Optional parent for new private run directories:
-node scripts/live-acceptance.mjs --package /absolute/path/to/installed/pi-a2ui --expected-version 0.1.9 --evidence-dir /absolute/private/evidence
+node scripts/live-acceptance.mjs --package /absolute/path/to/installed/pi-a2ui --expected-version 0.1.10 --evidence-dir /absolute/private/evidence
 ```
 
-The0.1.9 value selects this release; use the exact installed version for another package. No implicit `.local/installed/package` or environment-based scenario/restore override remains. Help and invalid arguments do not start Pi/browser/model work. Startup observes registration/discovery/status, not browser rendering or model compliance.
+The0.1.10 value selects this release; use the exact installed version for another package. No implicit `.local/installed/package` or environment-based scenario/restore override remains. Help and invalid arguments do not start Pi/browser/model work. Startup observes registration/discovery/status, not browser rendering or model compliance.
 
 Real model acceptance is separately **opt-in** and uses only existing Agent Plan `volcengine-ark/glm-5.3-flash`, verified against `https://ark.cn-beijing.volces.com/api/plan/v3` before the prompt. Credentials stay in Pi and are never copied. Select an installed Chromium executable; no download is attempted:
 
 ```sh
 nvm use 24
 export PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH="/absolute/path/to/installed/chromium"
-node scripts/live-acceptance.mjs --package /absolute/path/to/installed/pi-a2ui --expected-version 0.1.9 --mode skill --allow-model
+node scripts/live-acceptance.mjs --package /absolute/path/to/installed/pi-a2ui --expected-version 0.1.10 --mode skill --allow-model
 # Supplied-DSL component acceptance, distinct from skill-forward proof:
-node scripts/live-acceptance.mjs --package /absolute/path/to/installed/pi-a2ui --expected-version 0.1.9 --mode component --scenario basic --allow-model
+node scripts/live-acceptance.mjs --package /absolute/path/to/installed/pi-a2ui --expected-version 0.1.10 --mode component --scenario basic --allow-model
 ```
 
 Skill mode uses an explicit package+skill profile to avoid a duplicate globally installed package. It proves model-authored template/check/render, invalid submission0POST/no new model run, valid submission1POST and typed acknowledgement; it does not establish normal package discovery (the default startup tier does). Component mode retains `basic`, `forms`, `coding`, `live` and `workbench` scenarios with supplied DSL. Every mode uses a new private cwd and reports source/package identity, observed stages and cleanup. A failed setup/transport/metadata stage remains a failed run; partial observations are retained, not presented as full acceptance. No auto retry or model fallback. Raw session/opener/config files in receipts are private; share only reviewed sanitized summaries.
@@ -168,7 +168,7 @@ All eight additional groups are included in [v0.1.5](docs/specs/008-v0.1.5-inter
 ## Remove
 
 ```sh
-pi remove -l --approve git:github.com/Jackallink/pi-a2ui@v0.1.9
+pi remove -l --approve git:github.com/Jackallink/pi-a2ui@v0.1.10
 # For the local route instead:
 pi remove -l --approve /absolute/path/to/pi-a2ui
 ```

@@ -1,0 +1,116 @@
+{
+  "source": "bdda63ab3d8e202af2ca837022cd13ff4a9c9076",
+  "tree": "69a3b170d118ec4a1b65b9c99f448cdb4e8a9db8",
+  "node": "v24.18.1",
+  "tests": {
+    "node": 472,
+    "browser": 90,
+    "typecheck": true,
+    "golden": {
+      "source": "bdda63ab3d8e202af2ca837022cd13ff4a9c9076",
+      "cases": 68,
+      "positive": 45,
+      "negative": 23,
+      "node": "v24.18.1",
+      "browser": "158.0.8127.18"
+    }
+  },
+  "archiveSHA256": "c7d4511c1e92808691ab98a89897f7a6f2d0ed0e64b77f70f9ab610500177e55",
+  "archiveBytes": 275811,
+  "fileCount": 76,
+  "consumers": {
+    "localStartup": true,
+    "gitCommitStartup": true,
+    "modelCalls": 0
+  },
+  "previousAttempt": {
+    "source": "39dbafa51292495c9bcad96fef73449e7c87f071",
+    "nodePassed": 470,
+    "nodeFailed": 2,
+    "reason": "two obsolete version fixtures; not product behavior",
+    "browserPassed": 11,
+    "browserFailed": 79,
+    "browserReason": "missing locked-browser executable; setup failure",
+    "narrowPackageGreen": 5
+  },
+  "realModelCalls": 0,
+  "realV2": "not-run",
+  "raw": [
+    {
+      "path": "candidate-r2-node.log",
+      "sha256": "f5c78d1777792a93b1ca9206a8e1b0810d408837073aa8d2e4a4d73a3a177cd2"
+    },
+    {
+      "path": "candidate-r2-types.log",
+      "sha256": "b94e7c071db8114df2330bc5822d92b358f84cc2578c17c0ad0a84b0c1270745"
+    },
+    {
+      "path": "candidate-r2-browser.log",
+      "sha256": "884ede3ba91da059e57871036268d37e42f8c94d419798855026a124c48e4399"
+    },
+    {
+      "path": "candidate-r2-union.json",
+      "sha256": "2cacf42af17deb2d9c11f57d11e8d30b6eed0f7150b96855e23b72ca955ac16c"
+    },
+    {
+      "path": "candidate-r2-dry-run.json",
+      "sha256": "2c43bf8f342f2f88829f1e4ca0cb76bcb2b7d6357d248ae27b0e02a903631643"
+    },
+    {
+      "path": "candidate-r2-golden-node.json",
+      "sha256": "a429caae7c5e1fe5d82d319689585251a49b9176e422f8d72998160206e5f007"
+    },
+    {
+      "path": "candidate-r2-golden-browser.json",
+      "sha256": "90abce2fc77f6a655b7ad126e2edb4e056ac6eef8d1faaa5814f4d396a8f54bc"
+    },
+    {
+      "path": "candidate-pack.json",
+      "sha256": "e1f1adea342fba362d600b58769c7b1fc915b12d05b01641be32c44b1725ecfc"
+    },
+    {
+      "path": "candidate-local-startup.log",
+      "sha256": "5a4f012f7b21e427283769cb0bfe6b10e6e129174f9115ec65a8a87794ccd1f6"
+    },
+    {
+      "path": "pi-a2ui-accept-K2aPAZ/result.json",
+      "sha256": "5ef83c0757a9adf5f1745bcaef1b9b946084cb19a72591c74c8d8ca2ccaf958a"
+    },
+    {
+      "path": "candidate-git-startup.json",
+      "sha256": "571f5c573f7eb247c902e371421b63eac90ec13984fe4ccf3f767b8bae72bd30"
+    },
+    {
+      "path": "candidate-git-startup.log",
+      "sha256": "cd0d3185d1bb4b17cafea86dc1e3f1534139c1c63b8fce21f0c4bdba25bec2ba"
+    },
+    {
+      "path": "candidate-node.log",
+      "sha256": "55add5648f93d1eb08973347d7135ceeefd70c780266a43de3bc0191d06a55a9"
+    },
+    {
+      "path": "candidate-browser.log",
+      "sha256": "540e9e5412e538fb263851084b5ce64ed2e0166088de2fcfbf6fb4934c111e1a"
+    },
+    {
+      "path": "package-fixture-green.log",
+      "sha256": "0cee250868733fc1ac1b6694603d76c00159d1c0fdf7807a3169e4816571b6a0"
+    },
+    {
+      "path": "browser-setup-control.log",
+      "sha256": "a530b9599aa97001f075b058af9805086a57f0e3ea08dcb1fba2486efc389a2a"
+    },
+    {
+      "path": "browser-install.log",
+      "sha256": "a267e3e3bba8cf2a3dafe7a2541430aab73aa0676f2cb5c2adf16e31fe9273ee"
+    },
+    {
+      "path": "prepack.json",
+      "sha256": "b29c6f9b446f1ccff0b2d76bbb4540d40a6727c47e8aa8f9a2753adc3c5d0afc"
+    },
+    {
+      "path": "prepack.log",
+      "sha256": "1da5fc736b309860b023956c642eb81a9317eb47c4c7919a5271c53baae42d09"
+    }
+  ]
+}
