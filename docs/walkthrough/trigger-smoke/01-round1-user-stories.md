@@ -22,7 +22,7 @@ Canonical：Spec023。当前draft；用户授权设计/独立审查，不授权�
 
 | AC | Given / When / Then | 优先级 |
 | --- | --- | --- |
-| AC-001 | 无新授权或身份漂移 / 任一入口 / 配置、工作区和HTTP前拒绝 | Must |
+| AC-001 | 无新调用授权或身份漂移 / LIVE三入口 / 配置、工作区和HTTP前拒绝；dry-run/synthetic offline不需付费grant、零真实配置/provider | Must |
 | AC-002 | 1/3/4额度 / 每次准入 / durable记账与双重限额，不互借、不退款 | Must |
 | AC-003 | 新句与自然消息 / actualSDK首body / 只用B、相同工具、无强载skill、参数/哈希一致 | Must |
 | AC-004 | SM02完整消息 / 正常文本或toolCall / 收到且无tool才pass；其它停批，意图先于SDK拒绝计数 | Must |

@@ -6,7 +6,9 @@ Canonical：Spec023。当前为待实现闭环，不声称当前12会话脚本�
 
 | 用户操作 | Handler/组件 | 状态 | API/后端 | 响应后UI |
 | --- | --- | --- | --- | --- |
-| 当前请求设计，或未来未授权执行 | 文档检查；未来smoke CLI / worker / imported API同一policy guard | design-only / denied | 当前Node24只读JSON/哈希，无SDK/auth/API；未来先验证新grant/源码/1与3及总4，旧pilot guard仍禁用 | 本地设计/拒绝报告，无画布 |
+| 当前请求设计 | 文档/JSON/哈希检查 | design-only | 无SDK/auth/API；当前不实施适配 | 本地设计报告，无画布 |
+| 未来已获实施授权后dry-run/synthetic offline | 新smoke入口/worker的synthetic隔离路径 | 无付费grant亦可用 | synthetic凭据/transport，可用owned工作区；拒绝真实配置/外部provider | dry-run无画布；合成renderer控制可用owned headless画布 |
+| 未来未授权LIVE请求 | smoke CLI / worker script / imported API同一policy guard | denied | 新grant/源码/1与3及总4验证前，禁止真实配置/工作区/HTTP；旧pilot live仍禁用 | 本地拒绝报告，无画布 |
 | 未来获授权并通过代码检查 | 新smoke入口→受限policy→actualSDK capture→新grant/独占锁 | approved→preflight→admitted | 两例原样B首body，不使用旧normalizedBody；逐次验证唯一Ark endpoint/body，journal fsync后才POST | 独立2行结果，不用旧12行paired summary |
 
 ## P-002 简单确认

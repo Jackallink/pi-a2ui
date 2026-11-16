@@ -6,7 +6,7 @@ Canonical：Spec023。以下为设计测试意图；执行证据尚无，不冒�
 
 | ID | 路径 | 测试意图 |
 | --- | --- | --- |
-| IT-001 / SMG01–02 | P-001 | CLI/script/import拒绝与持久fs/fetch计数；两种每例超限、全批第5、额度不互借、短写/fsync/torn/缺receipt/错profile |
+| IT-001 / SMG01–02 | P-001 | 无授权LIVE CLI/script/import拒绝与持久fs/fetch计数；合法dry-run/offline无付费grant可用且无真实配置/provider；两种每例超限、全批第5、额度不互借、短写/fsync/torn/缺receipt/错profile |
 | IT-002 / SMS01 | P-001 | actualSDK两例B自然消息、工具/skill元数据、enabled/low/1536；旧句/capture/source漂移发送前拒绝，不旧normalize |
 | IT-003 / SMS02 | P-002 | exact收到/其它文本/read/render坏参数/半toolCall；requested先记录但任何完整toolCall不得执行，SM01仅pass后开始 |
 | IT-004 / SMS03 | P-003 | 合法form实际compiler/server/DOM，3步准备耗尽、schema/compile/缺字段/native-only；首次结果/失败/窗口后provider0续调 |
@@ -17,7 +17,9 @@ Canonical：Spec023。以下为设计测试意图；执行证据尚无，不冒�
 
 | 条件 | 结局 | 行为 |
 | --- | --- | --- |
-| 无新授权/仅本轮设计 | design-only/denied | 不读真实配置，不实现，不调用模型 |
+| 仅本轮设计授权 | design-only | 不读真实配置，不实现，不跑SDK/模型 |
+| 未来LIVE无新调用授权 | denied | 三入口配置/工作区/HTTP前拒绝 |
+| 未来实施获准后的dry-run/synthetic offline | 可用，无需付费grant | 可创建owned测试资源，但真实配置和外部provider拒绝 |
 | 旧CLI/profile/journal被用作本批次 | admission rejected | 不能外围截断36预算冒称4；需新experiment身份与两行report |
 | SM02其它文本或toolCall | negative fail | tool执行前停止，render意图照记，SM01 not_run |
 | SM01文字或准备窗口耗尽 | ui_not_observed | 不认定插件故障，不延长额度/强载模板 |

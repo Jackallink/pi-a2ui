@@ -68,7 +68,7 @@
 
 | ID / 优先级 | Given / When / Then | 后续必须有的测试 |
 | --- | --- | --- |
-| AC-001 / P0 | 无新调用授权或源/政策不匹配时，任何入口应在真实配置/工作区/HTTP前拒绝；默认工具零推理 | SMG01 CLI、worker script、imported API、缺/错grant；持久fs/fetch计数+无资源创建 |
+| AC-001 / P0 | LIVE请求无新调用授权或源/政策不匹配时，CLI、worker script、imported API均应在真实配置/工作区/HTTP前拒绝；默认dry-run和synthetic offline不要求付费grant，须零真实配置/零provider | SMG01 LIVE三入口、缺/错grant；持久fs/fetch计数+无资源创建；合法dry-run/offline无付费grant可用 |
 | AC-002 / P0 | 任意两例调用顺序/异常回执下，durable guard同时强制1/3/4上限且不互借；未知不返预算 | SMG02每例第2/第4、全批第5、未用额度不可转、fsync/短写、torn/缺/错receipt；无实际fetch |
 | AC-003 / P1 | 两例B自然消息进入实际SDK时，正确描述/工具/线级参数和首context一致；不得A归一化或强载skill | SMS01 actualSDK synthetic capture、body/model/描述漂移拒绝、wrong-old-clause canary |
 | AC-004 / P1 | SM02完整消息结束时，exact text无tool才通过；其它文本/任意toolCall先观察后阻止执行 | SMS02 收到/错字/read/render缺参数/截断/error；tool执行及后续provider计数0、失败后SM01 not_run |
@@ -78,7 +78,7 @@
 
 ## 当前代码缺口与后续准入
 
-采用小入口加单一受限政策适配，复用R2收集器、实际SDK/extension、guard及清理，避免复制另一套WebSocket/编译器。未来`trigger-smoke`入口固定新experiment id；私有worker/预算/父调度/报告全部使用同一经过校验的smoke policy，而不是CLI外层独自计数。只允许已知的旧offline与新smoke政策，无任意provider/预算/profile路径注入；旧pilot模式live保持禁用，新live须独立授权票据。新票据记录用户明确授权、source/tree/lock/profile/scenario/实际capture/归档/Node/SDK/browser/guard哈希和≤4界限；不能由CLI自行写userAuthorizedRequests充当授权。
+采用小入口加单一受限政策适配，复用R2收集器、实际SDK/extension、guard及清理，避免复制另一套WebSocket/编译器。未来`trigger-smoke`入口固定新experiment id；私有worker/预算/父调度/报告全部使用同一经过校验的smoke policy，而不是CLI外层独自计数。只允许已知的旧offline与新smoke政策，无任意provider/预算/profile路径注入；旧pilot模式live保持禁用，新live须独立授权票据。新票据记录用户明确授权、source/tree/lock/profile/scenario/实际capture/归档/Node/SDK/browser/guard哈希和≤4界限；不能由CLI自行写userAuthorizedRequests充当授权。LIVE的授权guard不适用于合法dry-run/synthetic offline：后者在适配实施另获允许后可无付费grant运行，只用synthetic凭据/transport，可创建owned测试资源，真实配置和外部provider始终拒绝。当前设计授权不包含实施或跑SDK。
 
 必须适配：每ID限额map与全局4同时用于journal准入/解析和父receipt核对；两行非配对report；负例message_end执行前停止；正例末请求tool_result后停止；B原样context attestation；3+1 worker/批次deadline；三入口统一授权guard与新独占锁。新增experiment/profile必须计入输入身份，journal须绑定experiment/profile身份，不能接受旧36预算journal作为新账本。当前实现的旧函数只可作为待复用边界，不证明上述缺口已闭合。
 
