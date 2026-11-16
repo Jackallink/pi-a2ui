@@ -2,10 +2,10 @@
 
 **GO — finite engineering and zero-inference acceptance only.** Open P0/P1/P2 blockers:0. The permanent offline helper adapter is accepted for the reviewed synthetic control. **Real requests authorized:0. No actual grant or paid invocation is approved.**
 
-Reviewed/executed source:`7ee904581982519ebec43c6df6edd671bedc261a`  
-Tree:`9dcb065a963076ac167eaa8ca5d12827f2a469f0`  
-Validation:`/Users/jakeliu/.codex/worktrees/pi-a2ui-bm4/pi-a2ui/.local/helper-adapter-implementation/validation-7ee9045.json`  
-Validation SHA-256:`c601a6b528455a0804129a95f07cc4dafad630499573eb424345909b38dfc086`  
+Reviewed/executed source:`7ee904581982519ebec43c6df6edd671bedc261a`
+Tree:`9dcb065a963076ac167eaa8ca5d12827f2a469f0`
+Validation:`/Users/jakeliu/.codex/worktrees/pi-a2ui-bm4/pi-a2ui/.local/helper-adapter-implementation/validation-7ee9045.json`
+Validation SHA-256:`c601a6b528455a0804129a95f07cc4dafad630499573eb424345909b38dfc086`
 Preserved original R3 source review SHA-256:`56e65ca66218db5bc3dcf3694a2ccf5a04fbeb1a857bc641657a487c523c7f76`.
 
 Date:2026-11-16. Current HEAD/tree match the fixed candidate and working tree is clean. This is a separate final report because validation already binds the original R3 report;the latter is unchanged. Preserve R1/R2 NO-GO reports,their failed evidence and older rejected-candidate checks.

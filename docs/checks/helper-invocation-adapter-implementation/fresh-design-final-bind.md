@@ -2,9 +2,9 @@
 
 **GO — final docs-only metadata binding.** Open P0/P1/P2 blockers:0. This binds the approved Gate1 design/budget-request status only;Gate2,paid implementation/code acceptance and real authorization remain unopened.
 
-Final clean local docs checkpoint:`aeef146ea2daf08d64183b41fd0a1505f702fd88`  
-Tree:`decbc8764f7ecf3618c2eba830505e813646b621`  
-Reviewed contract/R2 source:`ae181daa82329fc961c5af873d9d04b413d4c28f`  
+Final clean local docs checkpoint:`aeef146ea2daf08d64183b41fd0a1505f702fd88`
+Tree:`decbc8764f7ecf3618c2eba830505e813646b621`
+Reviewed contract/R2 source:`ae181daa82329fc961c5af873d9d04b413d4c28f`
 Date:2026-11-16.
 
 | Final document | SHA-256 |

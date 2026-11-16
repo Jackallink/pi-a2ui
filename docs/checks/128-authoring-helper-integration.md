@@ -14,7 +14,7 @@
 
 Spec024 Gate1/Gate2/代码/包与owned discovery及最终文档GO见Check120–121；Spec022/023/025见Check113–124。Spec026完整Node606/browser91/type0/strict68及代码R3、最终zero GO见Check125–126。Spec027仅设计预算GO见Check127，真实授权0。
 
-便携的只读评审副本位于[helper-invocation-adapter-implementation](helper-invocation-adapter-implementation/zero-final-review-r1.md)：code-review-r3、zero-final-review-r1、fresh-design-review-r2、fresh-design-final-bind均逐字复制sealed原件，其原SHA和历史source不改。它们不是本轮新source的测试或合并授权；当前用户授权与本轮本地CI另记。原105输入与166保护文件、17验证附件、16normal run artifacts保持。
+便携的只读评审副本位于[helper-invocation-adapter-implementation](helper-invocation-adapter-implementation/zero-final-review-r1.md)：code-review-r3与fresh-design-review-r2逐字复制sealed原件；zero-final-review-r1与fresh-design-final-bind是仅删除行尾ASCII空格的展示副本（原报告、source及SHA保持，[双指纹与转换规则](authoring-helper-integration/display-copy-manifest.json)）。它们不是本轮新source的测试或合并授权；当前用户授权与本轮本地CI另记。原105输入与166保护文件、17验证附件、16normal run artifacts保持。
 
 ## 本轮合并准入
 
@@ -22,4 +22,14 @@ Spec024 Gate1/Gate2/代码/包与owned discovery及最终文档GO见Check120–1
 
 风险：模型仍可能跳过提示，收益未量化；仅据实际使用提issue。回退：后续单独revert本PR相关提交，不删除失败证据或复活旧grant。合并不等于release或本机全局部署。
 
-当前本Check是合并准入记录；本轮检查与独立评审尚待完成，不能借旧606/91结果声称新source已绿。
+上述为本轮检查开始前的准入范围；实际结果和所测source见下节，不借旧606/91结果声称新source已绿。
+
+## 本轮固定source结果与独立 Gate4 GO
+
+本轮所测source **ba4e6018ff412f7c152f68e7a3e0e174e7080083** / tree **5246c8a2c8a05cea85ee626fb0f7054152c462f8**，Node24.18.1 / Pi1.5.0 / Chromium158.0.8127.18。build退出0且无跟踪资产漂移；完整Node606/606（fail/cancel/skip0）、TypeScript0、四组browser91/91、strict golden union68（45正/23负）通过。当前76产品payload逐字等于已审Spec024候选归档c96125e0a2095608d29ad7b09e6f1911572ed7162bf881b9b9d744e5235dc2d8，版本仍0.1.10，不发布或覆盖既有release。
+
+normal新offline run-9c9bUy：两行C/G各5数据synthetic回合，另各1capture；两行render_committed/first source exact/目标DOM通过/cleanup[]，无fatal或harnessFailure；providerRequests0、credentialReads0、modelEffect=not_evaluated。105输入、166保护、17验证附件、16旧normal run artifacts与本轮前快照一致。全部6步日志hash及结果见[validation.json](authoring-helper-integration/validation.json)，SHA **9d6da2719fa7e36bcae7e183e1800d004f60af152c1aa880b8197968c9762684**；本轮实际推理0，无新grant或Spec027预算申请。
+
+独立Integration/Gate4 **GO，0开放P0/P1/P2代码/安全阻塞**，见[评审报告](authoring-helper-integration/integration-review-r1.md)，SHA **362323c6be5336302d8e3d5f67dd7871a299e940c7f2194291cb63469cc1ab62**，绑定上述source/tree/validation。评审如实记录所测source相对main的diffcheck在2份逐字Markdown报告副本的7处hardbreak行上退出非零；它们不是代码问题。本次最终docs-only收口仅去这些公开副本的行尾空格并明确标注derived，原始sealed报告不动，另增本结果/公开review与validation副本。新最终docs提交不是另一次CI执行；推送前必须全range diffcheck0、确认所有运行输入和历史证据不变，并做独立最小元数据绑定。PR会标明tested source与final docs head，合并后核验main的实际tree等于已绑定PR tree。
+
+之后可按用户授权创建PR并合并，不再申请相同确认；没有新paid适配、真实调用、发布、全局安装或issue关闭。实际使用发现的问题通过后续issue推进。本地worktree、分支、归档和全部失败raw继续保留。

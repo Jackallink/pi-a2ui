@@ -1,0 +1,108 @@
+{
+  "source": "ba4e6018ff412f7c152f68e7a3e0e174e7080083",
+  "tree": "5246c8a2c8a05cea85ee626fb0f7054152c462f8",
+  "steps": {
+    "build": {
+      "exitCode": 0,
+      "seconds": 0.977,
+      "logSHA256": "d16a2d3930937cb307d28a9de5d34060304b2ff49251d7c0ce0bb6b4f453c450"
+    },
+    "node": {
+      "exitCode": 0,
+      "seconds": 236.695,
+      "logSHA256": "71338fe0723286c72faba1aa3ae1c9d6942616c4a3a768d187720d486fcfec12"
+    },
+    "types": {
+      "exitCode": 0,
+      "seconds": 5.445,
+      "logSHA256": "b94e7c071db8114df2330bc5822d92b358f84cc2578c17c0ad0a84b0c1270745"
+    },
+    "browser": {
+      "exitCode": 0,
+      "seconds": 90.418,
+      "logSHA256": "f4c89bc293210f00745d6d86dc0f26d673a985116a1837898627c2666de84ea1"
+    },
+    "golden": {
+      "exitCode": 0,
+      "seconds": 0.772,
+      "logSHA256": "eb145c866524f3733a058000d6eb5373a073eea880ce9f4a1e9b0b553f13750a"
+    },
+    "helper-offline": {
+      "exitCode": 0,
+      "seconds": 8.243,
+      "logSHA256": "31e1075b65278282a6acae1e0e2e04253f2c1591458d4300987b3c6c89da7224"
+    }
+  },
+  "realModelRequests": 0,
+  "schema": "authoring-helper-integration-validation-v1",
+  "node": "v24.18.1",
+  "pi": "1.5.0",
+  "browser": "158.0.8127.18",
+  "nodeTests": {
+    "pass": 606,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0
+  },
+  "browserTests": {
+    "pass": 91
+  },
+  "golden": {
+    "source": "ba4e6018ff412f7c152f68e7a3e0e174e7080083",
+    "cases": 68,
+    "positive": 45,
+    "negative": 23,
+    "node": "v24.18.1",
+    "browser": "158.0.8127.18"
+  },
+  "normalOffline": {
+    "report": "/Users/jakeliu/.codex/worktrees/pi-a2ui-bm4/pi-a2ui/.local/helper-adapter/run-9c9bUy/report.json",
+    "sha256": "9a43bb9118a7bccced616b8b5e78d8f88c6464e18a275a02ec60bb2de53d078b",
+    "harnessAccepted": true,
+    "syntheticUiPassed": 2,
+    "providerRequests": 0,
+    "credentialReads": 0,
+    "modelEffect": "not_evaluated",
+    "rows": [
+      {
+        "id": "HX01-C",
+        "outcome": "render_committed",
+        "syntheticRequests": 5,
+        "sourceMatch": "exact",
+        "cleanupErrors": [],
+        "fatal": false,
+        "harnessFailure": false
+      },
+      {
+        "id": "HX01-G",
+        "outcome": "render_committed",
+        "syntheticRequests": 5,
+        "sourceMatch": "exact",
+        "cleanupErrors": [],
+        "fatal": false,
+        "harnessFailure": false
+      }
+    ]
+  },
+  "preservation": {
+    "runtime": 105,
+    "protected": 166,
+    "artifacts": 17,
+    "runArtifacts": 16
+  },
+  "product": {
+    "payloadFiles": 76,
+    "matchesReviewedSpec024Archive": true,
+    "archiveSHA256": "c96125e0a2095608d29ad7b09e6f1911572ed7162bf881b9b9d744e5235dc2d8",
+    "changedPathsComparedWithMain": 7,
+    "version": "0.1.10",
+    "newRelease": false
+  },
+  "newRealModelCalls": 0,
+  "newGrantCreated": false,
+  "oldRemaining21Reusable": false,
+  "frozenRealBaselineRerun": false,
+  "futureSpec027BudgetRequested": false,
+  "actionsWorkflow": "418909498 remains disabled_manually",
+  "beforeManifestSHA256": "4b5cc305cca2a083a9411ece2b8d99e8e91c2a7f8096d583a734ece596d3ee21"
+}
