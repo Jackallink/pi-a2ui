@@ -45,3 +45,27 @@ test('AF04 documented nested Button and broken ID or Event coverage produce no p
  const cases=[invalid,valid.replace('fieldId:"appInput"','fieldId:"/form/appName"'),valid.replace('validation,submit])','validation])'),valid.replace(',version:$/form/version','')];
  for(const bad of cases){assert.notEqual(bad,valid);const r=check(bad);assert.equal(r.status,1,r.stderr);assert.equal(r.stdout,'');assert.equal(JSON.parse(r.stderr).code,'COMPILE');}
 });
+
+test('AF05 data-digest recipe keeps raw numbers, states sources and rejects fabricated display components',()=>{
+ const digest=block('visual-and-data-legibility.md','Data digest: summary, trend and raw table','text');
+ const negative=block('visual-and-data-legibility.md','Explicit anti-patterns','invalid-express');
+ const examplePath=join(skill,'examples/visual-summary-data-digest.express');
+ const template=readFileSync(examplePath,'utf8');
+ assert.equal(digest.trimEnd(),template.trimEnd(),'reference doc and owned example must stay identical');
+ const manifest=JSON.parse(readFileSync(join(skill,'examples/manifest.json'),'utf8')) as {name:string;requires:string[];reference?:string}[];
+ const entry=manifest.find(candidate=>candidate.name==='visual-summary-data-digest');
+ assert.ok(entry,'new example must be listed in the helper manifest');assert.equal(entry.reference,'references/visual-and-data-legibility.md');
+ const listed=spawnSync(process.execPath,[helper,'example','visual-summary-data-digest'],{encoding:'utf8',timeout:10000});
+ assert.equal(listed.status,0,listed.stderr);assert.equal(listed.stdout,template,'helper example output matches the owned file');
+ const result=spawnSync(process.execPath,[helper,'check','--surface-id','data-digest','-'],{input:digest,encoding:'utf8',timeout:10000});
+ assert.equal(result.status,0,result.stderr);assert.deepEqual(JSON.parse(result.stdout),{surfaceId:'data-digest',source:digest});
+ const surface=compile('data-digest',digest).createSurface,components=surface.components;
+ assert.deepEqual(new Set(components.map(c=>c.component)),new Set(entry.requires));
+ const table=components.find(c=>c.component==='DataTable')!;
+ assert.equal((table.rows as {cells:unknown[]}[]).some(row=>row.cells.includes(null)),true,'unknown stays an explicit null cell');
+ assert.equal((table.rows as {cells:unknown[]}[]).every(row=>typeof row.cells[1]==='number'),true,'request counts stay raw numbers');
+ const summary=components.find(c=>c.component==='MarkdownView')!;
+ assert.match(String(summary.text),/数据来源/,'summary states its data source');
+ const bad=spawnSync(process.execPath,[helper,'check','--surface-id','data-digest','-'],{input:negative,encoding:'utf8',timeout:10000});
+ assert.equal(bad.status,1,bad.stderr);assert.equal(bad.stdout,'');assert.equal(JSON.parse(bad.stderr).code,'COMPILE');
+});

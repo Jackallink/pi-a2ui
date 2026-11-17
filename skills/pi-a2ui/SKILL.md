@@ -62,6 +62,7 @@ Call `a2ui_render` with `surfaceId: "user-form"` and that entire source as `sour
 | --- | --- |
 | Small hierarchy / breadcrumbs / searchable choices | [Navigation and selection](references/navigation-and-selection.md); `tree-navigation` (composition), `searchable-picker` (requires SearchablePicker API) |
 | Summaries / field validation / loading-empty-error feedback | [Summaries and feedback](references/summaries-and-feedback.md); `summary-metrics` (composition), `validated-form` (requires FormValidation), `feedback-states` (composition) |
+| Data digest: raw numbers vs display text, chart legend/ticks, honest unknowns | [Visual and data legibility](references/visual-and-data-legibility.md); `visual-summary-data-digest` (composition) |
 | Keyboard action search / next-step action bar | [Keyboard actions](references/keyboard-actions.md); `command-actions` (composition; palette requires actual header control) |
 | Text, layout, forms and buttons (baseline16 types) | [Core components](references/core-components.md); `user-form`, `typed-form`, `layout` |
 | Native timeline / source evidence intent | [Timeline and evidence](references/timeline-and-evidence.md); `activity-timeline` (requires ActivityTimeline), `evidence-location` (composition) |

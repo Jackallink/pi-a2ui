@@ -204,5 +204,16 @@
     ],
     "pattern": "command-actions",
     "reference": "references/keyboard-actions.md"
+  },
+  {
+    "name": "visual-summary-data-digest",
+    "requires": [
+      "Column",
+      "MarkdownView",
+      "Chart",
+      "DataTable",
+      "Text"
+    ],
+    "reference": "references/visual-and-data-legibility.md"
   }
 ]
