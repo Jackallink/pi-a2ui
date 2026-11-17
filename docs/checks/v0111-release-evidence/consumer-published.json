@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "mode": "git",
+  "node": "v24.18.1",
+  "piVersion": "1.5.2",
+  "installedHead": "bb43d27083cc500f2a42858d628d4e3d33c0b4ca",
+  "uniqueA2uiCommands": 4,
+  "a2uiStatus": "A2UI enabled; not listening; 0 surface(s); 0 browser(s)",
+  "agentRuns": 0,
+  "modelRequests": 0,
+  "processExited": true,
+  "exitCode": 0,
+  "installedFrom": "public tag git:github.com/Jackallink/pi-a2ui@v0.1.11"
+}
