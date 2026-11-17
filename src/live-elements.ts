@@ -38,20 +38,20 @@ function tickValues(low:number,high:number,maxAbs:number):Array<{value:number;la
  return entries;
 }
 let measureLabels:((label:string)=>number)|undefined;
+const estimateLabel=(label:string):number=>label.length*10;
 const labelMeasurer=():((label:string)=>number)=>{
  if(measureLabels)return measureLabels;
  let context:CanvasRenderingContext2D|null=null;
  try{context=document.createElement('canvas').getContext('2d');if(context)context.font='10px '+getComputedStyle(document.body).fontFamily;}catch{context=null;}
- if(context)measureLabels=(label:string)=>{try{return context!.measureText(label).width;}catch{return label.length*8;}};
- else measureLabels=(label:string)=>{let width=0;for(const char of label)width+=char.charCodeAt(0)>0x2e80?10.5:8;return width;};
- return measureLabels;
+ if(context)measureLabels=(label:string)=>{try{return context!.measureText(label).width;}catch{return estimateLabel(label);}};
+ return measureLabels??estimateLabel;
 };
 function visibleXLabels(labels:Array<string>,left:number,plotSpan:number,kind:'line'|'bar',count:number,measure:(label:string)=>number):Array<{label:string;x:number;anchor:'start'|'middle'|'end'}>{
  if(count<=0)return[];
- const slot=plotSpan/count;const step=count>1?plotSpan/(count-1):0;
+ const slot=plotSpan/count;
  const items=labels.slice(0,count).map((label,i)=>{
   const anchor:'start'|'middle'|'end'=i===0?'start':i===count-1&&count>1?'end':kind==='bar'?'start':'middle';
-  const x=kind==='bar'?(i===count-1?left+plotSpan:left+i*slot):(left+i*step);
+  const x=kind==='bar'?(count>1&&i===count-1?left+plotSpan:left+i*slot):(i===0?left:i===count-1?left+plotSpan:left+i/(count-1)*plotSpan);
   const width=measure(label);
   const spanLeft=anchor==='start'?x:anchor==='middle'?x-width/2:x-width;
   return{label,x,anchor,spanLeft,spanRight:spanLeft+width};

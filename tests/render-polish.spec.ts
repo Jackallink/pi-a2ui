@@ -327,8 +327,11 @@ test.describe('T2 data legibility: table numerics and chart legend/ticks',()=>{
    }finally{await longLabels.close();}
   }finally{await secondPage.close();}
  });
- test('single, double and dense wide Latin point sets keep legible x labels',async({page})=>{
-  const source='single = Card(Chart(kind="line",series=[{name:"单点",points:[{label:"A",value:1}]}]))\ndouble = Card(Chart(kind="line",series=[{name:"两点",points:[{label:"A",value:1},{label:"B",value:2}]}]))\ndense = Card(Chart(kind="bar",series=[{name:"宽标签",points:[{label:"WWWWWWWW",value:1},{label:"WWWWWWWW",value:2},{label:"WWWWWWWW",value:3},{label:"WWWWWWWW",value:4},{label:"WWWWWWWW",value:5},{label:"WWWWWWWW",value:6},{label:"WWWWWWWW",value:7},{label:"WWWWWWWW",value:8},{label:"WWWWWWWW",value:9},{label:"WWWWWWWW",value:10},{label:"WWWWWWWW",value:11}]}]))\nroot = Column(children=[single,double,dense])';
+ test('single, double, long-series and dense wide Latin point sets keep legible x labels',async({page})=>{
+  const wide='WWWWWWWW';
+  const densePoints=Array.from({length:11},(_,index)=>`{label:"${wide}",value:${index+1}}`).join(',');
+  const longPoints=[...Array.from({length:133},()=>`{label:"${'W'.repeat(128)}",value:1}`),'{label:"B",value:1}'].join(',');
+  const source=`singleLine = Card(Chart(kind="line",series=[{name:"单点",points:[{label:"A",value:1}]}]))\nsingleBar = Card(Chart(kind="bar",series=[{name:"单柱",points:[{label:"A",value:1}]}]))\ndouble = Card(Chart(kind="line",series=[{name:"两点",points:[{label:"A",value:1},{label:"B",value:2}]}]))\ndense = Card(Chart(kind="bar",series=[{name:"宽标签",points:[${densePoints}]}]))\nlong = Card(Chart(kind="line",series=[{name:"长序列",points:[${longPoints}]}]))\nroot = Column(children=[singleLine,singleBar,double,dense,long])`;
   const env=await open(page,'rp-x-labels',source);
   try{
    const audit=(chart:ReturnType<Page['locator']>)=>chart.evaluate((node)=>{
@@ -339,19 +342,24 @@ test.describe('T2 data legibility: table numerics and chart legend/ticks',()=>{
     boxes.sort((a,b)=>a.left-b.left);
     const minGap=boxes.length>1?boxes.slice(1).reduce((gap,box,index)=>Math.min(gap,box.left-boxes[index].right),Number.POSITIVE_INFINITY):null;
     const outside=boxes.filter(box=>box.left<svgBox.left-0.5||box.right>svgBox.right+0.5).length;
-    return{count:boxes.length,minGap,outside,nonEmpty:boxes.every(box=>box.text.length>0)};
+    return{count:boxes.length,minGap,outside,nonEmpty:boxes.every(box=>box.text.length>0),texts:boxes.map(box=>box.text)};
    });
    const charts=page.locator('pi-a2ui-chart');
-   await expect(charts).toHaveCount(3,{timeout:3000});
-   const single=await audit(charts.nth(0));
-   assert.equal(single.count,1,'a single-point chart keeps its x label when space allows');
-   const double=await audit(charts.nth(1));
+   await expect(charts).toHaveCount(5,{timeout:3000});
+   const singleLine=await audit(charts.nth(0));
+   assert.equal(singleLine.count,1,'a single-point line chart keeps its x label when space allows');
+   const singleBar=await audit(charts.nth(1));
+   assert.equal(singleBar.count,1,'a single-point bar chart keeps its x label when space allows');
+   const double=await audit(charts.nth(2));
    assert.equal(double.count,2,'a two-point chart keeps both x labels with edge anchors');
-   const denseWide=await audit(charts.nth(2));
+   const denseWide=await audit(charts.nth(3));
    assert.ok(denseWide.count>=1,'dense wide Latin labels thin down but never disappear');
    assert.equal(denseWide.outside,0,'wide labels never extend past the svg viewport');
    assert.ok(denseWide.minGap===null||denseWide.minGap>=2,'wide labels never overlap (canvas-measured widths beat per-char estimates)');
    assert.equal(denseWide.nonEmpty,true,'kept labels keep their full text');
+   const longSeries=await audit(charts.nth(4));
+   assert.ok(longSeries.texts.some(text=>text.includes('B')),'a 134-point series keeps its short end label despite float boundaries and oversized earlier labels');
+   assert.equal(longSeries.outside,0,'the kept end label stays inside the svg viewport');
   }finally{await env.close();}
  });
  for(const entry of corpus){

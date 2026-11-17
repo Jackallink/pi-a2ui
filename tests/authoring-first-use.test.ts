@@ -77,7 +77,9 @@ test('AF05 data-digest recipe keeps raw numbers, states sources and rejects fabr
  const donutCleaned=negativeFences[1].replace('kind="donut"','kind="line"');
  const donutOk=spawnSync(process.execPath,[helper,'check','--surface-id','data-digest','-'],{input:donutCleaned,encoding:'utf8',timeout:10000});
  assert.equal(donutOk.status,0,'only the unsupported kind makes fence 2 fail: '+donutOk.stderr);
+ assert.deepEqual(JSON.parse(donutOk.stdout),{surfaceId:'data-digest',source:donutCleaned},'positive control echoes the exact helper output contract');
  const formatterCleaned=negativeFences[2].replace(',formatter="compact"','');
  const formatterOk=spawnSync(process.execPath,[helper,'check','--surface-id','data-digest','-'],{input:formatterCleaned,encoding:'utf8',timeout:10000});
  assert.equal(formatterOk.status,0,'only the banned prop makes fence 3 fail: '+formatterOk.stderr);
+ assert.deepEqual(JSON.parse(formatterOk.stdout),{surfaceId:'data-digest',source:formatterCleaned},'positive control echoes the exact helper output contract');
 });
