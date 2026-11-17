@@ -149,6 +149,14 @@ code { font-family: var(--pi-a2ui-font-mono); font-size: 0.95em; }
   cursor: pointer;
 }
 #surfaces a2ui-basic-button button {
+  background: var(--pi-a2ui-color-surface);
+  border-color: var(--pi-a2ui-color-border);
+  color: var(--pi-a2ui-color-text);
+  --a2ui-color-on-secondary: var(--pi-a2ui-color-text);
+}
+#surfaces a2ui-basic-button button .a2ui-text { color: inherit; }
+#surfaces a2ui-basic-button button.a2ui-button-default:hover { background: var(--pi-a2ui-color-raised); }
+#surfaces a2ui-basic-button button.a2ui-button-primary {
   background: var(--pi-a2ui-color-accent);
   border-color: var(--pi-a2ui-color-accent);
   color: var(--pi-a2ui-color-accent-contrast);
@@ -156,8 +164,7 @@ code { font-family: var(--pi-a2ui-font-mono); font-size: 0.95em; }
   font-weight: 600;
   padding: 11px 16px;
 }
-#surfaces a2ui-basic-button button .a2ui-text { color: inherit; }
-#surfaces a2ui-basic-button button:hover { background: var(--pi-a2ui-color-accent-hover); border-color: var(--pi-a2ui-color-accent-hover); }
+#surfaces a2ui-basic-button button.a2ui-button-primary:hover { background: var(--pi-a2ui-color-accent-hover); border-color: var(--pi-a2ui-color-accent-hover); }
 #surfaces a2ui-basic-button button.a2ui-button-borderless {
   background: transparent;
   border: none;

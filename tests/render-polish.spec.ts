@@ -24,9 +24,9 @@ const mixedSource='root = Card(child=Column(children=[DataTable(caption="混合�
 const tieSource='root = Card(child=Column(children=[DataTable(caption="同值稳定",columns=[{id:"name",label:"名称"},{id:"n",label:"数值"}],rows=['+
  '{id:"r1",cells:["first",77]},{id:"r2",cells:["second",77]},{id:"r3",cells:["third",8]}])]))';
 
-type Env={session:UiSession;origin:string;posts:string[];sent:string[];pageErrors:string[];externalBlocked:number;snapshotJson:string;close():Promise<void>};
+type Env={session:UiSession;origin:string;posts:string[];sent:string[];pageErrors:string[];externalBlocked:{count:number};snapshotJson:string;close():Promise<void>};
 async function open(page:Page,surfaceId:string,source:string):Promise<Env>{
- const sent:string[]=[],posts:string[]=[],pageErrors:string[]=[];let externalBlocked=0;
+ const sent:string[]=[],posts:string[]=[],pageErrors:string[]=[];const externalBlocked={count:0};
  const session=new UiSession(text=>{sent.push(text);});
  session.render(surfaceId,source);
  const snapshotJson=JSON.stringify(session.snapshot());
@@ -35,7 +35,7 @@ async function open(page:Page,surfaceId:string,source:string):Promise<Env>{
   page.on('pageerror',error=>pageErrors.push(String(error).slice(0,250)));
   await page.route('**/*',route=>{
    const url=new URL(route.request().url());
-   if(url.origin!==server.origin){externalBlocked+=1;void route.abort();return;}
+   if(url.origin!==server.origin){externalBlocked.count+=1;void route.abort();return;}
    if(url.pathname==='/api/actions'&&route.request().method()==='POST'){posts.push(route.request().postData()??'');void route.abort();return;}
    void route.continue();
   });
@@ -91,15 +91,15 @@ test.describe('T1 unified typography and theme consumption',()=>{
    assert.equal(await styleOf(card,'background-color'),'rgb(255, 255, 255)','surface card token');
   }finally{await env.close();}
  });
- test('accent buttons carry a readable white label on the visible text span',async({page})=>{
+ test('secondary canvas buttons stay neutral and readable (Spec028: accent is reserved for primary)',async({page})=>{
   const env=await open(page,'rp03',fixture('RP03-guarded-form'));
   try{
    const submit=page.getByRole('button',{name:'提交信息，等待确认'});
    await expect(submit).toBeVisible();
-   assert.equal(await styleOf(submit,'background-color'),'rgb(54, 92, 219)','primary accent token');
-   assert.equal(await styleOf(submit,'color'),'rgb(255, 255, 255)','on-accent foreground stays white');
+   assert.equal(await styleOf(submit,'background-color'),'rgb(255, 255, 255)','default variant stays neutral, not accent');
+   assert.equal(await styleOf(submit,'color'),'rgb(23, 32, 51)','button foreground stays the readable text color');
    const innerLabel=submit.locator('.a2ui-text').first();
-   assert.equal(await styleOf(innerLabel,'color'),'rgb(255, 255, 255)','the visible text span inherits the white on-accent color, not the SDK dark default');
+   assert.equal(await styleOf(innerLabel,'color'),'rgb(23, 32, 51)','the visible text span keeps the readable text color (SDK on-secondary remapped)');
   }finally{await env.close();}
  });
  test('default, primary and borderless variants keep distinct readable looks',async({page})=>{
@@ -108,8 +108,8 @@ test.describe('T1 unified typography and theme consumption',()=>{
    const inner=(name:string)=>page.getByRole('button',{name}).locator('.a2ui-text').first();
    const regular=page.getByRole('button',{name:'默认按钮'});
    await expect(regular).toBeVisible();
-   assert.equal(await styleOf(regular,'background-color'),'rgb(54, 92, 219)','default canvas button uses the accent');
-   assert.equal(await styleOf(inner('默认按钮'),'color'),'rgb(255, 255, 255)','default button inner label is white (SDK on-secondary remapped inside accent buttons)');
+   assert.equal(await styleOf(regular,'background-color'),'rgb(255, 255, 255)','default canvas button stays neutral white');
+   assert.equal(await styleOf(inner('默认按钮'),'color'),'rgb(23, 32, 51)','default button inner label keeps the readable text color');
    const primary=page.getByRole('button',{name:'主按钮'});
    assert.equal(await styleOf(primary,'background-color'),'rgb(54, 92, 219)','primary button uses the accent');
    assert.equal(await styleOf(inner('主按钮'),'color'),'rgb(255, 255, 255)','primary button inner label is white');
@@ -308,6 +308,7 @@ test.describe('T2 data legibility: table numerics and chart legend/ticks',()=>{
    await expect(chart).toBeVisible();
    const result=await audit(chart);
    assert.ok(result.count>=1,'line chart renders at least one x label');
+   assert.equal(result.count,6,'RP01 has six date labels; all fit with edge-aware anchors');
    assert.equal(result.outside,0,'every rendered x label stays inside the svg viewport (no clipping)');
    assert.ok(result.minGap===null||result.minGap>=2,'rendered x labels keep at least 2px separation (no overlap)');
    assert.equal(result.nonEmpty,true,'rendered x labels keep their full text; hidden labels stay reachable via point titles');
@@ -325,6 +326,33 @@ test.describe('T2 data legibility: table numerics and chart legend/ticks',()=>{
     assert.ok(result.minGap===null||result.minGap>=2,'long labels never overlap each other');
    }finally{await longLabels.close();}
   }finally{await secondPage.close();}
+ });
+ test('single, double and dense wide Latin point sets keep legible x labels',async({page})=>{
+  const source='single = Card(Chart(kind="line",series=[{name:"单点",points:[{label:"A",value:1}]}]))\ndouble = Card(Chart(kind="line",series=[{name:"两点",points:[{label:"A",value:1},{label:"B",value:2}]}]))\ndense = Card(Chart(kind="bar",series=[{name:"宽标签",points:[{label:"WWWWWWWW",value:1},{label:"WWWWWWWW",value:2},{label:"WWWWWWWW",value:3},{label:"WWWWWWWW",value:4},{label:"WWWWWWWW",value:5},{label:"WWWWWWWW",value:6},{label:"WWWWWWWW",value:7},{label:"WWWWWWWW",value:8},{label:"WWWWWWWW",value:9},{label:"WWWWWWWW",value:10},{label:"WWWWWWWW",value:11}]}]))\nroot = Column(children=[single,double,dense])';
+  const env=await open(page,'rp-x-labels',source);
+  try{
+   const audit=(chart:ReturnType<Page['locator']>)=>chart.evaluate((node)=>{
+    const svg=node.querySelector('svg');
+    if(!svg)throw new Error('chart svg missing');
+    const svgBox=svg.getBoundingClientRect();
+    const boxes=[...svg.querySelectorAll<SVGTextElement>('text.rp-x-label')].map(text=>{const box=text.getBoundingClientRect();return{left:box.left,right:box.right,text:(text.textContent??'').trim()};});
+    boxes.sort((a,b)=>a.left-b.left);
+    const minGap=boxes.length>1?boxes.slice(1).reduce((gap,box,index)=>Math.min(gap,box.left-boxes[index].right),Number.POSITIVE_INFINITY):null;
+    const outside=boxes.filter(box=>box.left<svgBox.left-0.5||box.right>svgBox.right+0.5).length;
+    return{count:boxes.length,minGap,outside,nonEmpty:boxes.every(box=>box.text.length>0)};
+   });
+   const charts=page.locator('pi-a2ui-chart');
+   await expect(charts).toHaveCount(3,{timeout:3000});
+   const single=await audit(charts.nth(0));
+   assert.equal(single.count,1,'a single-point chart keeps its x label when space allows');
+   const double=await audit(charts.nth(1));
+   assert.equal(double.count,2,'a two-point chart keeps both x labels with edge anchors');
+   const denseWide=await audit(charts.nth(2));
+   assert.ok(denseWide.count>=1,'dense wide Latin labels thin down but never disappear');
+   assert.equal(denseWide.outside,0,'wide labels never extend past the svg viewport');
+   assert.ok(denseWide.minGap===null||denseWide.minGap>=2,'wide labels never overlap (canvas-measured widths beat per-char estimates)');
+   assert.equal(denseWide.nonEmpty,true,'kept labels keep their full text');
+  }finally{await env.close();}
  });
  for(const entry of corpus){
   test(`chart ticks match the hand-authored oracle for ${entry.id}`,async({page})=>{
@@ -399,8 +427,8 @@ test.describe('contract regressions across the restyle',()=>{
    await page.getByRole('button',{name:'Pause log display'}).click();
    await expect(page.getByRole('button',{name:'Resume log display'})).toBeVisible();
    env.session.updateLog('AFTER_PAUSE_MARKER: newest data line','error',false);
-   await page.evaluate(()=>new Promise<void>(resolve=>{requestAnimationFrame(()=>requestAnimationFrame(()=>resolve()));}));
-   assert.doesNotMatch(await pre.textContent()??'',/AFTER_PAUSE_MARKER/,'paused display holds the old output');
+   await page.waitForFunction(()=>{const element=document.querySelector('pi-a2ui-log-view') as (Element&{controller?:{props?:{text?:unknown}}})|null;const text=element?.controller?.props?.text;return typeof text==='string'&&text.includes('AFTER_PAUSE_MARKER');},undefined,{timeout:5000});
+   assert.doesNotMatch(await pre.textContent()??'',/AFTER_PAUSE_MARKER/,'paused display holds the old output after the browser controller provably received the marker');
    await page.getByRole('button',{name:'Resume log display'}).click();
    await expect.poll(async()=>pre.textContent(),{timeout:5000}).toMatch(/AFTER_PAUSE_MARKER/);
    assert.equal(env.posts.length,0,'log interactions never post');
@@ -428,7 +456,7 @@ test.describe('contract regressions across the restyle',()=>{
    await expect(page.locator('pi-a2ui-chart').first()).toBeVisible();
    assert.deepEqual(env.pageErrors,[],'no uncaught page errors');
    assert.equal(env.posts.length,0,'no business POSTs');
-   assert.equal(env.externalBlocked,0,'no attempted provider or external requests');
+   assert.equal(env.externalBlocked.count,0,'no attempted provider or external requests');
   }finally{await env.close();}
  });
 });

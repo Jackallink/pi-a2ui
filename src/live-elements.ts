@@ -19,7 +19,7 @@ export class ChartElement extends A2uiLitElement<typeof chartApi>{
   const y=(value:number)=>210-((value/maxAbs-low)/span)*180;
   const gutter=40,plotSpan=540;const ticks=count===0?[]:tickValues(low,high,maxAbs);const longest=ticks.reduce((width,tick)=>Math.max(width,tick.label.length),0);const left=Math.max(gutter,Math.ceil(longest*7.5)+12);const width=left+plotSpan+24;
   const x=(index:number)=>left+(count<=1?0:index/(count-1)*plotSpan);
-  return html`<section aria-label="Chart"><h3>${p.kind==='line'?'Line':'Bar'} chart</h3>${count===0?html`<p>No data yet</p>`:nothing}${p.series.length?html`<ul class="rp-legend" aria-label="Chart series color legend">${p.series.map((series,index)=>html`<li><i style=${'background:'+colors[index]}></i>${series.name}</li>`)}</ul>`:nothing}<div class="chart-plot"><svg viewBox="0 0 ${width} 250" style=${'min-width:'+width+'px'} role="img" aria-label=${p.kind+' chart'}><line x1=${left} x2=${left+plotSpan} y1=${y(0)} y2=${y(0)} stroke="#64748b"></line>${ticks.map(tick=>svg`<line class="rp-tick-mark" x1=${left-6} x2=${left} y1=${y(tick.value)} y2=${y(tick.value)} stroke="var(--pi-a2ui-color-border,#dbe2ea)"></line><text class="rp-tick" x=${left-8} y=${y(tick.value)+4} text-anchor="end" font-size="11" fill="var(--pi-a2ui-color-muted,#566477)">${tick.label}</text>`)}${p.series.map((series,index)=>svg`<g data-series=${series.name}>${p.kind==='line'?svg`<polyline fill="none" stroke=${colors[index]} points=${series.points.map((point,i)=>`${x(i)},${y(point.value)}`).join(' ')}></polyline>`:nothing}${series.points.map((point,i)=>p.kind==='line'?svg`<circle cx=${x(i)} cy=${y(point.value)} r="3" fill=${colors[index]}><title>${series.name}: ${point.label} = ${point.value}</title></circle>`:svg`<rect x=${left+i*(plotSpan/Math.max(1,count))+index*((plotSpan-40)/Math.max(1,count)/Math.max(1,p.series.length))} y=${Math.min(y(0),y(point.value))} width=${Math.max(.1,480/Math.max(1,count)/Math.max(1,p.series.length))} height=${Math.abs(y(point.value)-y(0))} fill=${colors[index]}><title>${series.name}: ${point.label} = ${point.value}</title></rect>`)}</g>`)}${visibleXLabels(p.series[0]?.points.map(point=>point.label)??[],left,plotSpan,p.kind,count).map(item=>svg`<text class="rp-x-label" x=${item.x} y="235" font-size="10" text-anchor=${item.anchor}><title>${item.label}</title>${item.label}</text>`)}</svg></div><div class="values"><table><caption>Supplied chart values</caption><thead><tr><th>Series</th><th>Label</th><th>Value</th></tr></thead><tbody>${p.series.flatMap(series=>series.points.map(point=>html`<tr><td>${series.name}</td><td>${point.label}</td><td>${point.value}</td></tr>`))}</tbody></table></div></section>`;
+  return html`<section aria-label="Chart"><h3>${p.kind==='line'?'Line':'Bar'} chart</h3>${count===0?html`<p>No data yet</p>`:nothing}${p.series.length?html`<ul class="rp-legend" aria-label="Chart series color legend">${p.series.map((series,index)=>html`<li><i style=${'background:'+colors[index]}></i>${series.name}</li>`)}</ul>`:nothing}<div class="chart-plot"><svg viewBox="0 0 ${width} 250" style=${'min-width:'+width+'px'} role="img" aria-label=${p.kind+' chart'}><line x1=${left} x2=${left+plotSpan} y1=${y(0)} y2=${y(0)} stroke="#64748b"></line>${ticks.map(tick=>svg`<line class="rp-tick-mark" x1=${left-6} x2=${left} y1=${y(tick.value)} y2=${y(tick.value)} stroke="var(--pi-a2ui-color-border,#dbe2ea)"></line><text class="rp-tick" x=${left-8} y=${y(tick.value)+4} text-anchor="end" font-size="11" fill="var(--pi-a2ui-color-muted,#566477)">${tick.label}</text>`)}${p.series.map((series,index)=>svg`<g data-series=${series.name}>${p.kind==='line'?svg`<polyline fill="none" stroke=${colors[index]} points=${series.points.map((point,i)=>`${x(i)},${y(point.value)}`).join(' ')}></polyline>`:nothing}${series.points.map((point,i)=>p.kind==='line'?svg`<circle cx=${x(i)} cy=${y(point.value)} r="3" fill=${colors[index]}><title>${series.name}: ${point.label} = ${point.value}</title></circle>`:svg`<rect x=${left+i*(plotSpan/Math.max(1,count))+index*((plotSpan-40)/Math.max(1,count)/Math.max(1,p.series.length))} y=${Math.min(y(0),y(point.value))} width=${Math.max(.1,480/Math.max(1,count)/Math.max(1,p.series.length))} height=${Math.abs(y(point.value)-y(0))} fill=${colors[index]}><title>${series.name}: ${point.label} = ${point.value}</title></rect>`)}</g>`)}${visibleXLabels(p.series[0]?.points.map(point=>point.label)??[],left,plotSpan,p.kind,count,labelMeasurer()).map(item=>svg`<text class="rp-x-label" x=${item.x} y="235" font-size="10" text-anchor=${item.anchor}><title>${item.label}</title>${item.label}</text>`)}</svg></div><div class="values"><table><caption>Supplied chart values</caption><thead><tr><th>Series</th><th>Label</th><th>Value</th></tr></thead><tbody>${p.series.flatMap(series=>series.points.map(point=>html`<tr><td>${series.name}</td><td>${point.label}</td><td>${point.value}</td></tr>`))}</tbody></table></div></section>`;
  }
 }
 function tickValues(low:number,high:number,maxAbs:number):Array<{value:number;label:string}>{
@@ -37,19 +37,30 @@ function tickValues(low:number,high:number,maxAbs:number):Array<{value:number;la
  for(const entry of entries)if((collisions.get(entry.label)??0)>1)entry.label=String(entry.value);
  return entries;
 }
-const chartLabelWidth=(label:string):number=>{let width=0;for(const char of label)width+=char.charCodeAt(0)>0x2e80?10:6;return width;};
-function visibleXLabels(labels:Array<string>,left:number,plotSpan:number,kind:'line'|'bar',count:number):Array<{label:string;x:number;anchor:'start'|'middle'|'end'}>{
- const shown:Array<{label:string;x:number;anchor:'start'|'middle'|'end'}>=[];
- const slot=plotSpan/Math.max(1,count);let lastRight=-Infinity;
- for(let i=0;i<count;i++){
-  const anchor:'start'|'middle'|'end'=i===0?'start':i===count-1?'end':'middle';
-  const x=kind==='line'?left+(count<=1?0:i/(count-1)*plotSpan):left+i*slot+slot/2;
-  const width=chartLabelWidth(labels[i]??'');
+let measureLabels:((label:string)=>number)|undefined;
+const labelMeasurer=():((label:string)=>number)=>{
+ if(measureLabels)return measureLabels;
+ let context:CanvasRenderingContext2D|null=null;
+ try{context=document.createElement('canvas').getContext('2d');if(context)context.font='10px '+getComputedStyle(document.body).fontFamily;}catch{context=null;}
+ if(context)measureLabels=(label:string)=>{try{return context!.measureText(label).width;}catch{return label.length*8;}};
+ else measureLabels=(label:string)=>{let width=0;for(const char of label)width+=char.charCodeAt(0)>0x2e80?10.5:8;return width;};
+ return measureLabels;
+};
+function visibleXLabels(labels:Array<string>,left:number,plotSpan:number,kind:'line'|'bar',count:number,measure:(label:string)=>number):Array<{label:string;x:number;anchor:'start'|'middle'|'end'}>{
+ if(count<=0)return[];
+ const slot=plotSpan/count;const step=count>1?plotSpan/(count-1):0;
+ const items=labels.slice(0,count).map((label,i)=>{
+  const anchor:'start'|'middle'|'end'=i===0?'start':i===count-1&&count>1?'end':kind==='bar'?'start':'middle';
+  const x=kind==='bar'?(i===count-1?left+plotSpan:left+i*slot):(left+i*step);
+  const width=measure(label);
   const spanLeft=anchor==='start'?x:anchor==='middle'?x-width/2:x-width;
-  const spanRight=spanLeft+width;
-  if(spanLeft<left+1||spanRight>left+plotSpan-1)continue;
-  if(spanLeft<lastRight+2)continue;
-  shown.push({label:labels[i]??'',x,anchor});lastRight=spanRight;
+  return{label,x,anchor,spanLeft,spanRight:spanLeft+width};
+ });
+ const shown:Array<{label:string;x:number;anchor:'start'|'middle'|'end'}>=[];let lastRight=-Infinity;
+ for(const item of items){
+  if(item.spanLeft<left||item.spanRight>left+plotSpan)continue;
+  if(item.spanLeft<lastRight+2)continue;
+  shown.push({label:item.label,x:item.x,anchor:item.anchor});lastRight=item.spanRight;
  }
  return shown;
 }

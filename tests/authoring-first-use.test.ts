@@ -74,4 +74,10 @@ test('AF05 data-digest recipe keeps raw numbers, states sources and rejects fabr
   const solo=spawnSync(process.execPath,[helper,'check','--surface-id','data-digest','-'],{input:fence,encoding:'utf8',timeout:10000});
   assert.equal(solo.status,1,solo.stderr);assert.equal(solo.stdout,'');assert.equal(JSON.parse(solo.stderr).code,'COMPILE');
  }
+ const donutCleaned=negativeFences[1].replace('kind="donut"','kind="line"');
+ const donutOk=spawnSync(process.execPath,[helper,'check','--surface-id','data-digest','-'],{input:donutCleaned,encoding:'utf8',timeout:10000});
+ assert.equal(donutOk.status,0,'only the unsupported kind makes fence 2 fail: '+donutOk.stderr);
+ const formatterCleaned=negativeFences[2].replace(',formatter="compact"','');
+ const formatterOk=spawnSync(process.execPath,[helper,'check','--surface-id','data-digest','-'],{input:formatterCleaned,encoding:'utf8',timeout:10000});
+ assert.equal(formatterOk.status,0,'only the banned prop makes fence 3 fail: '+formatterOk.stderr);
 });

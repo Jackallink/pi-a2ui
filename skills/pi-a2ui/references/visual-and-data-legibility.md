@@ -52,7 +52,7 @@ root = Column(children=[trend])
 ```
 
 ```invalid-express
-detail = DataTable(caption="按模块的原始请求计数",columns=[{id:"module",label:"模块"}],rows=[{id:"api",cells:["/api/render",128]}],formatter="compact")
+detail = DataTable(caption="按模块的原始请求计数",columns=[{id:"module",label:"模块"},{id:"requests",label:"请求数"}],rows=[{id:"api",cells:["/api/render",128]}],formatter="compact")
 root = Column(children=[detail])
 ```
 
