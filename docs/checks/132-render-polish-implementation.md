@@ -69,9 +69,20 @@ review-ready（R1 已回环修复并复验，等待 R2 独立复评）：本 Che
   建议 [P3]：canvas 初始化失败被永久缓存（恢复后不重试）、两条降级路径不统一且非可靠上界；AF05 正对照可补精确输出契约断言。
 - **9e2f073 修复轮（2 项阻塞 + 2 条建议）**：
   1. visibleXLabels 首末坐标显式钉死（i===0→left；i===count-1→left+plotSpan；中间与数据点公式一致 left+i/(count-1)*plotSpan；单点 line/bar 均落 left 组起点）——浮点误差不再影响边界包含。
-  2. labelMeasurer：canvas 初始化失败不再永久缓存（下次渲染重试）；两条降级路径统一为 1em/字符保守上界（label.length*10）。
+  2. labelMeasurer：canvas 初始化失败不再永久缓存（下次渲染重试）；两条降级路径统一为启发式估算（label.length*10，R4 复评指出对极少数字形如 U+2E3B 非可靠上界，仅作兜底，主路径为 canvas measureText）。
   3. 测试扩展为五图 audit：单点 line、单点 bar（R3 回归覆盖）、两点、11×8W 密集、134 点超宽前缀+短末端标签（断言 B 保留且不出界）。
   4. AF05 正对照断言 helper 精确输出契约 {surfaceId,source}（deepEqual）。
 - **9e2f073 复验（干净树）**：tsc clean；render-polish **35/35**；npm test 609/609（node 报告 61 results 0 fail）；五套件 **126 passed**（BM3 accepted:true）；golden union `{"source":"9e2f073…","cases":68,"positive":45,"negative":23,"node":"v24.18.1","browser":"158.0.8127.18"}`。评审中的一次测试断言失配（texts 数组成员 vs 子串）属测试自身写法，已修；功能探针确认五图标签渲染正确。
 - 经验记录：golden union 与 BM3 accepted 都要求「node.json/browser.json 同为当前干净提交」——任何 src/tests 变更后需先提交，再重跑 npm test 刷新 node 报告，再 combine；浏览器证据在提交后的套件运行中生成。
 
+
+## R4 独立复评：GO（0 项阻塞性缺陷）— 审查闭环收敛
+- **R4 评审**（gpt-6.1-sol xhigh read-only，输入 69154b0..bb528e1 diff，93 行；全文 .local/render-polish-red/codex-review-r4.txt）：结论 **GO**。
+  - R3 两项 P2 均实质解决（评审员以函数前后版本探针独立复现：旧版单点 bar → []，新版保留 {label:"A",x:40,anchor:"start"}；134 点末标签旧版丢失、新版保留 B@580/end，且 line 1–200 点坐标均与数据点公式一致）。空数据、两点两种 kind、抽稀顺序/包含判断/2px 间隔、超宽前项不阻挡后续短标签均复核无误；缓存发布策略无重入风险；无注入/敏感信息/未捕获异常/接口漂移；dist/client.js 与内存重建字节一致。
+  - 遗留 2 条 [P3] 优化建议（评审明确不升级为阻塞）：① label.length*10 为启发式估算而非可靠上界（U+2E3B 实测 ≈26.34px@10px），Check132 措辞已改，主路径 canvas measureText 不受影响；② 可补窄断言（坐标/锚点、两点 bar、初始化失败恢复、measureText 抛错）——按 m00001 范围按需采纳，不在本轮阻塞闭环内实现。
+  - AF05 精确输出契约断言判定完全解决。
+- **收敛曲线**：R1 4 项 → R2 3 项 → R3 2 项 → R4 0 项，严格单调收敛，无同缺陷停滞、无回归，满足全局审查工作流放行条件（阻塞性缺陷归零）。
+
+## 终态（review-ready 停止点）
+- 分支 codex/67-render-polish；提交链 71f27ec → f88716d → 620198e → ed072cd → 00120ac → d5bc5d2 → 9095e99 → b17f085 → f6383c2 → 69154b0 → 9e2f073 → bb528e1 → 本记录提交。
+- 独立审查 R4 GO；本 Check 不关闭 issue、不合并、不发布、不改用户全局安装。
