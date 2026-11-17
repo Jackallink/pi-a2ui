@@ -1,6 +1,6 @@
 # Spec028：统一渲染视觉与现有组件可读性（#67）
 
-状态：walkthrough-approved（独立R2 Gate1设计完整性与Gate2测试意图GO；**尚无实际RED/生产实现/代码验收**，见Check130）。Tracker：[issue67](https://github.com/Jackallink/pi-a2ui/issues/67)。基线main `0c1fe67649b3f61d520ca0318f7dd977a208b3b5` / package0.1.11。用户授权先完成设计、固定场景前后样张及独立评审；本轮不触发Pi，不改产品，不调用真实模型。实施由用户自行发起Pi agent，交接提示词随设计交付；没有合并/发布/全局部署/issue关闭授权。
+状态：walkthrough-approved（独立R2 Gate1设计完整性与Gate2测试意图GO，见Check130）；实施T1–T4已完成于分支 `codex/67-render-polish`（Gate2 RED→GREEN与全量本地CI见Check132，HEAD=ed072cd），**review-ready待独立代码评审，未合并/发布**。Tracker：[issue67](https://github.com/Jackallink/pi-a2ui/issues/67)。基线main `0c1fe67649b3f61d520ca0318f7dd977a208b3b5` / package0.1.11。用户授权先完成设计、固定场景前后样张及独立评审；本轮不触发Pi，不改产品，不调用真实模型。实施由用户自行发起Pi agent，交接提示词随设计交付；没有合并/发布/全局部署/issue关闭授权。
 
 三轮：[R1](../walkthrough/render-polish/01-round1-user-stories.md)、[R2](../walkthrough/render-polish/02-round2-technical-trace.md)、[R3](../walkthrough/render-polish/03-round3-integration-check.md)；验收记录Check130；[实施计划](../plans/028-render-polish.md)；[样张/设计入口](../designs/028-render-polish/README.md)。状态/实际检查归Check，计划不维护实时进度。
 
