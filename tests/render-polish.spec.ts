@@ -664,3 +664,56 @@ test.describe('review findings F1-F4 corrective regressions (independent review 
   }finally{await env.close();}
  });
 });
+ test('wrap fallback keeps every label inside the plot when all labels exceed the plot width',async({page})=>{
+  const points=Array.from({length:32},(_,index)=>`{label:"${'W'.repeat(70)}",value:${index+1}}`).join(',');
+  const env=await open(page,'rp-f2-stride',`root = Chart(kind="line",series=[{name:"洪流",points:[${points}]}])`);
+  try{
+   await page.evaluate(()=>document.fonts.ready.then(()=>true));
+   const audit=await page.evaluate(()=>{
+    const svg=document.querySelector('svg.rp-plot') as SVGSVGElement;
+    const svgBox=svg.getBoundingClientRect();
+    const labels=[...svg.querySelectorAll('text.rp-x-label')];
+    // All coordinates stay in SCREEN space and are compared against the svg's own
+    // rect: the svg scales its viewBox to fit its container, so screen-space
+    // containment implies viewBox containment (same audit style as the T2 tests).
+    const boxes=labels.map(label=>{const box=label.getBoundingClientRect();return{left:box.left,right:box.right,lines:label.querySelectorAll('tspan').length,title:label.querySelector('title')?.textContent??''};});
+    boxes.sort((a,b)=>a.left-b.left);
+    const gaps=boxes.slice(1).map((box,i)=>box.left-boxes[i]!.right);
+    return{count:labels.length,boxes,gaps,svgLeft:svgBox.left,svgRight:svgBox.right,viewWidth:(svg as SVGSVGElement).viewBox.baseVal.width};
+   });
+   assert.ok(audit.count>=2&&audit.count<32,'the stride thinning keeps a bounded subset: '+audit.count);
+   assert.ok(audit.boxes.every(box=>box.lines>=1&&box.lines<=3),'wrapped labels stay within the 3-line cap');
+   assert.ok(audit.boxes.every(box=>box.left>=audit.svgLeft-0.5&&box.right<=audit.svgRight+0.5),'every wrapped label stays inside the svg viewport: '+JSON.stringify(audit.boxes));
+   assert.ok(audit.gaps.every(gap=>gap>=2),'wrapped label columns never overlap: '+JSON.stringify(audit.gaps));
+   assert.ok(audit.boxes.every(box=>box.title.length===70),'the full label text stays in <title>');
+  }finally{await env.close();}
+ });
+ test('the active tab keeps its accent color while hovered',async({page})=>{
+  const env=await open(page,'rp-f1-hover',`root = Tabs([{title:"概览",child:Text("概览内容")},{title:"明细",child:Text("明细内容")}])`);
+  try{
+   const active=page.locator('a2ui-tabs .a2ui-tab-button-active').first();
+   await active.hover();
+   await page.waitForTimeout(80);
+   assert.equal(await active.evaluate(node=>getComputedStyle(node).color),'rgb(54, 92, 219)','hovering the active tab must not wash out its accent color');
+  }finally{await env.close();}
+ });
+ test('the gutter covers the measured width of long numeric ticks, not only the 40px floor',async({page})=>{
+  const env=await open(page,'rp-f4-big',`root = Chart(kind="bar",series=[{name:"额度",points:[{label:"甲",value:123456789},{label:"乙",value:987654321}]}])`);
+  try{
+   await page.evaluate(()=>document.fonts.ready.then(()=>true));
+   const audit=await page.evaluate(()=>{
+    const axis=document.querySelector('svg.rp-plot line:not(.rp-tick-mark)') as SVGLineElement;
+    const ticks=[...document.querySelectorAll('svg.rp-tick,svg.rp-plot text.rp-tick')] as SVGTextElement[];
+    const mono=getComputedStyle(document.documentElement).getPropertyValue('--pi-a2ui-font-mono').trim()||'monospace';
+    const canvas=document.createElement('canvas');
+    const context=canvas.getContext('2d');
+    if(!context)return{error:'no canvas'};
+    context.font='11px '+mono;
+    const widths=ticks.map(tick=>context.measureText(tick.textContent??'').width);
+    return{left:Number(axis.getAttribute('x1')),maxWidth:Math.max(...widths),tickCount:ticks.length};
+   });
+   assert.ok(!('error'in audit)&&audit.tickCount>=2,'numeric ticks render: '+JSON.stringify(audit));
+   assert.ok(audit.left>=40,'gutter floor 40 holds: '+audit.left);
+   assert.ok(audit.left>=Math.ceil(audit.maxWidth)+12-0.5,'gutter derives from the measured max tick width+12: maxWidth='+audit.maxWidth.toFixed(1)+' left='+audit.left);
+  }finally{await env.close();}
+ });

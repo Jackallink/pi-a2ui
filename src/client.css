@@ -196,7 +196,7 @@ code { font-family: var(--pi-a2ui-font-mono); font-size: 0.95em; }
   color: var(--pi-a2ui-color-muted);
   font-weight: 500;
 }
-#surfaces a2ui-tabs .a2ui-tab-button:hover { color: var(--pi-a2ui-color-text); }
+#surfaces a2ui-tabs .a2ui-tab-button:hover:not(.a2ui-tab-button-active) { color: var(--pi-a2ui-color-text); }
 #surfaces a2ui-tabs .a2ui-tab-button-active {
   color: var(--pi-a2ui-color-accent);
   border-bottom: 2px solid var(--pi-a2ui-color-accent);

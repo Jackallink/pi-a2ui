@@ -7,16 +7,34 @@
 // only; screenshots are context, not the assertion itself.
 import{test,expect,type Page}from'@playwright/test';
 import assert from'node:assert/strict';
-import{mkdirSync}from'node:fs';
+import{mkdirSync,readFileSync,writeFileSync}from'node:fs';
 import{join}from'node:path';
-import{readFileSync}from'node:fs';
+import{createHash}from'node:crypto';
+import{execSync}from'node:child_process';
 import{UiSession}from'../src/session.ts';
 import{startServer}from'../src/server.ts';
 
 const SHOTS=join(process.cwd(),'.local/render-polish-corrective/shots');
-mkdirSync(SHOTS,{recursive:true});
+// Each run writes into its own timestamped directory and records a manifest
+// binding every screenshot to the exact source/lock/browser it was taken on,
+// so reruns never overwrite prior evidence (review R2 finding 4).
+const RUN=join(SHOTS,'run-'+new Date().toISOString().replace(/[:.]/g,'-'));
+mkdirSync(RUN,{recursive:true});
+const taken:{name:string;path:string}[]=[];
 const fixture=(name:string)=>readFileSync('docs/designs/028-render-polish/fixtures/'+name+'.express','utf8');
-const shot=async(page:Page,name:string)=>{const path=join(SHOTS,name+'.png');await page.screenshot({path,fullPage:true});return path;};
+const shot=async(page:Page,name:string)=>{const path=join(RUN,name+'.png');await page.screenshot({path,fullPage:true});taken.push({name,path});return path;};
+test.afterAll(async()=>{
+ const sha256=(path:string)=>createHash('sha256').update(readFileSync(path)).digest('hex');
+ const browser=JSON.parse(readFileSync('node_modules/playwright-core/browsers.json','utf8')).browsers.find((entry:{name:string})=>entry.name==='chromium-headless-shell');
+ const manifest={
+  source:execSync('git rev-parse HEAD').toString().trim(),
+  dirty:execSync('git status --porcelain --untracked-files=normal').toString().length>0,
+  lock:sha256('package-lock.json'),
+  browserRevision:browser?.revision??null,
+  shots:taken.map(entry=>({name:entry.name,file:join(RUN.slice(process.cwd().length+1),entry.name+'.png'),sha256:sha256(entry.path)})),
+ };
+ writeFileSync(join(RUN,'manifest.json'),JSON.stringify(manifest,null,1));
+});
 
 type Env={session:UiSession;origin:string;posts:string[];sent:string[];pageErrors:string[];externalBlocked:{count:number};snapshotJson:string;close():Promise<void>};
 async function open(page:Page,surfaceId:string,source:string|((session:UiSession)=>Promise<string>),opts:{keepPage?:boolean}={}):Promise<Env>{
@@ -49,6 +67,11 @@ async function open(page:Page,surfaceId:string,source:string|((session:UiSession
  }
 }
 const styleOf=(locator:ReturnType<Page['locator']>,name:string)=>locator.evaluate((node,property)=>getComputedStyle(node).getPropertyValue(property as string),name);
+
+const assertClean=(env:Env,stage:string)=>{
+  assert.deepEqual(env.pageErrors,[],stage+': no page errors');
+  assert.equal(env.externalBlocked.count,0,stage+': no external requests blocked');
+};
 
 test.use({launchOptions:{executablePath:process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH},viewport:{width:1280,height:900},deviceScaleFactor:1,colorScheme:'light',locale:'en-US',timezoneId:'UTC',reducedMotion:'reduce',actionTimeout:5000,navigationTimeout:5000});
 test.setTimeout(45000);
@@ -92,6 +115,7 @@ test('AC-001: all 32 component types render with the theme font and state famili
   assert.deepEqual(foundA.filter(f=>!f.count).map(f=>f.tag),[],'group A media/static components all render: '+JSON.stringify(foundA));
   assert.deepEqual(foundA.filter(f=>f.count&&f.family!==bodyFontA).map(f=>f.tag),[],'group A hosts inherit the themed body font: '+JSON.stringify(foundA));
   await shot(page,'ac001-groupA-media');
+  assertClean(envA,'AC-001 group A');
  }finally{await envA.close();}
  const envB=await open(page,'rp-acc-forms',`tfName = TextField(label="名称",value="",placeholder="输入名称")
 check = CheckBox(label="同意条款",value=false)
@@ -111,6 +135,7 @@ root = Column(children=[tfName,check,volume,when,tabs,more,explain,entry,grid])`
   await expect(page.locator('a2ui-tabs .a2ui-tab-button-active')).toHaveCount(1);
   assert.equal(await styleOf(page.locator('a2ui-tabs .a2ui-tab-button-active'),'color'),'rgb(54, 92, 219)','active tab keeps accent text');
   await shot(page,'ac001-groupB-forms');
+  assertClean(envB,'AC-001 group B');
  }finally{await envB.close();}
  const envC=await open(page,'rp-acc-data',`$/pick = ["t"]
 $/region = ["n"]
@@ -188,19 +213,26 @@ root = Column(children=[noteText,badge,chips,region,chart,table,fvName,fvSubmit,
   assert.deepEqual(erroredC,[],'all contrast probes resolved: '+JSON.stringify(ratiosC));
   assert.deepEqual(weakC,[],'effective-background contrast pairs meet 4.5:1: '+JSON.stringify(ratiosC));
   await shot(page,'ac001-contrast');
+  assertClean(envC,'AC-001 group C');
  }finally{await envC.close();}
 });
 
-test('AC-003: 200% zoom keeps a guarded form usable and narrow viewports keep geometry sane',async({page})=>{
- const env=await open(page,'rp-acc-zoom',`$/form/name = ""
+const AC003_SOURCE=`$/form/name = ""
 name = TextField(label="资产名称",value=$/form/name)
 submit = Button(child=Text("提交信息，等待确认"),action=Event("collect_asset",{name:$/form/name}))
 validation = FormValidation(title="请先补齐以下信息",buttons=["submit"],rules=[{fieldId:"name",message:"请填写资产名称",required:true}])
 more = Details(title="提交前会发生什么？",child=Text("缺少必填内容时只显示本地错误。"))
 explain = Modal(trigger=Text("查看使用说明"),content=Text("本地说明弹窗，关闭后焦点应回到入口。"))
-root = Card(child=Column(children=[name,validation,submit,more,explain]))`);
+root = Card(child=Column(children=[name,validation,submit,more,explain]))`;
+
+test('AC-003: 200% zoom keeps a guarded form usable and narrow viewports keep geometry sane',async({page})=>{
+ const env=await open(page,'rp-acc-zoom',AC003_SOURCE);
  try{
   // hit-test: click the guarded submit while INVALID through physical coordinates at zoom
+  // NOTE: headless Chromium cannot change browser-chrome zoom (Ctrl+= is inert);
+  // this CSS zoom pass is a proxy. The REAL 200% evidence is the physical
+  // equivalent below (CSS viewport 640 = 1280 physical px at browser zoom 200%,
+  // devicePixelRatio 2, media queries re-evaluated).
   const submit=page.getByRole('button',{name:'提交信息，等待确认'});
   await page.evaluate(()=>{(document.documentElement as HTMLElement).style.zoom='2';});
   await page.waitForTimeout(120);
@@ -233,7 +265,40 @@ root = Card(child=Column(children=[name,validation,submit,more,explain]))`);
    assert.ok(narrowOverflow<=0,width+'px viewport must not overflow horizontally, delta='+narrowOverflow);
    await shot(page,name);
   }
+  assertClean(env,'AC-003');
  }finally{await env.close();}
+ // Real desktop 200%: a 1280-physical-px window at browser zoom 200% renders a
+ // 640px CSS viewport with devicePixelRatio 2. Reproduce those exact rendering
+ // parameters and run the same guarded-form flow end to end.
+ const browser=page.context().browser();assert.ok(browser,'browser fixture available');
+ const zoomContext=await browser.newContext({viewport:{width:640,height:450},deviceScaleFactor:2,colorScheme:'light',reducedMotion:'reduce',locale:'en-US',timezoneId:'UTC'});
+ const zoomPage=await zoomContext.newPage();
+ try{
+  const zenv=await open(zoomPage,'rp-acc-zoom-physical',AC003_SOURCE);
+  const params=await zoomPage.evaluate(()=>({dpr:window.devicePixelRatio,innerWidth:window.innerWidth,stacked:getComputedStyle(document.querySelector('a2ui-basic-row')??document.body).display}));
+  assert.equal(params.dpr,2,'devicePixelRatio 2 matches real 200% zoom on a 1280-physical-px window');
+  assert.equal(params.innerWidth,640,'CSS viewport 640 matches real 200% zoom layout width');
+  const overflow=await zoomPage.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
+  assert.ok(overflow<=0,'200% physical zoom must not create horizontal page overflow, delta='+overflow);
+  const zsubmit=zoomPage.getByRole('button',{name:'提交信息，等待确认'});
+  await zsubmit.click({timeout:3000});
+  await expect(zoomPage.locator('.a2ui-field-error').first()).toBeVisible();// guarded validation reachable at real 200% zoom;
+  assert.equal(zenv.posts.length,0,'invalid submit posts nothing at physical 200%');
+  const zinput=zoomPage.getByRole('textbox').nth(0);
+  await zinput.fill('物理缩放命中');
+  await expect(zinput).toHaveValue('物理缩放命中');
+  await zoomPage.getByText('查看使用说明').click();
+  const zdialog=zoomPage.locator('pi-a2ui-modal dialog');
+  await expect(zdialog).toBeVisible();
+  const zInView=await zdialog.evaluate(node=>{const r=(node as HTMLElement).getBoundingClientRect();return r.left>=0&&r.top>=0&&r.right<=window.innerWidth&&r.bottom<=window.innerHeight;});
+  assert.ok(zInView,'modal stays inside the 200% viewport');
+  await zoomPage.keyboard.press('Escape');
+  await expect(zdialog).toBeHidden();
+  await expect(zoomPage.locator('.modal-trigger').first()).toBeFocused();// focus return works at physical 200% zoom;
+  await shot(zoomPage,'ac003-zoom200-physical');
+  assert.deepEqual(zenv.pageErrors,[],'physical zoom flow: no page errors');
+  assert.equal(zenv.externalBlocked.count,0,'physical zoom flow: no external requests');
+ }finally{await zoomContext.close();}
 });
 
 test('AC-004/007: keyboard flow, guarded errors, modal return focus and paused inertness',async({page})=>{
@@ -283,6 +348,7 @@ root = Card(child=Column(children=[name,team,note,validation,submit,explain]))`)
   await expect(page.locator('#status')).toHaveText('Ready for your input');
   await expect.poll(()=>page.evaluate(()=>[...document.querySelectorAll('a2ui-surface')].every(node=>!(node as HTMLElement).inert))).toBe(true);
   assert.equal(env.posts.length,validPosts,'pause window posts nothing');
+  assertClean(env,'AC-004/007');
  }finally{await env.close();}
 });
 
@@ -319,11 +385,24 @@ root = Column(children=[field,chart])`);
   assert.ok(ticks.length>=2&&ticks.every(t=>t!==''&&Number.isFinite(parseFloat(t!))),'ticks stay finite and labeled: '+JSON.stringify(ticks));
   const values=await page.locator('.values tbody tr').allTextContents();
   assert.equal(values.length,4,'values table covers both series after update');
-  assert.ok(values[0]!.includes('基线')&&values[0]!.includes('一'),'values keep original labels');
+  // exact cell contract: every row is [series, label, value] in supply order
+  const cells=await page.evaluate(()=>[...document.querySelectorAll('.values tbody tr')].map(tr=>[...tr.querySelectorAll('td')].map(td=>td.textContent)));
+  assert.deepEqual(cells,[['基线','一','1'],['基线','二','2'],['对照','一','2'],['对照','二','1']],'values table matches the exact supplied series after update');
+  // finite geometry: polyline points and tick coordinates are finite SVG numbers
+  const coords=await page.evaluate(()=>({
+   points:[...document.querySelectorAll('svg.rp-plot polyline')].flatMap(pl=>(pl.getAttribute('points')??'').split(' ').map(pair=>pair.split(',').map(Number)).flat()),
+   tickXY:[...document.querySelectorAll('svg.rp-plot text.rp-tick')].flatMap(t=>[Number(t.getAttribute('x')),Number(t.getAttribute('y'))]),
+  }));
+  assert.ok(coords.points.length>=8&&coords.points.every(n=>Number.isFinite(n)),'polyline coordinates are finite SVG numbers');
+  assert.ok(coords.tickXY.length>=4&&coords.tickXY.every(n=>Number.isFinite(n)),'tick coordinates are finite SVG numbers');
   const afterForward=env.session.snapshot();
   assert.equal(afterForward.surfaces[0]!.dataSequence,1,'updateChart advances the data sequence exactly once');
   assert.equal(afterForward.surfaces[0]!.revision,revision,'data update keeps the revision stable');
   assert.equal(afterForward.epoch,epoch,'data update keeps the epoch');
+  // Data updates patch per-component, so the uncommitted draft survives
+  // updateChart too (stronger than the Spec028:72 visual-only contract);
+  // pinned here so silent draft loss cannot regress.
+  await expect(field).toHaveValue('动态更新期间保留草稿');
   // reverse: back to one series
   const snap2=env.session.snapshot();
   const surface2=snap2.surfaces.find(s=>s.surfaceId==='rp-acc-chart');assert.ok(surface2);
@@ -339,5 +418,6 @@ root = Column(children=[field,chart])`);
   assert.throws(()=>env.session.updateChart('rp-acc-chart',revision+1,componentId,[{name:'迟到的',points:[{label:'旧',value:9}]}]),/Stale chart surface revision/,'stale revision rejected');
   assert.deepEqual(env.session.snapshot(),before,'rejected update leaves the session untouched');
   await shot(page,'ac006-updatechart-reverse');
+  assertClean(env,'AC-006');
  }finally{await env.close();}
 });

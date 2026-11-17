@@ -118,7 +118,6 @@ function visibleXLabels(labels:Array<string>,left:number,plotSpan:number,kind:'l
  // label remains in <title> and in the values table.
  const stride=Math.max(1,Math.ceil(34/slot));
  const column=slot*stride;
- const budget=Math.max(12,column-6);
  const kept:Array<number>=[];
  for(let index=0;index<count;index+=stride)kept.push(index);
  const last=count-1;
@@ -126,5 +125,12 @@ function visibleXLabels(labels:Array<string>,left:number,plotSpan:number,kind:'l
   if(kept.length>1)kept.pop();
   kept.push(last);
  }
- return kept.map(index=>({label:labels[index],x:left+index*slot+column/2,anchor:'middle' as const,lines:wrapLabel(labels[index],budget,measure,3)}));
+ // Each label stays inside its column; the final column is clipped to the plot's
+ // right edge so a remainder column can never push the label past the viewBox.
+ return kept.map(index=>{
+  const colStart=left+index*slot;
+  const colEnd=Math.min(colStart+column,left+plotSpan);
+  const width=Math.max(12,colEnd-colStart);
+  return{label:labels[index],x:(colStart+colEnd)/2,anchor:'middle' as const,lines:wrapLabel(labels[index],Math.max(12,width-6),measure,3)};
+ });
 }
