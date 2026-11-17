@@ -46,3 +46,18 @@
 
 ## 状态
 review-ready（R1 已回环修复并复验，等待 R2 独立复评）：本 Check 不关闭 issue、不合并、不发布、不改用户全局安装。
+
+## R2 独立复评（NO-GO，3 阻塞收敛自 4）与 f6383c2 修复轮
+- **R2 评审**（同命令 read-only，输入 00120ac..b17f085 全量 diff；全文 .local/render-polish-red/codex-review-r2.txt）：结论 **NO-GO**，3 项 [阻塞性缺陷]（caption 与 picker/badge 两项判定 RESOLVED；未发现新注入面/竞态/泄漏/越权）。收敛趋势 4→3，无同一缺陷原地停滞。
+  1. 默认变体与 primary 同为 accent（违反 Spec028:29 “主要操作用accent，次要与本地控件中性”）。
+  2. visibleXLabels 边界留 1px margin 致 start/end 锚点标签被吞（单点/双点/三点实测 []/[]/[B]）。
+  3. 非 CJK 6px/字符估宽低估宽 Latin（WWWWWWWW@10px 实测 ≈78px vs 估 48px），11×8W 条形图保留标签有 ~19px 重叠。
+  建议：externalBlocked 按值拷贝假绿；pause 双 rAF 不能证明 controller 已收到数据；guard 缺 callback fs.mkdir/mkdtemp 与 promises.mkdtemp；formatter 负例栅栏因列/格数错误而失败（原因错位），缺“仅去禁用项即可编译”正对照。
+- **f6383c2 修复轮（全部 3 项阻塞 + 4 条建议）**：
+  1. client.css：default 画布按钮回归中性（surface 底/中性边框/text 色，`--a2ui-color-on-secondary`→text）；primary 独占 accent + accent-contrast 白字 + 600 字重 + 11px16px padding；borderless 保持链接观。测试同步：RP03 submit（默认变体）断言中性观感；三变体测试断言三种独立观感。
+  2. live-elements.ts：visibleXLabels 改精确包含（无 margin，首/末锚点标签可贴边）；x 轴标签宽度改 canvas 2D measureText（`10px + body font-family`，模块级缓存，try/catch 回退 CJK 10.5/其余 8 保守估宽）；条形图末标签 end 锚点贴 plot 右缘。
+  3. 测试新增：单点/双点/11×宽 Latin 密集场景 per-chart audit（count/outside/minGap/nonEmpty）；RP01 六个日期标签全保留断言。
+  4. 建议：externalBlocked 改共享计数对象（route 回调与 env 同引用）并断言 0；pause 断言前用 `page.waitForFunction(controller.props.text.includes('AFTER_PAUSE_MARKER'))` 证明浏览器已收到更新（controller/props 为 SDK 公开面）；guard 补 mkdir/mkdtemp 回调与 promises 变体；formatter 栅栏修正列/格结构 + AF05 增两个正对照（kind→line、去 formatter 均编译通过）。
+- **f6383c2 复验（全部在本提交干净树上）**：tsc clean；render-polish **35/35**；五套件 **126 passed**（BM3 accepted:true）；npm test 61 results 0 fail（union validateReport 通过即完整交付）；golden union `{"source":"f6383c2…","cases":68,"positive":45,"negative":23,"node":"v24.18.1","browser":"158.0.8127.18"}`（.local/render-polish-red/t4-golden-union-r2fix.json）。
+- 备注：golden union 需 node.json 与 browser.json 同为当前干净提交——提交后重跑 npm test 刷新 node 报告再 combine；BM3 accepted 同样要求干净树（提交前一次合跑 125 passed / BM3 fail 为预期门控行为，非回归）。
+
