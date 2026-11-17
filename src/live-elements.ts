@@ -112,25 +112,25 @@ function visibleXLabels(labels:Array<string>,left:number,plotSpan:number,kind:'l
  }
  if(shown.length>0)return shown;
  // Wrap fallback (Spec028: wrap long labels instead of erasing the axis): every legal label
- // exceeds the plot width. Thin to columns of at least 34px, wrap each kept label into at most
- // 3 measured lines inside its own column (ellipsis tail when truncated). Columns are disjoint
- // by construction, so the presentation stays nonempty, bounded and non-overlapping; the full
+ // exceeds the plot width. Thin to columns of at least 34px; the LAST label always owns a
+ // full-width reserved column anchored at the plot's right edge, and every other kept
+ // column must clear that reserve. Each label is wrapped into at most 3 measured lines no
+ // wider than column-6 and centered in its own column, so columns are disjoint by
+ // construction (adjacent-column gap >= 6) and every column lies inside the plot; the full
  // label remains in <title> and in the values table.
  const stride=Math.max(1,Math.ceil(34/slot));
  const column=slot*stride;
+ const tailStart=left+plotSpan-column;
  const kept:Array<number>=[];
- for(let index=0;index<count;index+=stride)kept.push(index);
- const last=count-1;
- if(kept[kept.length-1]!==last){
-  if(kept.length>1)kept.pop();
-  kept.push(last);
+ for(let index=0;index<count;index+=stride){
+  if(left+index*slot+column>tailStart)break;// never eat into the reserved tail column
+  kept.push(index);
  }
- // Each label stays inside its column; the final column is clipped to the plot's
- // right edge so a remainder column can never push the label past the viewBox.
+ kept.push(count-1);// the last label always renders, in the reserved right-edge column
  return kept.map(index=>{
-  const colStart=left+index*slot;
-  const colEnd=Math.min(colStart+column,left+plotSpan);
-  const width=Math.max(12,colEnd-colStart);
-  return{label:labels[index],x:(colStart+colEnd)/2,anchor:'middle' as const,lines:wrapLabel(labels[index],Math.max(12,width-6),measure,3)};
+  const isTail=index===count-1;
+  const colStart=isTail?tailStart:left+index*slot;
+  const colEnd=colStart+column;
+  return{label:labels[index],x:(colStart+colEnd)/2,anchor:'middle' as const,lines:wrapLabel(labels[index],column-6,measure,3)};
  });
 }

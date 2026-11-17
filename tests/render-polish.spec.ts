@@ -688,6 +688,33 @@ test.describe('review findings F1-F4 corrective regressions (independent review 
    assert.ok(audit.boxes.every(box=>box.title.length===70),'the full label text stays in <title>');
   }finally{await env.close();}
  });
+ test('the reserved right-edge tail column keeps the last label disjoint at extreme point counts',async({page})=>{
+  // Review R3 mathematical counterexample: at 196/200 points the old clipped
+  // tail column shrank below 12 viewBox units and collided with its neighbor.
+  // The fallback now reserves a full-width right-edge column for the last label.
+  for(const count of [196,200]){
+   const sub=await page.context().newPage();// open() closes its page, so each iteration gets its own
+   const points=Array.from({length:count},(_,index)=>`{label:"${'W'.repeat(70)}",value:${index+1}}`).join(',');
+   const env=await open(sub,'rp-f2-tail-'+count,`root = Chart(kind="line",series=[{name:"洪流",points:[${points}]}])`);
+   try{
+    await sub.evaluate(()=>document.fonts.ready.then(()=>true));
+    const audit=await sub.evaluate(()=>{
+     const svg=document.querySelector('svg.rp-plot') as SVGSVGElement;
+     const svgBox=svg.getBoundingClientRect();
+     const labels=[...svg.querySelectorAll('text.rp-x-label')];
+     const boxes=labels.map(label=>{const box=label.getBoundingClientRect();return{left:box.left,right:box.right,lines:label.querySelectorAll('tspan').length,title:label.querySelector('title')?.textContent??''};});
+     boxes.sort((a,b)=>a.left-b.left);
+     const gaps=boxes.slice(1).map((box,i)=>box.left-boxes[i]!.right);
+     return{count:labels.length,boxes,gaps,svgLeft:svgBox.left,svgRight:svgBox.right};
+    });
+    assert.ok(audit.count>=1&&audit.count<count,'the fallback renders a bounded subset: '+audit.count);
+    assert.ok(audit.boxes.every(box=>box.lines>=1&&box.lines<=3),'wrapped labels stay within the 3-line cap');
+    assert.ok(audit.boxes.every(box=>box.left>=audit.svgLeft-0.5&&box.right<=audit.svgRight+0.5),'every label stays inside the svg viewport: '+JSON.stringify(audit.boxes));
+    assert.ok(audit.gaps.every(gap=>gap>=2),'reserved tail column keeps neighbors disjoint: '+JSON.stringify(audit.gaps));
+    assert.ok(audit.boxes.every(box=>box.title.length===70),'full label stays in <title>');
+   }finally{await env.close();}
+  }
+ });
  test('the active tab keeps its accent color while hovered',async({page})=>{
   const env=await open(page,'rp-f1-hover',`root = Tabs([{title:"概览",child:Text("概览内容")},{title:"明细",child:Text("明细内容")}])`);
   try{

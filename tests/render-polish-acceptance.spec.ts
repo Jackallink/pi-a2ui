@@ -7,7 +7,7 @@
 // only; screenshots are context, not the assertion itself.
 import{test,expect,type Page}from'@playwright/test';
 import assert from'node:assert/strict';
-import{mkdirSync,readFileSync,writeFileSync}from'node:fs';
+import{mkdtempSync,readFileSync,writeFileSync}from'node:fs';
 import{join}from'node:path';
 import{createHash}from'node:crypto';
 import{execSync}from'node:child_process';
@@ -15,22 +15,38 @@ import{UiSession}from'../src/session.ts';
 import{startServer}from'../src/server.ts';
 
 const SHOTS=join(process.cwd(),'.local/render-polish-corrective/shots');
-// Each run writes into its own timestamped directory and records a manifest
+// Each run writes into its own unique temp directory and records a manifest
 // binding every screenshot to the exact source/lock/browser it was taken on,
-// so reruns never overwrite prior evidence (review R2 finding 4).
-const RUN=join(SHOTS,'run-'+new Date().toISOString().replace(/[:.]/g,'-'));
-mkdirSync(RUN,{recursive:true});
+// so reruns never overwrite prior evidence (review R2 finding 4; R3 findings
+// 4/5: mkdtemp for worker/retry isolation, identity captured up front and
+// re-verified at the end, actual launched-browser version recorded).
+const RUN=mkdtempSync(join(SHOTS,'run-'));
 const taken:{name:string;path:string}[]=[];
+let browserIdentity:{name:string;version:string}|null=null;
+// Capture the evidence identity BEFORE any test runs; a mid-run commit switch
+// would otherwise mislabel old screenshots with the new source.
+const IDENTITY={
+ source:execSync('git rev-parse HEAD').toString().trim(),
+ dirty:execSync('git status --porcelain --untracked-files=normal').toString().length>0,
+ lock:createHash('sha256').update(readFileSync('package-lock.json')).digest('hex'),
+};
 const fixture=(name:string)=>readFileSync('docs/designs/028-render-polish/fixtures/'+name+'.express','utf8');
-const shot=async(page:Page,name:string)=>{const path=join(RUN,name+'.png');await page.screenshot({path,fullPage:true});taken.push({name,path});return path;};
+const shot=async(page:Page,name:string)=>{const path=join(RUN,name+'.png');await page.screenshot({path,fullPage:true});taken.push({name,path});if(!browserIdentity){const browser=page.context().browser();browserIdentity=browser?{name:browser.browserType().name(),version:browser.version()}:null;}return path;};
 test.afterAll(async()=>{
  const sha256=(path:string)=>createHash('sha256').update(readFileSync(path)).digest('hex');
- const browser=JSON.parse(readFileSync('node_modules/playwright-core/browsers.json','utf8')).browsers.find((entry:{name:string})=>entry.name==='chromium-headless-shell');
+ // The evidence must be bound to the same tree it was captured on: if the
+ // source/lock changed mid-run, fail instead of mislabeling (review R3 finding 5).
+ const nowSource=execSync('git rev-parse HEAD').toString().trim();
+ const nowLock=createHash('sha256').update(readFileSync('package-lock.json')).digest('hex');
+ if(nowSource!==IDENTITY.source||nowLock!==IDENTITY.lock)throw new Error('evidence identity changed mid-run: source '+IDENTITY.source+' -> '+nowSource+', lock '+(nowLock===IDENTITY.lock?'stable':'changed'));
+ const declared=JSON.parse(readFileSync('node_modules/playwright-core/browsers.json','utf8')).browsers.find((entry:{name:string})=>entry.name==='chromium-headless-shell');
  const manifest={
-  source:execSync('git rev-parse HEAD').toString().trim(),
-  dirty:execSync('git status --porcelain --untracked-files=normal').toString().length>0,
-  lock:sha256('package-lock.json'),
-  browserRevision:browser?.revision??null,
+  source:IDENTITY.source,
+  dirty:IDENTITY.dirty,
+  lock:IDENTITY.lock,
+  lockedBrowser:{revision:declared?.revision??null,browserVersion:declared?.browserVersion??null},
+  launchedBrowser:browserIdentity,
+  browserVersionMatchesLock:browserIdentity?.version===declared?.browserVersion,
   shots:taken.map(entry=>({name:entry.name,file:join(RUN.slice(process.cwd().length+1),entry.name+'.png'),sha256:sha256(entry.path)})),
  };
  writeFileSync(join(RUN,'manifest.json'),JSON.stringify(manifest,null,1));
@@ -230,9 +246,10 @@ test('AC-003: 200% zoom keeps a guarded form usable and narrow viewports keep ge
  try{
   // hit-test: click the guarded submit while INVALID through physical coordinates at zoom
   // NOTE: headless Chromium cannot change browser-chrome zoom (Ctrl+= is inert);
-  // this CSS zoom pass is a proxy. The REAL 200% evidence is the physical
-  // equivalent below (CSS viewport 640 = 1280 physical px at browser zoom 200%,
-  // devicePixelRatio 2, media queries re-evaluated).
+  // this CSS zoom pass is a proxy. The physical-equivalent block below re-renders
+  // at real 200% rendering parameters, but the ACTUAL browser-chrome 200% gate
+  // (Spec028:63) requires a human desktop operation record that headless CI
+  // cannot produce; that manual record is tracked in Check133 as an open item.
   const submit=page.getByRole('button',{name:'提交信息，等待确认'});
   await page.evaluate(()=>{(document.documentElement as HTMLElement).style.zoom='2';});
   await page.waitForTimeout(120);
@@ -267,14 +284,18 @@ test('AC-003: 200% zoom keeps a guarded form usable and narrow viewports keep ge
   }
   assertClean(env,'AC-003');
  }finally{await env.close();}
- // Real desktop 200%: a 1280-physical-px window at browser zoom 200% renders a
- // 640px CSS viewport with devicePixelRatio 2. Reproduce those exact rendering
- // parameters and run the same guarded-form flow end to end.
+ // Physical-equivalent 200%: a 1280-physical-px window at browser zoom 200%
+ // renders a 640px CSS viewport with devicePixelRatio 2. This reproduces the
+ // exact rendering parameters of real 200% zoom (same layout width, same DPR,
+ // media queries re-evaluated) but does NOT operate the browser's own zoom
+ // control; Spec028:63 therefore still requires the separate human desktop
+ // record, tracked in Check133.
  const browser=page.context().browser();assert.ok(browser,'browser fixture available');
  const zoomContext=await browser.newContext({viewport:{width:640,height:450},deviceScaleFactor:2,colorScheme:'light',reducedMotion:'reduce',locale:'en-US',timezoneId:'UTC'});
- const zoomPage=await zoomContext.newPage();
+ let zenv:Env|null=null;
  try{
-  const zenv=await open(zoomPage,'rp-acc-zoom-physical',AC003_SOURCE);
+  const zoomPage=await zoomContext.newPage();
+  zenv=await open(zoomPage,'rp-acc-zoom-physical',AC003_SOURCE);
   const params=await zoomPage.evaluate(()=>({dpr:window.devicePixelRatio,innerWidth:window.innerWidth,stacked:getComputedStyle(document.querySelector('a2ui-basic-row')??document.body).display}));
   assert.equal(params.dpr,2,'devicePixelRatio 2 matches real 200% zoom on a 1280-physical-px window');
   assert.equal(params.innerWidth,640,'CSS viewport 640 matches real 200% zoom layout width');
@@ -298,7 +319,10 @@ test('AC-003: 200% zoom keeps a guarded form usable and narrow viewports keep ge
   await shot(zoomPage,'ac003-zoom200-physical');
   assert.deepEqual(zenv.pageErrors,[],'physical zoom flow: no page errors');
   assert.equal(zenv.externalBlocked.count,0,'physical zoom flow: no external requests');
- }finally{await zoomContext.close();}
+ }finally{
+  if(zenv)await zenv.close();
+  await zoomContext.close();
+ }
 });
 
 test('AC-004/007: keyboard flow, guarded errors, modal return focus and paused inertness',async({page})=>{
@@ -388,13 +412,19 @@ root = Column(children=[field,chart])`);
   // exact cell contract: every row is [series, label, value] in supply order
   const cells=await page.evaluate(()=>[...document.querySelectorAll('.values tbody tr')].map(tr=>[...tr.querySelectorAll('td')].map(td=>td.textContent)));
   assert.deepEqual(cells,[['基线','一','1'],['基线','二','2'],['对照','一','2'],['对照','二','1']],'values table matches the exact supplied series after update');
-  // finite geometry: polyline points and tick coordinates are finite SVG numbers
+  // finite geometry with strict parsing: attributes must exist, be non-empty,
+  // form proper x,y pairs, one pair per supplied point, and all finite
   const coords=await page.evaluate(()=>({
-   points:[...document.querySelectorAll('svg.rp-plot polyline')].flatMap(pl=>(pl.getAttribute('points')??'').split(' ').map(pair=>pair.split(',').map(Number)).flat()),
-   tickXY:[...document.querySelectorAll('svg.rp-plot text.rp-tick')].flatMap(t=>[Number(t.getAttribute('x')),Number(t.getAttribute('y'))]),
+   polylines:[...document.querySelectorAll('svg.rp-plot polyline')].map(pl=>{
+    const raw=pl.getAttribute('points')??'';
+    const pairs=raw.trim()===''?[]:raw.trim().split(/\s+/).map(pair=>pair.split(',').map(Number));
+    return{raw,pairs,wellFormed:pairs.length>0&&pairs.every(pair=>pair.length===2&&pair.every(n=>Number.isFinite(n)))};
+   }),
+   ticks:[...document.querySelectorAll('svg.rp-plot text.rp-tick')].map(t=>({x:t.getAttribute('x'),y:t.getAttribute('y')})),
   }));
-  assert.ok(coords.points.length>=8&&coords.points.every(n=>Number.isFinite(n)),'polyline coordinates are finite SVG numbers');
-  assert.ok(coords.tickXY.length>=4&&coords.tickXY.every(n=>Number.isFinite(n)),'tick coordinates are finite SVG numbers');
+  assert.deepEqual(coords.polylines.map(pl=>pl.wellFormed),[true,true],'both polylines have well-formed non-empty coordinate pairs');
+  assert.deepEqual(coords.polylines.map(pl=>pl.pairs.length),[2,2],'each polyline has exactly one pair per supplied point');
+  assert.ok(coords.ticks.length>=2&&coords.ticks.every(t=>t.x!==null&&t.y!==null&&Number(t.x)!==0&&Number(t.y)!==0&&Number.isFinite(Number(t.x))&&Number.isFinite(Number(t.y))),'every tick has present non-zero finite x/y coordinates');
   const afterForward=env.session.snapshot();
   assert.equal(afterForward.surfaces[0]!.dataSequence,1,'updateChart advances the data sequence exactly once');
   assert.equal(afterForward.surfaces[0]!.revision,revision,'data update keeps the revision stable');
@@ -412,6 +442,13 @@ root = Column(children=[field,chart])`);
   assert.equal(afterReverse.surfaces[0]!.dataSequence,2,'reverse update advances the data sequence again');
   assert.equal(afterReverse.surfaces[0]!.revision,revision,'revision stays stable across the update cycle');
   assert.equal(await page.locator('.values tbody tr').count(),2,'reverse update restores the one-series values table');
+  // reverse gets the same-strength assertions as forward (review R3 suggestion 2)
+  const revCells=await page.evaluate(()=>[...document.querySelectorAll('.values tbody tr')].map(tr=>[...tr.querySelectorAll('td')].map(td=>td.textContent)));
+  assert.deepEqual(revCells,[['基线','一','1'],['基线','二','2']],'reverse values table matches the exact supplied series');
+  const revCoords=await page.evaluate(()=>[...document.querySelectorAll('svg.rp-plot polyline')].map(pl=>{const raw=pl.getAttribute('points')??'';const pairs=raw.trim()===''?[]:raw.trim().split(/\s+/).map(pair=>pair.split(',').map(Number));return{pairs,ok:pairs.length===2&&pairs.every(pair=>pair.length===2&&pair.every(n=>Number.isFinite(n)))};}));
+  assert.deepEqual(revCoords.map(entry=>entry.ok),[true],'reverse polyline is well-formed with one pair per point');
+  assert.equal(afterReverse.epoch,epoch,'reverse update keeps the epoch');
+  await expect(field).toHaveValue('动态更新期间保留草稿');// draft survives the reverse data update too;
   assert.equal(env.posts.length,0,'data-only updates post nothing');
   // stale revision is rejected and the page is untouched
   const before=env.session.snapshot();
