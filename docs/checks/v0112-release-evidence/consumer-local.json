@@ -1,0 +1,81 @@
+{
+  "mode": "startup",
+  "node": "v24.18.1",
+  "nodeExecutable": "/Users/jakeliu/.nvm/versions/node/v24.18.1/bin/node",
+  "packagePath": "/private/tmp/rp-consumer-local/package",
+  "packageVersion": "0.1.12",
+  "packageFingerprint": "9c39d05bfba0cbfbe9f348dfb95c71337f3ffb1068eb05d88692dcf08458a78b",
+  "modelRequestsAllowed": false,
+  "passed": true,
+  "stages": [
+    {
+      "name": "helper-identity",
+      "status": "passed"
+    },
+    {
+      "name": "host-identity",
+      "status": "passed"
+    },
+    {
+      "name": "fixture",
+      "status": "passed"
+    },
+    {
+      "name": "registration",
+      "status": "passed"
+    },
+    {
+      "name": "startup",
+      "status": "passed"
+    },
+    {
+      "name": "status",
+      "status": "passed"
+    },
+    {
+      "name": "cleanup.pi",
+      "status": "passed"
+    },
+    {
+      "name": "cleanup.registration",
+      "status": "passed"
+    },
+    {
+      "name": "child-runtime",
+      "status": "passed"
+    },
+    {
+      "name": "cleanup.diagnostics",
+      "status": "passed"
+    },
+    {
+      "name": "preservation",
+      "status": "passed"
+    }
+  ],
+  "observed": {
+    "normalRegistration": true,
+    "explicitPackageSkillProfile": false,
+    "suppliedDsl": false,
+    "skillForward": false,
+    "resolvedProvider": "volcengine-ark",
+    "resolvedModel": "glm-5.3-flash",
+    "agentPlanEndpointVerified": true,
+    "uniqueA2uiCommands": 3,
+    "uniqueSkill": true,
+    "statusCommandExecuted": true,
+    "agentRuns": 0,
+    "modelRequests": 0,
+    "externalFetchDenied": true,
+    "browserObserved": false,
+    "processExited": true,
+    "privateRegistrationRemoved": true,
+    "observedNodeProcesses": 5,
+    "allNode24": true,
+    "allCwdWithinOwnedRun": true,
+    "packagePayloadUnchanged": true,
+    "operatorFilesUnchanged": true
+  },
+  "catalogId": "https://jackallink.github.io/pi-a2ui/catalogs/interactions-v1.json",
+  "hostPi": "1.5.0"
+}

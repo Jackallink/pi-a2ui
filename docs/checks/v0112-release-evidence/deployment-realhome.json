@@ -1,0 +1,13 @@
+{
+  "passed": true,
+  "node": "v24.18.1",
+  "home": "/Users/jakeliu",
+  "cwd": "/Users/jakeliu/Workspace/pi-a2ui",
+  "uniqueA2uiCommands": 4,
+  "skillFromGlobalPackage": true,
+  "a2uiStatus": "A2UI enabled; not listening; 0 surface(s); 0 browser(s)",
+  "loadDiagnostics": false,
+  "processExited": true,
+  "agentRuns": 0,
+  "modelRequests": 0
+}

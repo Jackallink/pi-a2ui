@@ -1,0 +1,23 @@
+{
+  "archive": {
+    "name": "pi-a2ui-0.1.12.tgz",
+    "bytes": 291895,
+    "sha256": "373e3a0d78355e328225e2c8cfdedb09cc773f53dbf7b317736edd5af8fb4432",
+    "files": 78,
+    "profileV2Binding": {
+      "packageVersion": "0.1.12",
+      "archiveSHA256": "373e3a0d…",
+      "policyIdentifier": "v0.1.9-glm-first-v2 unchanged",
+      "frozenV1Files": "unchanged"
+    }
+  },
+  "settings": {
+    "beforeSHA256": "559e0ddc8a85f2d7f2505d330a1d1be6256435971f54889084efb7cfed2cb0f6",
+    "afterSHA256": "758853605045016bca72fa9df50754d4c6150c02d54d2e0c34b316afebde3020",
+    "diff": "exactly the one pi-a2ui registration entry v0.1.11→v0.1.12; no duplicate; other keys untouched"
+  },
+  "promptSlip": {
+    "note": "one unintended real model request occurred while probing package registration (`pi package list` is not a CLI subcommand and fell through to prompt mode); outside release validation, benchmarks and receipts; frozen baselines untouched",
+    "recorded": true
+  }
+}
