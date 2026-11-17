@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.11 - 2026-11-17
+
+- Make `a2ui_render` authoring skill-first: after deciding a canvas helps, the model reads the installed pi-a2ui SKILL.md (unless its body is already in context), starts from a matching example, adapts it, runs helper `check` on the final source and passes the returned arguments unchanged. When skill reading or helper execution is unavailable, it explains the limitation in prose instead of claiming a preflight ran.
+- Add the complete three-field `FormValidation` example with concrete value semantics: `buttons` is a list of reachable Button ID strings (not `Button(...)` calls), `rules.fieldId` names the input component rather than its value path, and guarded Buttons/inputs/validator live in the root tree. Add the orphan-reference repair walkthrough with an invalid example, and guidance to create a new owned source file via an allowed write/edit tool when shell redirection or `mktemp` is restricted, keeping sandbox rules and existing project files intact.
+- Tool inputs, schemas, runtime permissions, components and browser-opening policy are unchanged; only the shipped description/skill texts and built `dist/assistant-cli.mjs` change. Node24 local CI and Git/local distribution only; release validation adds no model inference and the v2 evaluator binding follows this release with frozen v1 files unchanged.
+
 ## 0.1.10 - 2026-11-16
 
 - Give `a2ui_render` concrete model-side trigger examples for structured input, review results, comparisons and inspectable artifacts, gated on whether inspection or interaction materially helps the next action. Skip pure prose and trivial confirmations.
