@@ -61,3 +61,17 @@ review-ready（R1 已回环修复并复验，等待 R2 独立复评）：本 Che
 - **f6383c2 复验（全部在本提交干净树上）**：tsc clean；render-polish **35/35**；五套件 **126 passed**（BM3 accepted:true）；npm test 61 results 0 fail（union validateReport 通过即完整交付）；golden union `{"source":"f6383c2…","cases":68,"positive":45,"negative":23,"node":"v24.18.1","browser":"158.0.8127.18"}`（.local/render-polish-red/t4-golden-union-r2fix.json）。
 - 备注：golden union 需 node.json 与 browser.json 同为当前干净提交——提交后重跑 npm test 刷新 node 报告再 combine；BM3 accepted 同样要求干净树（提交前一次合跑 125 passed / BM3 fail 为预期门控行为，非回归）。
 
+
+## R3 独立复评（NO-GO，2 项新边界缺陷）与 9e2f073 修复轮
+- **R3 评审**（同命令 read-only，输入 b17f085..69154b0 diff；全文 .local/render-polish-red/codex-review-r3.txt）：R2 七项中五项判定完全解决、两项部分解决，另发现 2 项新 [阻塞性缺陷]（评审员实测函数前后版本复现）：
+  1. 单点条形图唯一 x 标签必丢：count=1 时锚点取首项 start 而坐标取末项 left+plotSpan，右缘必然越界被过滤（实测 bar ["A"]→[]，line 正常）。
+  2. 精确包含仍有浮点误差缺口：134 点线图 step=540/133，末项 i*step=580.0000000000001>580，end 锚点标签被吞；且标签坐标公式与数据点公式（i/(count-1)*plotSpan）不一致。
+  建议 [P3]：canvas 初始化失败被永久缓存（恢复后不重试）、两条降级路径不统一且非可靠上界；AF05 正对照可补精确输出契约断言。
+- **9e2f073 修复轮（2 项阻塞 + 2 条建议）**：
+  1. visibleXLabels 首末坐标显式钉死（i===0→left；i===count-1→left+plotSpan；中间与数据点公式一致 left+i/(count-1)*plotSpan；单点 line/bar 均落 left 组起点）——浮点误差不再影响边界包含。
+  2. labelMeasurer：canvas 初始化失败不再永久缓存（下次渲染重试）；两条降级路径统一为 1em/字符保守上界（label.length*10）。
+  3. 测试扩展为五图 audit：单点 line、单点 bar（R3 回归覆盖）、两点、11×8W 密集、134 点超宽前缀+短末端标签（断言 B 保留且不出界）。
+  4. AF05 正对照断言 helper 精确输出契约 {surfaceId,source}（deepEqual）。
+- **9e2f073 复验（干净树）**：tsc clean；render-polish **35/35**；npm test 609/609（node 报告 61 results 0 fail）；五套件 **126 passed**（BM3 accepted:true）；golden union `{"source":"9e2f073…","cases":68,"positive":45,"negative":23,"node":"v24.18.1","browser":"158.0.8127.18"}`。评审中的一次测试断言失配（texts 数组成员 vs 子串）属测试自身写法，已修；功能探针确认五图标签渲染正确。
+- 经验记录：golden union 与 BM3 accepted 都要求「node.json/browser.json 同为当前干净提交」——任何 src/tests 变更后需先提交，再重跑 npm test 刷新 node 报告，再 combine；浏览器证据在提交后的套件运行中生成。
+
