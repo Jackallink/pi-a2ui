@@ -242,7 +242,7 @@ test('coding components escape source and display exact reported outcomes before
  await expect(page.getByText('1 pass · 1 fail · 1 skip · 1 error',{exact:true})).toBeVisible();
  await expect(page.locator('pi-a2ui-code-diff .add')).toHaveCount(2);
  await expect(page.locator('pi-a2ui-code-diff .add').first()).toHaveCSS('display','flex');
- await expect(page.locator('pi-a2ui-code-diff .add').first()).toHaveCSS('background-color','rgb(220, 252, 231)');
+ await expect(page.locator('pi-a2ui-code-diff .add').first()).toHaveCSS('background-color','rgb(239, 250, 243)');// #effaf3 per Spec028 approved palette
  await expect(page.locator('pi-a2ui-code-diff pre').first()).toHaveCSS('white-space','pre-wrap');
  await expect(page.locator('pi-a2ui-test-results tbody tr')).toHaveCount(4);
  await expect(page.locator('pi-a2ui-code-diff script,pi-a2ui-test-results img')).toHaveCount(0);

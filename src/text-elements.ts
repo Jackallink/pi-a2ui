@@ -19,11 +19,11 @@ function markdown(text:string):TemplateResult[]{
 export class CodeBlockElement extends A2uiLitElement<typeof codeBlockApi>{
  private feedback='';private copying=false;
  createRenderRoot(){return this;}
- static styles=css`:host{display:block}pre{overflow:auto;max-height:28em;white-space:pre;background:#101827;color:#e2e8f0;padding:1em}header{display:flex;gap:1em}`;
+ static styles=css`:host{display:block}pre{overflow:auto;max-height:260px;white-space:pre;background:#101a2d;color:#e4eaf4;padding:16px;border-radius:10px;font:12px/1.75 var(--pi-a2ui-font-mono)}header{display:flex;gap:12px;align-items:center;font-size:12px;color:var(--pi-a2ui-color-muted);margin-bottom:8px}header button{font-family:inherit;font-size:12px;border:1px solid var(--pi-a2ui-color-input-border);border-radius:8px;background:var(--pi-a2ui-color-surface);color:var(--pi-a2ui-color-text);padding:4px 10px;min-height:28px;cursor:pointer}header button:focus-visible{outline:3px solid var(--pi-a2ui-color-focus);outline-offset:2px}`;
  render(){const p=this.controller.props;if(!p)return nothing;return html`<section aria-label="Code block"><header><span>${p.language}</span>${p.copyable?html`<button type="button" ?disabled=${this.copying} @click=${async(e:Event)=>{e.stopPropagation();this.copying=true;this.requestUpdate();try{await navigator.clipboard.writeText(p.code);this.feedback='Copied';}catch{this.feedback='Copy unavailable; select the code manually';}finally{this.copying=false;this.requestUpdate();}}}>Copy code</button>`:nothing}<span role="status">${this.feedback}</span></header><pre><code>${p.code}</code></pre></section>`;}
 }
 export class MarkdownElement extends A2uiLitElement<typeof markdownApi>{
  createRenderRoot(){return this;}
- static styles=css`:host{display:block}p{white-space:pre-wrap}pre{overflow:auto;max-height:28em;white-space:pre}code{font-family:ui-monospace,monospace}`;
+ static styles=css`:host{display:block}p{white-space:pre-wrap;font-size:14px;line-height:1.55;margin:0 0 8px}pre{overflow:auto;max-height:260px;white-space:pre;background:#101a2d;color:#e4eaf4;padding:16px;border-radius:10px;font:12px/1.75 var(--pi-a2ui-font-mono);margin:0 0 8px}code{font-family:var(--pi-a2ui-font-mono);font-size:12px}`;
  render(){const p=this.controller.props;return p?html`<article aria-label="Markdown text">${markdown(p.text)}</article>`:nothing;}
 }

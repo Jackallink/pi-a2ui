@@ -6,7 +6,7 @@ export class ArtifactPreviewElement extends A2uiLitElement<typeof artifactPrevie
  private revoked=false;private invalidate=()=>{this.revoked=true;this.request?.abort();this.request=undefined;this.artifactMeta=undefined;this.state='Unavailable: artifact expired, busy or unsupported';this.requestUpdate();};
  private source='';private expectedKind='';private request?:AbortController;private artifactMeta?:{name:string;mime:string;size:number};private state='Loading artifact';
  createRenderRoot(){return this;}
- static styles=css`:host{display:block}section{border:1px solid #cbd5e1;border-radius:8px;padding:.7em}`;
+ static styles=css`:host{display:block}section{border:1px solid var(--pi-a2ui-color-border);border-radius:10px;padding:12px;background:var(--pi-a2ui-color-surface)}section h3{margin:0 0 8px;font-size:15px}`;
  connectedCallback(){super.connectedCallback();window.addEventListener('a2ui-artifacts-revoked',this.invalidate);}
  updated(){const p=this.controller.props;if(!this.revoked&&p&&(p.src!==this.source||p.kind!==this.expectedKind)){this.source=p.src;this.expectedKind=p.kind;void this.load(p.src,p.kind);}}
  disconnectedCallback(){window.removeEventListener('a2ui-artifacts-revoked',this.invalidate);this.request?.abort();this.source='';super.disconnectedCallback();}

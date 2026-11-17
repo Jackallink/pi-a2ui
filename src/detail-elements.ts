@@ -3,7 +3,7 @@ import {html,css,nothing} from 'lit';
 import {detailsApi} from './workbench.js';
 export class DetailsElement extends A2uiLitElement<typeof detailsApi>{
  createRenderRoot(){return this;}
- static styles=css`:host{display:block}details{border:1px solid #cbd5e1;border-radius:8px;padding:.7em}summary{cursor:pointer;font-weight:600}.details-content{padding-top:.7em}`;
+ static styles=css`:host{display:block}details{border:1px solid var(--pi-a2ui-color-border);border-radius:10px;padding:12px 14px;background:var(--pi-a2ui-color-surface)}summary{cursor:pointer;font-size:13px;font-weight:600;color:var(--pi-a2ui-color-text)}summary:focus-visible{outline:3px solid var(--pi-a2ui-color-focus);outline-offset:2px;border-radius:4px}.details-content{padding-top:8px;font-size:14px}`;
  render(){const p=this.controller.props;if(!p)return nothing;return html`<details ?open=${p.open}><summary @click=${(e:Event)=>e.stopPropagation()}>${p.title}</summary><div class="details-content">${this.renderNode(p.child)}</div></details>`;}
 }
 
@@ -14,7 +14,7 @@ const modalApi=basicCatalog.components.get('Modal')! as ComponentApi;
 const iconApi=basicCatalog.components.get('Icon')! as ComponentApi;
 export class ModalElement extends A2uiLitElement<typeof modalApi>{
  createRenderRoot(){return this;}
- static styles=css`:host{display:block}dialog{max-width:min(92vw,60em);max-height:85vh;overflow:auto;border:1px solid #94a3b8;border-radius:10px;padding:1em}dialog::backdrop{background:#0f172a99}.modal-close{float:right}`;
+ static styles=css`:host{display:block}dialog{max-width:min(92vw,60em);max-height:85vh;overflow:auto;border:none;border-radius:14px;padding:24px;box-shadow:0 16px 40px rgba(23,32,51,.18);color:var(--pi-a2ui-color-text);background:var(--pi-a2ui-color-surface)}dialog:focus-visible{outline:3px solid var(--pi-a2ui-color-focus);outline-offset:2px}dialog::backdrop{background:rgba(15,23,42,.6)}.modal-close{float:right}`;
  disconnectedCallback(){this.querySelector('dialog')?.close();super.disconnectedCallback();}
  private trap(event:KeyboardEvent){if(event.key!=='Tab')return;const dialog=this.querySelector('dialog')!;const items=focusable(dialog);const current=event.composedPath()[0];if(!items.length){event.preventDefault();dialog.focus();return;}if(event.shiftKey&&current===items[0]){event.preventDefault();items.at(-1)!.focus();}else if(!event.shiftKey&&current===items.at(-1)){event.preventDefault();items[0].focus();}}
  render(){const p=this.controller.props;if(!p)return nothing;return html`<button class="modal-trigger" type="button" @click=${(e:Event)=>{e.stopPropagation();this.querySelector('dialog')?.showModal();}}>${this.renderNode(p.trigger)}</button><dialog aria-label="Details" tabindex="-1" @keydown=${this.trap} @close=${()=>this.querySelector<HTMLButtonElement>('.modal-trigger')?.focus()}><button class="modal-close" type="button" aria-label="Close details" @click=${(e:Event)=>{e.stopPropagation();this.querySelector('dialog')?.close();}}>Close</button>${this.renderNode(p.content)}</dialog>`;}

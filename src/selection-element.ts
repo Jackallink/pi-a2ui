@@ -4,7 +4,7 @@ import {html,css,nothing} from 'lit';
 import {searchablePickerApi} from './interactions.js';
 export class SearchablePickerElement extends A2uiLitElement<typeof searchablePickerApi>{
  createRenderRoot(){return this;}
- static styles=css`:host{display:block}section{display:grid;gap:.5em}.picker-options{display:flex;flex-wrap:wrap;gap:.4em}.picker-selected{display:flex;flex-wrap:wrap;gap:.4em}button[aria-pressed=true]{border:2px solid #2563eb}input{max-width:100%;padding:.5em}`;
+ static styles=css`:host{display:block}section{display:grid;gap:8px}.picker-options{display:flex;flex-wrap:wrap;gap:8px}.picker-selected{display:flex;flex-wrap:wrap;gap:8px}button{border:1px solid var(--pi-a2ui-color-input-border);border-radius:8px;background:var(--pi-a2ui-color-surface);color:var(--pi-a2ui-color-text);padding:5px 12px;min-height:32px;font-family:inherit;font-size:13px;cursor:pointer}button:hover{border-color:var(--pi-a2ui-color-accent)}button[aria-pressed=true]{border:2px solid var(--pi-a2ui-color-accent);color:var(--pi-a2ui-color-accent);font-weight:600}button:focus-visible{outline:3px solid var(--pi-a2ui-color-focus);outline-offset:2px}label{color:var(--pi-a2ui-color-muted)}input{max-width:100%}`;
  private query='';
  private choose(value:string){const p=this.controller.props;if(!p)return;const current=p.value as string[];const next=current.includes(value)?current.filter(v=>v!==value):p.variant==='multipleSelection'?[...current,value]:[value];p.setValue?.(next);this.dispatchEvent(new Event('a2ui-input-change',{bubbles:true,composed:true}));}
  private search(event:Event){const input=event.target as HTMLInputElement;this.query=Array.from(input.value).slice(0,128).join('');input.value=this.query;this.requestUpdate();}
