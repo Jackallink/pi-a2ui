@@ -32,5 +32,17 @@
 - 回退：主题/组件视觉（f88716d）、Chart/表格展示（620198e）、skill 文档/样例（ed072cd）三个独立方向可单独 revert；无数据迁移、无状态库/网络服务变更。
 - 已知边界：32 类组件逐类像素级覆盖、actual desktop zoom、动态 patch/完整键盘矩阵未全量验证（设计已声明的漂移允许范围，由测试设计承担的部分已按 AC 覆盖：字体统一、token 消费、primary/focus/error、窄屏堆叠、数值右对齐、标量原子、排序/过滤稳定、图例/刻度语料 11 例）。
 
+## 独立评审与修复轮（R1 NO-GO → 修复 → 复验）
+- **R1 评审**（gpt-6.1-sol xhigh，read-only，输入 00120ac 全量 diff；全文 .local/render-polish-red/codex-review-r1.txt）：结论 **NO-GO**，4 项 [阻塞性缺陷] + 6 条建议。
+- **d5bc5d2 修复轮**（全部阻塞项 + 建议 a–e）：
+  1. 按钮可读性：`#surfaces a2ui-basic-button button` 重映射 `--a2ui-color-on-secondary`→accent-contrast + 内部 `.a2ui-text{color:inherit}`；borderless 变体恢复链接观（透明底/无框/accent 文字）；测试改为断言内部可见文字颜色并新增 default/primary/borderless 三变体测试。
+  2. 图表 x 轴标签：新增 visibleXLabels 抽稀/锚点策略（首 start/末 end/中间 middle，估宽 CJK 10px·其余 6px，防裁切+防重叠，`<title>` 保留全文）；svg 改动态 `min-width=width px`（窄屏走 .chart-plot 横滚，绘图区不再缩水 <480px）；新增 bbox 包含 + 相邻间距 ≥2px 测试（RP01 + long-label 语料，后者用独立 page 避免复用已关 page）。
+  3. caption 正体：`#surfaces .a2ui-text-caption em{font-style:normal}`（SDK 渲染 `<em>`，span 级覆盖不及文字）；测试改读 em 元素。
+  4. 页面规则不再压组件状态：删除 `#surfaces [data-status]{color:inherit}`；新增页面级 `.picker-options button[aria-pressed=true]` 与 hover 状态重断言（ID 特异性模式与 #surfaces th button 一致）；新增 SearchablePicker 选中/未选中 + StatusBadge success/warning/error 前景 computed style 测试（未选中基线观感 = 页面中性边框 rgb(219,226,234)，为级联有意结果）。
+  5. 建议：open() 记 externalBlocked 计数并断言 0 + 失败自清理（try/catch 关闭 server/session）；pause 400ms 固定等待改双 rAF 同步点；负例拆成 3 个独立 invalid-express（MetricCard/donut/真实组件未知 prop）逐个断言 COMPILE；digest note 改为按日趋势与按模块计数两份独立示例、口径不同。
+  - 修复后：render-polish 34/34；五套件 **125 passed**（BM3 accepted:true source d5bc5d2）；npm test rc=0；tsc clean；golden union 68 cases source d5bc5d2。
+- **9095e99 测试隔离修复**：TPD01 原“全局 .local/trigger-pilot 目录清单元相等”断言与并发测试文件（多文件 createRun→mkdtempSync 同目录）存在跨文件竞态（node --test 文件级并行；T3 新增编译触发改变时序后暴露，连续两次复现，单独文件运行始终绿）。修法保意图：guard 拦截 mkdirSync/mkdtempSync/promises.mkdir，对含 `.local/trigger-pilot` 的路径计数 `runs`，进程内断言 {config:0,network:0,runs:0}，删除竞态清单比较。修复后 npm test 连续 3 次 rc=0。
+- 未确认阻塞→建议处理：刻度字体未改等宽（Spec028 未要求，7.5px/字符估宽对 11px 数字刻度保守），维持现实现并记录。
+
 ## 状态
-review-ready：等待独立代码评审（未自行 GO）。本 Check 不关闭 issue、不合并、不发布、不改用户全局安装。
+review-ready（R1 已回环修复并复验，等待 R2 独立复评）：本 Check 不关闭 issue、不合并、不发布、不改用户全局安装。
