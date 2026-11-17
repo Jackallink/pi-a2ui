@@ -1,0 +1,33 @@
+{
+  "candidate": {
+    "source": "013d5ff0f4a0db3b80e28623689dae39fde3dadc",
+    "tree": "70372adda6c23bc60349984bc5103c9452ed9191",
+    "node": "v24.18.1",
+    "npm": "11.16.0",
+    "host": "darwin arm64, local CI only (GitHub Actions disabled)"
+  },
+  "gates": {
+    "build": "scripts/build.mjs — no drift, tracked dist unchanged",
+    "nodeTests": "606 pass, 0 fail, 0 skipped, 0 cancelled (npm test, includes 68-case strict golden union: 45 positive, 23 negative)",
+    "browserTests": "47 pass, 0 fail (locked headless Chromium via Playwright 1.65)",
+    "typecheck": "tsc --noEmit clean",
+    "dryRun": "default benchmark dry-run inside suite: 0 provider requests, 0 credential reads",
+    "modelRequests": 0
+  },
+  "archive": {
+    "name": "pi-a2ui-0.1.11.tgz",
+    "bytes": 278854,
+    "sha256": "62663468b470344140c7dcc19dddcf3331baed4cc64c39ae2e2443ba93027c55",
+    "files": 76,
+    "profileV2Binding": "packageVersion 0.1.11, archiveSHA256 62663468…; policy identifier v0.1.9-glm-first-v2, caps, model and handoff policy unchanged; frozen v1 files untouched"
+  },
+  "fixtureRestoral": {
+    "note": "Local .local evidence archives referenced by authority tests were absent on this machine and restored byte-exact before the suite: ARCHIVES.C re-downloaded from published release v0.1.10 (SHA256 c7d4511c1e92808691ab98a89897f7a6f2d0ed0e64b77f70f9ab610500177e55) and ARCHIVES.G re-packed from source 095459084f0bf8ab26c803c4b7e2f2dbb6b004ba (SHA256 c96125e0a2095608d29ad7b09e6f1911572ed7162bf881b9b9d744e5235dc2d8). npm pack byte-determinism was verified on the identical tree before rebuild. These are environment repairs, not product changes.",
+    "missingDirs": "empty fixture parent directories (.local/*) recreated for mkdtemp consumers"
+  },
+  "receipts": {
+    "consumerLocalSHA256": "b017afbeecc19d778d3096dae72a31043ce3696554d6c4477abf41ad26d1b112",
+    "consumerGitSHA256": "9501aef5e8676a884232a3630b1ec736fcf8a98dbd9e0533d8907b190a830111",
+    "suiteLogSHA256": "6d50131f2824c95e2b3f89d7e010a1daebf23aa08db0a08a49a5b8f770a659b4"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "mode": "local",
+  "node": "v24.18.1",
+  "piVersion": "1.5.2",
+  "uniqueA2uiCommands": 4,
+  "skillContentReadable": true,
+  "a2uiStatus": "A2UI enabled; not listening; 0 surface(s); 0 browser(s)",
+  "agentRuns": 0,
+  "modelRequests": 0,
+  "processExited": true,
+  "exitCode": 0,
+  "installedFrom": "extracted prepack archive pi-a2ui-0.1.11.tgz (SHA256 62663468b470344140c7dcc19dddcf3331baed4cc64c39ae2e2443ba93027c55)"
+}
