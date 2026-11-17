@@ -68,4 +68,10 @@ test('AF05 data-digest recipe keeps raw numbers, states sources and rejects fabr
  assert.match(String(summary.text),/数据来源/,'summary states its data source');
  const bad=spawnSync(process.execPath,[helper,'check','--surface-id','data-digest','-'],{input:negative,encoding:'utf8',timeout:10000});
  assert.equal(bad.status,1,bad.stderr);assert.equal(bad.stdout,'');assert.equal(JSON.parse(bad.stderr).code,'COMPILE');
+ const negativeFences=[...readFileSync(join(skill,'references/visual-and-data-legibility.md'),'utf8').split('## Explicit anti-patterns\n')[1]?.split('\n## ')[0]?.matchAll(/```invalid-express\n([\s\S]*?)\n```/g)??[]].map(match=>match[1]);
+ assert.equal(negativeFences.length,3,'each banned pattern is fenced separately so none hides behind another');
+ for(const fence of negativeFences){
+  const solo=spawnSync(process.execPath,[helper,'check','--surface-id','data-digest','-'],{input:fence,encoding:'utf8',timeout:10000});
+  assert.equal(solo.status,1,solo.stderr);assert.equal(solo.stdout,'');assert.equal(JSON.parse(solo.stderr).code,'COMPILE');
+ }
 });

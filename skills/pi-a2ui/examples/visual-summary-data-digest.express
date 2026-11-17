@@ -3,5 +3,5 @@
 digest = MarkdownView(text="## 本轮数据概览\n\n- 处理请求：**128**\n- 失败请求：**3**\n\n数据来源：示例演示值，非真实测量结果；未知指标留空不虚构。")
 trend = Chart(kind="line",series=[{name:"服务端",points:[{label:"11/12",value:42},{label:"11/13",value:55},{label:"11/14",value:49},{label:"11/15",value:61},{label:"11/16",value:74}]},{name:"浏览器",points:[{label:"11/12",value:28},{label:"11/13",value:35},{label:"11/14",value:40},{label:"11/15",value:46},{label:"11/16",value:51}]}])
 detail = DataTable(caption="按模块的原始请求计数（示例）",columns=[{id:"module",label:"模块"},{id:"requests",label:"请求数"},{id:"failures",label:"失败数"}],rows=[{id:"api",cells:["/api/render",128,3]},{id:"assets",cells:["/api/assets",64,null]},{id:"ws",cells:["/api/events",31,0]}])
-note = Text(text="图表与表格来自同一组示例数据；表格保留原始 number/null，未本地格式化。",variant="caption")
+note = Text(text="图表（按日趋势）与表格（按模块计数）是同一场景的两份独立示例，口径不同；表格保留原始 number/null，未本地格式化。",variant="caption")
 root = Column(children=[digest,trend,detail,note])

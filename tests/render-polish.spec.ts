@@ -24,28 +24,35 @@ const mixedSource='root = Card(child=Column(children=[DataTable(caption="混合�
 const tieSource='root = Card(child=Column(children=[DataTable(caption="同值稳定",columns=[{id:"name",label:"名称"},{id:"n",label:"数值"}],rows=['+
  '{id:"r1",cells:["first",77]},{id:"r2",cells:["second",77]},{id:"r3",cells:["third",8]}])]))';
 
-type Env={session:UiSession;origin:string;posts:string[];sent:string[];pageErrors:string[];snapshotJson:string;close():Promise<void>};
+type Env={session:UiSession;origin:string;posts:string[];sent:string[];pageErrors:string[];externalBlocked:number;snapshotJson:string;close():Promise<void>};
 async function open(page:Page,surfaceId:string,source:string):Promise<Env>{
- const sent:string[]=[],posts:string[]=[],pageErrors:string[]=[];
+ const sent:string[]=[],posts:string[]=[],pageErrors:string[]=[];let externalBlocked=0;
  const session=new UiSession(text=>{sent.push(text);});
  session.render(surfaceId,source);
  const snapshotJson=JSON.stringify(session.snapshot());
  const server=await startServer(session);
- page.on('pageerror',error=>pageErrors.push(String(error).slice(0,250)));
- await page.route('**/*',route=>{
-  const url=new URL(route.request().url());
-  if(url.origin!==server.origin){void route.abort();return;}
-  if(url.pathname==='/api/actions'&&route.request().method()==='POST'){posts.push(route.request().postData()??'');void route.abort();return;}
-  void route.continue();
- });
- const token=new URLSearchParams(new URL(server.openUrl).hash.slice(1)).get('token');
- expect((await page.request.post(server.origin+'/api/connect',{headers:{origin:server.origin},data:{token},timeout:5000})).status()).toBe(200);
- await page.goto(server.origin,{waitUntil:'load',timeout:10000});
- await page.locator('a2ui-surface').first().waitFor();
- await page.evaluate(()=>document.fonts.ready.then(()=>true));
- return{session,origin:server.origin,posts,sent,pageErrors,snapshotJson,close:async()=>{
-  await page.unrouteAll({behavior:'ignoreErrors'});await page.close();await server.close();session.close();
- }};
+ try{
+  page.on('pageerror',error=>pageErrors.push(String(error).slice(0,250)));
+  await page.route('**/*',route=>{
+   const url=new URL(route.request().url());
+   if(url.origin!==server.origin){externalBlocked+=1;void route.abort();return;}
+   if(url.pathname==='/api/actions'&&route.request().method()==='POST'){posts.push(route.request().postData()??'');void route.abort();return;}
+   void route.continue();
+  });
+  const token=new URLSearchParams(new URL(server.openUrl).hash.slice(1)).get('token');
+  expect((await page.request.post(server.origin+'/api/connect',{headers:{origin:server.origin},data:{token},timeout:5000})).status()).toBe(200);
+  await page.goto(server.origin,{waitUntil:'load',timeout:10000});
+  await page.locator('a2ui-surface').first().waitFor();
+  await page.evaluate(()=>document.fonts.ready.then(()=>true));
+  return{session,origin:server.origin,posts,sent,pageErrors,externalBlocked,snapshotJson,close:async()=>{
+   await page.unrouteAll({behavior:'ignoreErrors'});await page.close();await server.close();session.close();
+  }};
+ }catch(error){
+  await page.unrouteAll({behavior:'ignoreErrors'}).catch(()=>{});
+  if(!page.isClosed())await page.close().catch(()=>{});
+  await server.close().catch(()=>{});session.close();
+  throw error;
+ }
 }
 const styleOf=(locator:ReturnType<Page['locator']>,name:string)=>locator.evaluate((node,property)=>getComputedStyle(node).getPropertyValue(property as string),name);
 
@@ -76,19 +83,55 @@ test.describe('T1 unified typography and theme consumption',()=>{
    assert.equal(await styleOf(caption,'font-size'),'12px','caption reads at 12px, not the sub-12px SDK scale');
    assert.equal(await styleOf(caption,'color'),'rgb(86, 100, 119)','muted caption token');
    assert.equal(await styleOf(caption,'font-style'),'normal','captions keep an upright normal glyph');
+   const captionText=page.locator('.a2ui-text-caption em').first();
+   assert.equal(await styleOf(captionText,'font-style'),'normal','the actual caption text (SDK renders an <em>) is upright, not just the wrapper span');
    const summaryNumber=page.locator('h2').first();
    assert.equal(await styleOf(summaryNumber,'font-size'),'28px','summary numbers read at 28px');
    const card=page.locator('.a2ui-card').first();
    assert.equal(await styleOf(card,'background-color'),'rgb(255, 255, 255)','surface card token');
   }finally{await env.close();}
  });
- test('primary button uses the approved accent with a white label',async({page})=>{
+ test('accent buttons carry a readable white label on the visible text span',async({page})=>{
   const env=await open(page,'rp03',fixture('RP03-guarded-form'));
   try{
    const submit=page.getByRole('button',{name:'提交信息，等待确认'});
    await expect(submit).toBeVisible();
    assert.equal(await styleOf(submit,'background-color'),'rgb(54, 92, 219)','primary accent token');
    assert.equal(await styleOf(submit,'color'),'rgb(255, 255, 255)','on-accent foreground stays white');
+   const innerLabel=submit.locator('.a2ui-text').first();
+   assert.equal(await styleOf(innerLabel,'color'),'rgb(255, 255, 255)','the visible text span inherits the white on-accent color, not the SDK dark default');
+  }finally{await env.close();}
+ });
+ test('default, primary and borderless variants keep distinct readable looks',async({page})=>{
+  const env=await open(page,'rp-variants','root = Card(Column([Row([Button(Text("默认按钮"),action=Event("noop_a")),Button(Text("主按钮"),variant="primary",action=Event("noop_b")),Button(Text("链接按钮"),variant="borderless",action=Event("noop_c"))])]))');
+  try{
+   const inner=(name:string)=>page.getByRole('button',{name}).locator('.a2ui-text').first();
+   const regular=page.getByRole('button',{name:'默认按钮'});
+   await expect(regular).toBeVisible();
+   assert.equal(await styleOf(regular,'background-color'),'rgb(54, 92, 219)','default canvas button uses the accent');
+   assert.equal(await styleOf(inner('默认按钮'),'color'),'rgb(255, 255, 255)','default button inner label is white (SDK on-secondary remapped inside accent buttons)');
+   const primary=page.getByRole('button',{name:'主按钮'});
+   assert.equal(await styleOf(primary,'background-color'),'rgb(54, 92, 219)','primary button uses the accent');
+   assert.equal(await styleOf(inner('主按钮'),'color'),'rgb(255, 255, 255)','primary button inner label is white');
+   const link=page.getByRole('button',{name:'链接按钮'});
+   assert.equal(await styleOf(link,'background-color'),'rgba(0, 0, 0, 0)','borderless keeps a transparent link look');
+   assert.equal(await styleOf(link,'border-style'),'none','borderless has no border');
+   assert.equal(await styleOf(inner('链接按钮'),'color'),'rgb(54, 92, 219)','borderless inner label uses the accent');
+  }finally{await env.close();}
+ });
+ test('component state styles survive the page-level control rules',async({page})=>{
+  const env=await open(page,'rp-states-style','$/picker/teams = ["platform"]\nroot = Card(Column([StatusBadge(label="导出完成",status="success"),StatusBadge(label="配额即将耗尽",status="warning"),StatusBadge(label="同步失败",status="error"),SearchablePicker(label="选择团队",options=[{label:"平台组",value:"platform"},{label:"前端组",value:"frontend"}],value=$/picker/teams,variant="multipleSelection")]))');
+  try{
+   const selected=page.locator('pi-a2ui-searchable-picker .picker-options button[aria-pressed="true"]');
+   await expect(selected).toHaveCount(1,{timeout:1500});
+   assert.equal(await styleOf(selected.first(),'border-color'),'rgb(54, 92, 219)','selected option keeps the accent border');
+   assert.equal(await styleOf(selected.first(),'color'),'rgb(54, 92, 219)','selected option keeps the accent text');
+   const unselected=page.locator('pi-a2ui-searchable-picker .picker-options button[aria-pressed="false"]').first();
+   assert.equal(await styleOf(unselected,'border-color'),'rgb(219, 226, 234)','unselected option keeps the neutral canvas border (page base rule; state colors win via the scoped reassertions)');
+   const badge=page.locator('pi-a2ui-status-badge .badge');
+   assert.equal(await styleOf(badge.filter({hasText:'success'}).first(),'color'),'rgb(22, 101, 52)','success badge keeps its foreground token');
+   assert.equal(await styleOf(badge.filter({hasText:'warning'}).first(),'color'),'rgb(146, 64, 14)','warning badge keeps its foreground token');
+   assert.equal(await styleOf(badge.filter({hasText:'error'}).first(),'color'),'rgb(180, 35, 24)','error badge keeps its foreground token');
   }finally{await env.close();}
  });
  test('keyboard focus shows a solid accent outline on inputs',async({page})=>{
@@ -248,6 +291,41 @@ test.describe('T2 data legibility: table numerics and chart legend/ticks',()=>{
    assert.deepEqual(await ticks.allTextContents(),['0','37','74'],'ticks derive from the same zero-baseline domain as the plot');
   }finally{await env.close();}
  });
+ test('chart x-axis labels stay inside the plot viewport and never overlap',async({page})=>{
+  const audit=(chart:ReturnType<Page['locator']>)=>chart.evaluate((node)=>{
+   const svg=node.querySelector('svg');
+   if(!svg)throw new Error('chart svg missing');
+   const svgBox=svg.getBoundingClientRect();
+   const boxes=[...svg.querySelectorAll<SVGTextElement>('text.rp-x-label')].map(text=>{const box=text.getBoundingClientRect();return{left:box.left,right:box.right,text:(text.textContent??'').trim()};});
+   boxes.sort((a,b)=>a.left-b.left);
+   const minGap=boxes.length>1?boxes.slice(1).reduce((gap,box,index)=>Math.min(gap,box.left-boxes[index].right),Number.POSITIVE_INFINITY):null;
+   const outside=boxes.filter(box=>box.left<svgBox.left-0.5||box.right>svgBox.right+0.5).length;
+   return{count:boxes.length,minGap,outside,svgWidth:svgBox.width,nonEmpty:boxes.every(box=>box.text.length>0)};
+  });
+  const dashboards=await open(page,'rp01',fixture('RP01-dashboard'));
+  try{
+   const chart=page.locator('pi-a2ui-chart').first();
+   await expect(chart).toBeVisible();
+   const result=await audit(chart);
+   assert.ok(result.count>=1,'line chart renders at least one x label');
+   assert.equal(result.outside,0,'every rendered x label stays inside the svg viewport (no clipping)');
+   assert.ok(result.minGap===null||result.minGap>=2,'rendered x labels keep at least 2px separation (no overlap)');
+   assert.equal(result.nonEmpty,true,'rendered x labels keep their full text; hidden labels stay reachable via point titles');
+   assert.ok(result.svgWidth>=540,'the plot keeps its minimum width through the dynamic svg min-width');
+  }finally{await dashboards.close();}
+  const secondPage=await page.context().newPage();
+  try{
+   const longLabels=await open(secondPage,'corpus-long-label',chartSource(corpusCase('long-label')));
+   try{
+    const chart=secondPage.locator('pi-a2ui-chart').first();
+    await expect(chart).toBeVisible();
+    const result=await audit(chart);
+    assert.ok(result.count>=1,'long-label bar chart still renders at least one label');
+    assert.equal(result.outside,0,'long labels never extend past the svg viewport');
+    assert.ok(result.minGap===null||result.minGap>=2,'long labels never overlap each other');
+   }finally{await longLabels.close();}
+  }finally{await secondPage.close();}
+ });
  for(const entry of corpus){
   test(`chart ticks match the hand-authored oracle for ${entry.id}`,async({page})=>{
    const env=await open(page,'corpus-'+entry.id,chartSource(entry));
@@ -321,7 +399,7 @@ test.describe('contract regressions across the restyle',()=>{
    await page.getByRole('button',{name:'Pause log display'}).click();
    await expect(page.getByRole('button',{name:'Resume log display'})).toBeVisible();
    env.session.updateLog('AFTER_PAUSE_MARKER: newest data line','error',false);
-   await page.waitForTimeout(400);
+   await page.evaluate(()=>new Promise<void>(resolve=>{requestAnimationFrame(()=>requestAnimationFrame(()=>resolve()));}));
    assert.doesNotMatch(await pre.textContent()??'',/AFTER_PAUSE_MARKER/,'paused display holds the old output');
    await page.getByRole('button',{name:'Resume log display'}).click();
    await expect.poll(async()=>pre.textContent(),{timeout:5000}).toMatch(/AFTER_PAUSE_MARKER/);
@@ -344,12 +422,13 @@ test.describe('contract regressions across the restyle',()=>{
    assert.equal(JSON.stringify(env.session.snapshot()),env.snapshotJson,'states surface stays read-only');
   }finally{await env.close();}
  });
- test('no page errors and no provider requests across the whole suite state',async({page})=>{
+ test('no page errors, no business POSTs and no provider requests in the suite state',async({page})=>{
   const env=await open(page,'rp01',fixture('RP01-dashboard'));
   try{
    await expect(page.locator('pi-a2ui-chart').first()).toBeVisible();
    assert.deepEqual(env.pageErrors,[],'no uncaught page errors');
    assert.equal(env.posts.length,0,'no business POSTs');
+   assert.equal(env.externalBlocked,0,'no attempted provider or external requests');
   }finally{await env.close();}
  });
 });

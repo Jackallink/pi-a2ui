@@ -12,7 +12,7 @@ Start from `example visual-summary-data-digest`. It combines a MarkdownView summ
 digest = MarkdownView(text="## 本轮数据概览\n\n- 处理请求：**128**\n- 失败请求：**3**\n\n数据来源：示例演示值，非真实测量结果；未知指标留空不虚构。")
 trend = Chart(kind="line",series=[{name:"服务端",points:[{label:"11/12",value:42},{label:"11/13",value:55},{label:"11/14",value:49},{label:"11/15",value:61},{label:"11/16",value:74}]},{name:"浏览器",points:[{label:"11/12",value:28},{label:"11/13",value:35},{label:"11/14",value:40},{label:"11/15",value:46},{label:"11/16",value:51}]}])
 detail = DataTable(caption="按模块的原始请求计数（示例）",columns=[{id:"module",label:"模块"},{id:"requests",label:"请求数"},{id:"failures",label:"失败数"}],rows=[{id:"api",cells:["/api/render",128,3]},{id:"assets",cells:["/api/assets",64,null]},{id:"ws",cells:["/api/events",31,0]}])
-note = Text(text="图表与表格来自同一组示例数据；表格保留原始 number/null，未本地格式化。",variant="caption")
+note = Text(text="图表（按日趋势）与表格（按模块计数）是同一场景的两份独立示例，口径不同；表格保留原始 number/null，未本地格式化。",variant="caption")
 root = Column(children=[digest,trend,detail,note])
 ```
 
@@ -38,13 +38,22 @@ An unknown value is a `null` cell or an explicit loading/error DataTable state, 
 
 ## Explicit anti-patterns
 
-The following source must stay rejected: it invents components (`MetricCard`, `Donut`) and presentation props (`formatter`, `delta`) that do not exist in this catalog, and a chart kind that is not supported.
+The following sources must stay rejected — each fenced separately so every banned pattern fails on its own: inventing components (`MetricCard`), unsupported chart kinds (`donut`) and presentation props (`formatter`, `delta`) that do not exist in this catalog.
 
 ```invalid-express
 digest = MarkdownView(text="## 本轮数据概览")
 metric = MetricCard(title="处理请求",value=128,delta="+3%",formatter="compact")
-donut = Chart(kind="donut",series=[{name:"示例",points:[{label:"A",value:1}]}])
-root = Column(children=[digest,metric,donut])
+root = Column(children=[digest,metric])
+```
+
+```invalid-express
+trend = Chart(kind="donut",series=[{name:"示例",points:[{label:"A",value:1}]}])
+root = Column(children=[trend])
+```
+
+```invalid-express
+detail = DataTable(caption="按模块的原始请求计数",columns=[{id:"module",label:"模块"}],rows=[{id:"api",cells:["/api/render",128]}],formatter="compact")
+root = Column(children=[detail])
 ```
 
 There is no MetricCard, Donut, sparkline or number formatter API; do not invent properties, measurements or units on real components either. If a needed display primitive is missing, compose it from Text/MarkdownView/Chart/DataTable exactly as the digest example does.

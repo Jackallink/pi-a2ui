@@ -15,6 +15,7 @@
   --pi-a2ui-color-muted: #566477;
   --pi-a2ui-color-accent: #365cdb;
   --pi-a2ui-color-accent-hover: #2c4fc0;
+  --pi-a2ui-color-accent-contrast: #ffffff;
   --pi-a2ui-color-focus: #1d4ed8;
   --pi-a2ui-color-border: #dbe2ea;
   --pi-a2ui-color-input-border: #8190a5;
@@ -128,6 +129,7 @@ code { font-family: var(--pi-a2ui-font-mono); font-size: 0.95em; }
 #surfaces a2ui-basic-row > a2ui-card { flex: 1 1 200px; min-width: 0; }
 #surfaces .a2ui-text-body { font-size: 14px; line-height: 1.55; }
 #surfaces .a2ui-text-caption { font-size: 12px; line-height: 1.5; color: var(--pi-a2ui-color-muted); font-style: normal; }
+#surfaces .a2ui-text-caption em { font-style: normal; }
 #surfaces h1 { font-size: 24px; line-height: 1.25; letter-spacing: -0.4px; margin: 0 0 var(--pi-a2ui-space-8); }
 #surfaces h2 { font-size: 28px; line-height: 1.2; font-weight: 650; letter-spacing: -0.4px; margin: 0 0 var(--pi-a2ui-space-4); font-variant-numeric: tabular-nums; }
 #surfaces h3 { font-size: 15px; line-height: 1.4; font-weight: 650; margin: var(--pi-a2ui-space-16) 0 var(--pi-a2ui-space-8); }
@@ -149,11 +151,22 @@ code { font-family: var(--pi-a2ui-font-mono); font-size: 0.95em; }
 #surfaces a2ui-basic-button button {
   background: var(--pi-a2ui-color-accent);
   border-color: var(--pi-a2ui-color-accent);
-  color: #ffffff;
+  color: var(--pi-a2ui-color-accent-contrast);
+  --a2ui-color-on-secondary: var(--pi-a2ui-color-accent-contrast);
   font-weight: 600;
   padding: 11px 16px;
 }
-#surfaces a2ui-basic-button button:hover { background: var(--pi-a2ui-color-accent-hover); }
+#surfaces a2ui-basic-button button .a2ui-text { color: inherit; }
+#surfaces a2ui-basic-button button:hover { background: var(--pi-a2ui-color-accent-hover); border-color: var(--pi-a2ui-color-accent-hover); }
+#surfaces a2ui-basic-button button.a2ui-button-borderless {
+  background: transparent;
+  border: none;
+  padding: 0;
+  min-height: 0;
+  color: var(--pi-a2ui-color-accent);
+  --a2ui-color-on-secondary: var(--pi-a2ui-color-text);
+}
+#surfaces a2ui-basic-button button.a2ui-button-borderless:hover { background: transparent; border-color: transparent; }
 #surfaces th button {
   background: none;
   border: none;
@@ -164,6 +177,12 @@ code { font-family: var(--pi-a2ui-font-mono); font-size: 0.95em; }
   color: var(--pi-a2ui-color-muted);
 }
 #surfaces button:disabled { opacity: 0.65; cursor: default; }
+#surfaces .picker-options button[aria-pressed="true"] {
+  border: 2px solid var(--pi-a2ui-color-accent);
+  color: var(--pi-a2ui-color-accent);
+  font-weight: 600;
+}
+#surfaces .picker-options button:hover { border-color: var(--pi-a2ui-color-accent); }
 #surfaces :is(button, input, textarea, select, summary):focus-visible,
 #surfaces .a2ui-textfield:focus-visible {
   outline: 3px solid var(--pi-a2ui-color-focus);
@@ -184,7 +203,6 @@ code { font-family: var(--pi-a2ui-font-mono); font-size: 0.95em; }
 #surfaces small { font-size: 12px; color: var(--pi-a2ui-color-muted); line-height: 1.5; }
 #surfaces dialog { border: none; border-radius: var(--pi-a2ui-radius-card); padding: var(--pi-a2ui-space-24); box-shadow: 0 16px 40px rgba(23, 32, 51, 0.18); }
 #surfaces dialog::backdrop { background: rgba(15, 23, 42, 0.6); }
-#surfaces [data-status="success"], #surfaces [data-status="error"], #surfaces [data-status="warning"], #surfaces [data-status="info"] { color: inherit; }
 #surfaces hr { border: none; border-top: 1px solid var(--pi-a2ui-color-border); }
 
 /* ---- command palette (shell-owned dialog) ---- */
