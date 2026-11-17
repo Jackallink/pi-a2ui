@@ -1,0 +1,891 @@
+{
+  "node": "v24.18.1",
+  "browser": "158.0.8127.18",
+  "dom": [
+    {
+      "tag": "section",
+      "class": "surface",
+      "shadow": false,
+      "id": null,
+      "text": null,
+      "style": {
+        "display": "block",
+        "padding": "0px",
+        "color": "rgb(40, 40, 34)",
+        "border": "0px none rgb(40, 40, 34)",
+        "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "maxHeight": "none"
+      }
+    },
+    {
+      "tag": "a2ui-surface",
+      "class": "",
+      "shadow": false,
+      "id": null,
+      "text": null,
+      "style": {
+        "display": "block",
+        "padding": "0px",
+        "color": "rgb(40, 40, 34)",
+        "border": "0px none rgb(40, 40, 34)",
+        "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "maxHeight": "none"
+      }
+    },
+    {
+      "tag": "a2ui-card",
+      "class": "",
+      "shadow": false,
+      "id": "root",
+      "text": null,
+      "style": {
+        "display": "inline",
+        "padding": "0px",
+        "color": "rgb(40, 40, 34)",
+        "border": "0px none rgb(40, 40, 34)",
+        "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "maxHeight": "none"
+      }
+    },
+    {
+      "tag": "div",
+      "class": "a2ui-card",
+      "shadow": false,
+      "id": null,
+      "text": null,
+      "style": {
+        "display": "block",
+        "padding": "32px",
+        "color": "rgb(40, 40, 34)",
+        "border": "1px solid rgb(224, 222, 213)",
+        "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "maxHeight": "none"
+      }
+    },
+    {
+      "tag": "a2ui-basic-column",
+      "class": "",
+      "shadow": false,
+      "id": "root_child",
+      "text": null,
+      "style": {
+        "display": "flex",
+        "padding": "0px",
+        "color": "rgb(40, 40, 34)",
+        "border": "0px none rgb(40, 40, 34)",
+        "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "maxHeight": "none"
+      }
+    },
+    {
+      "tag": "a2ui-basic-text",
+      "class": "",
+      "shadow": false,
+      "id": "root_child_children_0",
+      "text": null,
+      "style": {
+        "display": "contents",
+        "padding": "0px",
+        "color": "rgb(40, 40, 34)",
+        "border": "0px none rgb(40, 40, 34)",
+        "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "maxHeight": "none"
+      }
+    },
+    {
+      "tag": "span",
+      "class": "a2ui-text a2ui-text-body",
+      "shadow": false,
+      "id": null,
+      "text": null,
+      "style": {
+        "display": "block",
+        "padding": "0px",
+        "color": "rgb(40, 40, 34)",
+        "border": "0px none rgb(40, 40, 34)",
+        "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "maxHeight": "none"
+      }
+    },
+    {
+      "tag": "span",
+      "class": "no-markdown-renderer",
+      "shadow": false,
+      "id": null,
+      "text": "固定设计探针",
+      "style": {
+        "display": "inline",
+        "padding": "0px",
+        "color": "rgb(40, 40, 34)",
+        "border": "0px none rgb(40, 40, 34)",
+        "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "maxHeight": "none"
+      }
+    },
+    {
+      "tag": "pi-a2ui-data-table",
+      "class": "",
+      "shadow": false,
+      "id": "root_child_children_1",
+      "text": null,
+      "style": {
+        "display": "block",
+        "padding": "0px",
+        "color": "rgb(40, 40, 34)",
+        "border": "0px none rgb(40, 40, 34)",
+        "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "maxHeight": "none"
+      }
+    },
+    {
+      "tag": "section",
+      "class": "",
+      "shadow": false,
+      "id": null,
+      "text": null,
+      "style": {
+        "display": "block",
+        "padding": "0px",
+        "color": "rgb(40, 40, 34)",
+        "border": "0px none rgb(40, 40, 34)",
+        "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "maxHeight": "none"
+      }
+    },
+    {
+      "tag": "label",
+      "class": "",
+      "shadow": false,
+      "id": null,
+      "text": null,
+      "style": {
+        "display": "inline",
+        "padding": "0px",
+        "color": "rgb(40, 40, 34)",
+        "border": "0px none rgb(40, 40, 34)",
+        "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "maxHeight": "none"
+      }
+    },
+    {
+      "tag": "input",
+      "class": "",
+      "shadow": false,
+      "id": null,
+      "text": "",
+      "style": {
+        "display": "inline-block",
+        "padding": "1px 2px",
+        "color": "rgb(0, 0, 0)",
+        "border": "2px inset rgb(118, 118, 118)",
+        "font": "13.3333px Arial",
+        "maxHeight": "none"
+      }
+    },
+    {
+      "tag": "div",
+      "class": "table-scroll",
+      "shadow": false,
+      "id": null,
+      "text": null,
+      "style": {
+        "display": "block",
+        "padding": "0px",
+        "color": "rgb(40, 40, 34)",
+        "border": "0px none rgb(40, 40, 34)",
+        "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "maxHeight": "448px"
+      }
+    },
+    {
+      "tag": "table",
+      "class": "",
+      "shadow": false,
+      "id": null,
+      "text": null,
+      "style": {
+        "display": "table",
+        "padding": "0px",
+        "color": "rgb(40, 40, 34)",
+        "border": "0px none rgb(40, 40, 34)",
+        "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "maxHeight": "none"
+      }
+    },
+    {
+      "tag": "caption",
+      "class": "",
+      "shadow": false,
+      "id": null,
+      "text": "示例数据",
+      "style": {
+        "display": "table-caption",
+        "padding": "0px",
+        "color": "rgb(40, 40, 34)",
+        "border": "0px none rgb(40, 40, 34)",
+        "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "maxHeight": "none"
+      }
+    },
+    {
+      "tag": "thead",
+      "class": "",
+      "shadow": false,
+      "id": null,
+      "text": null,
+      "style": {
+        "display": "table-header-group",
+        "padding": "0px",
+        "color": "rgb(40, 40, 34)",
+        "border": "0px none rgb(40, 40, 34)",
+        "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "maxHeight": "none"
+      }
+    },
+    {
+      "tag": "tr",
+      "class": "",
+      "shadow": false,
+      "id": null,
+      "text": null,
+      "style": {
+        "display": "table-row",
+        "padding": "0px",
+        "color": "rgb(40, 40, 34)",
+        "border": "0px none rgb(40, 40, 34)",
+        "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "maxHeight": "none"
+      }
+    },
+    {
+      "tag": "th",
+      "class": "",
+      "shadow": false,
+      "id": null,
+      "text": null,
+      "style": {
+        "display": "table-cell",
+        "padding": "8px",
+        "color": "rgb(40, 40, 34)",
+        "border": "",
+        "font": "700 16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "maxHeight": "none"
+      }
+    },
+    {
+      "tag": "button",
+      "class": "",
+      "shadow": false,
+      "id": null,
+      "text": "名称",
+      "style": {
+        "display": "inline-block",
+        "padding": "1px 6px",
+        "color": "rgb(0, 0, 0)",
+        "border": "2px outset rgb(0, 0, 0)",
+        "font": "13.3333px Arial",
+        "maxHeight": "none"
+      }
+    },
+    {
+      "tag": "th",
+      "class": "",
+      "shadow": false,
+      "id": null,
+      "text": null,
+      "style": {
+        "display": "table-cell",
+        "padding": "8px",
+        "color": "rgb(40, 40, 34)",
+        "border": "",
+        "font": "700 16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "maxHeight": "none"
+      }
+    },
+    {
+      "tag": "button",
+      "class": "",
+      "shadow": false,
+      "id": null,
+      "text": "数量",
+      "style": {
+        "display": "inline-block",
+        "padding": "1px 6px",
+        "color": "rgb(0, 0, 0)",
+        "border": "2px outset rgb(0, 0, 0)",
+        "font": "13.3333px Arial",
+        "maxHeight": "none"
+      }
+    },
+    {
+      "tag": "tbody",
+      "class": "",
+      "shadow": false,
+      "id": null,
+      "text": null,
+      "style": {
+        "display": "table-row-group",
+        "padding": "0px",
+        "color": "rgb(40, 40, 34)",
+        "border": "0px none rgb(40, 40, 34)",
+        "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "maxHeight": "none"
+      }
+    },
+    {
+      "tag": "tr",
+      "class": "",
+      "shadow": false,
+      "id": null,
+      "text": null,
+      "style": {
+        "display": "table-row",
+        "padding": "0px",
+        "color": "rgb(40, 40, 34)",
+        "border": "0px none rgb(40, 40, 34)",
+        "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "maxHeight": "none"
+      }
+    },
+    {
+      "tag": "td",
+      "class": "",
+      "shadow": false,
+      "id": null,
+      "text": "应用服务",
+      "style": {
+        "display": "table-cell",
+        "padding": "8px",
+        "color": "rgb(40, 40, 34)",
+        "border": "",
+        "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "maxHeight": "none"
+      }
+    },
+    {
+      "tag": "td",
+      "class": "",
+      "shadow": false,
+      "id": null,
+      "text": "12345",
+      "style": {
+        "display": "table-cell",
+        "padding": "8px",
+        "color": "rgb(40, 40, 34)",
+        "border": "",
+        "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "maxHeight": "none"
+      }
+    },
+    {
+      "tag": "pi-a2ui-chart",
+      "class": "",
+      "shadow": false,
+      "id": "root_child_children_2",
+      "text": null,
+      "style": {
+        "display": "block",
+        "padding": "0px",
+        "color": "rgb(40, 40, 34)",
+        "border": "0px none rgb(40, 40, 34)",
+        "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "maxHeight": "none"
+      }
+    },
+    {
+      "tag": "section",
+      "class": "",
+      "shadow": false,
+      "id": null,
+      "text": null,
+      "style": {
+        "display": "block",
+        "padding": "0px",
+        "color": "rgb(40, 40, 34)",
+        "border": "0px none rgb(40, 40, 34)",
+        "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "maxHeight": "none"
+      }
+    },
+    {
+      "tag": "h3",
+      "class": "",
+      "shadow": false,
+      "id": null,
+      "text": "Bar chart",
+      "style": {
+        "display": "block",
+        "padding": "0px",
+        "color": "rgb(40, 40, 34)",
+        "border": "0px none rgb(40, 40, 34)",
+        "font": "700 18.72px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "maxHeight": "none"
+      }
+    },
+    {
+      "tag": "svg",
+      "class": "",
+      "shadow": false,
+      "id": null,
+      "text": null,
+      "style": {
+        "display": "block",
+        "padding": "0px",
+        "color": "rgb(40, 40, 34)",
+        "border": "0px none rgb(40, 40, 34)",
+        "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "maxHeight": "260px"
+      }
+    },
+    {
+      "tag": "line",
+      "class": "",
+      "shadow": false,
+      "id": null,
+      "text": "",
+      "style": {
+        "display": "inline",
+        "padding": "0px",
+        "color": "rgb(40, 40, 34)",
+        "border": "0px none rgb(40, 40, 34)",
+        "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "maxHeight": "none"
+      }
+    },
+    {
+      "tag": "g",
+      "class": "",
+      "shadow": false,
+      "id": null,
+      "text": null,
+      "style": {
+        "display": "inline",
+        "padding": "0px",
+        "color": "rgb(40, 40, 34)",
+        "border": "0px none rgb(40, 40, 34)",
+        "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "maxHeight": "none"
+      }
+    },
+    {
+      "tag": "rect",
+      "class": "",
+      "shadow": false,
+      "id": null,
+      "text": null,
+      "style": {
+        "display": "inline",
+        "padding": "0px",
+        "color": "rgb(40, 40, 34)",
+        "border": "0px none rgb(40, 40, 34)",
+        "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "maxHeight": "none"
+      }
+    },
+    {
+      "tag": "title",
+      "class": "",
+      "shadow": false,
+      "id": null,
+      "text": "示例数量: 一月 = 2",
+      "style": {
+        "display": "inline",
+        "padding": "0px",
+        "color": "rgb(40, 40, 34)",
+        "border": "0px none rgb(40, 40, 34)",
+        "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "maxHeight": "none"
+      }
+    },
+    {
+      "tag": "rect",
+      "class": "",
+      "shadow": false,
+      "id": null,
+      "text": null,
+      "style": {
+        "display": "inline",
+        "padding": "0px",
+        "color": "rgb(40, 40, 34)",
+        "border": "0px none rgb(40, 40, 34)",
+        "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "maxHeight": "none"
+      }
+    },
+    {
+      "tag": "title",
+      "class": "",
+      "shadow": false,
+      "id": null,
+      "text": "示例数量: 二月 = 3",
+      "style": {
+        "display": "inline",
+        "padding": "0px",
+        "color": "rgb(40, 40, 34)",
+        "border": "0px none rgb(40, 40, 34)",
+        "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "maxHeight": "none"
+      }
+    },
+    {
+      "tag": "text",
+      "class": "",
+      "shadow": false,
+      "id": null,
+      "text": "一月",
+      "style": {
+        "display": "block",
+        "padding": "0px",
+        "color": "rgb(40, 40, 34)",
+        "border": "0px none rgb(40, 40, 34)",
+        "font": "10px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "maxHeight": "none"
+      }
+    },
+    {
+      "tag": "text",
+      "class": "",
+      "shadow": false,
+      "id": null,
+      "text": "二月",
+      "style": {
+        "display": "block",
+        "padding": "0px",
+        "color": "rgb(40, 40, 34)",
+        "border": "0px none rgb(40, 40, 34)",
+        "font": "10px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "maxHeight": "none"
+      }
+    },
+    {
+      "tag": "div",
+      "class": "values",
+      "shadow": false,
+      "id": null,
+      "text": null,
+      "style": {
+        "display": "block",
+        "padding": "0px",
+        "color": "rgb(40, 40, 34)",
+        "border": "0px none rgb(40, 40, 34)",
+        "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "maxHeight": "192px"
+      }
+    },
+    {
+      "tag": "table",
+      "class": "",
+      "shadow": false,
+      "id": null,
+      "text": null,
+      "style": {
+        "display": "table",
+        "padding": "0px",
+        "color": "rgb(40, 40, 34)",
+        "border": "0px none rgb(40, 40, 34)",
+        "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "maxHeight": "none"
+      }
+    },
+    {
+      "tag": "caption",
+      "class": "",
+      "shadow": false,
+      "id": null,
+      "text": "Supplied chart values",
+      "style": {
+        "display": "table-caption",
+        "padding": "0px",
+        "color": "rgb(40, 40, 34)",
+        "border": "0px none rgb(40, 40, 34)",
+        "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "maxHeight": "none"
+      }
+    },
+    {
+      "tag": "thead",
+      "class": "",
+      "shadow": false,
+      "id": null,
+      "text": null,
+      "style": {
+        "display": "table-header-group",
+        "padding": "0px",
+        "color": "rgb(40, 40, 34)",
+        "border": "0px none rgb(40, 40, 34)",
+        "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "maxHeight": "none"
+      }
+    },
+    {
+      "tag": "tr",
+      "class": "",
+      "shadow": false,
+      "id": null,
+      "text": null,
+      "style": {
+        "display": "table-row",
+        "padding": "0px",
+        "color": "rgb(40, 40, 34)",
+        "border": "0px none rgb(40, 40, 34)",
+        "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "maxHeight": "none"
+      }
+    },
+    {
+      "tag": "th",
+      "class": "",
+      "shadow": false,
+      "id": null,
+      "text": "Series",
+      "style": {
+        "display": "table-cell",
+        "padding": "4.8px",
+        "color": "rgb(40, 40, 34)",
+        "border": "",
+        "font": "700 16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "maxHeight": "none"
+      }
+    },
+    {
+      "tag": "th",
+      "class": "",
+      "shadow": false,
+      "id": null,
+      "text": "Label",
+      "style": {
+        "display": "table-cell",
+        "padding": "4.8px",
+        "color": "rgb(40, 40, 34)",
+        "border": "",
+        "font": "700 16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "maxHeight": "none"
+      }
+    },
+    {
+      "tag": "th",
+      "class": "",
+      "shadow": false,
+      "id": null,
+      "text": "Value",
+      "style": {
+        "display": "table-cell",
+        "padding": "4.8px",
+        "color": "rgb(40, 40, 34)",
+        "border": "",
+        "font": "700 16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "maxHeight": "none"
+      }
+    },
+    {
+      "tag": "tbody",
+      "class": "",
+      "shadow": false,
+      "id": null,
+      "text": null,
+      "style": {
+        "display": "table-row-group",
+        "padding": "0px",
+        "color": "rgb(40, 40, 34)",
+        "border": "0px none rgb(40, 40, 34)",
+        "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "maxHeight": "none"
+      }
+    },
+    {
+      "tag": "tr",
+      "class": "",
+      "shadow": false,
+      "id": null,
+      "text": null,
+      "style": {
+        "display": "table-row",
+        "padding": "0px",
+        "color": "rgb(40, 40, 34)",
+        "border": "0px none rgb(40, 40, 34)",
+        "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "maxHeight": "none"
+      }
+    },
+    {
+      "tag": "td",
+      "class": "",
+      "shadow": false,
+      "id": null,
+      "text": "示例数量",
+      "style": {
+        "display": "table-cell",
+        "padding": "4.8px",
+        "color": "rgb(40, 40, 34)",
+        "border": "",
+        "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "maxHeight": "none"
+      }
+    },
+    {
+      "tag": "td",
+      "class": "",
+      "shadow": false,
+      "id": null,
+      "text": "一月",
+      "style": {
+        "display": "table-cell",
+        "padding": "4.8px",
+        "color": "rgb(40, 40, 34)",
+        "border": "",
+        "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "maxHeight": "none"
+      }
+    },
+    {
+      "tag": "td",
+      "class": "",
+      "shadow": false,
+      "id": null,
+      "text": "2",
+      "style": {
+        "display": "table-cell",
+        "padding": "4.8px",
+        "color": "rgb(40, 40, 34)",
+        "border": "",
+        "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "maxHeight": "none"
+      }
+    },
+    {
+      "tag": "tr",
+      "class": "",
+      "shadow": false,
+      "id": null,
+      "text": null,
+      "style": {
+        "display": "table-row",
+        "padding": "0px",
+        "color": "rgb(40, 40, 34)",
+        "border": "0px none rgb(40, 40, 34)",
+        "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "maxHeight": "none"
+      }
+    },
+    {
+      "tag": "td",
+      "class": "",
+      "shadow": false,
+      "id": null,
+      "text": "示例数量",
+      "style": {
+        "display": "table-cell",
+        "padding": "4.8px",
+        "color": "rgb(40, 40, 34)",
+        "border": "",
+        "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "maxHeight": "none"
+      }
+    },
+    {
+      "tag": "td",
+      "class": "",
+      "shadow": false,
+      "id": null,
+      "text": "二月",
+      "style": {
+        "display": "table-cell",
+        "padding": "4.8px",
+        "color": "rgb(40, 40, 34)",
+        "border": "",
+        "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "maxHeight": "none"
+      }
+    },
+    {
+      "tag": "td",
+      "class": "",
+      "shadow": false,
+      "id": null,
+      "text": "3",
+      "style": {
+        "display": "table-cell",
+        "padding": "4.8px",
+        "color": "rgb(40, 40, 34)",
+        "border": "",
+        "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "maxHeight": "none"
+      }
+    },
+    {
+      "tag": "a2ui-basic-button",
+      "class": "",
+      "shadow": false,
+      "id": "root_child_children_3",
+      "text": null,
+      "style": {
+        "display": "block",
+        "padding": "0px",
+        "color": "rgb(40, 40, 34)",
+        "border": "0px none rgb(40, 40, 34)",
+        "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "maxHeight": "none"
+      }
+    },
+    {
+      "tag": "button",
+      "class": " a2ui-button a2ui-button-default ",
+      "shadow": false,
+      "id": null,
+      "text": null,
+      "style": {
+        "display": "inline-block",
+        "padding": "12px 19.2px",
+        "color": "rgb(40, 40, 34)",
+        "border": "1px solid rgb(224, 222, 213)",
+        "font": "13.3333px Arial",
+        "maxHeight": "none"
+      }
+    },
+    {
+      "tag": "a2ui-basic-text",
+      "class": "",
+      "shadow": false,
+      "id": "root_child_children_3_child",
+      "text": null,
+      "style": {
+        "display": "contents",
+        "padding": "0px",
+        "color": "rgb(40, 40, 34)",
+        "border": "0px none rgb(40, 40, 34)",
+        "font": "13.3333px Arial",
+        "maxHeight": "none"
+      }
+    },
+    {
+      "tag": "span",
+      "class": "a2ui-text a2ui-text-body",
+      "shadow": false,
+      "id": null,
+      "text": null,
+      "style": {
+        "display": "inline",
+        "padding": "0px",
+        "color": "rgb(40, 40, 34)",
+        "border": "0px none rgb(40, 40, 34)",
+        "font": "13.3333px Arial",
+        "maxHeight": "none"
+      }
+    },
+    {
+      "tag": "span",
+      "class": "no-markdown-renderer",
+      "shadow": false,
+      "id": null,
+      "text": "仅作示例",
+      "style": {
+        "display": "inline",
+        "padding": "0px",
+        "color": "rgb(40, 40, 34)",
+        "border": "0px none rgb(40, 40, 34)",
+        "font": "13.3333px Arial",
+        "maxHeight": "none"
+      }
+    }
+  ]
+}

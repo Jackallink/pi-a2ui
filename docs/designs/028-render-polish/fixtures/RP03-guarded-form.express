@@ -1,0 +1,9 @@
+$/form/name = ""
+$/form/team = ""
+$/form/note = ""
+name = TextField(label="资产名称",value=$/form/name)
+team = TextField(label="责任团队",value=$/form/team)
+note = TextField(label="登记备注",value=$/form/note)
+submit = Button(child=Text(text="提交信息，等待确认"),action=Event("collect_asset",{name:$/form/name,team:$/form/team,note:$/form/note}))
+validation = FormValidation(title="请先补齐以下信息",buttons=["submit"],rules=[{fieldId:"name",message:"请填写资产名称",required:true},{fieldId:"team",message:"请填写责任团队",required:true},{fieldId:"note",message:"请填写登记备注",required:true}])
+root = Card(child=Column(children=[MarkdownView(text="# 登记资产信息"),Text(text="固定表单样例 · 只收集信息，不执行资产操作",variant="caption"),name,team,note,validation,submit,Details(title="提交前会发生什么？",child=Text(text="缺少必填内容时只显示本地错误；本样张不产生任何业务POST。"))]))

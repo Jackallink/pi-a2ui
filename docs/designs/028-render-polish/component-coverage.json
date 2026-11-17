@@ -1,0 +1,262 @@
+{
+  "catalogId": "https://jackallink.github.io/pi-a2ui/catalogs/interactions-v1.json",
+  "packageVersion": "0.1.11",
+  "componentCount": 32,
+  "source": "actual helper catalog; preview coverage is not production acceptance",
+  "components": [
+    {
+      "component": "ActivityTimeline",
+      "previewScenes": [],
+      "previewBoundary": "Not captured in the six design scenes",
+      "implementationChecks": "Computed theme/contrast/scope plus existing behavior tests; native controlled state must use real synthetic lifecycle, not fabricated initial props"
+    },
+    {
+      "component": "ArtifactPreview",
+      "previewScenes": [],
+      "previewBoundary": "Not captured in the six design scenes",
+      "implementationChecks": "Computed theme/contrast/scope plus existing behavior tests; native controlled state must use real synthetic lifecycle, not fabricated initial props"
+    },
+    {
+      "component": "AudioPlayer",
+      "previewScenes": [],
+      "previewBoundary": "Not captured in the six design scenes",
+      "implementationChecks": "Computed theme/contrast/scope plus existing behavior tests; native controlled state must use real synthetic lifecycle, not fabricated initial props"
+    },
+    {
+      "component": "Button",
+      "previewScenes": [
+        "RP03",
+        "RP04",
+        "RP06"
+      ],
+      "previewBoundary": "Fixed fixture only",
+      "implementationChecks": "Computed theme/contrast/scope plus existing behavior tests; native controlled state must use real synthetic lifecycle, not fabricated initial props"
+    },
+    {
+      "component": "Card",
+      "previewScenes": [
+        "RP01",
+        "RP02",
+        "RP03",
+        "RP04",
+        "RP05",
+        "RP06"
+      ],
+      "previewBoundary": "Fixed fixture only",
+      "implementationChecks": "Computed theme/contrast/scope plus existing behavior tests; native controlled state must use real synthetic lifecycle, not fabricated initial props"
+    },
+    {
+      "component": "Chart",
+      "previewScenes": [
+        "RP01"
+      ],
+      "previewBoundary": "Fixed fixture only",
+      "implementationChecks": "Computed theme/contrast/scope plus existing behavior tests; native controlled state must use real synthetic lifecycle, not fabricated initial props"
+    },
+    {
+      "component": "CheckBox",
+      "previewScenes": [],
+      "previewBoundary": "Not captured in the six design scenes",
+      "implementationChecks": "Computed theme/contrast/scope plus existing behavior tests; native controlled state must use real synthetic lifecycle, not fabricated initial props"
+    },
+    {
+      "component": "ChoicePicker",
+      "previewScenes": [],
+      "previewBoundary": "Not captured in the six design scenes",
+      "implementationChecks": "Computed theme/contrast/scope plus existing behavior tests; native controlled state must use real synthetic lifecycle, not fabricated initial props"
+    },
+    {
+      "component": "CodeBlock",
+      "previewScenes": [
+        "RP04",
+        "RP05"
+      ],
+      "previewBoundary": "Fixed fixture only",
+      "implementationChecks": "Computed theme/contrast/scope plus existing behavior tests; native controlled state must use real synthetic lifecycle, not fabricated initial props"
+    },
+    {
+      "component": "CodeDiff",
+      "previewScenes": [
+        "RP04"
+      ],
+      "previewBoundary": "Fixed fixture only",
+      "implementationChecks": "Computed theme/contrast/scope plus existing behavior tests; native controlled state must use real synthetic lifecycle, not fabricated initial props"
+    },
+    {
+      "component": "Column",
+      "previewScenes": [
+        "RP01",
+        "RP02",
+        "RP03",
+        "RP04",
+        "RP05",
+        "RP06"
+      ],
+      "previewBoundary": "Fixed fixture only",
+      "implementationChecks": "Computed theme/contrast/scope plus existing behavior tests; native controlled state must use real synthetic lifecycle, not fabricated initial props"
+    },
+    {
+      "component": "DataTable",
+      "previewScenes": [
+        "RP01",
+        "RP02",
+        "RP05"
+      ],
+      "previewBoundary": "Fixed fixture only",
+      "implementationChecks": "Computed theme/contrast/scope plus existing behavior tests; native controlled state must use real synthetic lifecycle, not fabricated initial props"
+    },
+    {
+      "component": "DateTimeInput",
+      "previewScenes": [],
+      "previewBoundary": "Not captured in the six design scenes",
+      "implementationChecks": "Computed theme/contrast/scope plus existing behavior tests; native controlled state must use real synthetic lifecycle, not fabricated initial props"
+    },
+    {
+      "component": "Details",
+      "previewScenes": [
+        "RP02",
+        "RP03",
+        "RP04",
+        "RP05"
+      ],
+      "previewBoundary": "Fixed fixture only",
+      "implementationChecks": "Computed theme/contrast/scope plus existing behavior tests; native controlled state must use real synthetic lifecycle, not fabricated initial props"
+    },
+    {
+      "component": "Divider",
+      "previewScenes": [],
+      "previewBoundary": "Not captured in the six design scenes",
+      "implementationChecks": "Computed theme/contrast/scope plus existing behavior tests; native controlled state must use real synthetic lifecycle, not fabricated initial props"
+    },
+    {
+      "component": "FormValidation",
+      "previewScenes": [
+        "RP03"
+      ],
+      "previewBoundary": "Fixed fixture only",
+      "implementationChecks": "Computed theme/contrast/scope plus existing behavior tests; native controlled state must use real synthetic lifecycle, not fabricated initial props"
+    },
+    {
+      "component": "Icon",
+      "previewScenes": [],
+      "previewBoundary": "Not captured in the six design scenes",
+      "implementationChecks": "Computed theme/contrast/scope plus existing behavior tests; native controlled state must use real synthetic lifecycle, not fabricated initial props"
+    },
+    {
+      "component": "Image",
+      "previewScenes": [],
+      "previewBoundary": "Not captured in the six design scenes",
+      "implementationChecks": "Computed theme/contrast/scope plus existing behavior tests; native controlled state must use real synthetic lifecycle, not fabricated initial props"
+    },
+    {
+      "component": "List",
+      "previewScenes": [],
+      "previewBoundary": "Not captured in the six design scenes",
+      "implementationChecks": "Computed theme/contrast/scope plus existing behavior tests; native controlled state must use real synthetic lifecycle, not fabricated initial props"
+    },
+    {
+      "component": "LogView",
+      "previewScenes": [
+        "RP04"
+      ],
+      "previewBoundary": "Fixed fixture only",
+      "implementationChecks": "Computed theme/contrast/scope plus existing behavior tests; native controlled state must use real synthetic lifecycle, not fabricated initial props"
+    },
+    {
+      "component": "MarkdownView",
+      "previewScenes": [
+        "RP01",
+        "RP02",
+        "RP03",
+        "RP04",
+        "RP05",
+        "RP06"
+      ],
+      "previewBoundary": "Fixed fixture only",
+      "implementationChecks": "Computed theme/contrast/scope plus existing behavior tests; native controlled state must use real synthetic lifecycle, not fabricated initial props"
+    },
+    {
+      "component": "Modal",
+      "previewScenes": [
+        "RP05"
+      ],
+      "previewBoundary": "Modal trigger only, closed dialog",
+      "implementationChecks": "Computed theme/contrast/scope plus existing behavior tests; native controlled state must use real synthetic lifecycle, not fabricated initial props"
+    },
+    {
+      "component": "Row",
+      "previewScenes": [
+        "RP01",
+        "RP06"
+      ],
+      "previewBoundary": "Fixed fixture only",
+      "implementationChecks": "Computed theme/contrast/scope plus existing behavior tests; native controlled state must use real synthetic lifecycle, not fabricated initial props"
+    },
+    {
+      "component": "SearchablePicker",
+      "previewScenes": [],
+      "previewBoundary": "Not captured in the six design scenes",
+      "implementationChecks": "Computed theme/contrast/scope plus existing behavior tests; native controlled state must use real synthetic lifecycle, not fabricated initial props"
+    },
+    {
+      "component": "Slider",
+      "previewScenes": [],
+      "previewBoundary": "Not captured in the six design scenes",
+      "implementationChecks": "Computed theme/contrast/scope plus existing behavior tests; native controlled state must use real synthetic lifecycle, not fabricated initial props"
+    },
+    {
+      "component": "StatusBadge",
+      "previewScenes": [
+        "RP05"
+      ],
+      "previewBoundary": "Fixed fixture only",
+      "implementationChecks": "Computed theme/contrast/scope plus existing behavior tests; native controlled state must use real synthetic lifecycle, not fabricated initial props"
+    },
+    {
+      "component": "Tabs",
+      "previewScenes": [],
+      "previewBoundary": "Not captured in the six design scenes",
+      "implementationChecks": "Computed theme/contrast/scope plus existing behavior tests; native controlled state must use real synthetic lifecycle, not fabricated initial props"
+    },
+    {
+      "component": "TaskProgress",
+      "previewScenes": [],
+      "previewBoundary": "Not captured in the six design scenes",
+      "implementationChecks": "Computed theme/contrast/scope plus existing behavior tests; native controlled state must use real synthetic lifecycle, not fabricated initial props"
+    },
+    {
+      "component": "TestResults",
+      "previewScenes": [],
+      "previewBoundary": "Not captured in the six design scenes",
+      "implementationChecks": "Computed theme/contrast/scope plus existing behavior tests; native controlled state must use real synthetic lifecycle, not fabricated initial props"
+    },
+    {
+      "component": "Text",
+      "previewScenes": [
+        "RP01",
+        "RP02",
+        "RP03",
+        "RP04",
+        "RP05",
+        "RP06"
+      ],
+      "previewBoundary": "Fixed fixture only",
+      "implementationChecks": "Computed theme/contrast/scope plus existing behavior tests; native controlled state must use real synthetic lifecycle, not fabricated initial props"
+    },
+    {
+      "component": "TextField",
+      "previewScenes": [
+        "RP03",
+        "RP06"
+      ],
+      "previewBoundary": "Fixed fixture only",
+      "implementationChecks": "Computed theme/contrast/scope plus existing behavior tests; native controlled state must use real synthetic lifecycle, not fabricated initial props"
+    },
+    {
+      "component": "Video",
+      "previewScenes": [],
+      "previewBoundary": "Not captured in the six design scenes",
+      "implementationChecks": "Computed theme/contrast/scope plus existing behavior tests; native controlled state must use real synthetic lifecycle, not fabricated initial props"
+    }
+  ]
+}

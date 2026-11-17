@@ -1,0 +1,4689 @@
+{
+  "schema": "rp67-design-previews-v1",
+  "baseSource": "0c1fe67649b3f61d520ca0318f7dd977a208b3b5",
+  "node": "v24.18.1",
+  "browser": "158.0.8127.18",
+  "dpr": 1,
+  "locale": "zh-CN",
+  "timezone": "Asia/Shanghai",
+  "reducedMotion": true,
+  "zoomBoundary": "640x450 is reflow-equivalent only, not proof of actual desktop browser 200% zoom",
+  "previewCSSSHA256": "d23dc2badde1d9944ee57a5f28359693ebace2350ae4dff8c5ab1b9498edd64c",
+  "captureScriptSHA256": "206441229b37eae75778ad229f0b2161128177fdfb0b743971db2cca228b2c9b",
+  "sampleSources": [
+    {
+      "id": "RP01-dashboard",
+      "sourceSHA256": "08b75988115ebc74ce398db13eadaba0d505bf0f6a26b69ebaba5d532840aeb5",
+      "components": 32
+    },
+    {
+      "id": "RP02-long-table",
+      "sourceSHA256": "ee3d5e1d055c8f96b3e8e90207b4fb2d7d94856abc81cc22818e5a4d340d9eca",
+      "components": 7
+    },
+    {
+      "id": "RP03-guarded-form",
+      "sourceSHA256": "77c29d0e2fc93d8e331acf44e6656d26b75c862c6acf9da308b6475406ff5b3b",
+      "components": 12
+    },
+    {
+      "id": "RP04-diff-log",
+      "sourceSHA256": "7fb176f46eb593289ea9b0a50147d0df6793f6d288b74cb264e1944de6b626b3",
+      "components": 10
+    },
+    {
+      "id": "RP05-states",
+      "sourceSHA256": "55e31dcc1294e6c811c0b893c92a48809ce944b75d29f708f22d5e4db7ca46a1",
+      "components": 14
+    },
+    {
+      "id": "RP06-responsive-cards",
+      "sourceSHA256": "7ab630a1aaa3c8f8a1a5f3485a7a423fb25bedf56717b5600ae76c00a6dd21df",
+      "components": 25
+    }
+  ],
+  "records": [
+    {
+      "id": "RP01-dashboard",
+      "phase": "before",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "file": "RP01-dashboard-desktop-before.png",
+      "sha256": "77ced4827d81d2f798a1303b0c858d461e8befb0c7ac9f45c93046e0b56cf1e8",
+      "sourceSHA256": "08b75988115ebc74ce398db13eadaba0d505bf0f6a26b69ebaba5d532840aeb5",
+      "snapshotSHA256": "9773be17b1dc6604510717595372c99d7ba4b0aad391e9210ed053219e89a6f6",
+      "pageOverflow": false,
+      "font": "-apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "styles": [
+        {
+          "selector": "main",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "72px 40px 80px",
+            "border": "0px none rgb(40, 40, 34)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 200,
+            "y": 83,
+            "width": 880,
+            "height": 1712.96875
+          }
+        },
+        {
+          "selector": "#surfaces .a2ui-card",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "32px",
+            "border": "1px solid rgb(224, 222, 213)",
+            "radius": "14px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 240,
+            "y": 459.6875,
+            "width": 146.359375,
+            "height": 195
+          }
+        },
+        {
+          "selector": "pi-a2ui-data-table th",
+          "shadow": false,
+          "style": {
+            "display": "table-cell",
+            "font": "700 16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "8px",
+            "border": "",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 273,
+            "y": 1493.375,
+            "width": 220.8125,
+            "height": 41.5
+          }
+        },
+        {
+          "selector": "pi-a2ui-data-table input",
+          "shadow": false,
+          "style": {
+            "display": "inline-block",
+            "font": "13.3333px Arial",
+            "color": "rgb(0, 0, 0)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "1px 2px",
+            "border": "2px inset rgb(118, 118, 118)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "clip"
+          },
+          "rect": {
+            "x": 503.921875,
+            "y": 1454.375,
+            "width": 153,
+            "height": 21
+          }
+        },
+        {
+          "selector": "pi-a2ui-chart svg",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "0px",
+            "border": "0px none rgb(40, 40, 34)",
+            "radius": "0px",
+            "maxHeight": "260px",
+            "overflowX": "hidden"
+          },
+          "rect": {
+            "x": 273,
+            "y": 841.75,
+            "width": 734,
+            "height": 260
+          }
+        }
+      ],
+      "title": "Pi / A2UI — Your agent, in view.",
+      "prototypeDOM": "none"
+    },
+    {
+      "id": "RP01-dashboard",
+      "phase": "after",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "file": "RP01-dashboard-desktop-after.png",
+      "sha256": "2020a45a3f85957dbad3b6ab24776e05f07c7ad128b00c7564b726d943686a80",
+      "sourceSHA256": "08b75988115ebc74ce398db13eadaba0d505bf0f6a26b69ebaba5d532840aeb5",
+      "snapshotSHA256": "9773be17b1dc6604510717595372c99d7ba4b0aad391e9210ed053219e89a6f6",
+      "pageOverflow": false,
+      "font": "-apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "styles": [
+        {
+          "selector": "main",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "14px / 21.7px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(23, 32, 51)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "28px 40px 48px",
+            "border": "0px none rgb(23, 32, 51)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 20,
+            "y": 65,
+            "width": 1240,
+            "height": 1554.390625
+          }
+        },
+        {
+          "selector": "#surfaces .a2ui-card",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "14px / 21.7px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(23, 32, 51)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "24px",
+            "border": "1px solid rgb(219, 226, 234)",
+            "radius": "14px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 60,
+            "y": 337.46875,
+            "width": 278,
+            "height": 152.78125
+          }
+        },
+        {
+          "selector": "pi-a2ui-data-table th",
+          "shadow": false,
+          "style": {
+            "display": "table-cell",
+            "font": "",
+            "color": "rgb(86, 100, 119)",
+            "background": "rgb(245, 247, 251)",
+            "padding": "10px 12px",
+            "border": "",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 86,
+            "y": 1328.375,
+            "width": 345.84375,
+            "height": 50.5
+          }
+        },
+        {
+          "selector": "pi-a2ui-data-table input",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "14px / 21.7px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(23, 32, 51)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "10px 12px",
+            "border": "1px solid rgb(129, 144, 165)",
+            "radius": "8px",
+            "maxHeight": "none",
+            "overflowX": "clip"
+          },
+          "rect": {
+            "x": 297.921875,
+            "y": 1239.09375,
+            "width": 180,
+            "height": 43.6875
+          }
+        },
+        {
+          "selector": "pi-a2ui-chart svg",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "14px / 21.7px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(23, 32, 51)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "0px",
+            "border": "0px none rgb(23, 32, 51)",
+            "radius": "0px",
+            "maxHeight": "290px",
+            "overflowX": "hidden"
+          },
+          "rect": {
+            "x": 85,
+            "y": 643.34375,
+            "width": 1110,
+            "height": 290
+          }
+        }
+      ],
+      "title": "Pi / A2UI — Your agent, in view.",
+      "prototypeDOM": "CSS + chart legend/grid/line-style DOM presentation sketch only"
+    },
+    {
+      "id": "RP01-dashboard",
+      "phase": "before",
+      "viewport": {
+        "width": 768,
+        "height": 900
+      },
+      "file": "RP01-dashboard-tablet-before.png",
+      "sha256": "86fbfb72f0d0feb382b36d08052836cd79eb49aa155a3f68dad70332de9d0012",
+      "sourceSHA256": "08b75988115ebc74ce398db13eadaba0d505bf0f6a26b69ebaba5d532840aeb5",
+      "snapshotSHA256": "9773be17b1dc6604510717595372c99d7ba4b0aad391e9210ed053219e89a6f6",
+      "pageOverflow": false,
+      "font": "-apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "styles": [
+        {
+          "selector": "main",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "72px 40px 80px",
+            "border": "0px none rgb(40, 40, 34)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 0,
+            "y": 83,
+            "width": 768,
+            "height": 1667.75
+          }
+        },
+        {
+          "selector": "#surfaces .a2ui-card",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "30.72px",
+            "border": "1px solid rgb(224, 222, 213)",
+            "radius": "14px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 40,
+            "y": 438.1875,
+            "width": 143.796875,
+            "height": 192.4375
+          }
+        },
+        {
+          "selector": "pi-a2ui-data-table th",
+          "shadow": false,
+          "style": {
+            "display": "table-cell",
+            "font": "700 16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "8px",
+            "border": "",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 71.71875,
+            "y": 1449.4375,
+            "width": 187.890625,
+            "height": 41.5
+          }
+        },
+        {
+          "selector": "pi-a2ui-data-table input",
+          "shadow": false,
+          "style": {
+            "display": "inline-block",
+            "font": "13.3333px Arial",
+            "color": "rgb(0, 0, 0)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "1px 2px",
+            "border": "2px inset rgb(118, 118, 118)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "clip"
+          },
+          "rect": {
+            "x": 302.640625,
+            "y": 1410.4375,
+            "width": 153,
+            "height": 21
+          }
+        },
+        {
+          "selector": "pi-a2ui-chart svg",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "0px",
+            "border": "0px none rgb(40, 40, 34)",
+            "radius": "0px",
+            "maxHeight": "260px",
+            "overflowX": "hidden"
+          },
+          "rect": {
+            "x": 71.71875,
+            "y": 816.40625,
+            "width": 624.5625,
+            "height": 243.96875
+          }
+        }
+      ],
+      "title": "Pi / A2UI — Your agent, in view.",
+      "prototypeDOM": "none"
+    },
+    {
+      "id": "RP01-dashboard",
+      "phase": "after",
+      "viewport": {
+        "width": 768,
+        "height": 900
+      },
+      "file": "RP01-dashboard-tablet-after.png",
+      "sha256": "4c850fa905d30840e7f228444863a19b6fa1fa5443513461e3dbd48b8330bd0e",
+      "sourceSHA256": "08b75988115ebc74ce398db13eadaba0d505bf0f6a26b69ebaba5d532840aeb5",
+      "snapshotSHA256": "9773be17b1dc6604510717595372c99d7ba4b0aad391e9210ed053219e89a6f6",
+      "pageOverflow": false,
+      "font": "-apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "styles": [
+        {
+          "selector": "main",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "14px / 21.7px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(23, 32, 51)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "28px 40px 48px",
+            "border": "0px none rgb(23, 32, 51)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 0,
+            "y": 65,
+            "width": 768,
+            "height": 1702.328125
+          }
+        },
+        {
+          "selector": "#surfaces .a2ui-card",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "14px / 21.7px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(23, 32, 51)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "24px",
+            "border": "1px solid rgb(219, 226, 234)",
+            "radius": "14px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 40,
+            "y": 337.46875,
+            "width": 218.65625,
+            "height": 152.78125
+          }
+        },
+        {
+          "selector": "pi-a2ui-data-table th",
+          "shadow": false,
+          "style": {
+            "display": "table-cell",
+            "font": "",
+            "color": "rgb(86, 100, 119)",
+            "background": "rgb(245, 247, 251)",
+            "padding": "10px 12px",
+            "border": "",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 66,
+            "y": 1476.3125,
+            "width": 198.515625,
+            "height": 50.5
+          }
+        },
+        {
+          "selector": "pi-a2ui-data-table input",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "14px / 21.7px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(23, 32, 51)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "10px 12px",
+            "border": "1px solid rgb(129, 144, 165)",
+            "radius": "8px",
+            "maxHeight": "none",
+            "overflowX": "clip"
+          },
+          "rect": {
+            "x": 277.921875,
+            "y": 1387.03125,
+            "width": 180,
+            "height": 43.6875
+          }
+        },
+        {
+          "selector": "pi-a2ui-chart svg",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "14px / 21.7px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(23, 32, 51)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "0px",
+            "border": "0px none rgb(23, 32, 51)",
+            "radius": "0px",
+            "maxHeight": "290px",
+            "overflowX": "hidden"
+          },
+          "rect": {
+            "x": 65,
+            "y": 812.125,
+            "width": 638,
+            "height": 269.15625
+          }
+        }
+      ],
+      "title": "Pi / A2UI — Your agent, in view.",
+      "prototypeDOM": "CSS + chart legend/grid/line-style DOM presentation sketch only"
+    },
+    {
+      "id": "RP01-dashboard",
+      "phase": "before",
+      "viewport": {
+        "width": 360,
+        "height": 900
+      },
+      "file": "RP01-dashboard-mobile-before.png",
+      "sha256": "657818ca867d50fa91221ec931a44fa015c908287b4c054d351cb0cb58b79f0d",
+      "sourceSHA256": "08b75988115ebc74ce398db13eadaba0d505bf0f6a26b69ebaba5d532840aeb5",
+      "snapshotSHA256": "9773be17b1dc6604510717595372c99d7ba4b0aad391e9210ed053219e89a6f6",
+      "pageOverflow": false,
+      "font": "-apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "styles": [
+        {
+          "selector": "main",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "48px 23px 50px",
+            "border": "0px none rgb(40, 40, 34)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 0,
+            "y": 69,
+            "width": 360,
+            "height": 1721.875
+          }
+        },
+        {
+          "selector": "#surfaces .a2ui-card",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "20px",
+            "border": "1px solid rgb(224, 222, 213)",
+            "radius": "14px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 23,
+            "y": 379.34375,
+            "width": 63.984375,
+            "height": 374
+          }
+        },
+        {
+          "selector": "pi-a2ui-data-table th",
+          "shadow": false,
+          "style": {
+            "display": "table-cell",
+            "font": "700 16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "8px",
+            "border": "",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 44,
+            "y": 1420.28125,
+            "width": 76.46875,
+            "height": 79.5
+          }
+        },
+        {
+          "selector": "pi-a2ui-data-table input",
+          "shadow": false,
+          "style": {
+            "display": "inline-block",
+            "font": "13.3333px Arial",
+            "color": "rgb(0, 0, 0)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "1px 2px",
+            "border": "2px inset rgb(118, 118, 118)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "clip"
+          },
+          "rect": {
+            "x": 44,
+            "y": 1381.28125,
+            "width": 153,
+            "height": 21
+          }
+        },
+        {
+          "selector": "pi-a2ui-chart svg",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "0px",
+            "border": "0px none rgb(40, 40, 34)",
+            "radius": "0px",
+            "maxHeight": "260px",
+            "overflowX": "hidden"
+          },
+          "rect": {
+            "x": 44,
+            "y": 928.40625,
+            "width": 272,
+            "height": 106.25
+          }
+        }
+      ],
+      "title": "Pi / A2UI — Your agent, in view.",
+      "prototypeDOM": "none"
+    },
+    {
+      "id": "RP01-dashboard",
+      "phase": "after",
+      "viewport": {
+        "width": 360,
+        "height": 900
+      },
+      "file": "RP01-dashboard-mobile-after.png",
+      "sha256": "2981edffd744f094d95e4649a3930fc1e9988fab3247b8b3dfb47e714f3120f4",
+      "sourceSHA256": "08b75988115ebc74ce398db13eadaba0d505bf0f6a26b69ebaba5d532840aeb5",
+      "snapshotSHA256": "9773be17b1dc6604510717595372c99d7ba4b0aad391e9210ed053219e89a6f6",
+      "pageOverflow": false,
+      "font": "-apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "styles": [
+        {
+          "selector": "main",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "14px / 21.7px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(23, 32, 51)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "24px 16px 40px",
+            "border": "0px none rgb(23, 32, 51)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 0,
+            "y": 57,
+            "width": 360,
+            "height": 1958.40625
+          }
+        },
+        {
+          "selector": "#surfaces .a2ui-card",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "14px / 21.7px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(23, 32, 51)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "16px",
+            "border": "1px solid rgb(219, 226, 234)",
+            "radius": "14px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 16,
+            "y": 316.46875,
+            "width": 328,
+            "height": 134.375
+          }
+        },
+        {
+          "selector": "pi-a2ui-data-table th",
+          "shadow": false,
+          "style": {
+            "display": "table-cell",
+            "font": "",
+            "color": "rgb(86, 100, 119)",
+            "background": "rgb(245, 247, 251)",
+            "padding": "8px 10px",
+            "border": "",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 34,
+            "y": 1685.59375,
+            "width": 90.078125,
+            "height": 56.875
+          }
+        },
+        {
+          "selector": "pi-a2ui-data-table input",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "14px / 21.7px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(23, 32, 51)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "10px 12px",
+            "border": "1px solid rgb(129, 144, 165)",
+            "radius": "8px",
+            "maxHeight": "none",
+            "overflowX": "clip"
+          },
+          "rect": {
+            "x": 33,
+            "y": 1596.3125,
+            "width": 180,
+            "height": 43.6875
+          }
+        },
+        {
+          "selector": "pi-a2ui-chart svg",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "14px / 21.7px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(23, 32, 51)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "0px",
+            "border": "0px none rgb(23, 32, 51)",
+            "radius": "0px",
+            "maxHeight": "290px",
+            "overflowX": "hidden"
+          },
+          "rect": {
+            "x": 33,
+            "y": 1047.0625,
+            "width": 540,
+            "height": 227.8125
+          }
+        }
+      ],
+      "title": "Pi / A2UI — Your agent, in view.",
+      "prototypeDOM": "CSS + chart legend/grid/line-style DOM presentation sketch only"
+    },
+    {
+      "id": "RP01-dashboard",
+      "phase": "before",
+      "viewport": {
+        "width": 640,
+        "height": 450
+      },
+      "file": "RP01-dashboard-reflow-200-equivalent-before.png",
+      "sha256": "3ae7512663dc0fab77e787e8460c239763dba4bbe2f61ed8fdcf2a9e55dd6644",
+      "sourceSHA256": "08b75988115ebc74ce398db13eadaba0d505bf0f6a26b69ebaba5d532840aeb5",
+      "snapshotSHA256": "9773be17b1dc6604510717595372c99d7ba4b0aad391e9210ed053219e89a6f6",
+      "pageOverflow": false,
+      "font": "-apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "styles": [
+        {
+          "selector": "main",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "72px 40px 80px",
+            "border": "0px none rgb(40, 40, 34)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 0,
+            "y": 83,
+            "width": 640,
+            "height": 1622.15625
+          }
+        },
+        {
+          "selector": "#surfaces .a2ui-card",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "25.6px",
+            "border": "1px solid rgb(224, 222, 213)",
+            "radius": "14px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 40,
+            "y": 428.34375,
+            "width": 121.421875,
+            "height": 210.1875
+          }
+        },
+        {
+          "selector": "pi-a2ui-data-table th",
+          "shadow": false,
+          "style": {
+            "display": "table-cell",
+            "font": "700 16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "8px",
+            "border": "",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 66.59375,
+            "y": 1408.96875,
+            "width": 152.453125,
+            "height": 41.5
+          }
+        },
+        {
+          "selector": "pi-a2ui-data-table input",
+          "shadow": false,
+          "style": {
+            "display": "inline-block",
+            "font": "13.3333px Arial",
+            "color": "rgb(0, 0, 0)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "1px 2px",
+            "border": "2px inset rgb(118, 118, 118)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "clip"
+          },
+          "rect": {
+            "x": 297.515625,
+            "y": 1369.96875,
+            "width": 153,
+            "height": 21
+          }
+        },
+        {
+          "selector": "pi-a2ui-chart svg",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "0px",
+            "border": "0px none rgb(40, 40, 34)",
+            "radius": "0px",
+            "maxHeight": "260px",
+            "overflowX": "hidden"
+          },
+          "rect": {
+            "x": 66.59375,
+            "y": 832.1875,
+            "width": 506.8125,
+            "height": 197.96875
+          }
+        }
+      ],
+      "title": "Pi / A2UI — Your agent, in view.",
+      "prototypeDOM": "none"
+    },
+    {
+      "id": "RP01-dashboard",
+      "phase": "after",
+      "viewport": {
+        "width": 640,
+        "height": 450
+      },
+      "file": "RP01-dashboard-reflow-200-equivalent-after.png",
+      "sha256": "903e469f46b0233573b5e6a69b10820cd9b90f7a243ad1621b799863e281e54e",
+      "sourceSHA256": "08b75988115ebc74ce398db13eadaba0d505bf0f6a26b69ebaba5d532840aeb5",
+      "snapshotSHA256": "9773be17b1dc6604510717595372c99d7ba4b0aad391e9210ed053219e89a6f6",
+      "pageOverflow": false,
+      "font": "-apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "styles": [
+        {
+          "selector": "main",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "14px / 21.7px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(23, 32, 51)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "24px 16px 40px",
+            "border": "0px none rgb(23, 32, 51)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 0,
+            "y": 57,
+            "width": 640,
+            "height": 1870.265625
+          }
+        },
+        {
+          "selector": "#surfaces .a2ui-card",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "14px / 21.7px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(23, 32, 51)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "16px",
+            "border": "1px solid rgb(219, 226, 234)",
+            "radius": "14px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 16,
+            "y": 316.46875,
+            "width": 608,
+            "height": 134.375
+          }
+        },
+        {
+          "selector": "pi-a2ui-data-table th",
+          "shadow": false,
+          "style": {
+            "display": "table-cell",
+            "font": "",
+            "color": "rgb(86, 100, 119)",
+            "background": "rgb(245, 247, 251)",
+            "padding": "8px 10px",
+            "border": "",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 34,
+            "y": 1668.25,
+            "width": 180.21875,
+            "height": 46.5
+          }
+        },
+        {
+          "selector": "pi-a2ui-data-table input",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "14px / 21.7px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(23, 32, 51)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "10px 12px",
+            "border": "1px solid rgb(129, 144, 165)",
+            "radius": "8px",
+            "maxHeight": "none",
+            "overflowX": "clip"
+          },
+          "rect": {
+            "x": 245.921875,
+            "y": 1578.96875,
+            "width": 180,
+            "height": 43.6875
+          }
+        },
+        {
+          "selector": "pi-a2ui-chart svg",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "14px / 21.7px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(23, 32, 51)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "0px",
+            "border": "0px none rgb(23, 32, 51)",
+            "radius": "0px",
+            "maxHeight": "290px",
+            "overflowX": "hidden"
+          },
+          "rect": {
+            "x": 33,
+            "y": 1047.0625,
+            "width": 574,
+            "height": 242.15625
+          }
+        }
+      ],
+      "title": "Pi / A2UI — Your agent, in view.",
+      "prototypeDOM": "CSS + chart legend/grid/line-style DOM presentation sketch only"
+    },
+    {
+      "id": "RP02-long-table",
+      "phase": "before",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "file": "RP02-long-table-desktop-before.png",
+      "sha256": "fbb2df073ac3e6a7ed77eebcc269e7c1087c1e6c9944b01db5ec8df0f4a4bfc6",
+      "sourceSHA256": "ee3d5e1d055c8f96b3e8e90207b4fb2d7d94856abc81cc22818e5a4d340d9eca",
+      "snapshotSHA256": "19cd9fe72c09a6285aeb4bb1d53e9842dad9e50671cacd9a61a28fe9c7626048",
+      "pageOverflow": false,
+      "font": "-apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "styles": [
+        {
+          "selector": "main",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "72px 40px 80px",
+            "border": "0px none rgb(40, 40, 34)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 200,
+            "y": 83,
+            "width": 880,
+            "height": 936.25
+          }
+        },
+        {
+          "selector": "#surfaces .a2ui-card",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "32px",
+            "border": "1px solid rgb(224, 222, 213)",
+            "radius": "14px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 240,
+            "y": 357.75,
+            "width": 800,
+            "height": 538.90625
+          }
+        },
+        {
+          "selector": "pi-a2ui-data-table th",
+          "shadow": false,
+          "style": {
+            "display": "table-cell",
+            "font": "700 16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "8px",
+            "border": "",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 273,
+            "y": 531.6875,
+            "width": 405.25,
+            "height": 60.5
+          }
+        },
+        {
+          "selector": "pi-a2ui-data-table input",
+          "shadow": false,
+          "style": {
+            "display": "inline-block",
+            "font": "13.3333px Arial",
+            "color": "rgb(0, 0, 0)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "1px 2px",
+            "border": "2px inset rgb(118, 118, 118)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "clip"
+          },
+          "rect": {
+            "x": 456.296875,
+            "y": 492.6875,
+            "width": 153,
+            "height": 21
+          }
+        }
+      ],
+      "title": "Pi / A2UI — Your agent, in view.",
+      "prototypeDOM": "none"
+    },
+    {
+      "id": "RP02-long-table",
+      "phase": "after",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "file": "RP02-long-table-desktop-after.png",
+      "sha256": "51ed3d3a07ef1660664433d0728c6cccf014b237108c47782f9addda3148ad7b",
+      "sourceSHA256": "ee3d5e1d055c8f96b3e8e90207b4fb2d7d94856abc81cc22818e5a4d340d9eca",
+      "snapshotSHA256": "19cd9fe72c09a6285aeb4bb1d53e9842dad9e50671cacd9a61a28fe9c7626048",
+      "pageOverflow": false,
+      "font": "-apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "styles": [
+        {
+          "selector": "main",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "14px / 21.7px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(23, 32, 51)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "28px 40px 48px",
+            "border": "0px none rgb(23, 32, 51)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 20,
+            "y": 65,
+            "width": 1240,
+            "height": 822.1875
+          }
+        },
+        {
+          "selector": "#surfaces .a2ui-card",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "14px / 21.7px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(23, 32, 51)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "24px",
+            "border": "1px solid rgb(219, 226, 234)",
+            "radius": "14px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 60,
+            "y": 254.484375,
+            "width": 1160,
+            "height": 542.109375
+          }
+        },
+        {
+          "selector": "pi-a2ui-data-table th",
+          "shadow": false,
+          "style": {
+            "display": "table-cell",
+            "font": "",
+            "color": "rgb(86, 100, 119)",
+            "background": "rgb(245, 247, 251)",
+            "padding": "10px 12px",
+            "border": "",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 86,
+            "y": 451.75,
+            "width": 644.734375,
+            "height": 50.5
+          }
+        },
+        {
+          "selector": "pi-a2ui-data-table input",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "14px / 21.7px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(23, 32, 51)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "10px 12px",
+            "border": "1px solid rgb(129, 144, 165)",
+            "radius": "8px",
+            "maxHeight": "none",
+            "overflowX": "clip"
+          },
+          "rect": {
+            "x": 256.25,
+            "y": 362.46875,
+            "width": 180,
+            "height": 43.6875
+          }
+        }
+      ],
+      "title": "Pi / A2UI — Your agent, in view.",
+      "prototypeDOM": "CSS + chart legend/grid/line-style DOM presentation sketch only"
+    },
+    {
+      "id": "RP02-long-table",
+      "phase": "before",
+      "viewport": {
+        "width": 768,
+        "height": 900
+      },
+      "file": "RP02-long-table-tablet-before.png",
+      "sha256": "dfe932f1e696faa14cf4328d3c23415650a3507f69f69ce6201c7dcdf71a1bae",
+      "sourceSHA256": "ee3d5e1d055c8f96b3e8e90207b4fb2d7d94856abc81cc22818e5a4d340d9eca",
+      "snapshotSHA256": "19cd9fe72c09a6285aeb4bb1d53e9842dad9e50671cacd9a61a28fe9c7626048",
+      "pageOverflow": false,
+      "font": "-apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "styles": [
+        {
+          "selector": "main",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "72px 40px 80px",
+            "border": "0px none rgb(40, 40, 34)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 0,
+            "y": 83,
+            "width": 768,
+            "height": 948.1875
+          }
+        },
+        {
+          "selector": "#surfaces .a2ui-card",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "30.72px",
+            "border": "1px solid rgb(224, 222, 213)",
+            "radius": "14px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 40,
+            "y": 347,
+            "width": 688,
+            "height": 561.59375
+          }
+        },
+        {
+          "selector": "pi-a2ui-data-table th",
+          "shadow": false,
+          "style": {
+            "display": "table-cell",
+            "font": "700 16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "8px",
+            "border": "",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 71.71875,
+            "y": 508.90625,
+            "width": 333.984375,
+            "height": 60.5
+          }
+        },
+        {
+          "selector": "pi-a2ui-data-table input",
+          "shadow": false,
+          "style": {
+            "display": "inline-block",
+            "font": "13.3333px Arial",
+            "color": "rgb(0, 0, 0)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "1px 2px",
+            "border": "2px inset rgb(118, 118, 118)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "clip"
+          },
+          "rect": {
+            "x": 255.015625,
+            "y": 469.90625,
+            "width": 153,
+            "height": 21
+          }
+        }
+      ],
+      "title": "Pi / A2UI — Your agent, in view.",
+      "prototypeDOM": "none"
+    },
+    {
+      "id": "RP02-long-table",
+      "phase": "after",
+      "viewport": {
+        "width": 768,
+        "height": 900
+      },
+      "file": "RP02-long-table-tablet-after.png",
+      "sha256": "d6ae7341bfde060a6c9a48b9e6ceb291d123fdbd16f20c6c267ad437437a5a9d",
+      "sourceSHA256": "ee3d5e1d055c8f96b3e8e90207b4fb2d7d94856abc81cc22818e5a4d340d9eca",
+      "snapshotSHA256": "19cd9fe72c09a6285aeb4bb1d53e9842dad9e50671cacd9a61a28fe9c7626048",
+      "pageOverflow": false,
+      "font": "-apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "styles": [
+        {
+          "selector": "main",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "14px / 21.7px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(23, 32, 51)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "28px 40px 48px",
+            "border": "0px none rgb(23, 32, 51)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 0,
+            "y": 65,
+            "width": 768,
+            "height": 892.984375
+          }
+        },
+        {
+          "selector": "#surfaces .a2ui-card",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "14px / 21.7px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(23, 32, 51)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "24px",
+            "border": "1px solid rgb(219, 226, 234)",
+            "radius": "14px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 40,
+            "y": 254.484375,
+            "width": 688,
+            "height": 612.90625
+          }
+        },
+        {
+          "selector": "pi-a2ui-data-table th",
+          "shadow": false,
+          "style": {
+            "display": "table-cell",
+            "font": "",
+            "color": "rgb(86, 100, 119)",
+            "background": "rgb(245, 247, 251)",
+            "padding": "10px 12px",
+            "border": "",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 66,
+            "y": 451.75,
+            "width": 354.828125,
+            "height": 60.875
+          }
+        },
+        {
+          "selector": "pi-a2ui-data-table input",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "14px / 21.7px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(23, 32, 51)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "10px 12px",
+            "border": "1px solid rgb(129, 144, 165)",
+            "radius": "8px",
+            "maxHeight": "none",
+            "overflowX": "clip"
+          },
+          "rect": {
+            "x": 236.25,
+            "y": 362.46875,
+            "width": 180,
+            "height": 43.6875
+          }
+        }
+      ],
+      "title": "Pi / A2UI — Your agent, in view.",
+      "prototypeDOM": "CSS + chart legend/grid/line-style DOM presentation sketch only"
+    },
+    {
+      "id": "RP02-long-table",
+      "phase": "before",
+      "viewport": {
+        "width": 360,
+        "height": 900
+      },
+      "file": "RP02-long-table-mobile-before.png",
+      "sha256": "bfc135ec97eaabe3b01a176ee220eddc191c9fd4afdc1d2b04d53d203c9fc970",
+      "sourceSHA256": "ee3d5e1d055c8f96b3e8e90207b4fb2d7d94856abc81cc22818e5a4d340d9eca",
+      "snapshotSHA256": "19cd9fe72c09a6285aeb4bb1d53e9842dad9e50671cacd9a61a28fe9c7626048",
+      "pageOverflow": false,
+      "font": "-apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "styles": [
+        {
+          "selector": "main",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "48px 23px 50px",
+            "border": "0px none rgb(40, 40, 34)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 0,
+            "y": 69,
+            "width": 360,
+            "height": 991.90625
+          }
+        },
+        {
+          "selector": "#surfaces .a2ui-card",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "20px",
+            "border": "1px solid rgb(224, 222, 213)",
+            "radius": "14px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 23,
+            "y": 293.078125,
+            "width": 314,
+            "height": 675.234375
+          }
+        },
+        {
+          "selector": "pi-a2ui-data-table th",
+          "shadow": false,
+          "style": {
+            "display": "table-cell",
+            "font": "700 16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "8px",
+            "border": "",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 44,
+            "y": 457.34375,
+            "width": 104.359375,
+            "height": 98.5
+          }
+        },
+        {
+          "selector": "pi-a2ui-data-table input",
+          "shadow": false,
+          "style": {
+            "display": "inline-block",
+            "font": "13.3333px Arial",
+            "color": "rgb(0, 0, 0)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "1px 2px",
+            "border": "2px inset rgb(118, 118, 118)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "clip"
+          },
+          "rect": {
+            "x": 44,
+            "y": 418.34375,
+            "width": 153,
+            "height": 21
+          }
+        }
+      ],
+      "title": "Pi / A2UI — Your agent, in view.",
+      "prototypeDOM": "none"
+    },
+    {
+      "id": "RP02-long-table",
+      "phase": "after",
+      "viewport": {
+        "width": 360,
+        "height": 900
+      },
+      "file": "RP02-long-table-mobile-after.png",
+      "sha256": "a77743c21381251521dcdca20fcad133a0fa63447a951946c8d561c79b99b6f3",
+      "sourceSHA256": "ee3d5e1d055c8f96b3e8e90207b4fb2d7d94856abc81cc22818e5a4d340d9eca",
+      "snapshotSHA256": "19cd9fe72c09a6285aeb4bb1d53e9842dad9e50671cacd9a61a28fe9c7626048",
+      "pageOverflow": false,
+      "font": "-apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "styles": [
+        {
+          "selector": "main",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "14px / 21.7px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(23, 32, 51)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "24px 16px 40px",
+            "border": "0px none rgb(23, 32, 51)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 0,
+            "y": 57,
+            "width": 360,
+            "height": 921.578125
+          }
+        },
+        {
+          "selector": "#surfaces .a2ui-card",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "14px / 21.7px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(23, 32, 51)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "16px",
+            "border": "1px solid rgb(219, 226, 234)",
+            "radius": "14px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 16,
+            "y": 233.484375,
+            "width": 328,
+            "height": 662.5
+          }
+        },
+        {
+          "selector": "pi-a2ui-data-table th",
+          "shadow": false,
+          "style": {
+            "display": "table-cell",
+            "font": "",
+            "color": "rgb(86, 100, 119)",
+            "background": "rgb(245, 247, 251)",
+            "padding": "8px 10px",
+            "border": "",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 34,
+            "y": 454.4375,
+            "width": 138.15625,
+            "height": 89.25
+          }
+        },
+        {
+          "selector": "pi-a2ui-data-table input",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "14px / 21.7px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(23, 32, 51)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "10px 12px",
+            "border": "1px solid rgb(129, 144, 165)",
+            "radius": "8px",
+            "maxHeight": "none",
+            "overflowX": "clip"
+          },
+          "rect": {
+            "x": 33,
+            "y": 365.15625,
+            "width": 180,
+            "height": 43.6875
+          }
+        }
+      ],
+      "title": "Pi / A2UI — Your agent, in view.",
+      "prototypeDOM": "CSS + chart legend/grid/line-style DOM presentation sketch only"
+    },
+    {
+      "id": "RP02-long-table",
+      "phase": "before",
+      "viewport": {
+        "width": 640,
+        "height": 450
+      },
+      "file": "RP02-long-table-reflow-200-equivalent-before.png",
+      "sha256": "4b2b9344a7f4874cb9518477ec032bcdc8f16e970977a524ad29f60580234fa2",
+      "sourceSHA256": "ee3d5e1d055c8f96b3e8e90207b4fb2d7d94856abc81cc22818e5a4d340d9eca",
+      "snapshotSHA256": "19cd9fe72c09a6285aeb4bb1d53e9842dad9e50671cacd9a61a28fe9c7626048",
+      "pageOverflow": false,
+      "font": "-apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "styles": [
+        {
+          "selector": "main",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "72px 40px 80px",
+            "border": "0px none rgb(40, 40, 34)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 0,
+            "y": 83,
+            "width": 640,
+            "height": 983.09375
+          }
+        },
+        {
+          "selector": "#surfaces .a2ui-card",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "25.6px",
+            "border": "1px solid rgb(224, 222, 213)",
+            "radius": "14px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 40,
+            "y": 342.078125,
+            "width": 560,
+            "height": 601.421875
+          }
+        },
+        {
+          "selector": "pi-a2ui-data-table th",
+          "shadow": false,
+          "style": {
+            "display": "table-cell",
+            "font": "700 16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "8px",
+            "border": "",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 66.59375,
+            "y": 493.9375,
+            "width": 257.28125,
+            "height": 79.5
+          }
+        },
+        {
+          "selector": "pi-a2ui-data-table input",
+          "shadow": false,
+          "style": {
+            "display": "inline-block",
+            "font": "13.3333px Arial",
+            "color": "rgb(0, 0, 0)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "1px 2px",
+            "border": "2px inset rgb(118, 118, 118)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "clip"
+          },
+          "rect": {
+            "x": 249.890625,
+            "y": 454.9375,
+            "width": 153,
+            "height": 21
+          }
+        }
+      ],
+      "title": "Pi / A2UI — Your agent, in view.",
+      "prototypeDOM": "none"
+    },
+    {
+      "id": "RP02-long-table",
+      "phase": "after",
+      "viewport": {
+        "width": 640,
+        "height": 450
+      },
+      "file": "RP02-long-table-reflow-200-equivalent-after.png",
+      "sha256": "ad055b8da88d0428280bc80aaeaed445ab6ebfa6fa2f930d2dd93c9efb015447",
+      "sourceSHA256": "ee3d5e1d055c8f96b3e8e90207b4fb2d7d94856abc81cc22818e5a4d340d9eca",
+      "snapshotSHA256": "19cd9fe72c09a6285aeb4bb1d53e9842dad9e50671cacd9a61a28fe9c7626048",
+      "pageOverflow": false,
+      "font": "-apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "styles": [
+        {
+          "selector": "main",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "14px / 21.7px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(23, 32, 51)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "24px 16px 40px",
+            "border": "0px none rgb(23, 32, 51)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 0,
+            "y": 57,
+            "width": 640,
+            "height": 852.125
+          }
+        },
+        {
+          "selector": "#surfaces .a2ui-card",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "14px / 21.7px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(23, 32, 51)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "16px",
+            "border": "1px solid rgb(219, 226, 234)",
+            "radius": "14px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 16,
+            "y": 233.484375,
+            "width": 608,
+            "height": 593.046875
+          }
+        },
+        {
+          "selector": "pi-a2ui-data-table th",
+          "shadow": false,
+          "style": {
+            "display": "table-cell",
+            "font": "",
+            "color": "rgb(86, 100, 119)",
+            "background": "rgb(245, 247, 251)",
+            "padding": "8px 10px",
+            "border": "",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 34,
+            "y": 422.75,
+            "width": 319.703125,
+            "height": 56.875
+          }
+        },
+        {
+          "selector": "pi-a2ui-data-table input",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "14px / 21.7px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(23, 32, 51)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "10px 12px",
+            "border": "1px solid rgb(129, 144, 165)",
+            "radius": "8px",
+            "maxHeight": "none",
+            "overflowX": "clip"
+          },
+          "rect": {
+            "x": 204.25,
+            "y": 333.46875,
+            "width": 180,
+            "height": 43.6875
+          }
+        }
+      ],
+      "title": "Pi / A2UI — Your agent, in view.",
+      "prototypeDOM": "CSS + chart legend/grid/line-style DOM presentation sketch only"
+    },
+    {
+      "id": "RP03-guarded-form",
+      "phase": "before",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "file": "RP03-guarded-form-desktop-before.png",
+      "sha256": "0b72042bd3b39455dde3fc39218598e943b9e6f155f1cbf2f2b768fe360adac9",
+      "sourceSHA256": "77c29d0e2fc93d8e331acf44e6656d26b75c862c6acf9da308b6475406ff5b3b",
+      "snapshotSHA256": "fdb05ed4ee0b46d042abe373eb6dcc0cbae2c55fba725abf0ff14d4ad30e01b4",
+      "pageOverflow": false,
+      "font": "-apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "styles": [
+        {
+          "selector": "main",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "72px 40px 80px",
+            "border": "0px none rgb(40, 40, 34)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 200,
+            "y": 83,
+            "width": 880,
+            "height": 1207.015625
+          }
+        },
+        {
+          "selector": "#surfaces .a2ui-card",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "32px",
+            "border": "1px solid rgb(224, 222, 213)",
+            "radius": "14px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 240,
+            "y": 357.75,
+            "width": 800,
+            "height": 744.875
+          }
+        },
+        {
+          "selector": "pi-a2ui-form-validation section:not([hidden])",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(153, 27, 27)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "12.8px",
+            "border": "1px solid rgb(185, 28, 28)",
+            "radius": "6px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 273,
+            "y": 791.46875,
+            "width": 734,
+            "height": 131.59375
+          }
+        }
+      ],
+      "title": "Pi / A2UI — Your agent, in view.",
+      "prototypeDOM": "none"
+    },
+    {
+      "id": "RP03-guarded-form",
+      "phase": "after",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "file": "RP03-guarded-form-desktop-after.png",
+      "sha256": "c877690c9818784ec19e771be59462bde823965fea9ad08a28e879c8678540a7",
+      "sourceSHA256": "77c29d0e2fc93d8e331acf44e6656d26b75c862c6acf9da308b6475406ff5b3b",
+      "snapshotSHA256": "fdb05ed4ee0b46d042abe373eb6dcc0cbae2c55fba725abf0ff14d4ad30e01b4",
+      "pageOverflow": false,
+      "font": "-apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "styles": [
+        {
+          "selector": "main",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "14px / 21.7px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(23, 32, 51)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "28px 40px 48px",
+            "border": "0px none rgb(23, 32, 51)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 20,
+            "y": 65,
+            "width": 1240,
+            "height": 1065.546875
+          }
+        },
+        {
+          "selector": "#surfaces .a2ui-card",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "14px / 21.7px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(23, 32, 51)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "24px",
+            "border": "1px solid rgb(219, 226, 234)",
+            "radius": "14px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 60,
+            "y": 254.484375,
+            "width": 1160,
+            "height": 720.671875
+          }
+        },
+        {
+          "selector": "pi-a2ui-form-validation section:not([hidden])",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "13px / 20.15px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(180, 35, 24)",
+            "background": "rgb(255, 245, 243)",
+            "padding": "14px 16px",
+            "border": "",
+            "radius": "10px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 85,
+            "y": 686.5625,
+            "width": 1110,
+            "height": 118.5625
+          }
+        }
+      ],
+      "title": "Pi / A2UI — Your agent, in view.",
+      "prototypeDOM": "CSS + chart legend/grid/line-style DOM presentation sketch only"
+    },
+    {
+      "id": "RP03-guarded-form",
+      "phase": "before",
+      "viewport": {
+        "width": 768,
+        "height": 900
+      },
+      "file": "RP03-guarded-form-tablet-before.png",
+      "sha256": "7b913c84df1fed7ac77e33fa6a0e70f17e508cc72691b36eb67b49054b08e43d",
+      "sourceSHA256": "77c29d0e2fc93d8e331acf44e6656d26b75c862c6acf9da308b6475406ff5b3b",
+      "snapshotSHA256": "fdb05ed4ee0b46d042abe373eb6dcc0cbae2c55fba725abf0ff14d4ad30e01b4",
+      "pageOverflow": false,
+      "font": "-apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "styles": [
+        {
+          "selector": "main",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "72px 40px 80px",
+            "border": "0px none rgb(40, 40, 34)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 0,
+            "y": 83,
+            "width": 768,
+            "height": 1182.953125
+          }
+        },
+        {
+          "selector": "#surfaces .a2ui-card",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "30.72px",
+            "border": "1px solid rgb(224, 222, 213)",
+            "radius": "14px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 40,
+            "y": 347,
+            "width": 688,
+            "height": 731.5625
+          }
+        },
+        {
+          "selector": "pi-a2ui-form-validation section:not([hidden])",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(153, 27, 27)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "12.8px",
+            "border": "1px solid rgb(185, 28, 28)",
+            "radius": "6px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 71.71875,
+            "y": 768.6875,
+            "width": 624.5625,
+            "height": 131.59375
+          }
+        }
+      ],
+      "title": "Pi / A2UI — Your agent, in view.",
+      "prototypeDOM": "none"
+    },
+    {
+      "id": "RP03-guarded-form",
+      "phase": "after",
+      "viewport": {
+        "width": 768,
+        "height": 900
+      },
+      "file": "RP03-guarded-form-tablet-after.png",
+      "sha256": "2919758f1ed2223fe0f6d42731b42dac0e539d10b70385475698ca06dd5be68a",
+      "sourceSHA256": "77c29d0e2fc93d8e331acf44e6656d26b75c862c6acf9da308b6475406ff5b3b",
+      "snapshotSHA256": "fdb05ed4ee0b46d042abe373eb6dcc0cbae2c55fba725abf0ff14d4ad30e01b4",
+      "pageOverflow": false,
+      "font": "-apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "styles": [
+        {
+          "selector": "main",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "14px / 21.7px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(23, 32, 51)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "28px 40px 48px",
+            "border": "0px none rgb(23, 32, 51)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 0,
+            "y": 65,
+            "width": 768,
+            "height": 1065.546875
+          }
+        },
+        {
+          "selector": "#surfaces .a2ui-card",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "14px / 21.7px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(23, 32, 51)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "24px",
+            "border": "1px solid rgb(219, 226, 234)",
+            "radius": "14px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 40,
+            "y": 254.484375,
+            "width": 688,
+            "height": 720.671875
+          }
+        },
+        {
+          "selector": "pi-a2ui-form-validation section:not([hidden])",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "13px / 20.15px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(180, 35, 24)",
+            "background": "rgb(255, 245, 243)",
+            "padding": "14px 16px",
+            "border": "",
+            "radius": "10px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 65,
+            "y": 686.5625,
+            "width": 638,
+            "height": 118.5625
+          }
+        }
+      ],
+      "title": "Pi / A2UI — Your agent, in view.",
+      "prototypeDOM": "CSS + chart legend/grid/line-style DOM presentation sketch only"
+    },
+    {
+      "id": "RP03-guarded-form",
+      "phase": "before",
+      "viewport": {
+        "width": 360,
+        "height": 900
+      },
+      "file": "RP03-guarded-form-mobile-before.png",
+      "sha256": "ce8c876dbbb408f319fe6990d5435e4766423e704a9bb466b6b7a9f27ae43486",
+      "sourceSHA256": "77c29d0e2fc93d8e331acf44e6656d26b75c862c6acf9da308b6475406ff5b3b",
+      "snapshotSHA256": "fdb05ed4ee0b46d042abe373eb6dcc0cbae2c55fba725abf0ff14d4ad30e01b4",
+      "pageOverflow": false,
+      "font": "-apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "styles": [
+        {
+          "selector": "main",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "48px 23px 50px",
+            "border": "0px none rgb(40, 40, 34)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 0,
+            "y": 69,
+            "width": 360,
+            "height": 1128.265625
+          }
+        },
+        {
+          "selector": "#surfaces .a2ui-card",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "20px",
+            "border": "1px solid rgb(224, 222, 213)",
+            "radius": "14px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 23,
+            "y": 293.078125,
+            "width": 314,
+            "height": 705.203125
+          }
+        },
+        {
+          "selector": "pi-a2ui-form-validation section:not([hidden])",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(153, 27, 27)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "12.8px",
+            "border": "1px solid rgb(185, 28, 28)",
+            "radius": "6px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 44,
+            "y": 699.125,
+            "width": 272,
+            "height": 131.59375
+          }
+        }
+      ],
+      "title": "Pi / A2UI — Your agent, in view.",
+      "prototypeDOM": "none"
+    },
+    {
+      "id": "RP03-guarded-form",
+      "phase": "after",
+      "viewport": {
+        "width": 360,
+        "height": 900
+      },
+      "file": "RP03-guarded-form-mobile-after.png",
+      "sha256": "ec2360fe3ae1e4c566d85f42c40d2ec49abdefd9f95e28056236ebb96a128edd",
+      "sourceSHA256": "77c29d0e2fc93d8e331acf44e6656d26b75c862c6acf9da308b6475406ff5b3b",
+      "snapshotSHA256": "fdb05ed4ee0b46d042abe373eb6dcc0cbae2c55fba725abf0ff14d4ad30e01b4",
+      "pageOverflow": false,
+      "font": "-apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "styles": [
+        {
+          "selector": "main",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "14px / 21.7px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(23, 32, 51)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "24px 16px 40px",
+            "border": "0px none rgb(23, 32, 51)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 0,
+            "y": 57,
+            "width": 360,
+            "height": 1049.34375
+          }
+        },
+        {
+          "selector": "#surfaces .a2ui-card",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "14px / 21.7px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(23, 32, 51)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "16px",
+            "border": "1px solid rgb(219, 226, 234)",
+            "radius": "14px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 16,
+            "y": 233.484375,
+            "width": 328,
+            "height": 704.671875
+          }
+        },
+        {
+          "selector": "pi-a2ui-form-validation section:not([hidden])",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "13px / 20.15px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(180, 35, 24)",
+            "background": "rgb(255, 245, 243)",
+            "padding": "14px 16px",
+            "border": "",
+            "radius": "10px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 33,
+            "y": 657.5625,
+            "width": 294,
+            "height": 118.5625
+          }
+        }
+      ],
+      "title": "Pi / A2UI — Your agent, in view.",
+      "prototypeDOM": "CSS + chart legend/grid/line-style DOM presentation sketch only"
+    },
+    {
+      "id": "RP03-guarded-form",
+      "phase": "before",
+      "viewport": {
+        "width": 640,
+        "height": 450
+      },
+      "file": "RP03-guarded-form-reflow-200-equivalent-before.png",
+      "sha256": "49091b2ed3a9a3f8d8a5fefec2a2a814fe3f49925c1ac1a2ebd960155199670b",
+      "sourceSHA256": "77c29d0e2fc93d8e331acf44e6656d26b75c862c6acf9da308b6475406ff5b3b",
+      "snapshotSHA256": "fdb05ed4ee0b46d042abe373eb6dcc0cbae2c55fba725abf0ff14d4ad30e01b4",
+      "pageOverflow": false,
+      "font": "-apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "styles": [
+        {
+          "selector": "main",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "72px 40px 80px",
+            "border": "0px none rgb(40, 40, 34)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 0,
+            "y": 83,
+            "width": 640,
+            "height": 1183.65625
+          }
+        },
+        {
+          "selector": "#surfaces .a2ui-card",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "25.6px",
+            "border": "1px solid rgb(224, 222, 213)",
+            "radius": "14px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 40,
+            "y": 342.078125,
+            "width": 560,
+            "height": 716.390625
+          }
+        },
+        {
+          "selector": "pi-a2ui-form-validation section:not([hidden])",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(153, 27, 27)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "12.8px",
+            "border": "1px solid rgb(185, 28, 28)",
+            "radius": "6px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 66.59375,
+            "y": 753.71875,
+            "width": 506.8125,
+            "height": 131.59375
+          }
+        }
+      ],
+      "title": "Pi / A2UI — Your agent, in view.",
+      "prototypeDOM": "none"
+    },
+    {
+      "id": "RP03-guarded-form",
+      "phase": "after",
+      "viewport": {
+        "width": 640,
+        "height": 450
+      },
+      "file": "RP03-guarded-form-reflow-200-equivalent-after.png",
+      "sha256": "745fb1de2af4f7d0a04a43be256a7e3467d75d178736dbde9d0729bf24c57776",
+      "sourceSHA256": "77c29d0e2fc93d8e331acf44e6656d26b75c862c6acf9da308b6475406ff5b3b",
+      "snapshotSHA256": "fdb05ed4ee0b46d042abe373eb6dcc0cbae2c55fba725abf0ff14d4ad30e01b4",
+      "pageOverflow": false,
+      "font": "-apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "styles": [
+        {
+          "selector": "main",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "14px / 21.7px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(23, 32, 51)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "24px 16px 40px",
+            "border": "0px none rgb(23, 32, 51)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 0,
+            "y": 57,
+            "width": 640,
+            "height": 1049.34375
+          }
+        },
+        {
+          "selector": "#surfaces .a2ui-card",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "14px / 21.7px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(23, 32, 51)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "16px",
+            "border": "1px solid rgb(219, 226, 234)",
+            "radius": "14px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 16,
+            "y": 233.484375,
+            "width": 608,
+            "height": 704.671875
+          }
+        },
+        {
+          "selector": "pi-a2ui-form-validation section:not([hidden])",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "13px / 20.15px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(180, 35, 24)",
+            "background": "rgb(255, 245, 243)",
+            "padding": "14px 16px",
+            "border": "",
+            "radius": "10px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 33,
+            "y": 657.5625,
+            "width": 574,
+            "height": 118.5625
+          }
+        }
+      ],
+      "title": "Pi / A2UI — Your agent, in view.",
+      "prototypeDOM": "CSS + chart legend/grid/line-style DOM presentation sketch only"
+    },
+    {
+      "id": "RP04-diff-log",
+      "phase": "before",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "file": "RP04-diff-log-desktop-before.png",
+      "sha256": "7d651fde9d85edef8fc84d2caa2125456f4d3c0235fad2c6d07c0420ffc115ef",
+      "sourceSHA256": "7fb176f46eb593289ea9b0a50147d0df6793f6d288b74cb264e1944de6b626b3",
+      "snapshotSHA256": "cf67ff5996db42e14e8a96dfd70cd080ad5f12c64ab2902f27fb86832904fbc9",
+      "pageOverflow": false,
+      "font": "-apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "styles": [
+        {
+          "selector": "main",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "72px 40px 80px",
+            "border": "0px none rgb(40, 40, 34)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 200,
+            "y": 83,
+            "width": 880,
+            "height": 1207
+          }
+        },
+        {
+          "selector": "#surfaces .a2ui-card",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "32px",
+            "border": "1px solid rgb(224, 222, 213)",
+            "radius": "14px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 240,
+            "y": 357.75,
+            "width": 800,
+            "height": 809.65625
+          }
+        },
+        {
+          "selector": "pi-a2ui-code-diff .add",
+          "shadow": false,
+          "style": {
+            "display": "flex",
+            "font": "12px / 19.2px ui-monospace, monospace",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgb(220, 252, 231)",
+            "padding": "0px",
+            "border": "0px none rgb(40, 40, 34)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 274,
+            "y": 625.5,
+            "width": 732,
+            "height": 19.1875
+          }
+        },
+        {
+          "selector": "pi-a2ui-log-view pre",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "13px monospace",
+            "color": "rgb(226, 232, 240)",
+            "background": "rgb(16, 24, 39)",
+            "padding": "13px",
+            "border": "0px none rgb(226, 232, 240)",
+            "radius": "8px",
+            "maxHeight": "208px",
+            "overflowX": "auto"
+          },
+          "rect": {
+            "x": 273,
+            "y": 915.8125,
+            "width": 734,
+            "height": 119
+          }
+        }
+      ],
+      "title": "Pi / A2UI — Your agent, in view.",
+      "prototypeDOM": "none"
+    },
+    {
+      "id": "RP04-diff-log",
+      "phase": "after",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "file": "RP04-diff-log-desktop-after.png",
+      "sha256": "ffeb9db167c833fdaa5a508b22791033045a2c8cc3524bb1eeb9adb61b24bedc",
+      "sourceSHA256": "7fb176f46eb593289ea9b0a50147d0df6793f6d288b74cb264e1944de6b626b3",
+      "snapshotSHA256": "cf67ff5996db42e14e8a96dfd70cd080ad5f12c64ab2902f27fb86832904fbc9",
+      "pageOverflow": false,
+      "font": "-apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "styles": [
+        {
+          "selector": "main",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "14px / 21.7px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(23, 32, 51)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "28px 40px 48px",
+            "border": "0px none rgb(23, 32, 51)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 20,
+            "y": 65,
+            "width": 1240,
+            "height": 1130.1875
+          }
+        },
+        {
+          "selector": "#surfaces .a2ui-card",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "14px / 21.7px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(23, 32, 51)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "24px",
+            "border": "1px solid rgb(219, 226, 234)",
+            "radius": "14px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 60,
+            "y": 254.484375,
+            "width": 1160,
+            "height": 850.109375
+          }
+        },
+        {
+          "selector": "pi-a2ui-code-diff .add",
+          "shadow": false,
+          "style": {
+            "display": "flex",
+            "font": "12px / 21.6px ui-monospace, SFMono-Regular, Menlo, monospace",
+            "color": "rgb(20, 83, 45)",
+            "background": "rgb(239, 250, 243)",
+            "padding": "2px 10px",
+            "border": "0px none rgb(20, 83, 45)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 86,
+            "y": 478.09375,
+            "width": 1108,
+            "height": 25.59375
+          }
+        },
+        {
+          "selector": "pi-a2ui-log-view pre",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "12px / 21px ui-monospace, SFMono-Regular, Menlo, monospace",
+            "color": "rgb(228, 234, 244)",
+            "background": "rgb(16, 26, 45)",
+            "padding": "16px",
+            "border": "0px none rgb(228, 234, 244)",
+            "radius": "10px",
+            "maxHeight": "260px",
+            "overflowX": "auto"
+          },
+          "rect": {
+            "x": 85,
+            "y": 826.703125,
+            "width": 1110,
+            "height": 158
+          }
+        }
+      ],
+      "title": "Pi / A2UI — Your agent, in view.",
+      "prototypeDOM": "CSS + chart legend/grid/line-style DOM presentation sketch only"
+    },
+    {
+      "id": "RP04-diff-log",
+      "phase": "before",
+      "viewport": {
+        "width": 768,
+        "height": 900
+      },
+      "file": "RP04-diff-log-tablet-before.png",
+      "sha256": "8adeb1f81b32ce6979fead93194587ae4244616d29f7a5c1a4bffe853a7261c9",
+      "sourceSHA256": "7fb176f46eb593289ea9b0a50147d0df6793f6d288b74cb264e1944de6b626b3",
+      "snapshotSHA256": "cf67ff5996db42e14e8a96dfd70cd080ad5f12c64ab2902f27fb86832904fbc9",
+      "pageOverflow": false,
+      "font": "-apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "styles": [
+        {
+          "selector": "main",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "72px 40px 80px",
+            "border": "0px none rgb(40, 40, 34)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 0,
+            "y": 83,
+            "width": 768,
+            "height": 1182.9375
+          }
+        },
+        {
+          "selector": "#surfaces .a2ui-card",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "30.72px",
+            "border": "1px solid rgb(224, 222, 213)",
+            "radius": "14px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 40,
+            "y": 347,
+            "width": 688,
+            "height": 796.34375
+          }
+        },
+        {
+          "selector": "pi-a2ui-code-diff .add",
+          "shadow": false,
+          "style": {
+            "display": "flex",
+            "font": "12px / 19.2px ui-monospace, monospace",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgb(220, 252, 231)",
+            "padding": "0px",
+            "border": "0px none rgb(40, 40, 34)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 72.71875,
+            "y": 602.71875,
+            "width": 622.5625,
+            "height": 19.1875
+          }
+        },
+        {
+          "selector": "pi-a2ui-log-view pre",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "13px monospace",
+            "color": "rgb(226, 232, 240)",
+            "background": "rgb(16, 24, 39)",
+            "padding": "13px",
+            "border": "0px none rgb(226, 232, 240)",
+            "radius": "8px",
+            "maxHeight": "208px",
+            "overflowX": "auto"
+          },
+          "rect": {
+            "x": 71.71875,
+            "y": 893.03125,
+            "width": 624.5625,
+            "height": 119
+          }
+        }
+      ],
+      "title": "Pi / A2UI — Your agent, in view.",
+      "prototypeDOM": "none"
+    },
+    {
+      "id": "RP04-diff-log",
+      "phase": "after",
+      "viewport": {
+        "width": 768,
+        "height": 900
+      },
+      "file": "RP04-diff-log-tablet-after.png",
+      "sha256": "d4f133e4cdce9b66018e77ca61e6e9718085e476643a8bf1b3afe6d8f7084f22",
+      "sourceSHA256": "7fb176f46eb593289ea9b0a50147d0df6793f6d288b74cb264e1944de6b626b3",
+      "snapshotSHA256": "cf67ff5996db42e14e8a96dfd70cd080ad5f12c64ab2902f27fb86832904fbc9",
+      "pageOverflow": false,
+      "font": "-apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "styles": [
+        {
+          "selector": "main",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "14px / 21.7px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(23, 32, 51)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "28px 40px 48px",
+            "border": "0px none rgb(23, 32, 51)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 0,
+            "y": 65,
+            "width": 768,
+            "height": 1130.1875
+          }
+        },
+        {
+          "selector": "#surfaces .a2ui-card",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "14px / 21.7px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(23, 32, 51)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "24px",
+            "border": "1px solid rgb(219, 226, 234)",
+            "radius": "14px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 40,
+            "y": 254.484375,
+            "width": 688,
+            "height": 850.109375
+          }
+        },
+        {
+          "selector": "pi-a2ui-code-diff .add",
+          "shadow": false,
+          "style": {
+            "display": "flex",
+            "font": "12px / 21.6px ui-monospace, SFMono-Regular, Menlo, monospace",
+            "color": "rgb(20, 83, 45)",
+            "background": "rgb(239, 250, 243)",
+            "padding": "2px 10px",
+            "border": "0px none rgb(20, 83, 45)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 66,
+            "y": 478.09375,
+            "width": 636,
+            "height": 25.59375
+          }
+        },
+        {
+          "selector": "pi-a2ui-log-view pre",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "12px / 21px ui-monospace, SFMono-Regular, Menlo, monospace",
+            "color": "rgb(228, 234, 244)",
+            "background": "rgb(16, 26, 45)",
+            "padding": "16px",
+            "border": "0px none rgb(228, 234, 244)",
+            "radius": "10px",
+            "maxHeight": "260px",
+            "overflowX": "auto"
+          },
+          "rect": {
+            "x": 65,
+            "y": 826.703125,
+            "width": 638,
+            "height": 158
+          }
+        }
+      ],
+      "title": "Pi / A2UI — Your agent, in view.",
+      "prototypeDOM": "CSS + chart legend/grid/line-style DOM presentation sketch only"
+    },
+    {
+      "id": "RP04-diff-log",
+      "phase": "before",
+      "viewport": {
+        "width": 360,
+        "height": 900
+      },
+      "file": "RP04-diff-log-mobile-before.png",
+      "sha256": "c96c2f53296523b3a0f4fc55ff30e0dafc08355a00da18157553759817702779",
+      "sourceSHA256": "7fb176f46eb593289ea9b0a50147d0df6793f6d288b74cb264e1944de6b626b3",
+      "snapshotSHA256": "cf67ff5996db42e14e8a96dfd70cd080ad5f12c64ab2902f27fb86832904fbc9",
+      "pageOverflow": false,
+      "font": "-apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "styles": [
+        {
+          "selector": "main",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "48px 23px 50px",
+            "border": "0px none rgb(40, 40, 34)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 0,
+            "y": 69,
+            "width": 360,
+            "height": 1222.21875
+          }
+        },
+        {
+          "selector": "#surfaces .a2ui-card",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "20px",
+            "border": "1px solid rgb(224, 222, 213)",
+            "radius": "14px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 23,
+            "y": 293.078125,
+            "width": 314,
+            "height": 905.546875
+          }
+        },
+        {
+          "selector": "pi-a2ui-code-diff .add",
+          "shadow": false,
+          "style": {
+            "display": "flex",
+            "font": "12px / 19.2px ui-monospace, monospace",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgb(220, 252, 231)",
+            "padding": "0px",
+            "border": "0px none rgb(40, 40, 34)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 45,
+            "y": 570.34375,
+            "width": 270,
+            "height": 57.5625
+          }
+        },
+        {
+          "selector": "pi-a2ui-log-view pre",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "13px monospace",
+            "color": "rgb(226, 232, 240)",
+            "background": "rgb(16, 24, 39)",
+            "padding": "13px",
+            "border": "0px none rgb(226, 232, 240)",
+            "radius": "8px",
+            "maxHeight": "208px",
+            "overflowX": "auto"
+          },
+          "rect": {
+            "x": 44,
+            "y": 914.03125,
+            "width": 272,
+            "height": 164
+          }
+        }
+      ],
+      "title": "Pi / A2UI — Your agent, in view.",
+      "prototypeDOM": "none"
+    },
+    {
+      "id": "RP04-diff-log",
+      "phase": "after",
+      "viewport": {
+        "width": 360,
+        "height": 900
+      },
+      "file": "RP04-diff-log-mobile-after.png",
+      "sha256": "8446585a429c6750d0c43667215a0d0b8ee73337fb5afb80e1aa07fd8f1fc2f2",
+      "sourceSHA256": "7fb176f46eb593289ea9b0a50147d0df6793f6d288b74cb264e1944de6b626b3",
+      "snapshotSHA256": "cf67ff5996db42e14e8a96dfd70cd080ad5f12c64ab2902f27fb86832904fbc9",
+      "pageOverflow": false,
+      "font": "-apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "styles": [
+        {
+          "selector": "main",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "14px / 21.7px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(23, 32, 51)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "24px 16px 40px",
+            "border": "0px none rgb(23, 32, 51)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 0,
+            "y": 57,
+            "width": 360,
+            "height": 1093.1875
+          }
+        },
+        {
+          "selector": "#surfaces .a2ui-card",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "14px / 21.7px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(23, 32, 51)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "16px",
+            "border": "1px solid rgb(219, 226, 234)",
+            "radius": "14px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 16,
+            "y": 233.484375,
+            "width": 328,
+            "height": 834.109375
+          }
+        },
+        {
+          "selector": "pi-a2ui-code-diff .add",
+          "shadow": false,
+          "style": {
+            "display": "flex",
+            "font": "12px / 21.6px ui-monospace, SFMono-Regular, Menlo, monospace",
+            "color": "rgb(20, 83, 45)",
+            "background": "rgb(239, 250, 243)",
+            "padding": "2px 10px",
+            "border": "0px none rgb(20, 83, 45)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 34,
+            "y": 449.09375,
+            "width": 363.25,
+            "height": 25.59375
+          }
+        },
+        {
+          "selector": "pi-a2ui-log-view pre",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "12px / 21px ui-monospace, SFMono-Regular, Menlo, monospace",
+            "color": "rgb(228, 234, 244)",
+            "background": "rgb(16, 26, 45)",
+            "padding": "16px",
+            "border": "0px none rgb(228, 234, 244)",
+            "radius": "10px",
+            "maxHeight": "260px",
+            "overflowX": "auto"
+          },
+          "rect": {
+            "x": 33,
+            "y": 797.703125,
+            "width": 294,
+            "height": 158
+          }
+        }
+      ],
+      "title": "Pi / A2UI — Your agent, in view.",
+      "prototypeDOM": "CSS + chart legend/grid/line-style DOM presentation sketch only"
+    },
+    {
+      "id": "RP04-diff-log",
+      "phase": "before",
+      "viewport": {
+        "width": 640,
+        "height": 450
+      },
+      "file": "RP04-diff-log-reflow-200-equivalent-before.png",
+      "sha256": "492f69f4eabe7353fc45301f963870a022579b6363357d1b3570b4934fb375c6",
+      "sourceSHA256": "7fb176f46eb593289ea9b0a50147d0df6793f6d288b74cb264e1944de6b626b3",
+      "snapshotSHA256": "cf67ff5996db42e14e8a96dfd70cd080ad5f12c64ab2902f27fb86832904fbc9",
+      "pageOverflow": false,
+      "font": "-apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "styles": [
+        {
+          "selector": "main",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "72px 40px 80px",
+            "border": "0px none rgb(40, 40, 34)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 0,
+            "y": 83,
+            "width": 640,
+            "height": 1162.84375
+          }
+        },
+        {
+          "selector": "#surfaces .a2ui-card",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "25.6px",
+            "border": "1px solid rgb(224, 222, 213)",
+            "radius": "14px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 40,
+            "y": 342.078125,
+            "width": 560,
+            "height": 781.171875
+          }
+        },
+        {
+          "selector": "pi-a2ui-code-diff .add",
+          "shadow": false,
+          "style": {
+            "display": "flex",
+            "font": "12px / 19.2px ui-monospace, monospace",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgb(220, 252, 231)",
+            "padding": "0px",
+            "border": "0px none rgb(40, 40, 34)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 67.59375,
+            "y": 587.75,
+            "width": 504.8125,
+            "height": 19.1875
+          }
+        },
+        {
+          "selector": "pi-a2ui-log-view pre",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "13px monospace",
+            "color": "rgb(226, 232, 240)",
+            "background": "rgb(16, 24, 39)",
+            "padding": "13px",
+            "border": "0px none rgb(226, 232, 240)",
+            "radius": "8px",
+            "maxHeight": "208px",
+            "overflowX": "auto"
+          },
+          "rect": {
+            "x": 66.59375,
+            "y": 878.0625,
+            "width": 506.8125,
+            "height": 119
+          }
+        }
+      ],
+      "title": "Pi / A2UI — Your agent, in view.",
+      "prototypeDOM": "none"
+    },
+    {
+      "id": "RP04-diff-log",
+      "phase": "after",
+      "viewport": {
+        "width": 640,
+        "height": 450
+      },
+      "file": "RP04-diff-log-reflow-200-equivalent-after.png",
+      "sha256": "edf2cc8beb86e58f32d9278ded6c6d272b07bb3ded7b3cc4cca532a2451c4d6c",
+      "sourceSHA256": "7fb176f46eb593289ea9b0a50147d0df6793f6d288b74cb264e1944de6b626b3",
+      "snapshotSHA256": "cf67ff5996db42e14e8a96dfd70cd080ad5f12c64ab2902f27fb86832904fbc9",
+      "pageOverflow": false,
+      "font": "-apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "styles": [
+        {
+          "selector": "main",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "14px / 21.7px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(23, 32, 51)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "24px 16px 40px",
+            "border": "0px none rgb(23, 32, 51)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 0,
+            "y": 57,
+            "width": 640,
+            "height": 1093.1875
+          }
+        },
+        {
+          "selector": "#surfaces .a2ui-card",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "14px / 21.7px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(23, 32, 51)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "16px",
+            "border": "1px solid rgb(219, 226, 234)",
+            "radius": "14px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 16,
+            "y": 233.484375,
+            "width": 608,
+            "height": 834.109375
+          }
+        },
+        {
+          "selector": "pi-a2ui-code-diff .add",
+          "shadow": false,
+          "style": {
+            "display": "flex",
+            "font": "12px / 21.6px ui-monospace, SFMono-Regular, Menlo, monospace",
+            "color": "rgb(20, 83, 45)",
+            "background": "rgb(239, 250, 243)",
+            "padding": "2px 10px",
+            "border": "0px none rgb(20, 83, 45)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 34,
+            "y": 449.09375,
+            "width": 572,
+            "height": 25.59375
+          }
+        },
+        {
+          "selector": "pi-a2ui-log-view pre",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "12px / 21px ui-monospace, SFMono-Regular, Menlo, monospace",
+            "color": "rgb(228, 234, 244)",
+            "background": "rgb(16, 26, 45)",
+            "padding": "16px",
+            "border": "0px none rgb(228, 234, 244)",
+            "radius": "10px",
+            "maxHeight": "260px",
+            "overflowX": "auto"
+          },
+          "rect": {
+            "x": 33,
+            "y": 797.703125,
+            "width": 574,
+            "height": 158
+          }
+        }
+      ],
+      "title": "Pi / A2UI — Your agent, in view.",
+      "prototypeDOM": "CSS + chart legend/grid/line-style DOM presentation sketch only"
+    },
+    {
+      "id": "RP05-states",
+      "phase": "before",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "file": "RP05-states-desktop-before.png",
+      "sha256": "1ec8b9b2b789d4d3cede10fb7573c8c38d105d34a087e5d636fb8d1342bba566",
+      "sourceSHA256": "55e31dcc1294e6c811c0b893c92a48809ce944b75d29f708f22d5e4db7ca46a1",
+      "snapshotSHA256": "2cdf89bc5dd048cb36551b8bf6fc73c19f88535c3e3c93873bffe9554be01732",
+      "pageOverflow": false,
+      "font": "-apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "styles": [
+        {
+          "selector": "main",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "72px 40px 80px",
+            "border": "0px none rgb(40, 40, 34)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 200,
+            "y": 83,
+            "width": 880,
+            "height": 1111.21875
+          }
+        },
+        {
+          "selector": "#surfaces .a2ui-card",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "32px",
+            "border": "1px solid rgb(224, 222, 213)",
+            "radius": "14px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 240,
+            "y": 357.75,
+            "width": 800,
+            "height": 713.875
+          }
+        },
+        {
+          "selector": "pi-a2ui-data-table th",
+          "shadow": false,
+          "style": {
+            "display": "table-cell",
+            "font": "700 16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "8px",
+            "border": "",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 273,
+            "y": 599.28125,
+            "width": 734,
+            "height": 41.5
+          }
+        },
+        {
+          "selector": "pi-a2ui-data-table input",
+          "shadow": false,
+          "style": {
+            "display": "inline-block",
+            "font": "13.3333px Arial",
+            "color": "rgb(0, 0, 0)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "1px 2px",
+            "border": "2px inset rgb(118, 118, 118)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "clip"
+          },
+          "rect": {
+            "x": 376.921875,
+            "y": 560.28125,
+            "width": 153,
+            "height": 21
+          }
+        }
+      ],
+      "title": "Pi / A2UI — Your agent, in view.",
+      "prototypeDOM": "none"
+    },
+    {
+      "id": "RP05-states",
+      "phase": "after",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "file": "RP05-states-desktop-after.png",
+      "sha256": "08c40abc43f1b590a1826d0c919d063a547f7499dc4a1fbb54406f823f407055",
+      "sourceSHA256": "55e31dcc1294e6c811c0b893c92a48809ce944b75d29f708f22d5e4db7ca46a1",
+      "snapshotSHA256": "2cdf89bc5dd048cb36551b8bf6fc73c19f88535c3e3c93873bffe9554be01732",
+      "pageOverflow": false,
+      "font": "-apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "styles": [
+        {
+          "selector": "main",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "14px / 21.7px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(23, 32, 51)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "28px 40px 48px",
+            "border": "0px none rgb(23, 32, 51)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 20,
+            "y": 65,
+            "width": 1240,
+            "height": 963.984375
+          }
+        },
+        {
+          "selector": "#surfaces .a2ui-card",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "14px / 21.7px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(23, 32, 51)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "24px",
+            "border": "1px solid rgb(219, 226, 234)",
+            "radius": "14px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 60,
+            "y": 254.484375,
+            "width": 1160,
+            "height": 683.90625
+          }
+        },
+        {
+          "selector": "pi-a2ui-data-table th",
+          "shadow": false,
+          "style": {
+            "display": "table-cell",
+            "font": "",
+            "color": "rgb(86, 100, 119)",
+            "background": "rgb(245, 247, 251)",
+            "padding": "10px 12px",
+            "border": "",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 86,
+            "y": 489.4375,
+            "width": 1108,
+            "height": 50.5
+          }
+        },
+        {
+          "selector": "pi-a2ui-data-table input",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "14px / 21.7px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(23, 32, 51)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "10px 12px",
+            "border": "1px solid rgb(129, 144, 165)",
+            "radius": "8px",
+            "maxHeight": "none",
+            "overflowX": "clip"
+          },
+          "rect": {
+            "x": 186.796875,
+            "y": 400.15625,
+            "width": 180,
+            "height": 43.6875
+          }
+        }
+      ],
+      "title": "Pi / A2UI — Your agent, in view.",
+      "prototypeDOM": "CSS + chart legend/grid/line-style DOM presentation sketch only"
+    },
+    {
+      "id": "RP05-states",
+      "phase": "before",
+      "viewport": {
+        "width": 768,
+        "height": 900
+      },
+      "file": "RP05-states-tablet-before.png",
+      "sha256": "ceaf5ea2cb44a2bd7008cc60688f72471e6b26d1cbf8acb70ca87853e3e548cb",
+      "sourceSHA256": "55e31dcc1294e6c811c0b893c92a48809ce944b75d29f708f22d5e4db7ca46a1",
+      "snapshotSHA256": "2cdf89bc5dd048cb36551b8bf6fc73c19f88535c3e3c93873bffe9554be01732",
+      "pageOverflow": false,
+      "font": "-apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "styles": [
+        {
+          "selector": "main",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "72px 40px 80px",
+            "border": "0px none rgb(40, 40, 34)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 0,
+            "y": 83,
+            "width": 768,
+            "height": 1087.15625
+          }
+        },
+        {
+          "selector": "#surfaces .a2ui-card",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "30.72px",
+            "border": "1px solid rgb(224, 222, 213)",
+            "radius": "14px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 40,
+            "y": 347,
+            "width": 688,
+            "height": 700.5625
+          }
+        },
+        {
+          "selector": "pi-a2ui-data-table th",
+          "shadow": false,
+          "style": {
+            "display": "table-cell",
+            "font": "700 16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "8px",
+            "border": "",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 71.71875,
+            "y": 576.5,
+            "width": 624.5625,
+            "height": 41.5
+          }
+        },
+        {
+          "selector": "pi-a2ui-data-table input",
+          "shadow": false,
+          "style": {
+            "display": "inline-block",
+            "font": "13.3333px Arial",
+            "color": "rgb(0, 0, 0)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "1px 2px",
+            "border": "2px inset rgb(118, 118, 118)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "clip"
+          },
+          "rect": {
+            "x": 175.640625,
+            "y": 537.5,
+            "width": 153,
+            "height": 21
+          }
+        }
+      ],
+      "title": "Pi / A2UI — Your agent, in view.",
+      "prototypeDOM": "none"
+    },
+    {
+      "id": "RP05-states",
+      "phase": "after",
+      "viewport": {
+        "width": 768,
+        "height": 900
+      },
+      "file": "RP05-states-tablet-after.png",
+      "sha256": "3707fafba091057de3863006db832075a8dc46d78b8e71c9e8d6bb0c7d016212",
+      "sourceSHA256": "55e31dcc1294e6c811c0b893c92a48809ce944b75d29f708f22d5e4db7ca46a1",
+      "snapshotSHA256": "2cdf89bc5dd048cb36551b8bf6fc73c19f88535c3e3c93873bffe9554be01732",
+      "pageOverflow": false,
+      "font": "-apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "styles": [
+        {
+          "selector": "main",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "14px / 21.7px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(23, 32, 51)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "28px 40px 48px",
+            "border": "0px none rgb(23, 32, 51)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 0,
+            "y": 65,
+            "width": 768,
+            "height": 963.984375
+          }
+        },
+        {
+          "selector": "#surfaces .a2ui-card",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "14px / 21.7px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(23, 32, 51)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "24px",
+            "border": "1px solid rgb(219, 226, 234)",
+            "radius": "14px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 40,
+            "y": 254.484375,
+            "width": 688,
+            "height": 683.90625
+          }
+        },
+        {
+          "selector": "pi-a2ui-data-table th",
+          "shadow": false,
+          "style": {
+            "display": "table-cell",
+            "font": "",
+            "color": "rgb(86, 100, 119)",
+            "background": "rgb(245, 247, 251)",
+            "padding": "10px 12px",
+            "border": "",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 66,
+            "y": 489.4375,
+            "width": 636,
+            "height": 50.5
+          }
+        },
+        {
+          "selector": "pi-a2ui-data-table input",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "14px / 21.7px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(23, 32, 51)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "10px 12px",
+            "border": "1px solid rgb(129, 144, 165)",
+            "radius": "8px",
+            "maxHeight": "none",
+            "overflowX": "clip"
+          },
+          "rect": {
+            "x": 166.796875,
+            "y": 400.15625,
+            "width": 180,
+            "height": 43.6875
+          }
+        }
+      ],
+      "title": "Pi / A2UI — Your agent, in view.",
+      "prototypeDOM": "CSS + chart legend/grid/line-style DOM presentation sketch only"
+    },
+    {
+      "id": "RP05-states",
+      "phase": "before",
+      "viewport": {
+        "width": 360,
+        "height": 900
+      },
+      "file": "RP05-states-mobile-before.png",
+      "sha256": "3b218f73ecd2322646c684a71d014b4624869e75a4d7434877441ec90e49e5d4",
+      "sourceSHA256": "55e31dcc1294e6c811c0b893c92a48809ce944b75d29f708f22d5e4db7ca46a1",
+      "snapshotSHA256": "2cdf89bc5dd048cb36551b8bf6fc73c19f88535c3e3c93873bffe9554be01732",
+      "pageOverflow": false,
+      "font": "-apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "styles": [
+        {
+          "selector": "main",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "48px 23px 50px",
+            "border": "0px none rgb(40, 40, 34)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 0,
+            "y": 69,
+            "width": 360,
+            "height": 1136.953125
+          }
+        },
+        {
+          "selector": "#surfaces .a2ui-card",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "20px",
+            "border": "1px solid rgb(224, 222, 213)",
+            "radius": "14px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 23,
+            "y": 293.078125,
+            "width": 314,
+            "height": 820.28125
+          }
+        },
+        {
+          "selector": "pi-a2ui-data-table th",
+          "shadow": false,
+          "style": {
+            "display": "table-cell",
+            "font": "700 16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "8px",
+            "border": "",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 44,
+            "y": 563.015625,
+            "width": 272,
+            "height": 41.5
+          }
+        },
+        {
+          "selector": "pi-a2ui-data-table input",
+          "shadow": false,
+          "style": {
+            "display": "inline-block",
+            "font": "13.3333px Arial",
+            "color": "rgb(0, 0, 0)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "1px 2px",
+            "border": "2px inset rgb(118, 118, 118)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "clip"
+          },
+          "rect": {
+            "x": 147.921875,
+            "y": 524.015625,
+            "width": 153,
+            "height": 21
+          }
+        }
+      ],
+      "title": "Pi / A2UI — Your agent, in view.",
+      "prototypeDOM": "none"
+    },
+    {
+      "id": "RP05-states",
+      "phase": "after",
+      "viewport": {
+        "width": 360,
+        "height": 900
+      },
+      "file": "RP05-states-mobile-after.png",
+      "sha256": "bffa9788a145d9080c48b3c8414231db5a375b559e3088d1dd84165f7b2d0914",
+      "sourceSHA256": "55e31dcc1294e6c811c0b893c92a48809ce944b75d29f708f22d5e4db7ca46a1",
+      "snapshotSHA256": "2cdf89bc5dd048cb36551b8bf6fc73c19f88535c3e3c93873bffe9554be01732",
+      "pageOverflow": false,
+      "font": "-apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "styles": [
+        {
+          "selector": "main",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "14px / 21.7px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(23, 32, 51)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "24px 16px 40px",
+            "border": "0px none rgb(23, 32, 51)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 0,
+            "y": 57,
+            "width": 360,
+            "height": 1073.109375
+          }
+        },
+        {
+          "selector": "#surfaces .a2ui-card",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "14px / 21.7px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(23, 32, 51)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "16px",
+            "border": "1px solid rgb(219, 226, 234)",
+            "radius": "14px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 16,
+            "y": 233.484375,
+            "width": 328,
+            "height": 814.03125
+          }
+        },
+        {
+          "selector": "pi-a2ui-data-table th",
+          "shadow": false,
+          "style": {
+            "display": "table-cell",
+            "font": "",
+            "color": "rgb(86, 100, 119)",
+            "background": "rgb(245, 247, 251)",
+            "padding": "8px 10px",
+            "border": "",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 34,
+            "y": 482.125,
+            "width": 292,
+            "height": 46.5
+          }
+        },
+        {
+          "selector": "pi-a2ui-data-table input",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "14px / 21.7px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(23, 32, 51)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "10px 12px",
+            "border": "1px solid rgb(129, 144, 165)",
+            "radius": "8px",
+            "maxHeight": "none",
+            "overflowX": "clip"
+          },
+          "rect": {
+            "x": 134.796875,
+            "y": 392.84375,
+            "width": 180,
+            "height": 43.6875
+          }
+        }
+      ],
+      "title": "Pi / A2UI — Your agent, in view.",
+      "prototypeDOM": "CSS + chart legend/grid/line-style DOM presentation sketch only"
+    },
+    {
+      "id": "RP05-states",
+      "phase": "before",
+      "viewport": {
+        "width": 640,
+        "height": 450
+      },
+      "file": "RP05-states-reflow-200-equivalent-before.png",
+      "sha256": "c518606b711f42b9d603d209814a6175ac76e21906efcaceb3c554b2fe036eed",
+      "sourceSHA256": "55e31dcc1294e6c811c0b893c92a48809ce944b75d29f708f22d5e4db7ca46a1",
+      "snapshotSHA256": "2cdf89bc5dd048cb36551b8bf6fc73c19f88535c3e3c93873bffe9554be01732",
+      "pageOverflow": false,
+      "font": "-apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "styles": [
+        {
+          "selector": "main",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "72px 40px 80px",
+            "border": "0px none rgb(40, 40, 34)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 0,
+            "y": 83,
+            "width": 640,
+            "height": 1067.0625
+          }
+        },
+        {
+          "selector": "#surfaces .a2ui-card",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "25.6px",
+            "border": "1px solid rgb(224, 222, 213)",
+            "radius": "14px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 40,
+            "y": 342.078125,
+            "width": 560,
+            "height": 685.390625
+          }
+        },
+        {
+          "selector": "pi-a2ui-data-table th",
+          "shadow": false,
+          "style": {
+            "display": "table-cell",
+            "font": "700 16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "8px",
+            "border": "",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 66.59375,
+            "y": 561.53125,
+            "width": 506.8125,
+            "height": 41.5
+          }
+        },
+        {
+          "selector": "pi-a2ui-data-table input",
+          "shadow": false,
+          "style": {
+            "display": "inline-block",
+            "font": "13.3333px Arial",
+            "color": "rgb(0, 0, 0)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "1px 2px",
+            "border": "2px inset rgb(118, 118, 118)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "clip"
+          },
+          "rect": {
+            "x": 170.515625,
+            "y": 522.53125,
+            "width": 153,
+            "height": 21
+          }
+        }
+      ],
+      "title": "Pi / A2UI — Your agent, in view.",
+      "prototypeDOM": "none"
+    },
+    {
+      "id": "RP05-states",
+      "phase": "after",
+      "viewport": {
+        "width": 640,
+        "height": 450
+      },
+      "file": "RP05-states-reflow-200-equivalent-after.png",
+      "sha256": "f0236c7bacb5fb4d00bb2623ea08226095ccf4160602a4e395bdc643bdf09fe2",
+      "sourceSHA256": "55e31dcc1294e6c811c0b893c92a48809ce944b75d29f708f22d5e4db7ca46a1",
+      "snapshotSHA256": "2cdf89bc5dd048cb36551b8bf6fc73c19f88535c3e3c93873bffe9554be01732",
+      "pageOverflow": false,
+      "font": "-apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "styles": [
+        {
+          "selector": "main",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "14px / 21.7px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(23, 32, 51)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "24px 16px 40px",
+            "border": "0px none rgb(23, 32, 51)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 0,
+            "y": 57,
+            "width": 640,
+            "height": 922.984375
+          }
+        },
+        {
+          "selector": "#surfaces .a2ui-card",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "14px / 21.7px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(23, 32, 51)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "16px",
+            "border": "1px solid rgb(219, 226, 234)",
+            "radius": "14px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 16,
+            "y": 233.484375,
+            "width": 608,
+            "height": 663.90625
+          }
+        },
+        {
+          "selector": "pi-a2ui-data-table th",
+          "shadow": false,
+          "style": {
+            "display": "table-cell",
+            "font": "",
+            "color": "rgb(86, 100, 119)",
+            "background": "rgb(245, 247, 251)",
+            "padding": "8px 10px",
+            "border": "",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 34,
+            "y": 460.4375,
+            "width": 572,
+            "height": 46.5
+          }
+        },
+        {
+          "selector": "pi-a2ui-data-table input",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "14px / 21.7px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(23, 32, 51)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "10px 12px",
+            "border": "1px solid rgb(129, 144, 165)",
+            "radius": "8px",
+            "maxHeight": "none",
+            "overflowX": "clip"
+          },
+          "rect": {
+            "x": 134.796875,
+            "y": 371.15625,
+            "width": 180,
+            "height": 43.6875
+          }
+        }
+      ],
+      "title": "Pi / A2UI — Your agent, in view.",
+      "prototypeDOM": "CSS + chart legend/grid/line-style DOM presentation sketch only"
+    },
+    {
+      "id": "RP06-responsive-cards",
+      "phase": "before",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "file": "RP06-responsive-cards-desktop-before.png",
+      "sha256": "a3ce2ca7a385ff539d55a36dcc4c80c5266aac27356a8a3c1de010976bbc6317",
+      "sourceSHA256": "7ab630a1aaa3c8f8a1a5f3485a7a423fb25bedf56717b5600ae76c00a6dd21df",
+      "snapshotSHA256": "f0b9613438018bd85d3a0b797de598c8bfcd29e76afd548113e0a3d1e4d0e8fb",
+      "pageOverflow": false,
+      "font": "-apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "styles": [
+        {
+          "selector": "main",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "72px 40px 80px",
+            "border": "0px none rgb(40, 40, 34)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 200,
+            "y": 83,
+            "width": 880,
+            "height": 1015.5
+          }
+        },
+        {
+          "selector": "#surfaces .a2ui-card",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "32px",
+            "border": "1px solid rgb(224, 222, 213)",
+            "radius": "14px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 240,
+            "y": 459.6875,
+            "width": 265.171875,
+            "height": 208
+          }
+        }
+      ],
+      "title": "Pi / A2UI — Your agent, in view.",
+      "prototypeDOM": "none"
+    },
+    {
+      "id": "RP06-responsive-cards",
+      "phase": "after",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "file": "RP06-responsive-cards-desktop-after.png",
+      "sha256": "14e8e34504f5e94fde18d08eb21f8773db8205521fca48de66bbb8e78bf49470",
+      "sourceSHA256": "7ab630a1aaa3c8f8a1a5f3485a7a423fb25bedf56717b5600ae76c00a6dd21df",
+      "snapshotSHA256": "f0b9613438018bd85d3a0b797de598c8bfcd29e76afd548113e0a3d1e4d0e8fb",
+      "pageOverflow": false,
+      "font": "-apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "styles": [
+        {
+          "selector": "main",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "14px / 21.7px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(23, 32, 51)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "28px 40px 48px",
+            "border": "0px none rgb(23, 32, 51)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 20,
+            "y": 65,
+            "width": 1240,
+            "height": 781.828125
+          }
+        },
+        {
+          "selector": "#surfaces .a2ui-card",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "14px / 21.7px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(23, 32, 51)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "24px",
+            "border": "1px solid rgb(219, 226, 234)",
+            "radius": "14px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 60,
+            "y": 337.46875,
+            "width": 376,
+            "height": 152.78125
+          }
+        }
+      ],
+      "title": "Pi / A2UI — Your agent, in view.",
+      "prototypeDOM": "CSS + chart legend/grid/line-style DOM presentation sketch only"
+    },
+    {
+      "id": "RP06-responsive-cards",
+      "phase": "before",
+      "viewport": {
+        "width": 768,
+        "height": 900
+      },
+      "file": "RP06-responsive-cards-tablet-before.png",
+      "sha256": "240cf8de0c588b5778245d3604ce56a1cc8845a55586c3e116e0c8020f758d01",
+      "sourceSHA256": "7ab630a1aaa3c8f8a1a5f3485a7a423fb25bedf56717b5600ae76c00a6dd21df",
+      "snapshotSHA256": "f0b9613438018bd85d3a0b797de598c8bfcd29e76afd548113e0a3d1e4d0e8fb",
+      "pageOverflow": false,
+      "font": "-apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "styles": [
+        {
+          "selector": "main",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "72px 40px 80px",
+            "border": "0px none rgb(40, 40, 34)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 0,
+            "y": 83,
+            "width": 768,
+            "height": 988.875
+          }
+        },
+        {
+          "selector": "#surfaces .a2ui-card",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "30.72px",
+            "border": "1px solid rgb(224, 222, 213)",
+            "radius": "14px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 40,
+            "y": 438.1875,
+            "width": 226.9375,
+            "height": 205.4375
+          }
+        }
+      ],
+      "title": "Pi / A2UI — Your agent, in view.",
+      "prototypeDOM": "none"
+    },
+    {
+      "id": "RP06-responsive-cards",
+      "phase": "after",
+      "viewport": {
+        "width": 768,
+        "height": 900
+      },
+      "file": "RP06-responsive-cards-tablet-after.png",
+      "sha256": "ee9cca8a614cec3d648861da5d4c3dc9aa50bf44b31cd98b54c6125db4aceee0",
+      "sourceSHA256": "7ab630a1aaa3c8f8a1a5f3485a7a423fb25bedf56717b5600ae76c00a6dd21df",
+      "snapshotSHA256": "f0b9613438018bd85d3a0b797de598c8bfcd29e76afd548113e0a3d1e4d0e8fb",
+      "pageOverflow": false,
+      "font": "-apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "styles": [
+        {
+          "selector": "main",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "14px / 21.7px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(23, 32, 51)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "28px 40px 48px",
+            "border": "0px none rgb(23, 32, 51)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 0,
+            "y": 65,
+            "width": 768,
+            "height": 800.421875
+          }
+        },
+        {
+          "selector": "#surfaces .a2ui-card",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "14px / 21.7px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(23, 32, 51)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "24px",
+            "border": "1px solid rgb(219, 226, 234)",
+            "radius": "14px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 40,
+            "y": 337.46875,
+            "width": 218.65625,
+            "height": 171.375
+          }
+        }
+      ],
+      "title": "Pi / A2UI — Your agent, in view.",
+      "prototypeDOM": "CSS + chart legend/grid/line-style DOM presentation sketch only"
+    },
+    {
+      "id": "RP06-responsive-cards",
+      "phase": "before",
+      "viewport": {
+        "width": 360,
+        "height": 900
+      },
+      "file": "RP06-responsive-cards-mobile-before.png",
+      "sha256": "7f5120893cd1c325fd49c2c3002fe5596bf566d0455a86d0e62058218da1a494",
+      "sourceSHA256": "7ab630a1aaa3c8f8a1a5f3485a7a423fb25bedf56717b5600ae76c00a6dd21df",
+      "snapshotSHA256": "f0b9613438018bd85d3a0b797de598c8bfcd29e76afd548113e0a3d1e4d0e8fb",
+      "pageOverflow": false,
+      "font": "-apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "styles": [
+        {
+          "selector": "main",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "48px 23px 50px",
+            "border": "0px none rgb(40, 40, 34)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 0,
+            "y": 69,
+            "width": 360,
+            "height": 961.234375
+          }
+        },
+        {
+          "selector": "#surfaces .a2ui-card",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "20px",
+            "border": "1px solid rgb(224, 222, 213)",
+            "radius": "14px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 23,
+            "y": 417.421875,
+            "width": 99.3125,
+            "height": 223
+          }
+        }
+      ],
+      "title": "Pi / A2UI — Your agent, in view.",
+      "prototypeDOM": "none"
+    },
+    {
+      "id": "RP06-responsive-cards",
+      "phase": "after",
+      "viewport": {
+        "width": 360,
+        "height": 900
+      },
+      "file": "RP06-responsive-cards-mobile-after.png",
+      "sha256": "859ab5e0543771947c47fe1cc90c88ea921bb04db0a5f42c1bd865f97bcdb1ee",
+      "sourceSHA256": "7ab630a1aaa3c8f8a1a5f3485a7a423fb25bedf56717b5600ae76c00a6dd21df",
+      "snapshotSHA256": "f0b9613438018bd85d3a0b797de598c8bfcd29e76afd548113e0a3d1e4d0e8fb",
+      "pageOverflow": false,
+      "font": "-apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "styles": [
+        {
+          "selector": "main",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "14px / 21.7px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(23, 32, 51)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "24px 16px 40px",
+            "border": "0px none rgb(23, 32, 51)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 0,
+            "y": 57,
+            "width": 360,
+            "height": 1059.5625
+          }
+        },
+        {
+          "selector": "#surfaces .a2ui-card",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "14px / 21.7px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(23, 32, 51)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "16px",
+            "border": "1px solid rgb(219, 226, 234)",
+            "radius": "14px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 16,
+            "y": 348.859375,
+            "width": 328,
+            "height": 134.375
+          }
+        }
+      ],
+      "title": "Pi / A2UI — Your agent, in view.",
+      "prototypeDOM": "CSS + chart legend/grid/line-style DOM presentation sketch only"
+    },
+    {
+      "id": "RP06-responsive-cards",
+      "phase": "before",
+      "viewport": {
+        "width": 640,
+        "height": 450
+      },
+      "file": "RP06-responsive-cards-reflow-200-equivalent-before.png",
+      "sha256": "52f53362240389e6ebbc4a0ffed550c5b7bcd88e75b25d365ece01b8701e272b",
+      "sourceSHA256": "7ab630a1aaa3c8f8a1a5f3485a7a423fb25bedf56717b5600ae76c00a6dd21df",
+      "snapshotSHA256": "f0b9613438018bd85d3a0b797de598c8bfcd29e76afd548113e0a3d1e4d0e8fb",
+      "pageOverflow": false,
+      "font": "-apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "styles": [
+        {
+          "selector": "main",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "72px 40px 80px",
+            "border": "0px none rgb(40, 40, 34)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 0,
+            "y": 83,
+            "width": 640,
+            "height": 971.53125
+          }
+        },
+        {
+          "selector": "#surfaces .a2ui-card",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(40, 40, 34)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "25.6px",
+            "border": "1px solid rgb(224, 222, 213)",
+            "radius": "14px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 40,
+            "y": 428.34375,
+            "width": 183.359375,
+            "height": 208.1875
+          }
+        }
+      ],
+      "title": "Pi / A2UI — Your agent, in view.",
+      "prototypeDOM": "none"
+    },
+    {
+      "id": "RP06-responsive-cards",
+      "phase": "after",
+      "viewport": {
+        "width": 640,
+        "height": 450
+      },
+      "file": "RP06-responsive-cards-reflow-200-equivalent-after.png",
+      "sha256": "8d384bbb67ea6e192f3151bdb8aeeeacd6260b60a17e3c6b4f016428ccb8191f",
+      "sourceSHA256": "7ab630a1aaa3c8f8a1a5f3485a7a423fb25bedf56717b5600ae76c00a6dd21df",
+      "snapshotSHA256": "f0b9613438018bd85d3a0b797de598c8bfcd29e76afd548113e0a3d1e4d0e8fb",
+      "pageOverflow": false,
+      "font": "-apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "styles": [
+        {
+          "selector": "main",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "14px / 21.7px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(23, 32, 51)",
+            "background": "rgba(0, 0, 0, 0)",
+            "padding": "24px 16px 40px",
+            "border": "0px none rgb(23, 32, 51)",
+            "radius": "0px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 0,
+            "y": 57,
+            "width": 640,
+            "height": 1027.171875
+          }
+        },
+        {
+          "selector": "#surfaces .a2ui-card",
+          "shadow": false,
+          "style": {
+            "display": "block",
+            "font": "14px / 21.7px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+            "color": "rgb(23, 32, 51)",
+            "background": "rgb(255, 255, 255)",
+            "padding": "16px",
+            "border": "1px solid rgb(219, 226, 234)",
+            "radius": "14px",
+            "maxHeight": "none",
+            "overflowX": "visible"
+          },
+          "rect": {
+            "x": 16,
+            "y": 316.46875,
+            "width": 608,
+            "height": 134.375
+          }
+        }
+      ],
+      "title": "Pi / A2UI — Your agent, in view.",
+      "prototypeDOM": "CSS + chart legend/grid/line-style DOM presentation sketch only"
+    }
+  ],
+  "providerRequests": 0,
+  "actionRequests": 0,
+  "dispatches": 0,
+  "errors": [],
+  "productFilesPreserved": {
+    "dist/assistant-cli.mjs": "f00ab58509674b6c738f5e051edaeeff0ffa78bd002bbce7044cb5a4bdcb991c",
+    "dist/client.css": "eb647f62a9394dc836512bbbdd06d03813e8dfa70b758ceb1ec3566d6f51e96e",
+    "dist/client.js": "78922a871bf029c0c69362243596784149a04aa9888648f930a36197895de1c2",
+    "dist/index.html": "5f221a3dff76a7ebde3a90738eacc4d0837d1cae42d66ad906ba37d680a51a28",
+    "extension.ts": "1e250c6f2d1a7f980ef7e906ce648b271c4820d80020a664a242480aa18a5bfb",
+    "package-lock.json": "d13de27caf174ac8e0fddc617be2a0865f4bf54ce53f587ffc2e5f63e0ab81e8",
+    "package.json": "003c1c3ccbbd4354e8f574194e6429a75d8d4cf4791faab49f0a2d991bdf9719",
+    "skills/pi-a2ui/SKILL.md": "4166c6bf8702b1adcabd9da6bd9050bca3eeee6cefcafd5a6b033fa774378676",
+    "skills/pi-a2ui/examples/activity-timeline.express": "f1355efc71e12329d4161548554ca4ca780e6046ec281798e50f74ed49a5ac2e",
+    "skills/pi-a2ui/examples/artifacts.express": "ef77e8527844d75ebef86c6018596be71be9beb70e7d5b8365ba97d2ae3eec3a",
+    "skills/pi-a2ui/examples/command-actions.express": "35ce35c279be320398d228e417323caff2242b263861ca23be68805f5a09213e",
+    "skills/pi-a2ui/examples/details.express": "37a89cbad308a330e544ba005b9795c5f5ff38fc3164c6deadede657a52f0b80",
+    "skills/pi-a2ui/examples/evidence-location.express": "2a88eedcce7c73bfb343fdbf14aeaaf7dc1efaf45ded7d604ea2e81f4dfbce88",
+    "skills/pi-a2ui/examples/feedback-states.express": "fed6e9bcf1764af65500a1b39fbc821110386dd3b3093cb76375f83352d62813",
+    "skills/pi-a2ui/examples/layout.express": "56f9075eba2bf45b30dd986c30e898d37954840b1580eba2fabc522b2f5ccaf6",
+    "skills/pi-a2ui/examples/list-table.express": "d91d89c936979604da0254f21f7e805f2a2674d69a1b6e21bafb899339562904",
+    "skills/pi-a2ui/examples/live.express": "31d02bc6862375c55a0e155c679b307f53fc2e6d1be58e92c340de274d2ae6e6",
+    "skills/pi-a2ui/examples/manifest.json": "01e11042217378f07fd4dc2dea903df9466dd2c8f37adebdb159af7bc872e251",
+    "skills/pi-a2ui/examples/modal.express": "88e127c514b3bd136d930424962593fb84f49568fa732527bd34c5f6b51ac60b",
+    "skills/pi-a2ui/examples/reading.express": "241f775d1f407fc8ca2b5e260f4bd01cd2ffe46a3815bd18b3b0233baa466133",
+    "skills/pi-a2ui/examples/review.express": "8d109685d55a46a6b64068d1c0d7a6caf1d7b1ef32448b2b4c2babd0c9efea13",
+    "skills/pi-a2ui/examples/searchable-picker.express": "e20a0b0fb77648cebeff3780c57774c48bd0aebf9b9bbc01c8faf4ab1d2fa62f",
+    "skills/pi-a2ui/examples/status.express": "aaf4c74b1cf32d0c8349c6b076b3521dd8aee8db7155dc85d5ef5723fea13f71",
+    "skills/pi-a2ui/examples/summary-metrics.express": "f4179613b8718f017851dabf32e601a3f38bc772b520b4bc89890ef3a5b556ea",
+    "skills/pi-a2ui/examples/tree-navigation.express": "f2cae36388d51fb2b640eb9b70191ed83a12f4be29af34ad1fac2d2d56eca280",
+    "skills/pi-a2ui/examples/typed-form.express": "89db086adf21dfb9c89e87bdcb93f4cde7dd59eec402a3289e59dfb0d513de8c",
+    "skills/pi-a2ui/examples/user-form.express": "ca9cc31b09f9848a5156727651ebcddef371669c0a00ab27335246946934ddb0",
+    "skills/pi-a2ui/examples/validated-form.express": "c2ee3fc58ef9b5a720d82787c6d167ab917bb2bd78ba7b2c728952ec238ae4ed",
+    "skills/pi-a2ui/references/adapting-templates.md": "9a2a3e16d636d3e7a60430daf250577f6f185ecba6ea4b44203e29066cbc644b",
+    "skills/pi-a2ui/references/artifacts.md": "13603e34b6a506f1b6c616d790e7d9b549259c7497ee7567bf0ac324928f3f62",
+    "skills/pi-a2ui/references/coding-and-live.md": "bb78aab4f3705f9732ef224bb21b1046f196922573aa189fc405e6df6c616a92",
+    "skills/pi-a2ui/references/core-components.md": "8eb8be34c4c5a9b035d2ba388bfd67ef12865bd46bffad98752cdc55a48c3b9c",
+    "skills/pi-a2ui/references/event-provenance.md": "e2ac883a9c5f1a4451f6bdbab1e2f79a010394e9c8a8a35f3d7e58c2aae7d55f",
+    "skills/pi-a2ui/references/helper.md": "aef583bac726873733d47e1c94b169b0d9d1b6b3f047a839445efb08e864329d",
+    "skills/pi-a2ui/references/keyboard-actions.md": "033ab4a3942f2f2c3ded555c5443e8ccfdbba2dfd6d76c28ce3092f4a962ccb9",
+    "skills/pi-a2ui/references/navigation-and-selection.md": "4dcdd8102aaeb8ae976f9a2e4bd036b2ba27e019f3f9f822b60315f015594ef6",
+    "skills/pi-a2ui/references/summaries-and-feedback.md": "f8189f71e988157e6f2aed1262c11447b9e3e955f594d2747d52053736cebe19",
+    "skills/pi-a2ui/references/syntax-and-errors.md": "e3f778f947982b2706c885de750bf2998e0a0c29816ff9b945b41072e50c3ad4",
+    "skills/pi-a2ui/references/timeline-and-evidence.md": "794d6f426e958181568aaf9cf4fba7b00e09ac030b07229613c407bbef405f0f",
+    "skills/pi-a2ui/references/workbench-components.md": "c05b8d51c27ca3d9dcd7495e796de34e23cd414e50e6c5840503d3918832f1ef",
+    "skills/pi-a2ui/scripts/a2ui.mjs": "4d0df7347b2dac45ff21709e2d0c19c076b337455a75fada0de2d0e0d6d4461d",
+    "src/artifact-elements.ts": "b5cf4e102c47f8511dbe773fa628017f04740e3353913c1726ea38e346c55736",
+    "src/artifact-store.ts": "b89b8f1e451b997d56b61ccd31294483edfc5d3c74e5efdda69763452f586306",
+    "src/assistant-cli.ts": "f18afd5314063f6af2cad2b679d54dd2edc454c5ec99c8cf1fa0d74eb54bd091",
+    "src/assistant-guidance.ts": "bd581ff23337569548d74fd1b230e73ebd02216cb52fe4f5ec2f6cf888975cf9",
+    "src/authoring-policy.ts": "21173872870e68d17824c8be88d2d20e370abef0f5429523b0d6812cd58822e1",
+    "src/browser-catalog.ts": "5a6747bceddd50430db955e88558b15306c5faf23424b8329d862b0c20acfe77",
+    "src/browser-interactions.ts": "f45063cb0c83e96c18c3b1c68c30298e20b1f070bf6f8ce806e5406c5c1b16cb",
+    "src/catalog.ts": "1d2a00569425f512de1f762be50797a4ace5eb47f26ae9a9f236dc62649562d8",
+    "src/client.css": "eb647f62a9394dc836512bbbdd06d03813e8dfa70b758ceb1ec3566d6f51e96e",
+    "src/client.ts": "231a90ab7cae2405144ba248278371fb2f2f6bebd8dc920edf2fe812a4198a97",
+    "src/coding-elements.ts": "7812909bfa896a8400984f4272517d8b8aabd25d224f77bc63dea29510b84b5c",
+    "src/coding.ts": "d1970d43d7ef42085aabda7f2c2e3b1c286aa324682a9ac12d475d1fd1179c2a",
+    "src/command-palette.ts": "bbc680963d46a56dd039247fcaea70c9e9cfd9b930f8c3949b6edcf79cbebee4",
+    "src/compiler.ts": "c6b6dd6c61443a09801599dd130e4fc813d0115ad7a57632c609a6f23efd1ec2",
+    "src/controller.ts": "cff2afa6cfb2d414f526eb3d95dd69c307e8ac0efe3298d30c95c648dbc96415",
+    "src/detail-elements.ts": "0ec9596f3566c2a3e7423323a2e96d354ddd3bc0fe202e3f8c51af4de2a4818d",
+    "src/inputs.ts": "32c9565e4635eca1f5a52335c11ae7e47efa5a885871de6dfc513444ca28ac34",
+    "src/interactions.ts": "2221b36bcf6595d62b978353a47d86f1c2bc52b9ed4acfd5f59b98972ba50e7c",
+    "src/live-elements.ts": "423bdcfb14e5fcbe54a27a98adcb20d21e82748e0ce2fc5164ea8b0d646ab06e",
+    "src/live-tools.ts": "b8b664068c169236409d58d462e0cb803b9cffae0c496263f27c92d353562b71",
+    "src/live.ts": "e5e559969b4646dc0dfa11557338e9e2b1539aa91bea69a9e9d254934c5cc744",
+    "src/protocol.ts": "3977b7acb21906822dcd797342db8e4a50b9a2009eb47ceb24d7d249276af957",
+    "src/run-card.ts": "0bfd1729e3ffadd21e5292e949176987084eb0af97d621e04fb186005f79161f",
+    "src/selection-element.ts": "60e3f6df7124770aacb75478080c2acf59a660c3c1f0b7c0420ae15f8ec493d5",
+    "src/server.ts": "aaa381e959257a41e83f72e2a86ef4b424583603d3e745b1536087a5cf6d36c6",
+    "src/session.ts": "77a23aadc4c1b748641504e3257676636e426aa031ab726bfbace95f46fe79b0",
+    "src/status-elements.ts": "09c06683b94c8bc8e362c69d1c60a8cf7b3e33c615b1fb20b6d474537b1c6aaf",
+    "src/table-elements.ts": "5a00ed7e3e1111031ff8e6c66ecf7e58108fbaf0ff53a3783913f6cc9b0f9405",
+    "src/text-elements.ts": "8586bbb765ae6c82be85596ec8e5486d6686e9b67fef240fe12034f3fa10509f",
+    "src/timeline-element.ts": "c7d5c728b5aa001653f34c5681299c751227a1c974b284945561203d38f82712",
+    "src/validation-element.ts": "fc646dbcb2ad7a4dc3df0b37efce7e5407869952bd308556d1ae12f1eb97995a",
+    "src/workbench.ts": "23f16f945b86a1d2c47478dedfd54f825359a3f0f87760827aeca77e58bd7376"
+  },
+  "modelEffect": "not_evaluated",
+  "productionImplemented": false,
+  "cleanup": "all pages/contexts/servers/browser closed in finally"
+}

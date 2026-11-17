@@ -1,0 +1,94 @@
+{
+  "boundary": "Candidate palette pairs only; not whole-page WCAG certification or all computed-background combinations",
+  "method": "WCAG sRGB relative luminance, compare unrounded ratios",
+  "pairs": [
+    {
+      "name": "text/surface",
+      "foreground": "#172033",
+      "background": "#ffffff",
+      "ratio": 16.268480224545662,
+      "minimum": 4.5,
+      "pass": true
+    },
+    {
+      "name": "muted/surface",
+      "foreground": "#566477",
+      "background": "#ffffff",
+      "ratio": 6.025933581309434,
+      "minimum": 4.5,
+      "pass": true
+    },
+    {
+      "name": "muted/canvas",
+      "foreground": "#566477",
+      "background": "#f5f7fb",
+      "ratio": 5.618410633886839,
+      "minimum": 4.5,
+      "pass": true
+    },
+    {
+      "name": "on-accent",
+      "foreground": "#ffffff",
+      "background": "#365cdb",
+      "ratio": 5.659451352851272,
+      "minimum": 4.5,
+      "pass": true
+    },
+    {
+      "name": "error/panel",
+      "foreground": "#b42318",
+      "background": "#fff5f3",
+      "ratio": 6.1382492554715435,
+      "minimum": 4.5,
+      "pass": true
+    },
+    {
+      "name": "input-boundary",
+      "foreground": "#8190a5",
+      "background": "#ffffff",
+      "ratio": 3.247731657739689,
+      "minimum": 3,
+      "pass": true
+    },
+    {
+      "name": "focus/surface",
+      "foreground": "#1d4ed8",
+      "background": "#ffffff",
+      "ratio": 6.701618401398807,
+      "minimum": 3,
+      "pass": true
+    },
+    {
+      "name": "series1",
+      "foreground": "#365cdb",
+      "background": "#ffffff",
+      "ratio": 5.659451352851272,
+      "minimum": 3,
+      "pass": true
+    },
+    {
+      "name": "series2",
+      "foreground": "#0f766e",
+      "background": "#ffffff",
+      "ratio": 5.473250081210842,
+      "minimum": 3,
+      "pass": true
+    },
+    {
+      "name": "series3",
+      "foreground": "#9a5b0a",
+      "background": "#ffffff",
+      "ratio": 5.419603730367809,
+      "minimum": 3,
+      "pass": true
+    },
+    {
+      "name": "series4",
+      "foreground": "#92419c",
+      "background": "#ffffff",
+      "ratio": 6.072212212740208,
+      "minimum": 3,
+      "pass": true
+    }
+  ]
+}

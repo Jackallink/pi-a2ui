@@ -1,0 +1,9 @@
+root = Column(children=[
+ MarkdownView(text="# 构建质量概览"),Text(text="固定样例 · 非真实工具结果 · 2026-11-17",variant="caption"),
+ Row(children=[
+ Card(child=Column(children=[Text(text="构建次数",variant="caption"),MarkdownView(text="## 12,480"),Text(text="示例合计 · 次",variant="caption")])),
+ Card(child=Column(children=[Text(text="通过率",variant="caption"),MarkdownView(text="## 98.4%"),Text(text="示例比例 · 无同比基线",variant="caption")])),
+ Card(child=Column(children=[Text(text="待处理项",variant="caption"),MarkdownView(text="## 7"),Text(text="需要人工确认 · 项",variant="caption")])),
+ Card(child=Column(children=[Text(text="中位耗时",variant="caption"),MarkdownView(text="## 2.6 min"),Text(text="示例统计 · 非实测",variant="caption")]))]),
+ Card(child=Column(children=[MarkdownView(text="### 最近六次构建 · 示例通过数"),Chart(kind="line",series=[{name:"服务端",points:[{label:"11/12",value:42},{label:"11/13",value:55},{label:"11/14",value:49},{label:"11/15",value:61},{label:"11/16",value:74},{label:"11/17",value:66}]},{name:"浏览器",points:[{label:"11/12",value:28},{label:"11/13",value:35},{label:"11/14",value:40},{label:"11/15",value:46},{label:"11/16",value:51},{label:"11/17",value:57}]}])])),
+ Card(child=Column(children=[MarkdownView(text="### 需要关注的项目"),DataTable(caption="固定项目记录，非真实执行",columns=[{id:"project",label:"项目"},{id:"count",label:"构建数"},{id:"rate",label:"通过率（%）"},{id:"owner",label:"负责团队"}],rows=[{id:"a",cells:["agent-core",4320,99.1,"平台研发"]},{id:"b",cells:["canvas-web",3180,98.4,"交互体验"]},{id:"c",cells:["skill-examples",4980,97.8,"开发者工具"]}])]))])
