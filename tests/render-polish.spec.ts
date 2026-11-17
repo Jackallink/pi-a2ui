@@ -293,7 +293,7 @@ test.describe('T2 data legibility: table numerics and chart legend/ticks',()=>{
  });
  test('chart x-axis labels stay inside the plot viewport and never overlap',async({page})=>{
   const audit=(chart:ReturnType<Page['locator']>)=>chart.evaluate((node)=>{
-   const svg=node.querySelector('svg');
+   const svg=node.querySelector('svg.rp-plot');
    if(!svg)throw new Error('chart svg missing');
    const svgBox=svg.getBoundingClientRect();
    const boxes=[...svg.querySelectorAll<SVGTextElement>('text.rp-x-label')].map(text=>{const box=text.getBoundingClientRect();return{left:box.left,right:box.right,text:(text.textContent??'').trim()};});
@@ -335,7 +335,7 @@ test.describe('T2 data legibility: table numerics and chart legend/ticks',()=>{
   const env=await open(page,'rp-x-labels',source);
   try{
    const audit=(chart:ReturnType<Page['locator']>)=>chart.evaluate((node)=>{
-    const svg=node.querySelector('svg');
+    const svg=node.querySelector('svg.rp-plot');
     if(!svg)throw new Error('chart svg missing');
     const svgBox=svg.getBoundingClientRect();
     const boxes=[...svg.querySelectorAll<SVGTextElement>('text.rp-x-label')].map(text=>{const box=text.getBoundingClientRect();return{left:box.left,right:box.right,text:(text.textContent??'').trim()};});
@@ -465,6 +465,202 @@ test.describe('contract regressions across the restyle',()=>{
    assert.deepEqual(env.pageErrors,[],'no uncaught page errors');
    assert.equal(env.posts.length,0,'no business POSTs');
    assert.equal(env.externalBlocked.count,0,'no attempted provider or external requests');
+  }finally{await env.close();}
+ });
+});
+
+test.describe('review findings F1-F4 corrective regressions (independent review R1, base 29caec1)',()=>{
+ test('F1: Tabs active/inactive states survive the generic button reset, in both directions',async({page})=>{
+  const env=await open(page,'rp-f1-tabs','root = Tabs([{title:"概览",child:Text("概览内容")},{title:"明细",child:Text("明细内容")}])');
+  try{
+   const tabOne=page.getByRole('button',{name:'概览',exact:true});
+   const tabTwo=page.getByRole('button',{name:'明细',exact:true});
+   await expect(tabOne).toBeVisible();
+   const activeBg=await styleOf(tabOne,'background-color');
+   const activeColor=await styleOf(tabOne,'color');
+   const activeBorder=await styleOf(tabOne,'border-bottom-color');
+   assert.equal(activeBg,'rgba(0, 0, 0, 0)','active tab background stays transparent, not the generic button surface');
+   assert.equal(activeColor,'rgb(54, 92, 219)','active tab text uses the accent, not the generic button text');
+   assert.equal(activeBorder,'rgb(54, 92, 219)','active tab keeps its accent underline (the generic reset border must not win)');
+   const inactiveColor=await styleOf(tabTwo,'color');
+   const inactiveBg=await styleOf(tabTwo,'background-color');
+   assert.equal(inactiveColor,'rgb(86, 100, 119)','inactive tab reads muted, not the readable text color');
+   assert.equal(inactiveBg,'rgba(0, 0, 0, 0)');
+   await tabTwo.click();
+   await page.mouse.move(4,400);// pointer residue keeps :hover live and would mask the active-state color
+   await expect.poll(()=>styleOf(tabTwo,'color'),{timeout:3000}).toBe('rgb(54, 92, 219)');// clicking the second tab moves the active accent;
+   await expect.poll(()=>styleOf(tabOne,'color'),{timeout:3000}).toBe('rgb(86, 100, 119)');// the previously active tab falls back to muted;
+  }finally{await env.close();}
+ });
+ test('F1: ChoicePicker chip selected state survives the generic button reset, in both directions',async({page})=>{
+  const env=await open(page,'rp-f1-chips','$/pick = ["a"]\nroot = ChoicePicker(label="环境",displayStyle="chips",variant="mutuallyExclusive",options=[{label:"Alpha",value:"a"},{label:"Beta",value:"b"}],value=$/pick)');
+  try{
+   const chip=(name:string)=>page.locator('a2ui-choicepicker .a2ui-chip').filter({hasText:name}).first();
+   const alpha=chip('Alpha');
+   const beta=chip('Beta');
+   await expect(alpha).toBeVisible();
+   assert.equal(await styleOf(alpha,'background-color'),'rgb(54, 92, 219)','selected chip keeps the accent fill, not the generic button surface');
+   assert.equal(await styleOf(alpha,'color'),'rgb(255, 255, 255)','selected chip text is on-accent white');
+   assert.equal(await styleOf(alpha,'border-radius'),'999px','chips stay pill-shaped, not the generic control radius');
+   assert.equal(await styleOf(beta,'background-color'),'rgb(255, 255, 255)','unselected chip keeps the surface fill');
+   await beta.click();
+   await page.mouse.move(4,400);// avoid :hover residue on the clicked chip
+   await expect.poll(()=>styleOf(beta,'background-color'),{timeout:3000}).toBe('rgb(54, 92, 219)');// clicking Beta moves the selected fill;
+   await expect.poll(()=>styleOf(alpha,'background-color'),{timeout:3000}).toBe('rgb(255, 255, 255)');// Alpha falls back to the surface fill;
+  }finally{await env.close();}
+ });
+ test('F2: when every legal label exceeds its column, the fallback wraps instead of erasing the axis (single bar)',async({page})=>{
+  const wide='W'.repeat(128);
+  const env=await open(page,'rp-f2-single','root = Card(child=Column(children=[Chart(kind="bar",series=[{name:"长柱",points:[{label:'+JSON.stringify(wide)+',value:1}]}])]))');
+  try{
+   const audit=await page.locator('pi-a2ui-chart').first().evaluate((node)=>{
+    const svg=node.querySelector('svg.rp-plot');
+    if(!svg)throw new Error('chart svg missing');
+    const svgBox=svg.getBoundingClientRect();
+    const labels=[...svg.querySelectorAll<SVGTextElement>('text.rp-x-label')];
+    return labels.map(label=>{
+     const box=label.getBoundingClientRect();
+     const rendered=[...label.querySelectorAll('tspan')].map(t=>t.textContent??'').join('');
+     return{lines:label.querySelectorAll('tspan').length,rendered,title:label.querySelector('title')?.textContent??'',inside:box.left>=svgBox.left-0.5&&box.right<=svgBox.right+0.5,nonEmpty:rendered.trim().length>0};
+    });
+   });
+   assert.equal(audit.length,1,'the axis keeps its label node');
+   assert.ok(audit[0]!.lines>=2,'the oversized label wraps into multiple bounded lines, it is not dropped');
+   assert.ok(audit[0]!.lines<=3,'wrapping stays bounded (at most three lines per label)');
+   assert.ok(audit[0]!.nonEmpty,'the wrapped label is readable, not empty');
+   assert.ok(audit[0]!.inside,'the wrapped label stays inside the svg viewport');
+   assert.equal(audit[0]!.title,wide,'the <title> keeps the full supplied label');
+   assert.equal(audit[0]!.rendered.length,128,'the wrapped tspans together still carry the full 128-char label when it fits in three lines');
+   const tableRow=await page.locator('pi-a2ui-chart .values tbody tr td:nth-child(2)').first().textContent();
+   assert.equal(tableRow,wide,'the values table still carries the full label');
+  }finally{await env.close();}
+ });
+ test('F2: two fully oversized labels wrap with ellipsis tails, stay disjoint and keep full data downstream',async({page})=>{
+  const cjk='界'.repeat(128);
+  const env=await open(page,'rp-f2-pair','root = Card(child=Column(children=[Chart(kind="line",series=[{name:"两点",points:[{label:'+JSON.stringify(cjk)+',value:1},{label:'+JSON.stringify(cjk)+',value:2}]}])]))');
+  try{
+   const audit=await page.locator('pi-a2ui-chart').first().evaluate((node)=>{
+    const svg=node.querySelector('svg.rp-plot');
+    if(!svg)throw new Error('chart svg missing');
+    const svgBox=svg.getBoundingClientRect();
+    const labels=[...svg.querySelectorAll<SVGTextElement>('text.rp-x-label')].map(label=>{const box=label.getBoundingClientRect();return{left:box.left,right:box.right,lines:label.querySelectorAll('tspan').length,rendered:[...label.querySelectorAll('tspan')].map(t=>t.textContent??'').join(''),title:label.querySelector('title')?.textContent??'',inside:box.left>=svgBox.left-0.5&&box.right<=svgBox.right+0.5};});
+    labels.sort((a,b)=>a.left-b.left);
+    const minGap=labels.length>1?labels[1]!.left-labels[0]!.right:null;
+    return{labels,minGap};
+   });
+   assert.equal(audit.labels.length,2,'both labels survive the fallback');
+   for(const label of audit.labels){
+    assert.ok(label.lines<=3,'bounded line count');
+    assert.ok(label.rendered.endsWith('…'),'labels that cannot fit in three lines truncate with an ellipsis tail, got length '+label.rendered.length);
+    assert.ok(label.rendered.length<128,'the rendered label is bounded, unlike the 128-char input');
+    assert.equal(label.title,cjk,'the <title> keeps the full label for assistive tech');
+    assert.ok(label.inside,'wrapped labels stay inside the svg viewport');
+   }
+   assert.ok(audit.minGap!==null&&audit.minGap>=2,'wrapped labels never overlap: minGap='+audit.minGap);
+   const tableCells=await page.locator('pi-a2ui-chart .values tbody tr td:nth-child(2)').allTextContents();
+   assert.deepEqual(tableCells,[cjk,cjk],'the values table still carries both full labels');
+  }finally{await env.close();}
+ });
+ test('F3: the four-series line chart distinguishes series with dash styles and marker shapes, matching the legend',async({page})=>{
+  const env=await open(page,'rp-f3-marks',chartSource(corpusCase('four-series')));
+  try{
+   const marks=await page.locator('pi-a2ui-chart').first().evaluate((node)=>{
+    const groups=[...node.querySelectorAll('svg.rp-plot g[data-series]')];
+    return groups.map(group=>({
+     series:group.getAttribute('data-series'),
+     mark:group.getAttribute('data-mark'),
+     dash:group.querySelector('polyline')?.getAttribute('stroke-dasharray')??null,
+     circles:group.querySelectorAll('circle').length,
+     rects:group.querySelectorAll('rect').length,
+     polygons:group.querySelectorAll('polygon').length,
+    }));
+   });
+   assert.deepEqual(marks.map(mark=>mark.series),['服务端','浏览器','脚本','文档'],'setup: four series in order');
+   assert.deepEqual(marks.map(mark=>mark.dash),['none','7 3','2 3','11 4'],'each series carries its own dash pattern');
+   assert.deepEqual(marks.map(mark=>mark.mark),['circle','square','triangle','diamond'],'each series carries its own marker shape');
+   assert.deepEqual(marks.map(mark=>mark.circles),[2,0,0,0],'series one marks with circles');
+   assert.deepEqual(marks.map(mark=>mark.rects),[0,2,0,0],'series two marks with squares');
+   assert.deepEqual(marks.map(mark=>mark.polygons),[0,0,2,2],'series three and four mark with polygons');
+   const vertices=await page.locator('pi-a2ui-chart').first().evaluate((node)=>{
+    const groups=[...node.querySelectorAll('svg.rp-plot g[data-series]')];
+    return groups.map(group=>[...group.querySelectorAll('polygon')].map(polygon=>polygon.getAttribute('points')?.trim().split(' ').length??0));
+   });
+   assert.ok(vertices[2]!.every(count=>count===3),'series three uses triangle markers (3-point polygons)');
+   assert.ok(vertices[3]!.every(count=>count===4),'series four uses diamond markers (4-point polygons)');
+   const legendDashes=await page.locator('pi-a2ui-chart .rp-legend li').evaluateAll(nodes=>nodes.map(node=>node.querySelector('line')?.getAttribute('stroke-dasharray')??null));
+   assert.deepEqual(legendDashes,['none','7 3','2 3','11 4'],'legend swatches mirror the line dash patterns so the mapping is readable outside the plot');
+  }finally{await env.close();}
+ });
+ test('F4: ticks render in the mono tick font and the gutter is measured from real label widths',async({page})=>{
+  const env=await open(page,'rp01',fixture('RP01-dashboard'));
+  try{
+   const chart=page.locator('pi-a2ui-chart').first();
+   await expect(chart).toBeVisible();
+   const tick=chart.locator('svg text.rp-tick').first();
+   await expect(tick).toBeVisible();
+   const font=await styleOf(tick,'font-family');
+   assert.ok(/monospace/i.test(font),'tick labels use the mono font token, got '+font);
+   assert.equal(await styleOf(tick,'font-size'),'11px','ticks render at their 11px spec size');
+   const geometry=await chart.evaluate((node)=>{
+    const svg=node.querySelector('svg.rp-plot');
+    if(!svg)throw new Error('chart svg missing');
+    const axis=svg.querySelector('line:not(.rp-tick-mark)');
+    if(!axis)throw new Error('baseline line missing');
+    const svgBox=svg.getBoundingClientRect();
+    const axisLeft=axis.getBoundingClientRect().left;
+    const scale=svgBox.width/(svg as SVGSVGElement).viewBox.baseVal.width;
+    const ticks=[...svg.querySelectorAll<SVGTextElement>('text.rp-tick')].map(text=>{const box=text.getBoundingClientRect();return{right:box.right,left:box.left};});
+    return{gutterPx:axisLeft-svgBox.left,scale,rightmostTick:Math.max(...ticks.map(t=>t.right)),leftmostTick:Math.min(...ticks.map(t=>t.left)),svgLeft:svgBox.left};
+   });
+   assert.ok(geometry.gutterPx>=40*geometry.scale-0.5,'the measured gutter is at least the 40px floor, got '+geometry.gutterPx.toFixed(1));
+   assert.ok(geometry.rightmostTick<=geometry.gutterPx+geometry.svgLeft+1,'every tick label ends before the axis line starts (measured widths, not estimates)');
+   assert.ok(geometry.leftmostTick>=geometry.svgLeft-0.5,'no tick label spills past the left svg edge');
+  }finally{await env.close();}
+ });
+ test('F4: tick containment holds on the worst-case corpus case (long-label)',async({page})=>{
+  const env=await open(page,'rp-f4-corpus',chartSource(corpusCase('long-label')));
+  try{
+   const geometry=await page.locator('pi-a2ui-chart').first().evaluate((node)=>{
+    const svg=node.querySelector('svg.rp-plot');
+    if(!svg)throw new Error('chart svg missing');
+    const axis=svg.querySelector('line:not(.rp-tick-mark)');
+    if(!axis)throw new Error('baseline line missing');
+    const svgBox=svg.getBoundingClientRect();
+    const axisLeft=axis.getBoundingClientRect().left;
+    const scale=svgBox.width/(svg as SVGSVGElement).viewBox.baseVal.width;
+    const ticks=[...svg.querySelectorAll<SVGTextElement>('text.rp-tick')].map(text=>{const box=text.getBoundingClientRect();return{right:box.right,left:box.left};});
+    return{gutterPx:axisLeft-svgBox.left,scale,rightmostTick:Math.max(...ticks.map(t=>t.right)),leftmostTick:Math.min(...ticks.map(t=>t.left)),svgLeft:svgBox.left,count:ticks.length};
+   });
+   assert.ok(geometry.count>=3,'setup: corpus ticks render');
+   assert.ok(geometry.gutterPx>=40*geometry.scale-0.5,'measured gutter meets the 40px floor on the corpus case, got '+geometry.gutterPx.toFixed(1));
+   assert.ok(geometry.rightmostTick<=geometry.gutterPx+geometry.svgLeft+1,'corpus tick labels never cross the axis line');
+   assert.ok(geometry.leftmostTick>=geometry.svgLeft-0.5,'corpus tick labels stay inside the svg');
+  }finally{await env.close();}
+ });
+ test('the scroll region is a real focusable named region and arrow keys scroll it (Spec028:37 contract)',async({page})=>{
+  const env=await open(page,'rp02',fixture('RP02-long-table'));
+  try{
+   await page.setViewportSize({width:360,height:740});
+   await page.evaluate(()=>document.fonts.ready.then(()=>true));
+   const region=page.getByRole('region',{name:/待评审变更.*scroll with arrow keys/});
+   await expect(region).toHaveCount(1,{timeout:1500});
+   const first=await region.evaluate((node)=>({tabIndex:(node as HTMLElement).tabIndex,role:node.getAttribute('role'),label:node.getAttribute('aria-label'),overflowX:getComputedStyle(node).overflowX,scrollable:(node as HTMLElement).scrollWidth>(node as HTMLElement).clientWidth}));
+   assert.equal(first.tabIndex,0,'the scroll container is keyboard-reachable by contract, not only incidentally');
+   assert.equal(first.role,'region');
+   assert.equal(first.overflowX,'auto');
+   assert.equal(first.scrollable,true,'setup: the table really overflows horizontally at 360px');
+   await page.getByRole('searchbox').focus();
+   await page.keyboard.press('Tab');
+   assert.equal(await region.evaluate((node)=>document.activeElement===node),true,'Tab from the filter input moves focus to the table scroll region');
+   await page.keyboard.press('ArrowRight');
+   await page.keyboard.press('ArrowRight');
+   await page.keyboard.press('ArrowRight');
+   await expect.poll(()=>region.evaluate((node)=>(node as HTMLElement).scrollLeft),{timeout:3000}).toBeGreaterThan(0);// ArrowRight scrolls the focused region right (Chromium applies key scrolling asynchronously)
+   await page.keyboard.press('ArrowLeft');
+   await page.keyboard.press('ArrowLeft');
+   await page.keyboard.press('ArrowLeft');
+   await page.keyboard.press('ArrowLeft');
+   await expect.poll(()=>region.evaluate((node)=>({left:(node as HTMLElement).scrollLeft,focused:document.activeElement===node})),{timeout:3000}).toEqual({left:0,focused:true});// ArrowLeft returns to the start; keyboard scrolling never steals or drops focus
   }finally{await env.close();}
  });
 });

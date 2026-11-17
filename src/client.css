@@ -183,6 +183,38 @@ code { font-family: var(--pi-a2ui-font-mono); font-size: 0.95em; }
   font-weight: 600;
   color: var(--pi-a2ui-color-muted);
 }
+/* Restore SDK Tabs/ChoicePicker selected states hidden by the generic button reset above
+   (their own (0,2,0) rules lose to (1,0,1)); keeps Spec028 AC-001/004/007 state cues. */
+#surfaces a2ui-tabs .a2ui-tab-button {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  padding: 8px 16px;
+  min-height: 0;
+  margin-bottom: -2px;
+  color: var(--pi-a2ui-color-muted);
+  font-weight: 500;
+}
+#surfaces a2ui-tabs .a2ui-tab-button:hover { color: var(--pi-a2ui-color-text); }
+#surfaces a2ui-tabs .a2ui-tab-button-active {
+  color: var(--pi-a2ui-color-accent);
+  border-bottom: 2px solid var(--pi-a2ui-color-accent);
+}
+#surfaces a2ui-choicepicker .a2ui-chip {
+  border-radius: 999px;
+  padding: 4px 12px;
+  min-height: 0;
+  background: var(--pi-a2ui-color-surface);
+  color: var(--pi-a2ui-color-text);
+  border-color: var(--pi-a2ui-color-input-border);
+}
+#surfaces a2ui-choicepicker .a2ui-chip-selected {
+  background: var(--pi-a2ui-color-accent);
+  color: var(--pi-a2ui-color-accent-contrast);
+  border-color: var(--pi-a2ui-color-accent);
+  font-weight: 600;
+}
 #surfaces button:disabled { opacity: 0.65; cursor: default; }
 #surfaces .picker-options button[aria-pressed="true"] {
   border: 2px solid var(--pi-a2ui-color-accent);

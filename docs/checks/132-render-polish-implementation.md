@@ -43,6 +43,7 @@
   - 修复后：render-polish 34/34；五套件 **125 passed**（BM3 accepted:true source d5bc5d2）；npm test rc=0；tsc clean；golden union 68 cases source d5bc5d2。
 - **9095e99 测试隔离修复**：TPD01 原“全局 .local/trigger-pilot 目录清单元相等”断言与并发测试文件（多文件 createRun→mkdtempSync 同目录）存在跨文件竞态（node --test 文件级并行；T3 新增编译触发改变时序后暴露，连续两次复现，单独文件运行始终绿）。修法保意图：guard 拦截 mkdirSync/mkdtempSync/promises.mkdir，对含 `.local/trigger-pilot` 的路径计数 `runs`，进程内断言 {config:0,network:0,runs:0}，删除竞态清单比较。修复后 npm test 连续 3 次 rc=0。
 - 未确认阻塞→建议处理：刻度字体未改等宽（Spec028 未要求，7.5px/字符估宽对 11px 数字刻度保守），维持现实现并记录。
+- **勘误（2026-11-17 独立评审纠正）**：上一行判断有误。Spec028:57 明确要求刻度使用 ASCII 等宽字体、gutter 由最大刻度标签的实际测宽（+12，≥40px）得出，而非常规比例字体加 7.5px/字符估宽。已在整改轮（live-elements.ts tickMeasurer + .rp-tick mono token + 实测 gutter）落实，对应测试见 tests/render-polish.spec.ts F4 组。
 
 ## 状态
 review-ready（T1–T4 完成，独立审查 R1→R4 回环收敛：R4 GO、阻塞性缺陷归零）：本 Check 不关闭 issue、不合并、不发布、不改用户全局安装。
