@@ -5,7 +5,7 @@ Canonical：Spec028。以下为设计/实施测试意图；当前样张证明范
 | ID | 路径/AC | 测试意图 |
 | --- | --- | --- |
 | IT-001 | P-001 / AC-001,002,004 | 真实CSS消费与scope，6scene/3宽度前后，contrast有效背景；SDK Light DOM样式已生效，不迁移root |
-| IT-002 | P-002 / AC-005,006 | 数值/类型/稳定sort、raw table一致，8类Chart边界与动态patch，legend与tick同域、数据不变 |
+| IT-002 | P-002 / AC-005,006 | 数值/类型/稳定sort、scalar原子单行与横向可达、raw table一致，chart-corpus的11类边界（含微量/极大/subnormal）与动态patch，legend与tick同域、数据不变 |
 | IT-003 | P-003 / AC-003,007 | invalid0/valid1POST，本地控件无POST，保留草稿/焦点/aria/Modal/inert/pause；实际zoom独立记录 |
 | IT-004 | P-004 / AC-008,009,010 | helper正例可编译、不支持props显式负例，Node24本地完整CI与包，0真实模型、grant/frozen保全 |
 

@@ -21,7 +21,7 @@ skill只加按需子文档/索引和可执行组合，现有helper example/check
 
 本地CI：先相关窄检查，再固定source跑完整Node/type/四组browser+新测试/strict golden union，build资产一致性、pack与owned正常skill/tool discovery零推理验收。保存source/tree/Node/browser/lock、原始日志与hash。实际desktop200%缩放独立验证；640×450截图不是actual zoom。像素保持平台边界，不能直接覆盖旧BM3或冻结基线修绿。
 
-禁止真实模型评测/任何provider健康探针/读取或打印凭据、复用旧grant与剩余21、重跑冻结真实baseline。工作会话的模型由用户已配置的授权决定，本交接不允许另起模型调用；如用户采用既定模型，只用glm-5.3-flash，不切CodePlan或其它付费模型。保留所有历史raw、失败、STOP、锁、个人文件和全局安装。
+禁止真实模型评测/任何provider健康探针/读取或打印凭据、复用旧grant与剩余21、重跑冻结真实baseline。Pi工作会话只允许用户已有的Ark AgentPlan路由与glm-5.3-flash，不切CodePlan、其它endpoint或其它付费模型；若当前会话不能确认该route/model则停并报告，不自行改配置或发provider探针，不读取/打印凭据。Pi工作会话由用户自行启动授权，本交接不允许另开真实模型评测调用。保留所有历史raw、失败、STOP、锁、个人文件和全局安装。
 
 每个T任务单独可回退提交并记录Check。遇到确需内核变化/真实调用/设计外API，停该扩张并报告具体缺口，不自行修宽权限。不把setup/编译环境错误说成行为RED。
 

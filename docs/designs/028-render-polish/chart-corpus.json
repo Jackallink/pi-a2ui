@@ -1,0 +1,356 @@
+{
+  "schema": "rp67-chart-design-corpus-v1",
+  "status": "hand-authored spec expectations and future browser test inputs; not completed product tests",
+  "tickRule": "Spec028 zero / abs<0.01 or abs>=1e6 -> exponential(2) / else ungrouped en-US maximumFractionDigits6; distinct domain tick values must not collapse",
+  "cases": [
+    {
+      "id": "empty",
+      "kind": "line",
+      "series": [],
+      "expectedTickLabels": [],
+      "assertions": [
+        "No data remains explicit",
+        "no fake zero-valued sample or axis ticks"
+      ]
+    },
+    {
+      "id": "single-bar",
+      "kind": "bar",
+      "series": [
+        {
+          "name": "固定边界样例",
+          "points": [
+            {
+              "label": "1",
+              "value": 7
+            }
+          ]
+        }
+      ],
+      "expectedTickLabels": [
+        "0",
+        "3.5",
+        "7"
+      ],
+      "assertions": [
+        "all SVG coordinates finite",
+        "original table values and labels exact",
+        "no nonzero tick mislabeled zero",
+        "all tick labels fit reserved gutter/local scroll"
+      ]
+    },
+    {
+      "id": "zero",
+      "kind": "line",
+      "series": [
+        {
+          "name": "固定边界样例",
+          "points": [
+            {
+              "label": "1",
+              "value": 0
+            },
+            {
+              "label": "2",
+              "value": 0
+            }
+          ]
+        }
+      ],
+      "expectedTickLabels": [
+        "0"
+      ],
+      "assertions": [
+        "all SVG coordinates finite",
+        "original table values and labels exact",
+        "no nonzero tick mislabeled zero",
+        "all tick labels fit reserved gutter/local scroll"
+      ]
+    },
+    {
+      "id": "negative",
+      "kind": "bar",
+      "series": [
+        {
+          "name": "固定边界样例",
+          "points": [
+            {
+              "label": "1",
+              "value": -6
+            },
+            {
+              "label": "2",
+              "value": -2
+            }
+          ]
+        }
+      ],
+      "expectedTickLabels": [
+        "-6",
+        "-3",
+        "0"
+      ],
+      "assertions": [
+        "all SVG coordinates finite",
+        "original table values and labels exact",
+        "no nonzero tick mislabeled zero",
+        "all tick labels fit reserved gutter/local scroll"
+      ]
+    },
+    {
+      "id": "mixed",
+      "kind": "line",
+      "series": [
+        {
+          "name": "固定边界样例",
+          "points": [
+            {
+              "label": "1",
+              "value": -5
+            },
+            {
+              "label": "2",
+              "value": 5
+            }
+          ]
+        }
+      ],
+      "expectedTickLabels": [
+        "-5",
+        "0",
+        "5"
+      ],
+      "assertions": [
+        "all SVG coordinates finite",
+        "original table values and labels exact",
+        "no nonzero tick mislabeled zero",
+        "all tick labels fit reserved gutter/local scroll"
+      ]
+    },
+    {
+      "id": "tiny",
+      "kind": "line",
+      "series": [
+        {
+          "name": "固定边界样例",
+          "points": [
+            {
+              "label": "1",
+              "value": 0
+            },
+            {
+              "label": "2",
+              "value": 1e-06
+            }
+          ]
+        }
+      ],
+      "expectedTickLabels": [
+        "0",
+        "5.00e-7",
+        "1.00e-6"
+      ],
+      "assertions": [
+        "all SVG coordinates finite",
+        "original table values and labels exact",
+        "no nonzero tick mislabeled zero",
+        "all tick labels fit reserved gutter/local scroll"
+      ]
+    },
+    {
+      "id": "huge",
+      "kind": "bar",
+      "series": [
+        {
+          "name": "固定边界样例",
+          "points": [
+            {
+              "label": "1",
+              "value": 0
+            },
+            {
+              "label": "2",
+              "value": 1e+308
+            }
+          ]
+        }
+      ],
+      "expectedTickLabels": [
+        "0",
+        "5.00e+307",
+        "1.00e+308"
+      ],
+      "assertions": [
+        "all SVG coordinates finite",
+        "original table values and labels exact",
+        "no nonzero tick mislabeled zero",
+        "all tick labels fit reserved gutter/local scroll"
+      ]
+    },
+    {
+      "id": "minimum-subnormal",
+      "kind": "line",
+      "series": [
+        {
+          "name": "固定边界样例",
+          "points": [
+            {
+              "label": "1",
+              "value": 0
+            },
+            {
+              "label": "2",
+              "value": 5e-324
+            }
+          ]
+        }
+      ],
+      "expectedTickLabels": [
+        "0",
+        "4.94e-324"
+      ],
+      "assertions": [
+        "all SVG coordinates finite",
+        "original table values and labels exact",
+        "no nonzero tick mislabeled zero",
+        "all tick labels fit reserved gutter/local scroll"
+      ]
+    },
+    {
+      "id": "maximum-finite",
+      "kind": "bar",
+      "series": [
+        {
+          "name": "固定边界样例",
+          "points": [
+            {
+              "label": "1",
+              "value": 0
+            },
+            {
+              "label": "2",
+              "value": 1.7976931348623157e+308
+            }
+          ]
+        }
+      ],
+      "expectedTickLabels": [
+        "0",
+        "8.99e+307",
+        "1.80e+308"
+      ],
+      "assertions": [
+        "all SVG coordinates finite",
+        "original table values and labels exact",
+        "no nonzero tick mislabeled zero",
+        "all tick labels fit reserved gutter/local scroll"
+      ]
+    },
+    {
+      "id": "long-label",
+      "kind": "bar",
+      "series": [
+        {
+          "name": "固定边界样例",
+          "points": [
+            {
+              "label": "亚太区电子商务与开发者平台协作团队",
+              "value": 10
+            },
+            {
+              "label": "欧洲区域企业客户与解决方案支持团队",
+              "value": 20
+            },
+            {
+              "label": "北美研发效率与交互可读性验证小组",
+              "value": 35
+            },
+            {
+              "label": "中国区域服务可靠性与资产管理部门",
+              "value": 50
+            }
+          ]
+        }
+      ],
+      "expectedTickLabels": [
+        "0",
+        "25",
+        "50"
+      ],
+      "assertions": [
+        "all SVG coordinates finite",
+        "original table values and labels exact",
+        "no nonzero tick mislabeled zero",
+        "all tick labels fit reserved gutter/local scroll"
+      ]
+    },
+    {
+      "id": "four-series",
+      "kind": "line",
+      "series": [
+        {
+          "name": "服务端",
+          "points": [
+            {
+              "label": "一月",
+              "value": 10
+            },
+            {
+              "label": "二月",
+              "value": 20
+            }
+          ]
+        },
+        {
+          "name": "浏览器",
+          "points": [
+            {
+              "label": "一月",
+              "value": 20
+            },
+            {
+              "label": "二月",
+              "value": 30
+            }
+          ]
+        },
+        {
+          "name": "脚本",
+          "points": [
+            {
+              "label": "一月",
+              "value": 25
+            },
+            {
+              "label": "二月",
+              "value": 35
+            }
+          ]
+        },
+        {
+          "name": "文档",
+          "points": [
+            {
+              "label": "一月",
+              "value": 30
+            },
+            {
+              "label": "二月",
+              "value": 40
+            }
+          ]
+        }
+      ],
+      "expectedTickLabels": [
+        "0",
+        "20",
+        "40"
+      ],
+      "assertions": [
+        "4 visible name-matched legend entries",
+        "line dash alternatives",
+        "original table exact"
+      ]
+    }
+  ]
+}

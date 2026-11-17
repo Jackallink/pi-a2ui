@@ -27,3 +27,11 @@
 最终capture工具退出0，48张图片/6fixture/全snapshot与Chart原表/草稿/主按钮白字computed断言通过。见[design-ci.json](../designs/028-render-polish/design-ci.json)及[capture-manifest](../designs/028-render-polish/capture-manifest.json)；captureScriptSHA 206441229b37eae75778ad229f0b2161128177fdfb0b743971db2cca228b2c9b，previewCSS SHA d23dc2badde1d9944ee57a5f28359693ebace2350ae4dff8c5ab1b9498edd64c，manifest SHA 76be8ef6807882a83ca16ba36dc3059a3bc42c8ad373d1a38ed6ae8a88852ec4。初始manifest记录73个运行/样式/manifest文件逐字保全；补充product-preservation.json核对全部76已有payload加lock共77文件均等于基线Git对象。全部设计变更仅docs路径。walkthrough结构校验通过。
 
 [对照画廊](../designs/028-render-polish/gallery.html)与[概览图](../designs/028-render-polish/overview.png)已生成，已目视检查RP01桌面、RP02表格、RP03窄屏错误等代表图；不因此声称全部图片具备业务/无障碍正确性。独立评审仍需固定本设计commit，检查合同与证据分层。
+
+## 独立R1 NO-GO与局部修正
+
+固定f8de033f1bf6ff0ca5cf834bfa55d82c2a27b0bf/treebb5d2d84133acc6f9a2a87e320054b567199b1f9，R1报告.local/render-polish-design/independent-review-r1.md SHA927bd453b78363d93125a777d232c09feccc5fd66ce67a8400613e0bfdd3c288；0P0/P1，3P2：窄屏scalar拆行、极值tick定义、Pi route/model条件式。未越过NO-GO实施。
+
+修正只影响design：候选表格scalar nowrap与局部横滚/region，新增真实Range单行断言和数值列横滚补图；Spec/Plan与三轮补非零不伪0、极大/微小值科学计数、有效gutter和11场景corpus（输入由原compiler接纳，不代表formatter已实现）；handoff无条件绑定Ark AgentPlan/glm-5.3-flash，缺失停不改配置。新owned run run-cCkfed退出0，48主图＋1补图；after scalar拆行0，before保留4个原退化反例，24个before PNG与R1逐字一致；全snapshot/原Chart表/草稿/白字断言保持，外部/业务/dispatch0，无body overflow。
+
+更新manifest SHA 78f0b614d4da9bbf897cb5e431c5c194a9b4f7b38a80ac2acdc3d76c18ec6418，captureScriptSHA e2f542a9fbf58e3743ae6827a008a61c5575bade23f2a95019490c7c7721ad52，previewCSSSHA 5a84a5d50a68a618e46f0e2c8ed93865715863732dba5da6997a03f92234f50c；design-ci.json是当前证据，前节hash为历史R1来源，不覆盖或重判旧回执。产品77文件仍与基线字节相同，当前待新固定docs source的独立R2。

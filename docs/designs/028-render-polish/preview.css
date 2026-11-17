@@ -21,3 +21,6 @@ main{max-width:1240px;padding:28px 40px 48px}.eyebrow{margin:0 0 6px;color:var(-
 #surfaces [data-rp-numeric=true]{text-align:right}#surfaces input[aria-invalid=true]{border-color:var(--rp-error)}#surfaces :is(small,.footer-note){font-size:12px}
 
 #surfaces a2ui-basic-button button :is(.a2ui-text,.no-markdown-renderer){color:inherit;font:inherit}#surfaces .a2ui-text-caption,#surfaces .a2ui-text-caption *{font-style:normal}
+
+/* Scalar readability: retain atomic values; overflow belongs to the table region. */
+#surfaces pi-a2ui-data-table table{min-width:560px}#surfaces pi-a2ui-data-table [data-rp-scalar=true],#surfaces pi-a2ui-chart td:last-child{white-space:nowrap;overflow-wrap:normal;word-break:normal}#surfaces pi-a2ui-data-table td{min-width:5ch}#surfaces .table-scroll:focus-visible{outline:3px solid var(--rp-focus);outline-offset:3px}

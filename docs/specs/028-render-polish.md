@@ -34,7 +34,7 @@ OUT：compiler/session/protocol/server/认证/预算/事件生命周期/SDK版�
 | typography | 正文14px/1.55、caption12px、section15–16px、页内标题24px、摘要数字28px；代码/日志12px等宽，关键内容允许缩放；数字tabular-nums |
 | layout | desktop main max1240px/左右40px，≤700px左右16px；Row卡片换行，窄屏单列；只允许表格/图表/代码局部滚动 |
 
-当前Text只支持body/caption，不能使用h1/h2新variant；标题和摘要通过既有受限MarkdownView的heading子集组织，不开放HTML。样例MetricCard仍是Card/Column/Text/MarkdownView组合，不注册MetricCard函数。Table数字单元格仅由现有number类型派生内部`data-value-kind="number"`用于右对齐；不把number变字符串，不改compare函数/顺序/原始事件。
+当前Text只支持body/caption，不能使用h1/h2新variant；标题和摘要通过既有受限MarkdownView的heading子集组织，不开放HTML。样例MetricCard仍是Card/Column/Text/MarkdownView组合，不注册MetricCard函数。Table数字单元格仅由现有number类型派生内部`data-value-kind="number"`用于右对齐；number/boolean/null作为原子文本，white-space:nowrap且禁用anywhere断词；表格不足宽时只在table-scroll区域横向滚动并提供可聚焦region，长字符串列可换行。不得仅凭bodyOverflow=false称数值可读；number/boolean/null的Range实际行数必须≤1，原始text与value保持。不把number变字符串，不改compare函数/顺序/原始事件。
 
 ## 组件覆盖与允许文件
 
@@ -54,7 +54,7 @@ OUT：compiler/session/protocol/server/认证/预算/事件生命周期/SDK版�
 
 继续使用现有零基线归一化域：maxAbs=max(1,max(abs(values)))、low=min(0,values/maxAbs)、high=max(0,values/maxAbs)、span=high-low或1；标注与现有点/柱用同一y映射，不能另算不一致的坐标轴。ticks从low/mid/high去重，空数据不画伪数据刻度，全零最多一条0刻度。不是“nice ticks”新算法，也不生成目标/预测。
 
-显示顺序/系列名与输入一致，legend对应实际series并保留4条文字区分；原始表始终保留完整标签与值。显示tick可用有界数字格式，但不能改points或表格源值。长标签先换行/选择较少tick并保留完整title与原表，窄屏绘图区使用≥540px局部滚动，不把字缩到不可读；不可旋转45度遮挡或改label原值。现有原生SVG title继续保留，首轮不宣称完整keyboard Tooltip组件；可见legend与原表为非颜色替代。
+显示顺序/系列名与输入一致，legend对应实际series并保留4条文字区分；原始表始终保留完整标签与值。内部tick显示规则：精确0（含-0）显示0；非零abs<0.01或abs≥1e6用toExponential(2)（3有效数字，保留正负与指数），其它值用固定en-US无分组、最多6位小数。非零不能显示成0；允许刻度显示近似值，原表不改。若不同tick值格式化后标签碰撞，逐步提升精度至Number.toString()，不得合并不同值为同标签。tick标签采用ASCII等宽字体并为最大标签保留足够左gutter（至少40px、按最大实际标签宽度+12调整；绘图区最小宽480px，加右边距24px后形成最小SVG宽度，窄屏只做局部横滚，不能硬裁到140px），绘图区x起点和点/柱坐标同步内缩，y保持同域公式；不会新增formatter属性或更改schema。所有值必须finite，包含最小subnormal与接近MAX_VALUE，空与zero逻辑如上。不能改points或表格源值。长标签先换行/选择较少tick并保留完整title与原表，窄屏绘图区使用≥540px局部滚动，不把字缩到不可读；不可旋转45度遮挡或改label原值。现有原生SVG title继续保留，首轮不宣称完整keyboard Tooltip组件；可见legend与原表为非颜色替代。
 
 样张的after通过注入CSS、局部legend/网格/线型和数字单元格派生标记模拟此方向，**没有修改src实现**。真实Chart长标签/空/零/负/4series与动态patch仍需实施后的测试，不能借RP01两条正值折线样张称边界全部通过。
 
@@ -68,8 +68,8 @@ OUT：compiler/session/protocol/server/认证/预算/事件生命周期/SDK版�
 | AC-002 | P1 | 六固定场景 / 相同source与data前后 / 有界before/after和manifest可追溯，不把prototype当生产 | RP-T2 capture registry/hash/known fixture/实际截图 |
 | AC-003 | P0 | 360/768/1280和desktop实际200% / 重排与输入/弹窗操作 / 无非预期body溢出、遮挡/重叠，局部滚动可用，草稿不丢 | RP-T3 geometry/hit-test+已有BM3 canary、实际zoom人工记录 |
 | AC-004 | P1 | 文字/输入边界/焦点/状态 / 键盘/reduced motion / 普通文字≥4.5，大字及必要非文字信息≥3，状态不只靠颜色；焦点/aria原合同保持 | RP-T4 computed有效背景的contrast对+tab/Modal/error/focus；不把token数值表当全WCAG认证 |
-| AC-005 | P0 | 表格数字/字符串/null/boolean / 展示、sort/filter / value/type/稳定排序和Event.context完全不变 | RP-T5 actual browser numeric/string sort+snapshot+no POST |
-| AC-006 | P0 | line/bar空/单点/零/全负/混合/长标签/4series / 展示及updateChart / 刻度/legend/table一致，有限坐标，无伪0样本/插值，草稿和revision/epoch不被视觉改动重置 | RP-T6 chart corpus、patch回归、原表/数据精确相等 |
+| AC-005 | P0 | 表格数字/字符串/null/boolean / 展示、sort/filter / value/type/稳定排序和Event.context完全不变 | RP-T5 actual browser numeric/string sort+snapshot+no POST，360窄屏Range scalar单行及横向可达 |
+| AC-006 | P0 | line/bar空/单点/零/全负/混合/长标签/4series / 展示及updateChart / 刻度/legend/table一致，有限坐标，无伪0样本/插值，草稿和revision/epoch不被视觉改动重置 | RP-T6 chart corpus（含tiny/huge/subnormal/MAX_VALUE）/formatter非零不伪0与label宽度、patch回归、原表/数据精确相等 |
 | AC-007 | P0 | 空guard表单、本地控件、发送中/暂停 / 键盘/点击/样式切换 / 无无效POST；Details/Modal/复制/筛选不多发事件；valid动作按旧通路 | RP-T7 invalid0+valid1 POST、焦点返回、pause/inert/隐含事件回归 |
 | AC-008 | P1 | 新skill索引/组合例 / helper example→check / 可编译、组件名真实、无虚构props/测量/单位或预载整篇system prompt | RP-T8 actual helper/正例与显式负例/CLI shape回归 |
 | AC-009 | P0 | 固定产品候选 / 本地CI/包启动 / Node24窄→全Node/type/四browser/strictunion+build/pack/owned discovery，通过独立代码GO；无依赖/内核漂移 | RP-T9 fixedsource CI/package/rollback审查 |

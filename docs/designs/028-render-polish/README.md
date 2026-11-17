@@ -2,7 +2,7 @@
 
 候选方向：中性浅底、靛蓝强调、统一卡片/控件/数据层级。推荐先把现有组件做好，不迁移React/CopilotKit，不新增Catalog或样式参数。Canonical：[Spec028](../../specs/028-render-polish.md)，测试/范围见[Plan028](../../plans/028-render-polish.md)。当前是design preview，产品尚未实现。
 
-打开[前后对照画廊](gallery.html)。每个场景可选desktop1280、tablet768、mobile360、640×450等效reflow，均有before/after。after=真实现有renderer＋本地候选CSS/Chart展示标记/数字单元格派生标记，不是产品候选包；before不注入样式。所有数据与快照逐对保持，不执行模型或业务动作。图片位于samples/，48张，共约4.4MiB，不进入产品包files。
+打开[前后对照画廊](gallery.html)。每个场景可选desktop1280、tablet768、mobile360、640×450等效reflow，均有before/after。after=真实现有renderer＋本地候选CSS/Chart展示标记/数字单元格派生标记，不是产品候选包；before不注入样式。所有数据与快照逐对保持，不执行模型或业务动作。图片位于samples/，48张主样张＋1张窄屏数值列横滚补图，共约4.4MiB，不进入产品包files。
 
 | 场景 | 固定内容 | 提案关注点 |
 | --- | --- | --- |
@@ -33,3 +33,9 @@ node --import tsx docs/designs/028-render-polish/capture.mts
 ```
 
 该工具只使用UiSession/startServer与headless Chromium，拦截所有非本地页面请求和业务POST；不导入Pi模型会话、不读用户凭据/真实provider配置。capture输出到忽略目录，不能直接当发布门禁或重写已审samples；重生成后先核source/fixture/CSS/环境与设计delta再评审。当前不提供任何付费执行命令。
+
+## R1修正
+
+原R1指出手机表格中158/12040等被anywhere断行。最终候选让number/boolean/null单行原子显示，宽度不足在可聚焦table region局部横滚；真实Range检查after scalar拆行0（before仍有4个拆行反例）。24张before PNG逐字与R1相同，没有重录基线修绿。见samples/RP02-mobile-scalars-scroll-after.png，数值列完整呈现；其他列可继续横滚。
+
+chart-corpus.json给出11组手写设计期望（包括1e-6/1e308/最小subnormal/MAX_VALUE）；当前compiler已接纳其输入，但未来formatter/宽度/动态行为尚未实现。Spec028明确非零科学计数与gutter规则，不能从本正值RP01预览推断极值已过视觉验收。Pi工作会话仅Ark AgentPlan/glm-5.3-flash，缺失停，不改配置/探针。

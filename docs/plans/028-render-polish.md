@@ -31,11 +31,11 @@ expect(await page.locator('pi-a2ui-data-table input').evaluate(el=>getComputedSt
 
 **文件**：src/table-elements.ts、src/live-elements.ts；tests/render-polish.spec.ts。消费T1 token；产出相同rows/series的视觉DOM，不增加外部API。
 
-**RED**：RP02真实number单元格computed textAlign要求right（字符串数字不被隐式转number），并操作sort验证77<158、"158"<"77"，同值稳定，source snapshot/业务POST不变。Chart真实DOM要求语义legend列出series.name、tick去重且零基线一致，当前没有legend应失败；不是判断截图“看起来更好”。
+**RED**：RP02真实number单元格computed textAlign要求right（字符串数字不被隐式转number），并操作sort验证77<158、"158"<"77"，同值稳定，source snapshot/业务POST不变；360px真实Range scalar行数≤1，并横滚到数字/布尔列断言完整值可见，不以无body overflow替代。Chart真实DOM要求语义legend列出series.name、tick去重且零基线一致，当前没有legend应失败；不是判断截图“看起来更好”。
 
-**最小实现**：TD按已有cell的typeof派生`data-value-kind="number"`（或等效内部标记）供CSS右对齐，原cells/compare/filter不改；Chart render仅加`ul.chart-legend[aria-label="Chart series"]`与对应li、同域tick/grid、line线型、长标签换行/抽tick/full title和原始数据表。静态坐标继续使用Spec028公式，ticks空时空/zero去重。未改validateSeries、updateChart或schema。不要手改dist。
+**最小实现**：TD按已有cell的typeof派生`data-value-kind="number"|"boolean"|"null"|"string"`（或等效内部标记）；数值右对齐，number/boolean/null nowrap与不拆词，table最小宽度560px、.table-scroll提供可聚焦region与局部横滚，原cells/compare/filter不改；Chart render仅加`ul.chart-legend[aria-label="Chart series"]`与对应li、同域tick/grid、line线型、长标签换行/抽tick/full title和原始数据表。静态y坐标继续使用Spec028公式，ticks空时空/zero去重；tick格式严格按Spec028的非零科学计数/精度碰撞规则，不再固定maximumFractionDigits2；根据实际label宽度预留左gutter，点/柱x同步调整，无裁切。未改validateSeries、updateChart或schema。不要手改dist。
 
-**GREEN**：empty、single point、all-zero、all-negative、mixed、long-label、4-series、bar/line均真实render且原值表一致；反向patch后legend/ticks即时更新，原草稿、revision/epoch和交互行为保持。locale显示tick可格式化，不能改point.value/label或DataTable原数值。每个bar系列仍有文字/原表替代，不只靠颜色。数值对齐/Chart展示独立commit并独立审diff。
+**GREEN**：empty、single point、all-zero、all-negative、mixed、long-label、4-series、bar/line，以及1e-6/1e308/Number.MIN_VALUE/Number.MAX_VALUE均真实render；可用docs/designs/028-render-polish/chart-corpus.json的手写预期，不能复制formatter产出当oracle且原值表一致；反向patch后legend/ticks即时更新，原草稿、revision/epoch和交互行为保持。locale显示tick可格式化，不能改point.value/label或DataTable原数值。每个bar系列仍有文字/原表替代，不只靠颜色。数值对齐/Chart展示独立commit并独立审diff。
 
 ## T3：按需skill和可执行组合样例（AC-008）
 
