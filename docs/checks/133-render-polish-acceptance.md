@@ -59,6 +59,30 @@ codex（gpt-6.1-sol xhigh）对 97b12e8..b21f1c3 复审：**NO-GO，4 项阻塞 
 4. golden combine 于干净 e1772db：`{"source":"e1772db…","cases":68,"positive":45,"negative":23,"node":"v24.18.1","browser":"158.0.8127.18"}`（`.local/render-polish-corrective/golden-union-e1772db.json`）。
 5. 提交 **e1772db** `fix(#67): R2 review fixes…`（6 文件 +161/−22，含 dist 同步）。
 
+## R3 内审修复轮（dc13024，2026-11-17）
+
+codex（gpt-6.1-sol xhigh）对 b21f1c3..8414f41 复审：**NO-GO，5 项阻塞 + 2 项建议**。处置：
+
+- **阻塞 1（B1 尾列重叠）**：数学反例（196 点尾列宽 2.755、相邻间距 −0.714）确认 R2 的"裁剪尾列"方案在极点数下仍重叠。src/live-elements.ts 兑底改为**右缘保留列**：尾标签独占 `[plotSpan−column, plotSpan]` 满宽列（column=slot·stride≥34），其余保留列必须避开保留区；文本预算恒为 column−6 且居中，列间不相交由构造保证（相邻列间隙≥6 viewBox 单位）。新增 196/200 点边界回归（屏幕坐标含于 svg 视口、间距≥2、≤3 行、title 全文）。
+- **阻塞 2（B2 真实 200%）**：未闭合，**按熔断规则停轮上报**——无头环境无法驱动浏览器 chrome 缩放（Ctrl+= 探针无效），Spec028:63 要求的实际桌面 200% 操作记录只能由人工提供。已按审查要求降级措辞：CSS zoom 明确为代理、物理等效环境（640×450 + DPR2）明确为渲染参数复现而非真实浏览器缩放操作，人工记录列为待办。
+- **阻塞 3（zenv 泄漏）**：物理等效块重构为外层 try/finally 管 BrowserContext、内层管 zenv（成功/异常路径均关闭），newPage 移入 try。
+- **阻塞 4（RUN 目录碰撞）**：时间戳目录改 `mkdtempSync(SHOTS/run-)`，worker/重试各归各目录，manifest 互不覆盖。
+- **阻塞 5（manifest 身份绑定）**：source/dirty/lock 在模块加载时先采集，afterAll 复核一致（变更则抛错拒标）；新增 launchedBrowser{browserType name, version()}（首个截图时采集）与 lockedBrowser{revision, browserVersion}（browsers.json）同录，并校验 browserVersionMatchesLock。
+- **建议 1**：AC-006 坐标断言改严格解析——points 属性必须存在非空、逐对 length===2 且有限、每条 polyline 恰好一对/点（2×2）、tick x/y 存在非零有限。
+- **建议 2**：反向更新补齐同强度断言（精确值表 deepEqual、polyline 严格解析、epoch 稳定、草稿保留）。
+
+### R3 轮门禁（HEAD=dc13024 干净树）
+1. tsc clean；npm run build 后 dist 同步提交。
+2. `npm test` **609/609**。
+3. 六套件 `--workers=1` **142 passed**（首跑 1 例未复现偶发，连续两轮全绿；BM3 accepted:true、baseline not-comparable/pixelGate:false，run `.local/bm3-layout/run-1794913744703-6298`）。
+4. golden combine 于干净 dc13024：`{"source":"dc13024…","cases":68,"positive":45,"negative":23,"node":"v24.18.1","browser":"158.0.8127.18"}`（`.local/render-polish-corrective/golden-union-dc13024.json`）。
+5. 截图证据 per-run mkdtemp 目录 + manifest.json（source/dirty/lock/lockedBrowser/launchedBrowser/browserVersionMatchesLock/逐张 sha256）。
+6. 提交 **dc13024** `fix(#67): R3 review fixes…`（4 文件 +104/−40，含 dist 同步）。
+
+### 待人工项（本轮无法闭合，需用户/评审员执行）
+
+- **AC-003 实际桌面 200% 缩放人工记录**（Spec028:63）：在真实桌面浏览器（1280 物理像素宽窗口）按 Ctrl+= 达到 200% 页面缩放，记录 source=dc13024（或后续固定提交）、浏览器与版本、基准 DPR=2、窗口尺寸，执行守卫表单命中/输入/Modal/焦点/草稿全流程并留存记录。无头 CI 只能提供物理等效（渲染参数复现）与 CSS zoom 代理两层证据，不能替代此项。
+
 ## 漂移、风险与回退
 - F2 换行兜底在列抽稀下不再要求全量可读（stride 保证不相交、非空、有界；全文在 `<title>` 与值表），与 R1 修复建议一致；U+2E3B 类极少数字形估算上界问题沿用 Check132 R4 结论（主路径 canvas measureText，兜底非可靠上界、已如实记录）。
 - updateChart 重渲染与草稿：R2 内审后实测推翻了早前"数据更新重置草稿"的观察——客户端按组件补丁渲染，未提交草稿在 updateChart 前后均保留（AC-006 已用正反两侧断言钉死：视觉改动保留草稿 + 数据更新后 toHaveValue('动态更新期间保留草稿')），强于 Spec028:72 仅视觉合同。
@@ -66,4 +90,4 @@ codex（gpt-6.1-sol xhigh）对 97b12e8..b21f1c3 复审：**NO-GO，4 项阻塞 
 - 回退：97b12e8（整改）与 290e5fd（验收测试）两个提交方向独立可 revert；无数据迁移、无内核/schema/权限变更、无 dist 手工改动（dist 仅由 build 生成）。
 
 ## 状态
-review-ready（整改 + 验收闭合 + R2 内审修复轮完成，待外部评审员对 97b12e8..e1772db 复审；本 Check 不关闭 issue、不合并、不发布、不改用户全局安装）。
+内审修复轮按 AGENTS.md §2.4 熔断规则停止：阻塞计数 R2 4→R3 5（新增阻塞均来自新加测试基建代码，非产品回归），且 B2 连续两轮未闭合（需人工桌面记录，外部输入）。其余阻塞/建议已全部修复并全门禁绿。review-ready（待外部评审员对 97b12e8..dc13024 复审 + 上述人工 200% 记录；本 Check 不关闭 issue、不合并、不发布、不改用户全局安装）。
