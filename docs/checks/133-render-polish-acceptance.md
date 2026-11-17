@@ -40,11 +40,30 @@
 - StatusBadge 颜色在内层 `.badge`，宿主元素透明；Button 类名为 `a2ui-button(-default/-primary)`（client.css 旧 `.a2ui-basic-button` 选择器与实际 DOM 不符，为既有遗留，不在本轮范围）。
 - golden union 与 BM3 accepted 均要求 node/browser 报告与当前干净提交一致：任何 src/tests 变更先提交，再重跑 npm test 刷 node 报告、重跑 golden browser 套件，再 combine。
 
+## R2 内审修复轮（e1772db，2026-11-17）
+
+codex（gpt-6.1-sol xhigh）对 97b12e8..b21f1c3 复审：**NO-GO，4 项阻塞 + 3 项建议**。逐项修复：
+
+- **B1 F2 兜底列溢出**：src/live-elements.ts visibleXLabels 尾列改为 `colEnd=min(colStart+column,left+plotSpan)`，逐列宽度/中心点按裁剪后列计算——余数列不再越过 viewBox 右缘；新增 stride 分支用例（32×'W'×70，审计：有界子集、≤3 行、屏幕坐标含于 svg 视口、列间距≥2、title 全文）。教训：rp-plot svg 无 width 属性时按容器缩放（实测 scale≈1.32），审计必须在同一坐标系比较（沿用 T2 屏幕坐标做法），不能拿缩放后 px 对 viewBox 单位。
+- **S2 刻度槽宽**：新增长数字刻度用例（123456789/987654321）断言 left≥40 且 ≥实测 maxWidth+12-0.5（canvas 以 --pi-a2ui-font-mono 11px 量测）。
+- **S1 hover/active 优先级**：`#surfaces a2ui-tabs .a2ui-tab-button:hover` → `:hover:not(.a2ui-tab-button-active)`，新增 hover 活动态用例（hover 后仍 rgb(54,92,219)）。
+- **B2 真实 200% 缩放**：CSS zoom 明确标注为代理；新增物理等效环境 browser.newContext({viewport 640×450, deviceScaleFactor:2})（1280 物理像素窗口浏览器 200% 缩放的精确渲染参数）复跑守卫表单全流程（命中/校验/填充/Modal/焦点返回/截图 ac003-zoom200-physical）。无头 Chromium 无法驱动浏览器 chrome 缩放（Ctrl+= 探针无效），物理等效 + CSS 代理两层证据并如实分层标注。
+- **B4 证据源绑定**：截图改为 per-run 目录 `.local/render-polish-corrective/shots/run-<ISO>/`，afterAll 写 manifest.json（source=git HEAD、dirty、lock sha256、chromium-headless-shell revision、每张截图 sha256），重跑不再覆盖旧证据。
+- **B3 AC-006 强化**：更新后精确值表 deepEqual（基线一/二 1/2、对照一/二 2/1）、polyline/tick 坐标全部有限、数据更新后草稿保留（推翻早前错误观察，见漂移节勘误）。
+- **S3 清洁断言**：assertClean(env,stage)（pageErrors 空 + externalBlocked 0）接入 AC-001 三组/AC-003/AC-004/AC-006 全部用例尾。
+
+### R2 轮门禁（HEAD=e1772db 干净树）
+1. tsc clean；npm run build 后 dist 同步提交。
+2. `npm test` **609/609**。
+3. 六套件（五套件+验收规格）`--workers=1` **141 passed**（含 3 个新回归用例）；BM3 evidence accepted:true、baseline not-comparable/pixelGate:false（冻结基线零触碰，run `.local/bm3-layout/run-1794912497348-81603`）。
+4. golden combine 于干净 e1772db：`{"source":"e1772db…","cases":68,"positive":45,"negative":23,"node":"v24.18.1","browser":"158.0.8127.18"}`（`.local/render-polish-corrective/golden-union-e1772db.json`）。
+5. 提交 **e1772db** `fix(#67): R2 review fixes…`（6 文件 +161/−22，含 dist 同步）。
+
 ## 漂移、风险与回退
 - F2 换行兜底在列抽稀下不再要求全量可读（stride 保证不相交、非空、有界；全文在 `<title>` 与值表），与 R1 修复建议一致；U+2E3B 类极少数字形估算上界问题沿用 Check132 R4 结论（主路径 canvas measureText，兜底非可靠上界、已如实记录）。
-- updateChart 重渲染会重置未提交 DOM 草稿为绑定初值（既有平台行为，非本轮引入；本轮测试口径改为"视觉改动保留草稿、数据更新不保草稿"，与 Spec028:72 不冲突）。若需"数据更新也保草稿"属新行为需求，应另立 issue。
+- updateChart 重渲染与草稿：R2 内审后实测推翻了早前"数据更新重置草稿"的观察——客户端按组件补丁渲染，未提交草稿在 updateChart 前后均保留（AC-006 已用正反两侧断言钉死：视觉改动保留草稿 + 数据更新后 toHaveValue('动态更新期间保留草稿')），强于 Spec028:72 仅视觉合同。
 - client.css `.a2ui-basic-button` 遗留选择器与实际 DOM `.a2ui-button` 不符（R1 前已存在，本轮未触碰合同面；按钮观感由 `#surfaces button` 通用规则 + 变体规则承载，验收探针已按真实 DOM 校验对比度）。
 - 回退：97b12e8（整改）与 290e5fd（验收测试）两个提交方向独立可 revert；无数据迁移、无内核/schema/权限变更、无 dist 手工改动（dist 仅由 build 生成）。
 
 ## 状态
-review-ready（整改 + 验收闭合完成，待外部评审员对 97b12e8..290e5fd 复审；本 Check 不关闭 issue、不合并、不发布、不改用户全局安装）。
+review-ready（整改 + 验收闭合 + R2 内审修复轮完成，待外部评审员对 97b12e8..e1772db 复审；本 Check 不关闭 issue、不合并、不发布、不改用户全局安装）。
