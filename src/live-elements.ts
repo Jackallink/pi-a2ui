@@ -11,12 +11,29 @@ export class LogViewElement extends A2uiLitElement<typeof logViewApi>{
 }
 export class ChartElement extends A2uiLitElement<typeof chartApi>{
  createRenderRoot(){return this;}
- static styles=css`:host{display:block}svg{display:block;width:100%;max-height:260px}.values{max-height:12em;overflow:auto}table{border-collapse:collapse;width:100%}td,th{text-align:left;padding:.3em;border-bottom:1px solid #ddd}`;
+ static styles=css`:host{display:block}.chart-plot{overflow:auto}svg{display:block;width:100%;min-width:540px;max-height:290px}.rp-legend{display:flex;flex-wrap:wrap;gap:8px 18px;list-style:none;margin:0 0 8px;padding:0;font-size:12px;color:var(--pi-a2ui-color-muted)}.rp-legend i{display:inline-block;width:16px;height:4px;border-radius:2px;margin-right:6px;vertical-align:middle}.values{max-height:176px;overflow:auto}table{border-collapse:collapse;width:100%}td,th{text-align:left;padding:.3em;border-bottom:1px solid var(--pi-a2ui-color-border)}td:last-child{white-space:nowrap}caption{text-align:left;font-size:12px;color:var(--pi-a2ui-color-muted);padding:4px 0}`;
  render(){const p=this.controller.props;if(!p)return nothing;
-  const colors=['#2563eb','#d97706','#059669','#be123c'];const count=p.series[0]?.points.length??0;
+  const colors=['#365cdb','#0f766e','#9a5b0a','#92419c'];const count=p.series[0]?.points.length??0;
   const maxAbs=Math.max(1,...p.series.flatMap(s=>s.points.map(point=>Math.abs(point.value))));
   const values=p.series.flatMap(s=>s.points.map(point=>point.value/maxAbs));const low=Math.min(0,...values),high=Math.max(0,...values);const span=high-low||1;
-  const y=(value:number)=>210-((value/maxAbs-low)/span)*180;const x=(index:number)=>40+(count<=1?0:index/(count-1)*540);
-  return html`<section aria-label="Chart"><h3>${p.kind==='line'?'Line':'Bar'} chart</h3>${count===0?html`<p>No data yet</p>`:nothing}<svg viewBox="0 0 640 250" role="img" aria-label=${p.kind+' chart'}><line x1="35" x2="615" y1=${y(0)} y2=${y(0)} stroke="#64748b"></line>${p.series.map((series,index)=>svg`<g data-series=${series.name}>${p.kind==='line'?svg`<polyline fill="none" stroke=${colors[index]} points=${series.points.map((point,i)=>`${x(i)},${y(point.value)}`).join(' ')}></polyline>`:nothing}${series.points.map((point,i)=>p.kind==='line'?svg`<circle cx=${x(i)} cy=${y(point.value)} r="3" fill=${colors[index]}><title>${series.name}: ${point.label} = ${point.value}</title></circle>`:svg`<rect x=${40+i*(540/Math.max(1,count))+index*(500/Math.max(1,count)/Math.max(1,p.series.length))} y=${Math.min(y(0),y(point.value))} width=${Math.max(.1,480/Math.max(1,count)/Math.max(1,p.series.length))} height=${Math.abs(y(point.value)-y(0))} fill=${colors[index]}><title>${series.name}: ${point.label} = ${point.value}</title></rect>`)}</g>`)}${p.series[0]?.points.map((point,i)=>svg`<text x=${p.kind==='line'?x(i):40+i*(540/Math.max(1,count))} y="235" font-size="10">${point.label}</text>`)}</svg><div class="values"><table><caption>Supplied chart values</caption><thead><tr><th>Series</th><th>Label</th><th>Value</th></tr></thead><tbody>${p.series.flatMap(series=>series.points.map(point=>html`<tr><td>${series.name}</td><td>${point.label}</td><td>${point.value}</td></tr>`))}</tbody></table></div></section>`;
+  const y=(value:number)=>210-((value/maxAbs-low)/span)*180;
+  const gutter=40,plotSpan=540;const ticks=count===0?[]:tickValues(low,high,maxAbs);const longest=ticks.reduce((width,tick)=>Math.max(width,tick.label.length),0);const left=Math.max(gutter,Math.ceil(longest*7.5)+12);const width=left+plotSpan+24;
+  const x=(index:number)=>left+(count<=1?0:index/(count-1)*plotSpan);
+  return html`<section aria-label="Chart"><h3>${p.kind==='line'?'Line':'Bar'} chart</h3>${count===0?html`<p>No data yet</p>`:nothing}${p.series.length?html`<ul class="rp-legend" aria-label="Chart series color legend">${p.series.map((series,index)=>html`<li><i style=${'background:'+colors[index]}></i>${series.name}</li>`)}</ul>`:nothing}<div class="chart-plot"><svg viewBox="0 0 ${width} 250" role="img" aria-label=${p.kind+' chart'}><line x1=${left} x2=${left+plotSpan} y1=${y(0)} y2=${y(0)} stroke="#64748b"></line>${ticks.map(tick=>svg`<line class="rp-tick-mark" x1=${left-6} x2=${left} y1=${y(tick.value)} y2=${y(tick.value)} stroke="var(--pi-a2ui-color-border,#dbe2ea)"></line><text class="rp-tick" x=${left-8} y=${y(tick.value)+4} text-anchor="end" font-size="11" fill="var(--pi-a2ui-color-muted,#566477)">${tick.label}</text>`)}${p.series.map((series,index)=>svg`<g data-series=${series.name}>${p.kind==='line'?svg`<polyline fill="none" stroke=${colors[index]} points=${series.points.map((point,i)=>`${x(i)},${y(point.value)}`).join(' ')}></polyline>`:nothing}${series.points.map((point,i)=>p.kind==='line'?svg`<circle cx=${x(i)} cy=${y(point.value)} r="3" fill=${colors[index]}><title>${series.name}: ${point.label} = ${point.value}</title></circle>`:svg`<rect x=${left+i*(plotSpan/Math.max(1,count))+index*((plotSpan-40)/Math.max(1,count)/Math.max(1,p.series.length))} y=${Math.min(y(0),y(point.value))} width=${Math.max(.1,480/Math.max(1,count)/Math.max(1,p.series.length))} height=${Math.abs(y(point.value)-y(0))} fill=${colors[index]}><title>${series.name}: ${point.label} = ${point.value}</title></rect>`)}</g>`)}${p.series[0]?.points.map((point,i)=>svg`<text x=${p.kind==='line'?x(i):left+i*(plotSpan/Math.max(1,count))} y="235" font-size="10">${point.label}</text>`)}</svg></div><div class="values"><table><caption>Supplied chart values</caption><thead><tr><th>Series</th><th>Label</th><th>Value</th></tr></thead><tbody>${p.series.flatMap(series=>series.points.map(point=>html`<tr><td>${series.name}</td><td>${point.label}</td><td>${point.value}</td></tr>`))}</tbody></table></div></section>`;
  }
+}
+function tickValues(low:number,high:number,maxAbs:number):Array<{value:number;label:string}>{
+ const format=(value:number):string=>{
+  if(value===0)return'0';
+  const abs=Math.abs(value);
+  if(abs<0.01||abs>=1e6)return value.toExponential(2);
+  return value.toLocaleString('en-US',{useGrouping:false,maximumFractionDigits:6});
+ };
+ const mid=(low+high)/2;const seen=new Set<number>();const entries:Array<{value:number;label:string}>=[];
+ for(const value of [low*maxAbs,mid*maxAbs,high*maxAbs]){
+  if(seen.has(value))continue;seen.add(value);entries.push({value,label:format(value)});
+ }
+ const collisions=new Map<string,number>();for(const entry of entries)collisions.set(entry.label,(collisions.get(entry.label)??0)+1);
+ for(const entry of entries)if((collisions.get(entry.label)??0)>1)entry.label=String(entry.value);
+ return entries;
 }
