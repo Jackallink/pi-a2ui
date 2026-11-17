@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.12 - 2026-11-17
+
+- Polish canvas rendering per issue #67 without changing any data, event, draft, sorting or permission contract: chart gains a non-color series identity layer (legend swatches, deterministic line dash styles `none`/`7 3`/`2 3`/`11 4` with circle/square/triangle/diamond point markers) and axis tick labels switch to the monospace token with a measured per-label gutter (40px floor, actual font-metric width + 12 padding) instead of the character-count estimate.
+- Chart x labels gain a bounded wrap fallback: when no full single-line label fits the slot, the fallback renders at most 3 wrapped lines per label (full text kept in `<title>`), reserves a full-width right-edge column for the last label so columns never collide (adjacent gap ≥6 viewBox units), and grows the viewBox height with the deepest wrap instead of discarding every label.
+- `DataTable` scroll regions become named focusable regions (`tabindex=0`, `role=region`, caption-derived label) so keyboard arrow scrolling is a contract, and the generic canvas button reset no longer overrides SDK `Tabs` active or `ChoicePicker` chip selected states (restored accent/underline/pill styling with hover scoped off the active tab).
+- Shipped tests extended: tab/chip/scroll-region/mono-tick/measured-gutter/tail-column/196-200-point boundary/acceptance suites (AC-001 32-component style coverage with contrast ratios, AC-003 200%-zoom proxy + physical-equivalent rendering, AC-004/007 keyboard/modal/pause/inert, AC-006 dynamic chart updates). Spec028:63 real desktop 200% record remains a human follow-up tracked in Check133/134; report issues from actual use.
+- Tool inputs, schemas, runtime permissions, browser-opening policy and the v2 benchmark binding policy stay unchanged (only its packageVersion/archiveSHA256 follow this release; frozen real-v1 files untouched). Node24 local CI and Git/local distribution only; release validation adds no model inference.
+
 ## 0.1.11 - 2026-11-17
 
 - Make `a2ui_render` authoring skill-first: after deciding a canvas helps, the model reads the installed pi-a2ui SKILL.md (unless its body is already in context), starts from a matching example, adapts it, runs helper `check` on the final source and passes the returned arguments unchanged. When skill reading or helper execution is unavailable, it explains the limitation in prose instead of claiming a preflight ran.

@@ -14,13 +14,13 @@
     "cleanupMs": 10000,
     "batchMs": 1200000
   },
-  "archiveSHA256": "62663468b470344140c7dcc19dddcf3331baed4cc64c39ae2e2443ba93027c55",
+  "archiveSHA256": "373e3a0d78355e328225e2c8cfdedb09cc773f53dbf7b317736edd5af8fb4432",
   "nodeMajor": 24,
   "pi": "1.5.0",
   "cases": 12,
   "retry": false,
   "ciInference": false,
   "handoffPolicy": "compiled-surface-identity",
-  "packageVersion": "0.1.11",
+  "packageVersion": "0.1.12",
   "previousProfile": "v0.1.8-glm-first-v1"
 }
