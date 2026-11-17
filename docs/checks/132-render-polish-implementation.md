@@ -45,7 +45,7 @@
 - 未确认阻塞→建议处理：刻度字体未改等宽（Spec028 未要求，7.5px/字符估宽对 11px 数字刻度保守），维持现实现并记录。
 
 ## 状态
-review-ready（R1 已回环修复并复验，等待 R2 独立复评）：本 Check 不关闭 issue、不合并、不发布、不改用户全局安装。
+review-ready（T1–T4 完成，独立审查 R1→R4 回环收敛：R4 GO、阻塞性缺陷归零）：本 Check 不关闭 issue、不合并、不发布、不改用户全局安装。
 
 ## R2 独立复评（NO-GO，3 阻塞收敛自 4）与 f6383c2 修复轮
 - **R2 评审**（同命令 read-only，输入 00120ac..b17f085 全量 diff；全文 .local/render-polish-red/codex-review-r2.txt）：结论 **NO-GO**，3 项 [阻塞性缺陷]（caption 与 picker/badge 两项判定 RESOLVED；未发现新注入面/竞态/泄漏/越权）。收敛趋势 4→3，无同一缺陷原地停滞。
