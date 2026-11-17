@@ -1,6 +1,6 @@
 # Pi Agent 实施交接提示词（#67）
 
-当前独立设计评审尚待GO；若Check130没有明确GO/source/报告指纹，**不要开始产品实现**。本文件仅交接文本，Codex不触发Pi。
+独立R2设计/测试意图已GO，受审source68b2974a62ffeaac606f63b6292a3de2def40cbf/tree3b910aaf6d83941f5412d4d32623a86b1b44a56c，报告SHA d42138e339454145159f1bac1e22ccec2a78b0a9037beeba6831e8caecbdd5c4；Check130记录完整边界。本文件仅交接文本，用户手动启动Pi，Codex不触发。实施仍先落实Gate2实际RED；不是生产代码GO或发布授权。
 
 复制下段给用户自己启动的Pi会话；具体设计commit/最终GO以Check130及Codex交付的固定指纹为准，不使用更早草案：
 

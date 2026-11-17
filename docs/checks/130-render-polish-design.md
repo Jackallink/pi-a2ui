@@ -1,6 +1,6 @@
 # Check130：#67 渲染美化设计、固定样张与交接
 
-状态：review-ready（设计与prototype，独立评审待进行）；不代表产品实现完成。Canonical Spec028、Plan028与三轮walkthrough；issue67。基线main0c1fe67649b3f61d520ca0318f7dd977a208b3b5/package0.1.11，独立本地分支codex/67-render-polish-design。用户授权本阶段设计/样张/独立评审，Pi只给提示词不触发；没有真实模型/内核改造/合并发布/全局更新授权。
+状态：设计交接完成（独立R2 Gate1与Gate2测试意图GO）；Spec028 walkthrough-approved，不代表实际RED、产品实现或代码验收完成。Canonical Spec028、Plan028与三轮walkthrough；issue67。基线main0c1fe67649b3f61d520ca0318f7dd977a208b3b5/package0.1.11，独立本地分支codex/67-render-polish-design。用户授权本阶段设计/样张/独立评审，Pi只给提示词不触发；没有真实模型/内核改造/合并发布/全局更新授权。
 
 ## 当前事实与证据边界
 
@@ -35,3 +35,11 @@
 修正只影响design：候选表格scalar nowrap与局部横滚/region，新增真实Range单行断言和数值列横滚补图；Spec/Plan与三轮补非零不伪0、极大/微小值科学计数、有效gutter和11场景corpus（输入由原compiler接纳，不代表formatter已实现）；handoff无条件绑定Ark AgentPlan/glm-5.3-flash，缺失停不改配置。新owned run run-cCkfed退出0，48主图＋1补图；after scalar拆行0，before保留4个原退化反例，24个before PNG与R1逐字一致；全snapshot/原Chart表/草稿/白字断言保持，外部/业务/dispatch0，无body overflow。
 
 更新manifest SHA 78f0b614d4da9bbf897cb5e431c5c194a9b4f7b38a80ac2acdc3d76c18ec6418，captureScriptSHA e2f542a9fbf58e3743ae6827a008a61c5575bade23f2a95019490c7c7721ad52，previewCSSSHA 5a84a5d50a68a618e46f0e2c8ed93865715863732dba5da6997a03f92234f50c；design-ci.json是当前证据，前节hash为历史R1来源，不覆盖或重判旧回执。产品77文件仍与基线字节相同，当前待新固定docs source的独立R2。
+
+## 独立R2 GO与交接边界
+
+固定source **68b2974a62ffeaac606f63b6292a3de2def40cbf** / tree **3b910aaf6d83941f5412d4d32623a86b1b44a56c**，独立报告[independent-review-r2.md](../designs/028-render-polish/independent-review-r2.md)，SHA **d42138e339454145159f1bac1e22ccec2a78b0a9037beeba6831e8caecbdd5c4**。Gate1设计与Gate2测试意图GO，R1三项closed、0开放P0/P1/P2。R1与R2公开副本均逐字匹配sealed原件，不改旧失败。
+
+Reviewer独立核48+1图、24before逐字、24snapshot pairs、6fixture、77payload+lock/73运行文件、新raw/log hash与11配色；目视数值横滚补图。Node24只做seriesSchema与11手写tick期望的只读算术核对，不是产品formatter或极值视觉验收。handoff精确限制Ark AgentPlan/glm-5.3-flash，仍禁止本chat触发Pi/真实评测/内核/merge/release/global/issue关闭。
+
+最终收口仅Spec/Check/handoff状态和reviewed identity/报告hash、公开逐字review副本，CSS、样张、数据、测试意图不变；随后固定最终metadata提交做独立最小绑定。交付用户自行启动Pi的提示词，按Plan028 T1→T4并先Gate2实际RED；没有第二次付费预算申请。实施交接不等于当前产品已变或任何发布授权。
